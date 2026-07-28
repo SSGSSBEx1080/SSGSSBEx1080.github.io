@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071327">
+  <title>DC Universe — Чек-лист киновселенной</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050a13;
+      --bg-2: #0b1424;
+      --bg-3: #101d31;
+      --panel: rgba(12, 24, 43, .88);
+      --blue: #198cff;
+      --blue-2: #58b4ff;
+      --ice: #a6dcff;
+      --gold: #f7c948;
+      --text: #eef7ff;
+      --muted: #8fa4bc;
+      --border: #213553;
+      --done: #28d17c;
+      --movie: #3aa2ff;
+      --series: #b76bff;
+      --animation: #ffb84d;
+      --danger: #ff6374;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body { min-height: 100vh; color: var(--text); background: var(--bg); font-family: Montserrat, Arial, sans-serif; }
+    button, input, textarea { font: inherit; }
+    button { border: 0; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .icon { width: 1em; height: 1em; fill: currentColor; display: inline-block; vertical-align: -.125em; }
+
+    /* Navigation */
+    .top-nav {
+      height: 68px; padding: 10px clamp(16px, 4vw, 34px); display: flex; align-items: center; gap: 18px;
+      position: sticky; z-index: 50; top: 0; background: rgba(5, 10, 19, .91); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(64, 142, 224, .45); box-shadow: 0 8px 30px rgba(0, 0, 0, .24);
+    }
+    .nav-logo { text-decoration: none; color: var(--text); display: inline-flex; align-items: center; flex-shrink: 0; cursor: pointer; }
+    .nav-symbol { width: 34px; height: 34px; border: 2px solid var(--blue-2); border-radius: 50%; display: grid; place-items: center; font: 900 14px/1 Orbitron, sans-serif; color: white; box-shadow: 0 0 12px rgba(25, 140, 255, .55), inset 0 0 12px rgba(25, 140, 255, .3); }
+    .nav-logo-text { padding-left: 9px; font: 900 18px/1 Orbitron, sans-serif; letter-spacing: 1.2px; color: var(--blue-2); }
+    .nav-logo-text b { color: white; }
+    .nav-links { display: flex; gap: 7px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-link { padding: 9px 14px; border: 1px solid transparent; border-radius: 999px; color: #b9c9dc; text-decoration: none; font-size: 12px; font-weight: 700; transition: .22s ease; white-space: nowrap; }
+    .nav-link:hover { color: white; background: var(--bg-3); border-color: #31527c; }
+    .nav-link.active { color: white; background: linear-gradient(135deg, #1477e8, #24a4ff); border-color: #66bfff; box-shadow: 0 0 18px rgba(25,140,255,.35); }
+
+    /* Views */
+    .page { display: none; min-height: calc(100vh - 68px); }
+    .page.active { display: flex; flex-direction: column; }
+
+    /* Homepage */
+    .home-hero { min-height: calc(100vh - 68px); padding: 74px 8%; position: relative; overflow: hidden; display: flex; align-items: center; }
+    .home-hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #050a13 0%, rgba(5,10,19,.78) 37%, rgba(5,10,19,.24) 74%, rgba(5,10,19,.55)), radial-gradient(ellipse at 85% 54%, rgba(16, 110, 220, .27), transparent 38%); }
+    .home-hero::after { content: ""; position: absolute; width: min(92vw, 900px); height: min(92vw, 900px); right: -13%; top: 50%; transform: translateY(-50%); border-radius: 50%; border: 1px solid rgba(90, 180, 255, .14); box-shadow: 0 0 0 90px rgba(48, 127, 213, .025), 0 0 0 180px rgba(48, 127, 213, .018), 0 0 110px 20px rgba(24, 124, 255, .16); animation: pulseRing 7s ease-in-out infinite; }
+    .hero-grid { position: absolute; inset: 0; opacity: .32; background-image: linear-gradient(rgba(49, 128, 209, .13) 1px, transparent 1px), linear-gradient(90deg, rgba(49, 128, 209, .13) 1px, transparent 1px); background-size: 62px 62px; mask-image: linear-gradient(90deg, transparent 15%, black 55%, black); }
+    .hero-dots { position: absolute; right: 5%; bottom: -5%; width: min(63vw, 760px); aspect-ratio: 1; opacity: .55; background-image: radial-gradient(circle, #42a3ff 1.3px, transparent 1.4px); background-size: 17px 17px; mask-image: radial-gradient(circle, black 15%, transparent 68%); transform: rotate(-18deg); }
+    .home-content { z-index: 1; max-width: 720px; position: relative; }
+    .home-badge { color: var(--ice); border: 1px solid rgba(89, 177, 255, .75); border-radius: 999px; background: rgba(11, 49, 93, .5); backdrop-filter: blur(8px); padding: 8px 14px; display: inline-flex; gap: 8px; align-items: center; font-size: 11px; font-weight: 800; letter-spacing: 1.7px; text-transform: uppercase; margin-bottom: 23px; }
+    .badge-dot { height: 7px; width: 7px; border-radius: 50%; background: var(--blue-2); box-shadow: 0 0 12px 3px var(--blue); animation: blink 1.9s ease-in-out infinite; }
+    .hero-logo { display: flex; align-items: center; gap: 20px; margin-bottom: 9px; filter: drop-shadow(0 12px 24px rgba(0,0,0,.48)); }
+    .hero-logo-mark { width: clamp(84px, 11vw, 128px); height: clamp(84px, 11vw, 128px); flex: 0 0 auto; position: relative; display: grid; place-items: center; border: 4px solid #65c2ff; border-radius: 50%; overflow: hidden; color: white; font: 900 clamp(29px,4.1vw,51px)/1 Orbitron, sans-serif; letter-spacing: -5px; text-indent: -4px; background: linear-gradient(135deg, #0a6ed6, #032a68 61%, #031737); box-shadow: 0 0 0 9px rgba(64,172,255,.09), 0 0 38px rgba(34,145,255,.8), inset 0 0 32px rgba(114,215,255,.75); animation: logoFloat 4.5s ease-in-out infinite, logoGlow 3s ease-in-out infinite; }
+    .hero-logo-mark::before { content: ""; position: absolute; inset: -65%; background: linear-gradient(107deg, transparent 43%, rgba(255,255,255,.75) 49%, transparent 55%); transform: translateX(-40%) rotate(10deg); animation: logoShine 4.2s ease-in-out infinite; }
+    .hero-logo-mark span { position: relative; z-index: 1; }
+    .home-title { margin: 0; font: 900 clamp(48px, 8.1vw, 94px)/.91 Orbitron, Montserrat, sans-serif; letter-spacing: clamp(-4px,-.35vw,-1px); text-shadow: 0 5px 28px rgba(0,0,0,.7); }
+    .home-title .blue { color: #4eb2ff; text-shadow: 0 0 30px rgba(49, 158, 255, .6), 0 5px 28px rgba(0,0,0,.7); }
+    .home-subtitle { font-size: clamp(18px, 2.7vw, 29px); font-weight: 400; color: #f2f8ff; margin: 18px 0 26px; text-shadow: 0 2px 14px black; }
+    .home-description { max-width: 610px; color: #c3d1e3; font-size: 15px; line-height: 1.76; margin-bottom: 40px; text-shadow: 0 2px 12px rgba(0,0,0,.9); }
+    .home-description strong { color: #6fc1ff; }
+    .home-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+    .home-btn { min-width: min(100%, 255px); flex: 1; padding: 24px; max-width: 340px; position: relative; overflow: hidden; display: block; text-decoration: none; color: var(--text); border: 1px solid rgba(86, 142, 205, .45); background: rgba(9, 22, 42, .72); backdrop-filter: blur(12px); border-radius: 16px; transition: .3s ease; }
+    .home-btn::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, #177ee9, #79d6ff); transition: transform .4s; }
+    .home-btn:hover { border-color: #62bcff; background: rgba(15, 42, 76, .92); transform: translateY(-5px); box-shadow: 0 18px 45px rgba(10, 111, 225, .26); }
+    .home-btn:hover::before { transform: scaleX(1); }
+    .home-btn-icon { font-size: 32px; margin-bottom: 11px; display: block; }
+    .home-btn-title { display: block; font-size: 19px; font-weight: 800; margin-bottom: 7px; }
+    .home-btn-desc { color: var(--muted); display: block; font-size: 12px; line-height: 1.5; }
+    .home-btn-arrow { position: absolute; color: var(--blue-2); right: 21px; bottom: 18px; font-size: 23px; opacity: 0; transform: translateX(-8px); transition: .28s; }
+    .home-btn:hover .home-btn-arrow { opacity: 1; transform: translateX(0); }
+    .home-stats { display: flex; gap: 37px; margin-top: 47px; flex-wrap: wrap; }
+    .home-stat-num { font-size: 30px; color: #62baff; font-weight: 900; text-shadow: 0 0 18px rgba(31,146,255,.55); }
+    .home-stat-label { color: #b6c8dc; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+
+    /* Checklist */
+    .checklist-layout { display: flex; flex: 1; padding-left: 92px; }
+    .progress-sidebar { position: fixed; left: 0; top: 68px; z-index: 15; width: 92px; height: calc(100vh - 68px); padding: 21px 10px; display: flex; flex-direction: column; align-items: center; background: #081222; border-right: 1px solid var(--border); }
+    .progress-label { font-size: 9px; color: var(--muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: 11px; }
+    .progress-track { width: 14px; flex: 1; min-height: 130px; max-height: 420px; position: relative; overflow: hidden; border: 1px solid #26425f; border-radius: 999px; background: #101d31; }
+    .progress-fill { position: absolute; left: 0; bottom: 0; right: 0; min-height: 0; background: linear-gradient(0deg, #0fb878, #31e09a); box-shadow: 0 0 15px rgba(40,209,124,.75); transition: height .5s cubic-bezier(.4,0,.2,1); }
+    .progress-percent { color: var(--blue-2); font-weight: 900; font-size: 21px; margin-top: 11px; }
+    .progress-count { color: var(--muted); font-size: 10px; margin-top: 4px; text-align: center; }
+    .progress-divider { width: 30px; height: 1px; background: var(--border); margin: 16px 0 12px; }
+    .sidebar-action { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: var(--bg-3); border: 1px solid var(--border); color: #a7c0d9; cursor: pointer; font-size: 16px; transition: .2s; }
+    .sidebar-action:hover { color: white; border-color: var(--blue); background: #14325a; }
+    .checklist-header { min-height: 76px; padding: 15px clamp(17px, 3vw, 34px); background: rgba(11,20,36,.9); border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .search-box { flex: 1 1 220px; max-width: 440px; position: relative; }
+    .search-box::before { content: "⌕"; position: absolute; z-index: 1; left: 14px; top: 3px; color: #87a8c9; font: 27px/1 Arial, sans-serif; pointer-events: none; }
+    .search-box input { color: var(--text); width: 100%; padding: 11px 14px 11px 39px; outline: none; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-3); font-size: 13px; transition: .25s; }
+    .search-box input::placeholder { color: #7890aa; }
+    .search-box input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(25,140,255,.15); }
+    .filters, .sorts { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .filter-btn, .sort-btn { padding: 8px 12px; color: #b5c6d9; background: var(--bg-3); border: 1px solid var(--border); border-radius: 999px; cursor: pointer; font-size: 11px; font-weight: 700; transition: .2s; white-space: nowrap; }
+    .filter-btn:hover, .sort-btn:hover { border-color: #4488ce; color: white; }
+    .filter-btn.active, .sort-btn.active { color: white; border-color: #248eea; background: #1478d5; box-shadow: 0 0 14px rgba(25,140,255,.32); }
+    .sorts { margin-left: auto; }
+    .checklist-main { width: 100%; padding: 29px clamp(18px, 4vw, 43px) 55px; overflow: hidden; }
+    .empty-state { padding: 64px 20px; color: var(--muted); text-align: center; background: var(--bg-2); border: 1px dashed #2e4a69; border-radius: 15px; font-size: 14px; font-weight: 700; }
+    .empty-state span { display: block; font-size: 38px; margin-bottom: 12px; }
+    .era-section { margin-bottom: 43px; }
+    .era-title { padding-bottom: 12px; margin-bottom: 18px; border-bottom: 2px solid var(--blue); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: clamp(19px, 2.1vw, 25px); font-weight: 900; letter-spacing: -.5px; }
+    .era-badge { padding: 4px 9px; border-radius: 7px; color: white; background: #147ce0; font-size: 11px; letter-spacing: .2px; }
+    .era-progress { margin-left: auto; color: var(--muted); font-weight: 600; font-size: 12px; }
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)); gap: 14px; }
+    .item-card { position: relative; overflow: hidden; border: 1px solid var(--border); background: var(--panel); border-radius: 14px; transition: .3s cubic-bezier(.4,0,.2,1); }
+    .item-card:hover { transform: translateY(-3px); border-color: #438fcf; box-shadow: 0 12px 27px rgba(0,0,0,.32), 0 0 25px rgba(20,119,230,.12); }
+    .item-card.done { background: linear-gradient(98deg, rgba(40,209,124,.12), var(--panel) 58%); }
+    .card-inner { display: flex; min-height: 154px; cursor: pointer; }
+    .card-poster { position: relative; width: 92px; flex: 0 0 92px; margin: 13px 0 13px 13px; overflow: hidden; border: 2px solid transparent; border-radius: 9px; background: #07101e; transition: .25s; }
+    .item-card.done .card-poster { border-color: var(--done); box-shadow: 0 0 12px rgba(40,209,124,.37); }
+    .card-poster img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .45s; }
+    .item-card:hover .card-poster img { transform: scale(1.07); }
+    .poster-fallback { display: grid; place-items: center; position: absolute; inset: 0; text-align: center; padding: 7px; font: 800 11px/1.3 Orbitron,sans-serif; color: #79c4ff; background: radial-gradient(circle at 30% 20%, #125394, #081322 62%); }
+    .card-content { min-width: 0; padding: 15px 12px 14px 13px; flex: 1; display: flex; flex-direction: column; }
+    .card-header-row { display: flex; gap: 9px; align-items: flex-start; }
+    .checkbox { width: 25px; height: 25px; flex: 0 0 25px; cursor: pointer; border: 2px solid #46617c; border-radius: 7px; background: #101d31; display: grid; place-items: center; color: white; transition: .2s; margin-top: 1px; }
+    .checkbox:hover { transform: scale(1.07); border-color: var(--done); }
+    .item-card.done .checkbox { background: var(--done); border-color: var(--done); box-shadow: 0 0 10px rgba(40,209,124,.45); }
+    .check-mark { opacity: 0; font-size: 15px; font-weight: 900; transform: scale(.4); transition: .18s; }
+    .item-card.done .check-mark { opacity: 1; transform: scale(1); }
+    .card-title-wrap { min-width: 0; flex: 1; }
+    .card-title { color: #f1f7ff; font-weight: 800; font-size: 13px; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .card-year { display: block; color: #91a7bf; font-size: 10px; font-weight: 600; margin-top: 4px; }
+    .fav-btn { color: #66809c; background: transparent; padding: 2px 0 2px 4px; cursor: pointer; transition: .2s; font-size: 19px; line-height: 1; }
+    .fav-btn:hover { color: var(--gold); transform: scale(1.15); }
+    .fav-btn.active { color: var(--gold); text-shadow: 0 0 9px rgba(247,201,72,.55); }
+    .card-desc { color: #aebfd0; font-size: 10.5px; line-height: 1.48; margin: 11px 0 auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-footer { display: flex; align-items: center; gap: 5px; margin-top: 9px; }
+    .type-badge { display: inline-block; color: white; padding: 4px 7px; border-radius: 5px; font-size: 8.5px; text-transform: uppercase; font-weight: 800; letter-spacing: .4px; }
+    .type-film { background: #227ac3; }.type-series { background: #7b48bf; }.type-animation { background: #b77613; }
+    .card-duration { color: #8096ae; font-size: 9.5px; font-weight: 600; }
+    .personal-rating { margin-left: auto; color: var(--gold); font-size: 12px; white-space: nowrap; }
+
+    /* Profile */
+    .profile-page { background: radial-gradient(ellipse at 78% 6%, rgba(19, 115, 227, .17), transparent 30%), var(--bg); }
+    .profile-wrap { width: min(1120px, 100%); margin: 0 auto; padding: 46px 26px 70px; }
+    .profile-head { margin-bottom: 30px; }
+    .eyebrow { color: var(--blue-2); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; margin-bottom: 8px; }
+    .profile-head h1 { font-size: clamp(29px, 4vw, 43px); margin-bottom: 9px; }
+    .profile-head p { color: var(--muted); font-size: 14px; }
+    .profile-hero { display: grid; grid-template-columns: 230px 1fr; gap: 30px; padding: 28px; border: 1px solid #254260; border-radius: 19px; background: linear-gradient(120deg, rgba(16,40,72,.96), rgba(10,19,34,.93)); box-shadow: 0 18px 42px rgba(0,0,0,.25); }
+    .big-progress { width: 170px; height: 170px; margin: auto; border-radius: 50%; display: grid; place-items: center; position: relative; background: conic-gradient(var(--blue) var(--progress), #1b2b40 0); }
+    .big-progress::after { content:""; position:absolute; inset: 11px; border-radius:50%; background:#0d1b2d; box-shadow: inset 0 0 22px rgba(0,0,0,.35); }
+    .big-progress-content { text-align: center; position: relative; z-index: 1; }.big-progress-content strong { display:block; font-size:35px; color:#76caff; }.big-progress-content span { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; }
+    .profile-total { display: flex; flex-direction: column; justify-content: center; }.profile-total h2 { font-size: 24px; margin-bottom: 14px; }.profile-total > p { color: #b5c9dd; font-size: 13px; line-height: 1.55; }.profile-total > p b { color:white; }
+    .profile-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 20px; }.kpi { padding: 13px; border:1px solid #2a4665; border-radius:10px; background:rgba(5,13,25,.44); }.kpi b { display:block; font-size:18px; color:#73c5ff; }.kpi span { color:var(--muted); font-size:9px; font-weight:700; text-transform:uppercase; line-height:1.3; }
+    .profile-grids { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }.profile-card { background:var(--bg-2); border:1px solid var(--border); border-radius:15px; padding:22px; }.profile-card h3 { font-size:16px; margin-bottom:18px; }.stat-row { display:grid; grid-template-columns: 1fr 47px; gap:12px; align-items:center; margin: 14px 0; }.stat-row-title { display:flex; justify-content:space-between; color:#c9d8e7; font-size:11px; font-weight:700; margin-bottom:6px; }.mini-track { height:7px; overflow:hidden; background:#1a2b40; border-radius:10px; }.mini-fill { height:100%; border-radius:inherit; background:linear-gradient(90deg,#147ce0,#58c5ff); transition:.5s; }.stat-row-num { color:#8db3d6; font-size:11px; font-weight:800; text-align:right; }.recent-list { display:flex; flex-direction:column; gap:9px; }.recent-item { display:flex; align-items:center; gap:10px; padding:8px; border-radius:9px; background:#0d1a2b; }.recent-item img { width:31px;height:43px;object-fit:cover;border-radius:4px; }.recent-item b { font-size:10px; line-height:1.35; }.recent-item span { display:block; color:var(--muted); font-size:9px; margin-top:3px; }.no-recent { color:var(--muted); font-size:12px; line-height:1.6; padding:18px 0; }
+    .profile-actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:20px; }.outline-btn, .danger-btn { padding:10px 13px; border-radius:8px; color:#b9d5ef; background:#11243d; border:1px solid #315273; cursor:pointer; font-size:11px; font-weight:700; transition:.2s; }.outline-btn:hover { border-color:#58b4ff;color:white;background:#173457; }.danger-btn { color:#ffb1bb;border-color:#713647;background:#351720; }.danger-btn:hover { background:#54202c;color:white;border-color:#dc5668; }
+
+    /* Modal */
+    .modal { position: fixed; z-index: 100; inset: 0; padding: 21px; background: rgba(1, 6, 13, .78); backdrop-filter: blur(8px); display: grid; place-items: center; opacity: 0; visibility: hidden; transition: .22s; }
+    .modal.show { opacity: 1; visibility: visible; }
+    .modal-box { width: min(740px, 100%); max-height: min(700px, calc(100vh - 42px)); display: grid; grid-template-columns: 210px 1fr; overflow: auto; position: relative; border: 1px solid #39648c; border-radius: 18px; background: #0c1727; box-shadow: 0 25px 65px rgba(0,0,0,.6); transform: translateY(15px) scale(.985); transition: .25s; }
+    .modal.show .modal-box { transform: translateY(0) scale(1); }
+    .modal-poster { min-height: 100%; position: sticky; top: 0; background:#07101e; }.modal-poster img { width:100%; height:100%; min-height: 420px; object-fit:cover; display:block; }.modal-body { padding: 30px; }.modal-close { position:absolute; z-index:2; top:12px; right:12px; width:33px; height:33px; display:grid;place-items:center;border-radius:50%;color:white;background:rgba(5,11,20,.75);border:1px solid rgba(152,199,239,.5);cursor:pointer;font-size:19px; }.modal-close:hover{background:#197eda}.modal-tags { display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px; }.modal-tag { padding:5px 8px;border-radius:5px;background:#13335a;color:#9bd3ff;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px; }.modal-body h2 { font-size:25px;line-height:1.15;margin-bottom:7px; }.orig-title { color:var(--muted); font-size:12px;margin-bottom:20px; }.modal-overview { color:#b8cadc;line-height:1.7;font-size:12px;margin:17px 0 20px; }.info-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:19px; }.info-cell { padding:9px;background:#101f33;border:1px solid #233e5d;border-radius:8px; }.info-cell span { display:block;color:#7890aa;text-transform:uppercase;font-size:8px;font-weight:800;margin-bottom:4px; }.info-cell b { font-size:11px;color:#e0f0ff; }.rating-label { color:#a9bed2;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px; }.stars { display:flex;gap:7px;margin-bottom:20px; }.star { cursor:pointer;color:#50667f;background:transparent;font-size:26px;transition:.15s;line-height:1; }.star:hover,.star.on{color:var(--gold);transform:scale(1.12);text-shadow:0 0 12px rgba(247,201,72,.35)}.modal-note-label { font-size:10px;text-transform:uppercase;font-weight:800;letter-spacing:.7px;color:#a9bed2;display:block;margin-bottom:7px; }.modal-note { width:100%;min-height:74px;resize:vertical;padding:10px;border-radius:9px;border:1px solid #284560;color:#d8e7f6;background:#0a1422;outline:none;font-size:11px;line-height:1.5; }.modal-note:focus { border-color:#2a92ee;box-shadow:0 0 0 3px rgba(25,140,255,.13); }.credits { padding:10px;border-left:3px solid #56b7ff;background:#102640;color:#b9d8f2;font-size:10px;line-height:1.5;margin:17px 0; }.save-modal { padding:11px 16px;border-radius:8px;cursor:pointer;background:linear-gradient(135deg,#187de1,#32aafd);color:white;font-size:11px;font-weight:800;box-shadow:0 8px 18px rgba(17,128,232,.25); }.save-modal:hover{filter:brightness(1.1)}
+
+    .toast { position:fixed;z-index:200;right:18px;bottom:18px;transform:translateY(20px);opacity:0;pointer-events:none;padding:12px 16px;border:1px solid #386c9e;border-radius:9px;background:#0d2642;color:#dff1ff;font-size:11px;font-weight:700;box-shadow:0 11px 30px rgba(0,0,0,.35);transition:.25s; }.toast.show{opacity:1;transform:translateY(0)}
+    input[type=file] { display:none; }
+
+    @keyframes logoFloat { 0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)} }
+    @keyframes logoGlow { 0%,100%{box-shadow:0 0 0 9px rgba(64,172,255,.09),0 0 30px rgba(34,145,255,.65),inset 0 0 28px rgba(114,215,255,.65)}50%{box-shadow:0 0 0 13px rgba(64,172,255,.12),0 0 55px rgba(34,145,255,.98),inset 0 0 43px rgba(114,215,255,.9)} }
+    @keyframes logoShine { 0%,28%{transform:translateX(-74%) rotate(10deg)}55%,100%{transform:translateX(76%) rotate(10deg)} }
+    @keyframes pulseRing { 0%,100% { opacity:.65; transform:translateY(-50%) scale(.98)}50%{opacity:1;transform:translateY(-50%) scale(1.04)} }
+    @keyframes blink { 0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1.2)} }
+
+    @media (max-width: 760px) { .top-nav{height:auto;min-height:62px;gap:10px;padding:9px 13px;align-items:flex-start}.nav-logo-text{font-size:14px}.nav-symbol{width:31px;height:31px;font-size:12px}.nav-links{gap:3px;margin-left:auto}.nav-link{padding:7px 9px;font-size:9px}.home-hero{min-height:calc(100vh - 62px);padding:54px 7%}.home-hero::before{background:linear-gradient(90deg,#050a13 0%,rgba(5,10,19,.72) 100%)}.home-hero::after{right:-50%;top:45%}.hero-logo{gap:14px}.home-buttons{gap:11px}.home-btn{max-width:none;min-width:100%;padding:19px}.home-stats{gap:20px;margin-top:34px}.home-stat-num{font-size:24px}.checklist-layout{padding-left:0;flex-direction:column}.progress-sidebar{top:auto;bottom:0;left:0;width:100%;height:54px;padding:7px 15px;flex-direction:row;gap:10px;border-top:1px solid var(--border);border-right:0;z-index:45}.progress-label{margin:0;font-size:8px;text-align:left;max-width:75px}.progress-track{height:8px;min-height:8px;max-height:8px;flex:1;width:auto}.progress-fill{height:100%!important;width:var(--mobile-progress);right:auto}.progress-percent{margin:0;font-size:16px}.progress-count{margin:0;font-size:9px}.progress-divider,.sidebar-action{display:none}.checklist-header{padding:12px 15px;gap:8px}.search-box{order:1;flex-basis:100%;max-width:none}.filters{order:2}.sorts{order:3;margin-left:0}.filter-btn,.sort-btn{font-size:9px;padding:7px 9px}.checklist-main{padding:23px 15px 75px}.items-grid{grid-template-columns:1fr;gap:11px}.era-section{margin-bottom:31px}.era-title{font-size:17px;gap:7px}.era-badge{font-size:9px}.era-progress{font-size:10px}.profile-wrap{padding:31px 15px 76px}.profile-hero{grid-template-columns:1fr;padding:21px;gap:20px}.big-progress{width:145px;height:145px}.profile-total{text-align:center}.profile-kpis{gap:6px}.kpi{padding:10px}.kpi b{font-size:15px}.profile-grids{grid-template-columns:1fr;gap:13px}.modal{padding:10px}.modal-box{grid-template-columns:92px 1fr;border-radius:13px}.modal-poster img{min-height:390px}.modal-body{padding:22px 17px}.modal-body h2{font-size:19px}.info-grid{grid-template-columns:1fr 1fr}.modal-close{top:7px;right:7px}.home-description{font-size:13px} }
+    @media (max-width: 395px) { .nav-link:nth-child(3),.nav-link:nth-child(4){display:none}.card-poster{width:82px;flex-basis:82px}.card-content{padding-left:11px}.hero-logo-mark{width:74px;height:74px;border-width:3px}.home-title{font-size:41px}.home-stats{gap:15px}.profile-kpis{grid-template-columns:1fr}.profile-total{text-align:left}.modal-poster{display:none}.modal-box{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <nav class="top-nav" aria-label="Основная навигация">
+    <a class="nav-logo" href="#home" aria-label="На главную">
+      <span class="nav-symbol">DC</span><span class="nav-logo-text">DC <b>UNIVERSE</b></span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" href="#dcu">✨ DCU</a>
+      <a class="nav-link" href="#dceu">🦇 DCEU</a>
+      <a class="nav-link" href="#elseworlds">🤡 Иные миры</a>
+      <a class="nav-link" href="#upcoming">⌛ Анонсы</a>
+      <a class="nav-link" href="#profile">◎ Профиль</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="homePage" class="page active" aria-label="Главная">
+      <div class="home-hero">
+        <div class="hero-grid"></div><div class="hero-dots"></div>
+        <div class="home-content">
+          <div class="home-badge"><i class="badge-dot"></i> твой киновселенный штаб</div>
+          <div class="hero-logo">
+            <div class="hero-logo-mark" aria-label="DC"><span>DC</span></div>
+            <h1 class="home-title"><span class="blue">DC</span><br>UNIVERSE</h1>
+          </div>
+          <p class="home-subtitle">Твой личный чек-лист вселенных DC</p>
+          <p class="home-description">Отмечай просмотренные <strong>фильмы</strong>, <strong>сериалы</strong> и <strong>мультсериалы</strong>, ставь личные оценки и собирай собственный маршрут по DCU, DCEU и иным мирам.</p>
+          <div class="home-buttons">
+            <a class="home-btn" href="#dcu"><span class="home-btn-icon">✓</span><span class="home-btn-title">Чек-лист DC</span><span class="home-btn-desc">Новая DCU, DCEU и порядок просмотра.</span><span class="home-btn-arrow">→</span></a>
+            <a class="home-btn" href="#elseworlds"><span class="home-btn-icon">◈</span><span class="home-btn-title">Иные миры</span><span class="home-btn-desc">Бэтмен, Джокер и самостоятельные истории.</span><span class="home-btn-arrow">→</span></a>
+          </div>
+          <div class="home-stats" id="homeStats"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="checklistPage" class="page" aria-label="Чек-лист">
+      <div class="checklist-layout">
+        <aside class="progress-sidebar" aria-label="Общий прогресс">
+          <div class="progress-label">Твой<br>прогресс</div>
+          <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+          <div id="progressPercent" class="progress-percent">0%</div>
+          <div id="progressCount" class="progress-count">0 из 18</div>
+          <div class="progress-divider"></div>
+          <button class="sidebar-action" title="Открыть профиль" onclick="location.hash='#profile'">◎</button>
+        </aside>
+        <div style="flex:1;min-width:0">
+          <header class="checklist-header">
+            <label class="search-box"><input id="searchInput" type="search" placeholder="Поиск фильма или сериала..." autocomplete="off"></label>
+            <div class="filters" aria-label="Фильтры типа">
+              <button class="filter-btn active" data-filter="all">Все</button>
+              <button class="filter-btn" data-filter="film">🎬 Фильмы</button>
+              <button class="filter-btn" data-filter="series">▣ Сериалы</button>
+              <button class="filter-btn" data-filter="animation">✦ Мультсериалы</button>
+              <button class="filter-btn" data-filter="unwatched">○ Не просмотрено</button>
+              <button class="filter-btn" data-filter="favorite">★ Избранное</button>
+            </div>
+            <div class="sorts" aria-label="Сортировка">
+              <button class="sort-btn active" data-sort="release">По релизу</button>
+              <button class="sort-btn" data-sort="chrono">По хронологии</button>
+            </div>
+          </header>
+          <div id="checklistMain" class="checklist-main"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="profilePage" class="page profile-page" aria-label="Личный кабинет">
+      <div class="profile-wrap">
+        <div class="profile-head"><div class="eyebrow">Личный кабинет</div><h1>Мой прогресс</h1><p>Статистика просмотра всех проектов DC в твоём чек-листе.</p></div>
+        <div class="profile-hero">
+          <div class="big-progress" id="bigProgress"><div class="big-progress-content"><strong id="profilePercent">0%</strong><span>готово</span></div></div>
+          <div class="profile-total"><h2>Твоя коллекция DC</h2><p>Просмотрено: <b id="profileWatched">0 из 18</b></p><div class="profile-kpis"><div class="kpi"><b id="profileHours">~0 ч</b><span>времени за просмотром</span></div><div class="kpi"><b id="profileFavs">0</b><span>в избранном</span></div><div class="kpi"><b id="profileRated">0</b><span>с личной оценкой</span></div></div></div>
+        </div>
+        <div class="profile-grids">
+          <article class="profile-card"><h3>Статистика по вселенным</h3><div id="eraStats"></div></article>
+          <article class="profile-card"><h3>Последние просмотренные</h3><div id="recentList" class="recent-list"></div></article>
+        </div>
+        <div class="profile-actions"><button id="exportBtn" class="outline-btn">⇩ Экспортировать прогресс</button><button id="importBtn" class="outline-btn">⇧ Импортировать прогресс</button><input id="importInput" type="file" accept="application/json"><button id="resetBtn" class="danger-btn">⌫ Сбросить прогресс</button></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="detailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box">
+      <button class="modal-close" aria-label="Закрыть">×</button>
+      <div class="modal-poster"><img id="modalPoster" src="" alt=""></div>
+      <div class="modal-body">
+        <div class="modal-tags"><span id="modalType" class="modal-tag"></span><span id="modalEra" class="modal-tag"></span></div>
+        <h2 id="modalTitle"></h2><p id="modalOriginal" class="orig-title"></p>
+        <div class="info-grid"><div class="info-cell"><span>Год</span><b id="modalYear"></b></div><div class="info-cell"><span>Длительность</span><b id="modalDuration"></b></div><div class="info-cell"><span>IMDb</span><b id="modalImdb"></b></div></div>
+        <p id="modalOverview" class="modal-overview"></p><div id="modalCredits" class="credits"></div>
+        <div class="rating-label">Твоя оценка</div><div id="modalStars" class="stars" aria-label="Личная оценка"></div>
+        <label class="modal-note-label" for="modalNote">Личная заметка</label><textarea id="modalNote" class="modal-note" placeholder="Например: пересмотреть в оригинале..."></textarea>
+        <button id="saveModalBtn" class="save-modal">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script>
+    const projects = [
+      {id:'creature-commandos', title:'Монстры-коммандос', original:'Creature Commandos', year:2024, era:'dcu', eraName:'✨ DCU — Глава 1: Боги и монстры', type:'animation', duration:'7 серий · 25 мин', minutes:175, imdb:'7.8', release:1, chrono:1, poster:'posters/creature-commandos.jpg', overview:'Секретный отряд Аманды Уоллер, состоящий из монстров и металюдей, берётся за задания, слишком опасные для людей.', credits:'Есть сцена после титров.'},
+      {id:'superman-2025', title:'Супермен', original:'Superman', year:2025, era:'dcu', eraName:'✨ DCU — Глава 1: Боги и монстры', type:'film', duration:'2 ч 10 мин', minutes:130, imdb:'7.5', release:2, chrono:2, poster:'posters/superman-2025.jpg', overview:'Новая эпоха Киновселенной DC: Кларк Кент пытается примирить своё криптонское наследие с человеческим воспитанием.', credits:'Полнометражный старт новой DCU.'},
+      {id:'peacemaker-s2', title:'Миротворец — сезон 2', original:'Peacemaker Season 2', year:2025, era:'dcu', eraName:'✨ DCU — Глава 1: Боги и монстры', type:'series', duration:'8 серий · 45 мин', minutes:360, imdb:'8.3', release:3, chrono:3, poster:'posters/peacemaker-s2.jpg', overview:'Кристофер Смит возвращается и пытается стать лучшим человеком — по-своему и в новой хронологии DCU.', credits:'Шуточные сцены в конце эпизодов.'},
+      {id:'man-of-steel', title:'Человек из стали', original:'Man of Steel', year:2013, era:'dceu', eraName:'🦇 DCEU — Вселенная Снайдера и расширение', type:'film', duration:'2 ч 23 мин', minutes:143, imdb:'7.1', release:4, chrono:1, poster:'posters/man-of-steel.jpg', overview:'Кларк Кент узнаёт о внеземном происхождении и должен решить, станет ли он символом надежды для Земли.', credits:'Сцен после титров нет.'},
+      {id:'batman-v-superman', title:'Бэтмен против Супермена', original:'Batman v Superman: Dawn of Justice', year:2016, era:'dceu', eraName:'🦇 DCEU — Вселенная Снайдера и расширение', type:'film', duration:'3 ч 03 мин', minutes:183, imdb:'6.5', release:5, chrono:3, poster:'posters/batman-v-superman.jpg', overview:'Страж Готэма бросает вызов спасителю Метрополиса, пока миру угрожает новый враг.', credits:'Сцен после титров нет.'},
+      {id:'suicide-squad', title:'Отряд самоубийц', original:'Suicide Squad', year:2016, era:'dceu', eraName:'🦇 DCEU — Вселенная Снайдера и расширение', type:'film', duration:'2 ч 03 мин', minutes:123, imdb:'5.9', release:6, chrono:4, poster:'posters/suicide-squad.jpg', overview:'Правительство собирает команду опасных суперзлодеев для миссии, которую никто другой не переживёт.', credits:'Есть сцена во время титров.'},
+      {id:'wonder-woman', title:'Чудо-женщина', original:'Wonder Woman', year:2017, era:'dceu', eraName:'🦇 DCEU — Вселенная Снайдера и расширение', type:'film', duration:'2 ч 21 мин', minutes:141, imdb:'7.4', release:7, chrono:2, poster:'posters/wonder-woman.jpg', overview:'Диана покидает Темискиру, чтобы остановить Первую мировую войну и впервые столкнуться с миром людей.', credits:'Сцен после титров нет.'},
+      {id:'zack-snyders-justice-league', title:'Лига справедливости Зака Снайдера', original:"Zack Snyder's Justice League", year:2021, era:'dceu', eraName:'🦇 DCEU — Вселенная Снайдера и расширение', type:'film', duration:'4 ч 02 мин', minutes:242, imdb:'8.0', release:8, chrono:5, poster:'posters/zack-snyders-justice-league.jpg', overview:'Брюс Уэйн и Диана Принс собирают команду металюдей, чтобы защитить Землю от вторжения.', credits:'Эпилог Knightmare.'},
+      {id:'aquaman', title:'Аквамен', original:'Aquaman', year:2018, era:'dceu', eraName:'🦇 DCEU — Вселенная Снайдера и расширение', type:'film', duration:'2 ч 23 мин', minutes:143, imdb:'6.8', release:9, chrono:6, poster:'posters/aquaman.jpg', overview:'Артур Карри должен принять своё наследие и побороться за трон Атлантиды.', credits:'Есть сцена в середине титров.'},
+      {id:'shazam', title:'Шазам!', original:'Shazam!', year:2019, era:'dceu', eraName:'🦇 DCEU — Вселенная Снайдера и расширение', type:'film', duration:'2 ч 12 мин', minutes:132, imdb:'7.0', release:10, chrono:7, poster:'posters/shazam.jpg', overview:'Подросток Билли Бэтсон получает волшебную силу и превращается во взрослого супергероя.', credits:'Две сцены после титров.'},
+      {id:'batman-1989', title:'Бэтмен (1989)', original:'Batman', year:1989, era:'elseworlds', eraName:'🤡 ELSEWORLDS — Иные миры', type:'film', duration:'2 ч 06 мин', minutes:126, imdb:'7.5', release:11, chrono:1, poster:'posters/batman-1989.jpg', overview:'Классика Тима Бёртона: Бэтмен защищает Готэм от безумного и харизматичного Джокера.', credits:'Сцен после титров нет.'},
+      {id:'batman-begins', title:'Бэтмен: Начало', original:'Batman Begins', year:2005, era:'elseworlds', eraName:'🤡 ELSEWORLDS — Иные миры', type:'film', duration:'2 ч 20 мин', minutes:140, imdb:'8.2', release:12, chrono:2, poster:'posters/batman-begins.jpg', overview:'История становления Тёмного рыцаря: от страха Брюса Уэйна до рождения символа Готэма.', credits:'Сцен после титров нет.'},
+      {id:'dark-knight', title:'Тёмный рыцарь', original:'The Dark Knight', year:2008, era:'elseworlds', eraName:'🤡 ELSEWORLDS — Иные миры', type:'film', duration:'2 ч 32 мин', minutes:152, imdb:'9.0', release:13, chrono:3, poster:'posters/dark-knight.jpg', overview:'Бэтмен оказывается втянут в хаос, который устраивает Джокер, проверяя пределы правил героя.', credits:'Сцен после титров нет.'},
+      {id:'joker', title:'Джокер', original:'Joker', year:2019, era:'elseworlds', eraName:'🤡 ELSEWORLDS — Иные миры', type:'film', duration:'2 ч 02 мин', minutes:122, imdb:'8.4', release:14, chrono:4, poster:'posters/joker.jpg', overview:'Одинокий комик Артур Флек постепенно превращается в человека, который станет Джокером.', credits:'Сцен после титров нет.'},
+      {id:'the-batman', title:'Бэтмен (2022)', original:'The Batman', year:2022, era:'elseworlds', eraName:'🤡 ELSEWORLDS — Иные миры', type:'film', duration:'2 ч 56 мин', minutes:176, imdb:'7.8', release:15, chrono:5, poster:'posters/the-batman.jpg', overview:'Нуарный детектив о молодом Брюсе Уэйне, расследующем преступления Загадочника в коррумпированном Готэме.', credits:'Шифр в конце титров.'},
+      {id:'penguin', title:'Пингвин', original:'The Penguin', year:2024, era:'elseworlds', eraName:'🤡 ELSEWORLDS — Иные миры', type:'series', duration:'8 серий · 60 мин', minutes:480, imdb:'8.8', release:16, chrono:6, poster:'posters/penguin.jpg', overview:'Освальд Кобблпот борется за контроль над преступным миром Готэма после событий «Бэтмена».', credits:'Эпилог перед титрами финального эпизода.'},
+      {id:'supergirl', title:'Супергёрл: Женщина завтрашнего дня', original:'Supergirl: Woman of Tomorrow', year:2026, era:'upcoming', eraName:'⌛ АНОНСИРОВАННЫЕ РЕЛИЗЫ', type:'film', duration:'Релиз 2026', minutes:120, imdb:'Скоро', release:17, chrono:1, poster:'posters/supergirl.jpg', overview:'Сольная история Кара Зор-Эл, вдохновлённая комиксом «Woman of Tomorrow».', credits:'Статус: ожидает просмотра.'},
+      {id:'batman-part-ii', title:'Бэтмен: Часть II', original:'The Batman: Part II', year:2028, era:'upcoming', eraName:'⌛ АНОНСИРОВАННЫЕ РЕЛИЗЫ', type:'film', duration:'Анонс', minutes:150, imdb:'Скоро', release:18, chrono:2, poster:'posters/batman-part-ii.jpg', overview:'Продолжение криминальной саги Мэтта Ривза о Тёмном рыцаре.', credits:'Статус: ожидает просмотра.'}
+    ];
+
+    const eras = ['dcu','dceu','elseworlds','upcoming'];
+    const erasShort = {dcu:'DCU',dceu:'DCEU',elseworlds:'Иные миры',upcoming:'Анонсы'};
+    const typeNames = {film:'Фильм',series:'Сериал',animation:'Мультсериал'};
+    let state = safeReadState();
+    let activeFilter = 'all';
+    let sortMode = 'release';
+    let query = '';
+    let activeProjectId = null;
+
+    function safeReadState() {
+      try { const saved = JSON.parse(localStorage.getItem('dc_universe_checklist_v1')); return saved && typeof saved === 'object' ? saved : {}; }
+      catch { return {}; }
+    }
+    function saveState() { localStorage.setItem('dc_universe_checklist_v1', JSON.stringify(state)); }
+    function projectState(id) { return state[id] || {}; }
+    function escapeHTML(value) { return String(value).replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char])); }
+    function typeClass(type) { return 'type-' + type; }
+    function posterFallback(image) {
+      const placeholder = document.createElement('span');
+      placeholder.className = 'poster-fallback';
+      placeholder.innerHTML = 'DC<br>' + escapeHTML(image.alt.replace('Постер: ', ''));
+      image.replaceWith(placeholder);
+    }
+    function cardImage(project) { return `<img src="${project.poster}" alt="Постер: ${escapeHTML(project.title)}" loading="lazy" onerror="posterFallback(this)">`; }
+    function formatHours(minutes) { return `~${Math.round(minutes / 60)} ч`; }
+    function watchedProjects() { return projects.filter(p => projectState(p.id).watched); }
+    function totalWatchedMinutes() { return watchedProjects().reduce((sum,p) => sum + p.minutes, 0); }
+    function isUpcoming(p) { return p.era === 'upcoming'; }
+
+    function updateHome() {
+      const movies = projects.filter(p => p.type === 'film').length;
+      const series = projects.filter(p => p.type !== 'film').length;
+      document.getElementById('homeStats').innerHTML = `<div><div class="home-stat-num">${projects.length}</div><div class="home-stat-label">Всего проектов</div></div><div><div class="home-stat-num">${movies}</div><div class="home-stat-label">Фильмов</div></div><div><div class="home-stat-num">${series}</div><div class="home-stat-label">Сериалов и анимаций</div></div>`;
+    }
+
+    function filterProjects() {
+      const currentEra = getRoute();
+      return projects.filter(p => {
+        const textOk = !query || `${p.title} ${p.original}`.toLocaleLowerCase('ru').includes(query.toLocaleLowerCase('ru'));
+        let typeOk = true;
+        if (activeFilter === 'unwatched') typeOk = !projectState(p.id).watched;
+        else if (activeFilter === 'favorite') typeOk = !!projectState(p.id).favorite;
+        else if (activeFilter !== 'all') typeOk = p.type === activeFilter;
+        const eraOk = currentEra === 'all' || p.era === currentEra;
+        return textOk && typeOk && eraOk;
+      }).sort((a,b) => sortMode === 'chrono' ? (a.chrono - b.chrono || a.release - b.release) : a.release - b.release);
+    }
+    function renderChecklist() {
+      const list = filterProjects();
+      const main = document.getElementById('checklistMain');
+      if (!list.length) {
+        main.innerHTML = '<div class="empty-state"><span>◌</span>Ничего не найдено. Измени поиск или фильтры.</div>';
+        updateGlobalProgress(); return;
+      }
+      const groupOrder = sortMode === 'chrono' && getRoute() === 'all' ? eras : eras;
+      main.innerHTML = groupOrder.map(era => {
+        const items = list.filter(p => p.era === era); if (!items.length) return '';
+        const watched = items.filter(p => projectState(p.id).watched).length;
+        return `<section class="era-section"><h2 class="era-title"><span>${escapeHTML(items[0].eraName)}</span><span class="era-badge">${erasShort[era]}</span><span class="era-progress">${watched} из ${items.length} просмотрено</span></h2><div class="items-grid">${items.map(renderCard).join('')}</div></section>`;
+      }).join('');
+      updateGlobalProgress();
+    }
+    function renderCard(p) {
+      const data = projectState(p.id); const done = !!data.watched; const favorite = !!data.favorite;
+      const rate = data.rating ? `<span class="personal-rating" title="Твоя оценка">★ ${data.rating}/5</span>` : '';
+      return `<article class="item-card ${done ? 'done' : ''}" data-id="${p.id}">
+        <div class="card-inner" data-open="${p.id}">
+          <div class="card-poster">${cardImage(p)}</div>
+          <div class="card-content">
+            <div class="card-header-row">
+              <button class="checkbox" data-watch="${p.id}" title="${done ? 'Убрать отметку' : 'Отметить как просмотренное'}" aria-label="Отметить ${escapeHTML(p.title)}"><span class="check-mark">✓</span></button>
+              <div class="card-title-wrap"><div class="card-title">${escapeHTML(p.title)}</div><span class="card-year">${p.year} · ${escapeHTML(p.original)}</span></div>
+              <button class="fav-btn ${favorite ? 'active' : ''}" data-favorite="${p.id}" title="Избранное" aria-label="Избранное">${favorite ? '★' : '☆'}</button>
+            </div>
+            <p class="card-desc">${escapeHTML(p.overview)}</p>
+            <div class="card-footer"><span class="type-badge ${typeClass(p.type)}">${typeNames[p.type]}</span><span class="card-duration">${escapeHTML(p.duration)}</span>${rate}</div>
+          </div>
+        </div>
+      </article>`;
+    }
+    function updateGlobalProgress() {
+      const watched = watchedProjects().length; const percent = Math.round(watched / projects.length * 100) || 0;
+      const fill = document.getElementById('progressFill');
+      fill.style.height = percent + '%'; fill.parentElement.style.setProperty('--mobile-progress', percent + '%');
+      document.getElementById('progressPercent').textContent = percent + '%'; document.getElementById('progressCount').textContent = `${watched} из ${projects.length}`;
+    }
+    function updateProfile() {
+      const watched = watchedProjects(); const total = projects.length; const percent = Math.round(watched.length / total * 100) || 0;
+      const favs = projects.filter(p => projectState(p.id).favorite).length;
+      const rated = projects.filter(p => projectState(p.id).rating).length;
+      document.getElementById('profilePercent').textContent = percent + '%'; document.getElementById('profileWatched').textContent = `${watched.length} из ${total}`; document.getElementById('profileHours').textContent = formatHours(totalWatchedMinutes()); document.getElementById('profileFavs').textContent = favs; document.getElementById('profileRated').textContent = rated;
+      document.getElementById('bigProgress').style.setProperty('--progress', `${percent}%`);
+      document.getElementById('eraStats').innerHTML = eras.map(era => { const all = projects.filter(p => p.era === era); const count = all.filter(p => projectState(p.id).watched).length; const progress = Math.round(count / all.length * 100) || 0; return `<div class="stat-row"><div><div class="stat-row-title"><span>${erasShort[era]}</span><span>${progress}%</span></div><div class="mini-track"><div class="mini-fill" style="width:${progress}%"></div></div></div><span class="stat-row-num">${count}/${all.length}</span></div>`; }).join('');
+      const recent = watched.slice().sort((a,b) => (projectState(b.id).watchedAt || 0) - (projectState(a.id).watchedAt || 0)).slice(0,5);
+      document.getElementById('recentList').innerHTML = recent.length ? recent.map(p => `<div class="recent-item"><img src="${p.poster}" alt="" onerror="this.style.visibility='hidden'"><div><b>${escapeHTML(p.title)}</b><span>${p.year} · ${typeNames[p.type]}</span></div></div>`).join('') : '<p class="no-recent">Пока здесь тихо. Отметь первый просмотренный проект — и он появится в этом списке.</p>';
+    }
+
+    function toggleWatched(id) { const row = state[id] || {}; row.watched = !row.watched; row.watchedAt = row.watched ? Date.now() : null; state[id] = row; saveState(); renderChecklist(); updateProfile(); showToast(row.watched ? 'Отмечено как просмотренное ✓' : 'Отметка снята'); }
+    function toggleFavorite(id) { const row = state[id] || {}; row.favorite = !row.favorite; state[id] = row; saveState(); renderChecklist(); updateProfile(); showToast(row.favorite ? 'Добавлено в избранное ★' : 'Убрано из избранного'); }
+    function openModal(id) { const p = projects.find(item => item.id === id); if (!p) return; activeProjectId = id; const data = projectState(id); document.getElementById('modalPoster').src = p.poster; document.getElementById('modalPoster').alt = `Постер: ${p.title}`; document.getElementById('modalTitle').textContent = p.title; document.getElementById('modalOriginal').textContent = p.original; document.getElementById('modalType').textContent = typeNames[p.type]; document.getElementById('modalEra').textContent = erasShort[p.era]; document.getElementById('modalYear').textContent = p.year; document.getElementById('modalDuration').textContent = p.duration; document.getElementById('modalImdb').textContent = p.imdb; document.getElementById('modalOverview').textContent = p.overview; document.getElementById('modalCredits').textContent = p.credits; document.getElementById('modalNote').value = data.note || ''; renderStars(data.rating || 0); document.getElementById('detailModal').classList.add('show'); document.body.style.overflow = 'hidden'; }
+    function closeModal() { document.getElementById('detailModal').classList.remove('show'); document.body.style.overflow = ''; activeProjectId = null; }
+    function renderStars(current) { document.getElementById('modalStars').innerHTML = [1,2,3,4,5].map(n => `<button class="star ${n <= current ? 'on':''}" data-rating="${n}" aria-label="${n} из 5">★</button>`).join(''); }
+    function saveModal() { if (!activeProjectId) return; const row = state[activeProjectId] || {}; row.note = document.getElementById('modalNote').value.trim(); state[activeProjectId] = row; saveState(); closeModal(); renderChecklist(); updateProfile(); showToast('Изменения сохранены'); }
+    function showToast(message) { const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 2300); }
+
+    function getRoute() { const hash = location.hash.slice(1).toLowerCase(); return ['home','dcu','dceu','elseworlds','upcoming','profile'].includes(hash) ? hash : 'home'; }
+    function renderRoute() { const route = getRoute(); const showHome = route === 'home'; const showProfile = route === 'profile'; document.getElementById('homePage').classList.toggle('active', showHome); document.getElementById('checklistPage').classList.toggle('active', !showHome && !showProfile); document.getElementById('profilePage').classList.toggle('active', showProfile); document.querySelectorAll('.nav-link').forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${route}`)); if (!showHome && !showProfile) renderChecklist(); if (showProfile) updateProfile(); }
+
+    document.getElementById('searchInput').addEventListener('input', e => { query = e.target.value.trim(); renderChecklist(); });
+    document.querySelector('.filters').addEventListener('click', e => { const btn = e.target.closest('[data-filter]'); if (!btn) return; activeFilter = btn.dataset.filter; document.querySelectorAll('[data-filter]').forEach(b => b.classList.toggle('active', b === btn)); renderChecklist(); });
+    document.querySelector('.sorts').addEventListener('click', e => { const btn = e.target.closest('[data-sort]'); if (!btn) return; sortMode = btn.dataset.sort; document.querySelectorAll('[data-sort]').forEach(b => b.classList.toggle('active', b === btn)); renderChecklist(); });
+    document.getElementById('checklistMain').addEventListener('click', e => { const watch = e.target.closest('[data-watch]'); const fav = e.target.closest('[data-favorite]'); const open = e.target.closest('[data-open]'); if (watch) { toggleWatched(watch.dataset.watch); return; } if (fav) { toggleFavorite(fav.dataset.favorite); return; } if (open) openModal(open.dataset.open); });
+    document.querySelector('.modal-close').addEventListener('click', closeModal);
+    document.getElementById('detailModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); const star = e.target.closest('[data-rating]'); if (star && activeProjectId) { const row = state[activeProjectId] || {}; const value = Number(star.dataset.rating); row.rating = row.rating === value ? 0 : value; state[activeProjectId] = row; renderStars(row.rating); } });
+    document.getElementById('saveModalBtn').addEventListener('click', saveModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    window.addEventListener('hashchange', renderRoute);
+    document.getElementById('exportBtn').addEventListener('click', () => { const content = JSON.stringify(state, null, 2); const blob = new Blob([content], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `dc-universe-progress-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); showToast('Файл прогресса подготовлен'); });
+    document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importInput').click());
+    document.getElementById('importInput').addEventListener('change', e => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const imported = JSON.parse(reader.result); if (!imported || typeof imported !== 'object' || Array.isArray(imported)) throw new Error(); state = imported; saveState(); renderChecklist(); updateProfile(); showToast('Прогресс импортирован'); } catch { showToast('Не удалось прочитать этот файл'); } e.target.value = ''; }; reader.readAsText(file); });
+    document.getElementById('resetBtn').addEventListener('click', () => { if (confirm('Сбросить все отметки, оценки и заметки? Это действие нельзя отменить.')) { state = {}; saveState(); renderChecklist(); updateProfile(); showToast('Прогресс сброшен'); } });
+
+    updateHome(); renderRoute();
+  </script>
+</body>
+</html>
