@@ -1,0 +1,18 @@
+{
+  "adun_ambient": {
+    "subtitle": "subtitles.entity.adun_villager.ambient",
+    "sounds": ["zitraksmode:adun_ambient1", "zitraksmode:adun_ambient2", "zitraksmode:adun_ambient3"]
+  },
+  "adun_trade": {
+    "subtitle": "subtitles.entity.adun_villager.trade",
+    "sounds": ["zitraksmode:adun_trade1", "zitraksmode:adun_trade2"]
+  },
+  "adun_hurt": {
+    "subtitle": "subtitles.entity.adun_villager.hurt",
+    "sounds": ["zitraksmode:adun_hurt1", "zitraksmode:adun_hurt2"]
+  },
+  "adun_death": {
+    "subtitle": "subtitles.entity.adun_villager.death",
+    "sounds": ["zitraksmode:adun_death"]
+  }
+}

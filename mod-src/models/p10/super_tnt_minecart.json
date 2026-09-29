@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "zitraksmode:item/super_tnt_minecart"
+  }
+}

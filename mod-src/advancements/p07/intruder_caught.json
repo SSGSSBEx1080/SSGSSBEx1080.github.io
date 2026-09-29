@@ -1,0 +1,14 @@
+{
+  "parent": "zitraksmode:07_ender/upgrades",
+  "display": {
+    "icon": { "item": "zitraksmode:ender_safe" },
+    "title": "§c§lВЗЛОМЩИК ПОЙМАН",
+    "description": "§7Кто-то сунулся в твою Эндер-систему. Молния попала в него.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": { "caught": { "trigger": "zitraksmode:ender_intruder_caught" } },
+  "rewards": { "experience": 20 }
+}

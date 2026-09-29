@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["TTT","TCT","TTT"],
+  "key": {"T": {"item": "minecraft:tnt"}, "C": {"item": "zitraksmode:charged_creeper_eggs"}},
+  "result": {"item": "zitraksmode:super_tnt"}
+}

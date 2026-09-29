@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:09_dildo/craft_gold",
+  "display": {
+    "icon": { "item": "zitraksmode:diamond_dildo" },
+    "title": "§fPro dildo",
+    "description": "§7Алмазный наконечник для сверления очка.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:diamond_dildo"] }] }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

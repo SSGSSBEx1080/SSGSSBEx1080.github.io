@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№07 · Эндер-система — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №07 мода ZitraksMode: Эндер-система. Сейф, печь, дверь, люк, кнопка и плита, которые слушаются только того, кто их поставил, и закалённое стекло, которое не берёт взрыв.">
+<meta name="theme-color" content="#07060d">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- фон: портал в Энд (текстура end_portal.png слоями, как шейдер портала) + частицы -->
+<canvas id="bgCv" aria-hidden="true"></canvas>
+<canvas id="boltCv" aria-hidden="true"></canvas>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="en-hero" id="hero">
+    <div class="en-copy">
+      <div class="en-tag"><b>ПУНКТ №07</b><span>добавлено 15.02.2026</span><span class="en-tag-lock">7 блоков · 1 хозяин</span></div>
+      <h1 class="en-title" id="enTitle" aria-label="Эндер-система"><span class="t1">ЭНДЕР</span><span class="t2">СИСТЕМА</span></h1>
+      <p class="en-lead">Всё, что ты поставил, открывается <b>только тебе</b>. Сейф, печь, дверь, люк, кнопка и плита запоминают того, кто их поставил. Чужак получает отказ, а у сейфа и печи ещё и <b>молнию в голову</b>. Стекло к этому набору не держит хозяина, зато держит взрыв как обсидиан.</p>
+      <div class="en-stats" id="enStats"></div>
+      <div class="en-who" id="heroWho" role="group" aria-label="Кто ты"></div>
+      <p class="en-hint">Нажми на дверь. Потом переключись на чужака и попробуй ещё раз.</p>
+    </div>
+
+    <div class="dr-stage" id="drStage">
+      <div class="dr-scene" id="drScene">
+        <div class="dr-floor"></div>
+        <div class="dr-void" id="drVoid"><canvas id="voidCv"></canvas><div class="dr-room" id="drRoom"></div></div>
+        <div class="dr-jamb l"></div><div class="dr-jamb r"></div><div class="dr-jamb t"></div>
+        <div class="dr-wall l"></div><div class="dr-wall r"></div><div class="dr-wall t"></div>
+        <div class="dr-door" id="drDoor" role="button" tabindex="0" aria-label="Эндер-дверь">
+          <i class="f front"></i><i class="f back"></i><i class="f side a"></i><i class="f side b"></i><i class="f cap"></i>
+        </div>
+        <div class="dr-plate" data-tip="Эндер нажимная плита"></div>
+        <div class="dr-btn" id="drBtn" role="button" tabindex="0" aria-label="Эндер-кнопка" data-tip="Эндер-кнопка" data-tip-info="нажми"></div>
+      </div>
+      <div class="mc-bar" id="drBar" aria-live="polite"></div>
+      <div class="dr-owner" id="drOwner"></div>
+    </div>
+    <a class="en-down" href="#blocks"><span>СПУСТИТЬСЯ В ХРАНИЛИЩЕ</span><i></i></a>
+  </section>
+
+  <div class="en-strip" aria-hidden="true"><div class="en-strip-in" id="strip"></div></div>
+
+  <!-- ============ БЛОКИ ============ -->
+  <section class="sec" id="blocks">
+    <header class="sec-head reveal"><span class="sec-n">07.1</span><h2>Семь замков</h2><span class="sec-q">strength из ModBlocks</span></header>
+    <p class="sec-p reveal">Все семь блоков набора. Модель крутится мышкой, ниже рецепт, цифры и сколько блок ломать. Прочность у всех от 25 до 36, у обсидиана 50: ломаются быстрее обсидиана, а взрыв держат почти так же.</p>
+    <div class="bk-rail reveal" id="bkRail" role="tablist"></div>
+    <div class="bk reveal">
+      <div class="bk-view pnl" id="bkView">
+        <div class="bk-3d" id="bk3d"></div>
+        <div class="bk-name" id="bkName"></div>
+        <div class="bk-tools" id="bkTools"></div>
+        <div class="bk-hint">↻ тяни, чтобы повернуть</div>
+      </div>
+      <div class="bk-info pnl" id="bkInfo"></div>
+    </div>
+    <div class="bk-row reveal">
+      <div class="pnl mine" id="mine">
+        <div class="pn-h"><b>Сколько ломать</b><span>как считает игра: скорость инструмента / прочность / 30, округление вверх до тика</span></div>
+        <div class="mine-grid">
+          <button type="button" class="mine-block" id="mineBlock" aria-label="Зажми, чтобы ломать"><img id="mineIco" alt="" draggable="false"><img class="px crack" id="mineCrack" alt="" draggable="false"></button>
+          <div class="mine-ctl">
+            <div class="mine-tools" id="mineTools"></div>
+            <div class="mine-eff" id="mineEff"></div>
+            <div class="mine-out" id="mineOut"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pnl cost" id="cost">
+        <div class="pn-h"><b>Смета</b><span>сколько чего нужно на всю стройку</span></div>
+        <div class="cost-list" id="costList"></div>
+        <div class="cost-sum" id="costSum"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ СВОЙ / ЧУЖОЙ ============ -->
+  <section class="sec" id="lock">
+    <header class="sec-head reveal"><span class="sec-n">07.2</span><h2>Свой — чужой</h2><span class="sec-q">UUID владельца в NBT</span></header>
+    <p class="sec-p reveal">Когда ставишь блок, он записывает твой UUID в поле <code>Owner</code>. Дальше всё просто: совпал с тем, кто кликает, — открыто. Не совпал — по-разному для каждого блока. Выбери, кто ты, и потыкай по базе.</p>
+    <div class="lk reveal">
+      <div class="lk-scene pnl" id="lkScene">
+        <div class="lk-sky"></div>
+        <div class="lk-row" id="lkRow"></div>
+        <div class="lk-hud">
+          <div class="mc-chat" id="lkChat" aria-live="polite"></div>
+          <div class="mc-bar" id="lkBar" aria-live="polite"></div>
+          <div class="lk-hearts" id="lkHearts" aria-label="Здоровье"></div>
+        </div>
+        <div class="lk-dead" id="lkDead" hidden><b>Вы погибли!</b><span id="lkDeadWhy"></span><button type="button" class="en-btn" id="lkRespawn">Возродиться</button></div>
+      </div>
+      <div class="lk-side">
+        <div class="en-who" id="lkWho" role="group" aria-label="Кто ты"></div>
+        <div class="pnl lk-rules" id="lkRules"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ПЕЧЬ ============ -->
+  <section class="sec" id="furnace">
+    <header class="sec-head reveal"><span class="sec-n">07.3</span><h2>Эндер-печь</h2><span class="sec-q">EnderFurnaceBlockEntity</span></header>
+    <p class="sec-p reveal">Уголь сюда не положишь: в слот топлива идут только <b>око Эндера</b> и <b>эндер-жемчуг</b>. Вместо времени горения у печи счётчик переплавок: око даёт 64, жемчуг 32, и заряд тратится только за готовый предмет. А скорость такая, что обычная печь рядом кажется сломанной. Ниже всё работает в реальном времени, 20 тиков в секунду.</p>
+    <div class="fu reveal">
+      <div class="fu-left">
+        <div class="fu-gui-wrap"><div class="fu-gui" id="fuGui"></div></div>
+        <div class="fu-pick">
+          <div class="fu-pick-h">Что плавим</div>
+          <div class="fu-inputs" id="fuInputs"></div>
+          <div class="fu-pick-h">Чем топим</div>
+          <div class="fu-fuels" id="fuFuels"></div>
+          <div class="fu-btns"><button type="button" class="en-btn hot" id="fuFill">Загрузить 64</button><button type="button" class="en-btn" id="fuTake">Забрать результат</button><button type="button" class="en-btn" id="fuClear">Очистить</button></div>
+        </div>
+      </div>
+      <div class="fu-right">
+        <div class="pnl fu-stats" id="fuStats"></div>
+        <div class="pnl race">
+          <div class="pn-h"><b>Гонка: 64 сырого железа</b><span>обычная печь на угле против эндер-печи</span></div>
+          <div class="race-rows" id="raceRows"></div>
+          <div class="race-btns"><button type="button" class="en-btn hot" id="raceGo">▶ Старт</button><span class="race-t" id="raceT">0,00 с</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ СЕЙФ ============ -->
+  <section class="sec" id="safe">
+    <header class="sec-head reveal"><span class="sec-n">07.4</span><h2>Эндер-сейф</h2><span class="sec-q">capability BIG_ENDER_INVENTORY</span></header>
+    <p class="sec-p reveal">Главная хитрость сейфа: вещей в нём нет. Все 54 слота хранятся <b>у игрока</b>, а блок только открывает к ним доступ. Поставь три сейфа в трёх концах мира, и все три покажут одно и то же. Сломай сейф, и ничего не выпадет, потому что выпадать нечему. Кликни по предмету, чтобы переложить его, как Shift+клик в игре.</p>
+    <div class="sf reveal">
+      <div class="sf-left">
+        <div class="sf-tabs" id="sfTabs" role="tablist"></div>
+        <div class="sf-gui-wrap"><div class="sf-gui" id="sfGui"></div><div class="sf-gone" id="sfGone" hidden></div></div>
+        <div class="sf-btns"><button type="button" class="en-btn" id="sfBreak">⛏ Сломать этот сейф</button><button type="button" class="en-btn" id="sfSort">Вернуть всё в инвентарь</button></div>
+      </div>
+      <div class="sf-right">
+        <div class="pnl sf-vs" id="sfVs"></div>
+        <div class="pnl sf-note" id="sfNote"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ДОСТУП ============ -->
+  <section class="sec" id="access">
+    <header class="sec-head reveal"><span class="sec-n">07.5</span><h2>Проход для одного</h2><span class="sec-q">EnderDoorBlock.neighborChanged</span></header>
+    <p class="sec-p reveal">Эндер-дверь не слушает обычный редстоун. Открыть её сигналом могут только <b>эндер-кнопка или эндер-плита того же хозяина</b>, стоящие вплотную к двери. Люк рядом ещё упрямее: на редстоун не реагирует совсем, только на руку хозяина. Жми, ставь, наступай.</p>
+    <div class="ac reveal">
+      <div class="ac-scene pnl" id="acScene">
+        <div class="ac-wall" id="acWall"></div>
+        <div class="ac-sig" id="acSig"></div>
+        <div class="mc-bar" id="acBar" aria-live="polite"></div>
+      </div>
+      <div class="ac-side">
+        <div class="pnl ac-ctl">
+          <div class="pn-h"><b>Кто встаёт на плиту</b><span>плиту продавливает только хозяин</span></div>
+          <div class="ac-who" id="acStep"></div>
+        </div>
+        <div class="pnl ac-ctl">
+          <div class="pn-h"><b>Что стоит у двери</b><span>жми, чтобы дать сигнал</span></div>
+          <div class="ac-src" id="acSrc"></div>
+        </div>
+        <div class="pnl ac-log" id="acLog"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ВЗРЫВ ============ -->
+  <section class="sec" id="blast">
+    <header class="sec-head reveal"><span class="sec-n">07.6</span><h2>Краш-тест</h2><span class="sec-q">explosionResistance</span></header>
+    <p class="sec-p reveal">Выбери, чем рвануть. Зелёное устоит, красное разнесёт.</p>
+    <div class="bl reveal">
+      <div class="bl-src" id="blSrc"></div>
+      <div class="pnl bl-sum" id="blSum"></div>
+      <div class="bl-wall" id="blWall"></div>
+      <details class="pnl bl-own"><summary>Своя сила взрыва</summary>
+        <div class="bl-top"><span>сила</span><b id="blP">4</b><span id="blX"></span></div>
+        <input type="range" id="blRange" min="0" max="1000" value="200" aria-label="Сила взрыва">
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">07.7</span><h2>Достижения</h2><span class="sec-q" id="advQ"></span></header>
+    <p class="sec-p reveal">Три скрытые ачивки. Одна за то, что собрал весь набор, и две за один и тот же неудачный взлом: хозяину за то, что поймал, взломщику за то, что попался. Хозяин при этом должен быть в игре.</p>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 0</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ ХРОНОЛОГИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal"><span class="sec-n">07.8</span><h2>Хронология</h2><span class="sec-q">HISTORY.md</span></header>
+    <div class="tl7 reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <div class="fin-eye" id="finEye" aria-hidden="true"></div>
+    <h2 class="fin-h">Дверь закрыта</h2>
+    <p class="fin-p">Ключ один, и он у того, кто её поставил. Остальным молния.</p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<!-- «кто ты» всегда под рукой -->
+<div class="who-fab" id="whoFab" role="group" aria-label="Кто ты"></div>
+<button type="button" class="sndbtn" id="sndBtn" aria-pressed="true" title="Звук"><i></i><span>звук</span></button>
+
+<script src="../../shared/points.js"></script>
+<script src="../../shared/core.js"></script>
+<script src="../../data/p07_ender.js"></script>
+<script src="../../data/p07_models.js"></script>
+<script src="../../data/p07_tex.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

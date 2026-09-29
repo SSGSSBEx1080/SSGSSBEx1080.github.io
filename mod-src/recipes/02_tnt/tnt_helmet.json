@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "pattern": [
+  "TTT",
+  "THT",
+  "   "
+ ],
+ "key": {
+  "T": { "item": "minecraft:tnt" },
+  "H": { "item": "minecraft:iron_helmet" }
+ },
+ "result": { "item": "zitraksmode:tnt_helmet" }
+}

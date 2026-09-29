@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" Q "," Q ","QQQ"],
+  "key": {"Q": {"item": "minecraft:gold_block"}},
+  "result": {"item": "zitraksmode:gold_dildo"}
+}

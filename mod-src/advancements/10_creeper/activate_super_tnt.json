@@ -1,0 +1,20 @@
+{
+  "parent": "zitraksmode:10_creeper/craft_super_tnt_minecart",
+  "display": {
+    "icon": { "item": "minecraft:tnt" },
+    "title": "§c§lДетонация",
+    "description": "§7Котлеты в фарш обратно не провернёшь... Хуй не нос, назад не шмыгнешь...",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "activate": {
+      "trigger": "zitraksmode:super_tnt_activated"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:09_dildo/gay_master",
+  "display": {
+    "icon": { "item": "zitraksmode:mud_dildo" },
+    "title": "§fNoob dildo",
+    "description": "§7Скрафти свой первый дилдак из грязи.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:mud_dildo"] }] }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

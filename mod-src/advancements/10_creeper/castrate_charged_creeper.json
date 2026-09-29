@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:10_creeper/eat_creeper_eggs",
+  "display": {
+    "icon": { "item": "zitraksmode:charged_creeper_eggs" },
+    "title": "§bОчень опасная затея окупается.",
+    "description": "§7Каким свирепым не был бык, на банке пишется «Тушенка». Кастрируй заряженного крипера.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "castrate_charged": { "trigger": "zitraksmode:charged_creeper_castrated" }
+  },
+  "rewards": { "experience": 20 }
+}

@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:10_creeper/cook_creeper_eggs",
+  "display": {
+    "icon": { "item": "zitraksmode:creeper_statue" },
+    "title": "§bПамятник охуевшему криперу",
+    "description": "§7Скрафти и установи статую крипера. Можно пугать игроков тем что у тебя дома крипер домашний, ебать обосруться.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "place": {
+      "trigger": "minecraft:placed_block",
+      "conditions": { "block": "zitraksmode:creeper_statue" }
+    }
+  },
+  "rewards": { "experience": 20 }
+}

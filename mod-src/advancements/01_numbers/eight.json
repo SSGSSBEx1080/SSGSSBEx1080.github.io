@@ -1,0 +1,31 @@
+{
+  "parent": "zitraksmode:01_numbers/seven",
+  "display": {
+    "icon": {
+      "item": "zitraksmode:eight"
+    },
+    "title": "Восьмёрка",
+    "description": "8 лет условка",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "get_eight": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "zitraksmode:eight"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

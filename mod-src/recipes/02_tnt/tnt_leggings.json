@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "pattern": [
+  "TTT",
+  "TLT",
+  "T T"
+ ],
+ "key": {
+  "T": { "item": "minecraft:tnt" },
+  "L": { "item": "minecraft:iron_leggings" }
+ },
+ "result": { "item": "zitraksmode:tnt_leggings" }
+}

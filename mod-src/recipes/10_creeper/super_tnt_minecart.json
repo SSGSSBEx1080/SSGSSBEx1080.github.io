@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "T",
+    "M"
+  ],
+  "key": {
+    "T": { "item": "zitraksmode:super_tnt" },
+    "M": { "item": "minecraft:minecart" }
+  },
+  "result": {
+    "item": "zitraksmode:super_tnt_minecart",
+    "count": 1
+  }
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№04 · Каска Шахтёра — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №04 мода ZitraksMode: Каска Шахтёра. Свет 15, ночное зрение, спешка, батарейка на 30 минут, чары Пересвет I–III. Страница-шахта: скролл вниз = спуск до бедрока.">
+<meta name="theme-color" content="#0b0906">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- стена шахты: столб мира от поверхности (Y 70) до бедрока (Y −64), 1 блок = 1 ряд плиток -->
+<canvas id="mineCv" aria-hidden="true"></canvas>
+<div class="lamp-glow" id="lampGlow" aria-hidden="true"></div>
+
+<!-- эффекты каски, как в правом верхнем углу игры -->
+<div class="fx" id="fx"></div>
+
+<!-- глубиномер -->
+<aside class="depth" id="depth" aria-label="Глубиномер">
+  <div class="dp-y"><small>Y</small><b id="dpY">64</b></div>
+  <div class="dp-layer" id="dpLayer">Поверхность</div>
+  <div class="dp-scale" id="dpScale"><i class="dp-mark" id="dpMark"></i></div>
+  <div class="dp-ores" id="dpOres"></div>
+</aside>
+
+<!-- пульт: фонарь, F3, звук, инструмент и добыча -->
+<div class="dock" id="dock">
+  <div class="hot" id="hot" aria-label="Добыча"></div>
+  <div class="dock-btns">
+    <button type="button" class="db" id="bLamp" aria-pressed="true" title="Надеть / снять каску (L)"><i class="ic-lamp"></i><span>каска</span></button>
+    <button type="button" class="db" id="bF3" aria-pressed="false" title="Уровни света (F3)"><b>F3</b><span>свет</span></button>
+    <button type="button" class="db" id="bTool" title="Сменить кирку"><img id="toolIc" alt=""><span id="toolN">кирка</span></button>
+    <button type="button" class="db" id="snd" aria-pressed="true" title="Звук"><i class="ic-snd"></i><span>звук</span></button>
+  </div>
+</div>
+
+<main>
+  <!-- ============ HERO: поверхность, Y 64 ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-copy">
+      <div class="hero-tag"><b>ПУНКТ №04</b><span>добавлено 07.11.2025</span></div>
+      <h1 class="hero-h"><span class="l1">КАСКА</span><span class="l2">ШАХТЁРА</span></h1>
+      <p class="hero-p">Золотой шлем с фонарём. Пока заряжен, светит на <b>15</b>, даёт <b>ночное зрение</b> и <b>спешку</b>, а защищает лучше незеритового. Эта страница и есть шахта: крути вниз до бедрока, фонарь у тебя на курсоре.</p>
+      <div class="hero-stats" id="heroStats"></div>
+      <p class="hero-hint"><span class="k">ЛКМ</span> зажми на стене, чтобы копать · <span class="k">L</span> снять каску · <span class="k">F3</span> уровни света</p>
+    </div>
+    <div class="hero-stage" id="heroStage">
+      <div class="hs-model" id="hsModel"></div>
+      <div class="hs-ph" id="hsPh" hidden>временная текстура</div>
+      <div class="hs-hint">↻ тяни, чтобы повернуть</div>
+    </div>
+    <a class="hero-down" href="#passport"><span>СПУСК</span><i></i><small>Y 64 → −64</small></a>
+  </section>
+
+  <!-- ============ ПАСПОРТ ============ -->
+  <section class="sec" id="passport">
+    <header class="sec-head reveal"><span class="sec-n">04.1</span><h2>Паспорт каски</h2><span class="sec-y" data-y></span></header>
+    <div class="pass reveal">
+      <div class="plate pn" id="plate"></div>
+      <div class="cmp pn">
+        <div class="cmp-head"><b>Против всех шлемов игры</b><div class="cmp-tabs" id="cmpTabs" role="tablist"></div></div>
+        <div class="cmp-list" id="cmpList"></div>
+        <div class="cmp-note" id="cmpNote"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ БАТАРЕЙКА ============ -->
+  <section class="sec" id="battery">
+    <header class="sec-head reveal"><span class="sec-n">04.2</span><h2>Батарейка</h2><span class="sec-y" data-y></span></header>
+    <p class="sec-p reveal">Прочность каски и есть заряд. Пока каска на голове, она теряет 1 прочности каждые 2 секунды, даже если по тебе никто не бьёт: 900 прочности = 30 минут света. Фонарь на этой странице питается от этой же батарейки: сядет она, погаснет и стена.</p>
+    <div class="bat reveal" id="bat">
+      <div class="bat-l pn">
+        <div class="bat-slot" id="batSlot"></div>
+        <div class="bat-tip" id="batTip"></div>
+      </div>
+      <div class="bat-r pn">
+        <div class="bat-cell" id="batCell"><div class="bat-fill" id="batFill"></div><div class="bat-cap"></div><b id="batPct">100%</b></div>
+        <div class="bat-read" id="batRead"></div>
+        <div class="bat-ctl">
+          <div class="bat-grp"><span>Пересвет</span><div class="seg" id="batLvl"></div></div>
+          <div class="bat-grp"><span>Время</span><div class="seg" id="batSpd"></div></div>
+        </div>
+        <div class="bat-btns">
+          <button type="button" class="bb" id="batWear"></button>
+          <button type="button" class="bb gold" id="batFix"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ФОНАРЬ ============ -->
+  <section class="sec" id="lamp">
+    <header class="sec-head reveal"><span class="sec-n">04.3</span><h2>Свет в шахте</h2><span class="sec-y" data-y></span></header>
+    <p class="sec-p reveal">Каска ставит у глаз невидимый блок света уровня <b>15</b> и таскает его за тобой. Если голова в блоке, свет садится на блок выше ног, а если занято и там, не светит вовсе. Дальше как в игре: минус 1 за каждый блок, а мобы спавнятся только там, где свет <b>0</b>. Включи <span class="k">F3</span> на пульте, и на стене появятся цифры.</p>
+    <div class="lights reveal pn" id="lights"></div>
+  </section>
+
+  <!-- ============ ПЕРЕСВЕТ ============ -->
+  <section class="sec" id="peresvet">
+    <header class="sec-head reveal"><span class="sec-n">04.4</span><h2>Пересвет</h2><span class="sec-y" data-y></span></header>
+    <p class="sec-p reveal">Свои чары каски. Ставятся только на Каску Шахтёра и книги, выпадают в столе зачарования и у библиотекарей. Каждый уровень растягивает батарейку, а со второго ещё и разгоняет спешку. Нажми на уровень, и он встанет на каску в «Батарейке».</p>
+    <div class="pv reveal" id="pv"></div>
+    <div class="pv-facts reveal" id="pvFacts"></div>
+  </section>
+
+  <!-- ============ ГЛУБИНОМЕР ============ -->
+  <section class="sec" id="ores">
+    <header class="sec-head reveal"><span class="sec-n">04.5</span><h2>Что копать на глубине</h2><span class="sec-y" data-y></span></header>
+    <p class="sec-p reveal">Генерация руд 1.19: у каждой руды своя любимая высота. Страница повторяет настоящий мир, поэтому по кнопке «спуститься» тебя перекинет ровно на эту глубину. Спешка с каски ускоряет копание стены.</p>
+    <div class="orex reveal">
+      <div class="orex-chart pn"><canvas id="oreCv"></canvas><div class="orex-read" id="oreRead"></div></div>
+      <div class="orex-list" id="oreList"></div>
+    </div>
+  </section>
+
+  <!-- ============ КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">04.6</span><h2>Крафт</h2><span class="sec-y" data-y></span></header>
+    <div class="craft reveal pn" id="craftBox"></div>
+  </section>
+
+  <!-- ============ ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">04.7</span><h2>Достижения</h2><span class="sec-y" data-y></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 2</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ ХРОНОЛОГИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal"><span class="sec-n">04.8</span><h2>Хронология</h2><span class="sec-y" data-y></span></header>
+    <div class="tl4 reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ: бедрок ============ -->
+  <section class="finale" id="finale">
+    <div class="fin-copy">
+      <h2 class="fin-h">Бедрок</h2>
+      <p class="fin-p" id="finP">Глубже не копается.</p>
+      <nav class="fin-nav" id="finNav"></nav>
+    </div>
+  </section>
+</main>
+
+<script src="../../shared/points.js"></script>
+<script src="../../shared/core.js"></script>
+<script src="../../data/p04_miner.js"></script>
+<script src="../../data/p04_models.js"></script>
+<script src="../../data/p04_tex.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="mine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

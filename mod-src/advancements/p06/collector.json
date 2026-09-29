@@ -1,0 +1,41 @@
+{
+  "parent": "zitraksmode:06_labubu/anime_drop",
+  "display": {
+    "icon": { "item": "zitraksmode:labubu_anime" },
+    "title": "§b§lПОЛНАЯ КОЛЛЕКЦИЯ",
+    "description": "§7Подбери каждую уникальную фигурку хотя бы раз. Прогресс сохраняется навсегда.",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "red": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_red"] }] } },
+    "blue": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_blue"] }] } },
+    "yellow": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_yellow"] }] } },
+    "white": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_white"] }] } },
+    "black": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_black"] }] } },
+    "green": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_green"] }] } },
+    "purple": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_purple"] }] } },
+    "black_white": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_black_white"] }] } },
+    "striped": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_striped"] }] } },
+    "kazakh": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_kazakh"] }] } },
+    "ukrainian": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_ukrainian"] }] } },
+    "japanese": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_japanese"] }] } },
+    "top_hat": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_top_hat"] }] } },
+    "faseless": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_faseless"] }] } },
+    "russian": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_russian"] }] } },
+    "neon": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_neon"] }] } },
+    "litvin": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_litvin"] }] } },
+    "anonymous": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_anonymous"] }] } },
+    "demon": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_demon"] }] } },
+    "angel": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_angel"] }] } },
+    "galactic": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_galactic"] }] } },
+    "rainbow": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_rainbow"] }] } },
+    "golden": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_golden"] }] } },
+    "buddha": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_buddha"] }] } },
+    "booba": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_booba"] }] } },
+    "anime": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:labubu_anime"] }] } }
+  },
+  "rewards": { "experience": 100 }
+}

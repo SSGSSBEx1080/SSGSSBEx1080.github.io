@@ -1,0 +1,21 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:labubu_box" },
+    "title": "§fКоробка с сюрпризом",
+    "description": "§7Ты скрафтил Лабубу-бокс. Открой и посмотри чё тебе выпало.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft_box": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": ["zitraksmode:labubu_box"] }]
+      }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

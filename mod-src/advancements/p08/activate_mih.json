@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:08_mih/craft_mih",
+  "display": {
+    "icon": { "item": "minecraft:clock" },
+    "title": "§bВремя ускоряет свой ход...",
+    "description": "§7Активация прошла успешна, вы почти достигли рая... Пуччи доволен...",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "activate": { "trigger": "zitraksmode:mih_activated" }
+  },
+  "rewards": { "experience": 15 }
+}

@@ -1,0 +1,31 @@
+{
+  "parent": "zitraksmode:01_numbers/one",
+  "display": {
+    "icon": {
+      "item": "zitraksmode:two"
+    },
+    "title": "Двойка",
+    "description": "2 подбородка",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "get_two": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "zitraksmode:two"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "minecraft:creeper_spawn_egg" },
+    "title": "§aЧик, и больше не мужик.",
+    "description": "§7Кастрируй обычного крипера. Он больше не взорвётся.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "castrate": { "trigger": "zitraksmode:creeper_castrated" }
+  },
+  "rewards": { "experience": 5 }
+}

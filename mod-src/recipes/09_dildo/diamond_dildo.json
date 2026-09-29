@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" Q "," Q ","QQQ"],
+  "key": {"Q": {"item": "minecraft:diamond_block"}},
+  "result": {"item": "zitraksmode:diamond_dildo"}
+}

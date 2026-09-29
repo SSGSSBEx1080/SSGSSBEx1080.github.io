@@ -1,0 +1,18 @@
+{
+  "parent": "zitraksmode:05_adun/trade_adun",
+  "display": {
+    "icon": { "item": "zitraksmode:adun_villager_spawn_egg" },
+    "title": "§fТишина...",
+    "description": "§7Стал тем кого презирал...",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "killed_adun": {
+      "trigger": "zitraksmode:kill_adun"
+    }
+  },
+  "rewards": { "experience": 5 }
+}

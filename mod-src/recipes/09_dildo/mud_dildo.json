@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " Q ",
+    " Q ",
+    "QQQ"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "result": {
+    "item": "zitraksmode:mud_dildo"
+  }
+}

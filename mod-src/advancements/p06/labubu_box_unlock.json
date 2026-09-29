@@ -1,0 +1,34 @@
+{
+  "__comment": "Разблокировать рецепт Labubu Box, когда в инвентаре есть ВСЕ перечисленные предметы",
+  "parent": "minecraft:recipes/root",
+  "display": {
+    "icon": { "item": "zitraksmode:labubu_box" },
+    "title": { "translate": "advancements.zitraksmode.labubu_box.title" },
+    "description": { "translate": "advancements.zitraksmode.labubu_box.description" },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "has_stone":      { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["minecraft:stone"] }] } },
+    "has_red_dye":    { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["minecraft:red_dye"] }] } },
+    "has_green_dye":  { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["minecraft:green_dye"] }] } },
+    "has_blue_dye":   { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["minecraft:blue_dye"] }] } },
+    "has_emerald":    { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["minecraft:emerald"] }] } },
+    "has_gold_block": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["minecraft:gold_block"] }] } }
+  },
+  "requirements": [
+    ["has_stone"],
+    ["has_red_dye"],
+    ["has_green_dye"],
+    ["has_blue_dye"],
+    ["has_emerald"],
+    ["has_gold_block"]
+  ],
+  "rewards": {
+    "recipes": [
+      "zitraksmode:labubu_box"
+    ]
+  }
+}

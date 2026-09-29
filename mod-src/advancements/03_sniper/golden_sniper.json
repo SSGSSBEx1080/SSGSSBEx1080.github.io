@@ -1,0 +1,21 @@
+{
+  "parent": "zitraksmode:03_sniper/iron_sniper",
+  "display": {
+    "icon": { "item": "zitraksmode:golden_sniper" },
+    "title": "§eЗолотая лихорадка",
+    "description": "§7Сука богатый эль пачо, звони если чо",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "get_golden_sniper": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": ["zitraksmode:golden_sniper"] }]
+      }
+    }
+  },
+  "rewards": { "experience": 15 }
+}

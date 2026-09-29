@@ -1,0 +1,23 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:tnt_helmet" },
+    "title": "§fGAP - Gay and Pidors",
+    "description": "§7Первый элемент ТНТ-брони. Только не натягивай его на хуй.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true,
+    "x": 15,
+    "y": 5
+  },
+  "criteria": {
+    "get_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": ["zitraksmode:tnt_helmet"] }]
+      }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

@@ -1,0 +1,14 @@
+{
+  "parent": "zitraksmode:07_ender/intruder_caught",
+  "display": {
+    "icon": { "item": "minecraft:barrier" },
+    "title": "§4§lХуй тебе",
+    "description": "§7Хотел стащить предметы? - Получай, дурачина!",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": { "intruded": { "trigger": "zitraksmode:intruder_fucked" } },
+  "rewards": { "experience": 0 }
+}

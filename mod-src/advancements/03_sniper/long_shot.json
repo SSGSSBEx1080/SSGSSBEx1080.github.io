@@ -1,0 +1,18 @@
+{
+  "parent": "zitraksmode:03_sniper/netherite_sniper",
+  "display": {
+    "icon": { "item": "minecraft:target" },
+    "title": "§6§lКОРОЛЬ СНАЙПЕРОВ",
+    "description": "§7В дальнем снайперском краю, был рождён однажды я, 100 раз стрельну - 100 попаду...",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "long_shot": {
+      "trigger": "zitraksmode:sniper_long_shot"
+    }
+  },
+  "rewards": { "experience": 50 }
+}

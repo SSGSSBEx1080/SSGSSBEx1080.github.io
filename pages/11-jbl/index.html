@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№11 · JBL-колонка — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №11 мода ZitraksMode: JBL-колонка. ПКМ открывает плеер с общей библиотекой сервера, свои .ogg и .mp3 перетаскиваются прямо в окно, трек слышат все рядом.">
+<meta name="theme-color" content="#060d1c">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- фон: сетка динамика, свечения дышат басами -->
+<div class="jb-bg" aria-hidden="true"><i class="g1"></i><i class="g2"></i></div>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="jb-hero" id="hero">
+    <div class="jb-hero-txt">
+      <div class="jb-tag"><span>№11</span><i></i>14.03.2026<i></i><span class="ver">zitraksmode:jbl_speaker</span></div>
+      <h1 class="jb-title"><span class="jb-logo">JBL</span><span class="jb-t2">-колонка</span></h1>
+      <p class="jb-sub">Берёшь в руку, жмёшь ПКМ, и открывается плеер со всей музыкой сервера. Свои .ogg и .mp3 кидаешь прямо в окно, и трек слышат все, кто рядом.</p>
+      <div class="jb-cta">
+        <button type="button" class="jb-btn" id="heroPlay" data-nosfx><span class="ic">▶</span><span id="heroPlayT">Врубить</span></button>
+        <a class="jb-btn2" href="#player">Открыть плеер</a>
+      </div>
+      <div class="jb-stats">
+        <a href="#adv"><b id="stGot">0/2</b><span>ачивки</span></a>
+        <a href="#hud"><b>15 с</b><span>на 100%</span></a>
+        <a href="#player"><b id="stLib">4</b><span>треков в библиотеке</span></a>
+      </div>
+    </div>
+    <div class="jb-stage">
+      <canvas class="jb-rings" id="rings" aria-hidden="true"></canvas>
+      <div class="jb-3d" id="hero3d" title="Тянуть: покрутить · клик: нотный блок"></div>
+      <div class="jb-floor" aria-hidden="true"></div>
+      <div class="mctt jb-tt" id="heroTT" aria-live="polite"></div>
+    </div>
+    <div class="jb-eq" id="eq" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============ I · ПЛЕЕР ============ -->
+  <section class="sec" id="player">
+    <header class="sec-head reveal"><span class="sec-n">I</span><div class="sec-t"><span class="sec-k">JBLSpeakerScreen</span><h2>Плеер</h2></div><span class="sec-q">ПКМ колонкой</span></header>
+    <p class="sec-p reveal">Экран как в игре, один в один: тот же список, те же кнопки, те же подсказки. Двойной клик по треку запускает его. Свои файлы кидай прямо в окно, они сохранятся в этом браузере.</p>
+    <div class="scr reveal" id="scr">
+      <div class="scr-head">
+        <div class="scr-title">JBL Колонка</div>
+        <div class="scr-hint">Перетащи .ogg / .mp3 прямо сюда для добавления в библиотеку</div>
+        <div class="scr-status" id="scrStatus"></div>
+        <button type="button" class="scr-ref" id="scrRef" data-tip="Обновить библиотеку" data-nosfx>⟳</button>
+      </div>
+      <div class="scr-panel">
+        <div class="scr-list" id="scrList" role="listbox" aria-label="Библиотека"></div>
+      </div>
+      <div class="scr-bar">
+        <div class="scr-now" id="scrNow">Ничего не играет</div>
+        <div class="scr-ctl">
+          <button type="button" class="cb" id="bPrev" data-tip="Предыдущий" data-nosfx>⏮</button>
+          <button type="button" class="cb acc" id="bPlay" data-tip="Играть" data-nosfx>▶</button>
+          <button type="button" class="cb" id="bNext" data-tip="Следующий" data-nosfx>⏭</button>
+        </div>
+        <div class="scr-seek" id="seek" data-tip="Перемотка"><i id="seekFill"></i><u id="seekKnob"></u></div>
+        <div class="scr-times"><span id="tCur">00:00</span><span id="tDur">00:00</span></div>
+      </div>
+      <div class="scr-drop" id="scrDrop"><div><b>Отпусти, чтобы загрузить</b><span>.ogg · .mp3</span></div></div>
+    </div>
+    <div class="scr-under reveal">
+      <label class="jb-file"><input type="file" id="filePick" accept=".ogg,.mp3,audio/ogg,audio/mpeg" multiple hidden><span>＋ выбрать файл</span></label>
+      <span class="scr-note">На телефоне перетаскивать некуда, поэтому тут есть кнопка. В игре файл просто бросаешь в окно.</span>
+      <button type="button" class="btn-ghost" id="libReset">↺ вернуть библиотеку</button>
+    </div>
+  </section>
+
+  <!-- ============ II · HUD ============ -->
+  <section class="sec" id="hud">
+    <header class="sec-head reveal"><span class="sec-n">II</span><div class="sec-t"><span class="sec-k">JBLSpeakerHUD</span><h2>В руке</h2></div><span class="sec-q">колесо: слот · 1–9 · F</span></header>
+    <p class="sec-p reveal">Пока колонка в руке и играет, внизу слева висит плашка: мигающая нота, название бегущей строкой, процент и полоска громкости. Сменишь слот, и она пропадёт. Во второй руке тоже работает.</p>
+    <div class="game reveal" id="game">
+      <div class="game-view" id="gameView">
+        <canvas class="game-fx" id="gameFx"></canvas>
+        <canvas class="hudc" id="hudc" width="140" height="35" aria-label="HUD колонки"></canvas>
+        <div class="hb" id="hbar"></div>
+        <div class="game-empty" id="gameEmpty"></div>
+      </div>
+      <div class="game-side">
+        <div class="pnl11">
+          <div class="lbl11">Громкость <span class="gr11">NBT Volume</span></div>
+          <div class="vol"><input type="range" id="vol" min="0" max="100" value="100" aria-label="Громкость"><b id="volT">100%</b></div>
+          <div class="vol-q" id="volQ"></div>
+        </div>
+        <div class="pnl11">
+          <div class="lbl11">Максимальная громкость! <span class="gr11">300 тиков</span></div>
+          <div class="fv"><div class="fv-bar"><i id="fvBar"></i></div><b id="fvT">0 / 300</b></div>
+          <p class="fv-p" id="fvP"></p>
+        </div>
+        <div class="pnl11 nb">
+          <div class="lbl11">Соседи <span class="gr11" id="nbQ">спят</span></div>
+          <div class="nb-row" id="nbRow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ III · КОЛОНКА ============ -->
+  <section class="sec" id="item">
+    <header class="sec-head reveal"><span class="sec-n">III</span><div class="sec-t"><span class="sec-k">zitraksmode:jbl_speaker</span><h2>Колонка</h2></div><span class="sec-q">стак 1</span></header>
+    <p class="sec-p reveal">Модель из Blockbench, одна коробка 7 × 14,75 × 7,75 пикселя, два динамика по торцам. Всё, что колонка помнит, хранится прямо в предмете: справа живой NBT, он меняется, пока играет музыка.</p>
+    <div class="itm reveal">
+      <div class="pnl11 itm-3d"><div class="jb-3d sm" id="item3d" title="Тянуть: покрутить"></div>
+        <div class="faces" id="faces"></div>
+      </div>
+      <div class="pnl11 itm-nbt">
+        <div class="lbl11">/data get entity @s SelectedItem <span class="gr11" id="nbtLive">обновляется</span></div>
+        <pre class="snbt" id="snbt"></pre>
+        <div class="nbt-leg" id="nbtLeg"></div>
+      </div>
+    </div>
+    <div class="rules11 reveal" id="ruGrid"></div>
+  </section>
+
+  <!-- ============ IV · СЕТЬ ============ -->
+  <section class="sec" id="net">
+    <header class="sec-head reveal"><span class="sec-n">IV</span><div class="sec-t"><span class="sec-k">jbl_speaker_channel</span><h2>Как трек доходит до всех</h2></div><span class="sec-q" id="netQ">протокол 1</span></header>
+    <p class="sec-p reveal">Загрузишь файл в плеере, и здесь видно, что происходит: трек кусками летит на сервер, ложится в библиотеку, а когда включаешь, звук получают все, кто рядом с тобой.</p>
+    <div class="net reveal" id="netBox">
+      <div class="net-map">
+        <svg class="net-lines" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M150 150 H500" /><path d="M500 150 L850 60" /><path d="M500 150 L850 150" /><path d="M500 150 L850 240" />
+        </svg>
+        <div class="nn me" style="left:15%;top:50%"><img id="netMe" src="" alt=""><b id="netMeN">Ты</b><span>клиент</span></div>
+        <div class="nn srv" style="left:50%;top:50%"><img src="../../assets/textures/p11/iso/jukebox.png" alt=""><b>Сервер</b><span id="netLib">библиотека: 4</span></div>
+        <div class="nn pl" style="left:85%;top:20%"><img src="../../assets/textures/hub/av/alex.png" alt=""><b>Alex</b><span>рядом</span></div>
+        <div class="nn pl" style="left:85%;top:50%"><img src="../../assets/textures/hub/av/villager.png" alt=""><b>Житель</b><span>рядом</span></div>
+        <div class="nn pl far" style="left:85%;top:80%"><img src="../../assets/textures/hub/av/steve.png" alt=""><b>Steve</b><span>далеко, не видит</span></div>
+        <div class="net-fly" id="netFly"></div>
+      </div>
+      <div class="net-log" id="netLog"></div>
+      <div class="net-ctl"><button type="button" class="jb-btn2 sm" id="netRun">Прогнать загрузку</button><span class="scr-note">или просто брось файл в плеер</span></div>
+    </div>
+  </section>
+
+  <!-- ============ V · КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">V</span><div class="sec-t"><span class="sec-k">crafting_shaped</span><h2>Крафт</h2></div><span class="sec-q">любая кнопка</span></header>
+    <p class="sec-p reveal">Железо по углам, редстоун сверху, бамбук по бокам, нотный блок в центре и снизу кнопка. Подойдёт любая: тег <code>zitraksmode:jbl_buttons</code>, поэтому в слоте они сменяют друг друга.</p>
+    <div class="crf reveal">
+      <div class="cg11" id="craftGrid"></div>
+      <div class="crf-side">
+        <div class="crf-msg" id="craftMsg"></div>
+        <div class="crf-inv"><span>В инвентаре:</span><button type="button" class="slot11" id="invSlot" data-tip="JBL-колонка" data-tip-sub="zitraksmode:jbl_speaker"><img src="../../assets/textures/p11/iso/jbl_speaker.png" alt=""><i id="invN"></i></button>
+          <button type="button" class="btn-ghost" id="creativeTake">взять из креатива</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VI · ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">VI</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <p class="sec-p reveal">Скрытые, как в игре: пока не получишь, не видно, что это. Вся ветка целиком живёт в общем древе мода на главной.</p>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 0</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ VII · ИСТОРИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal"><span class="sec-n">VII</span><div class="sec-t"><span class="sec-k">changelog</span><h2>История</h2></div></header>
+    <div class="timeline reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <button type="button" class="fin-sp" id="finSp" data-nosfx aria-label="Бас"><img src="../../assets/textures/p11/face_speaker.png" alt=""></button>
+    <div class="fin-t">Соседям пизда!</div>
+    <p class="fin-p">Жми на динамик. Желательно ночью.</p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<div class="jb-mini" id="mini" hidden><button type="button" id="miniPlay" data-nosfx>⏸</button><span id="miniT"></span><a href="#player">плеер</a></div>
+<div class="md11" id="md" hidden><div class="md11-box" id="mdBox"></div></div>
+<div class="mc-chat" id="chat" aria-live="polite"></div>
+<button type="button" class="sndbtn" id="sndBtn" aria-pressed="true" data-nosfx><i></i><span>звук</span></button>
+<audio id="au" preload="auto"></audio>
+
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="../../data/p11_jbl.js"></script>
+<script src="../../data/p11_tracks.js"></script>
+<script src="../../data/p11_models.js"></script>
+<script src="../../data/p11_tex.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

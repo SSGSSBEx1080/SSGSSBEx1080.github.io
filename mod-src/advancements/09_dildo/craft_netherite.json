@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:09_dildo/craft_tnt",
+  "display": {
+    "icon": { "item": "zitraksmode:netherite_dildo" },
+    "title": "§5§lНЕЗЕРИТОВЫЙ МОНУМЕНТ",
+    "description": "§7ДОКАЗАТЕЛЬСТВО ТОГО ЧТО ТЫ МОЖЕШЬ ДЕЛАТЬ ВСЁ ЧТО ТЫ ЗАХОЧЕШЬ.",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:netherite_dildo"] }] }
+    }
+  },
+  "rewards": { "experience": 50 }
+}

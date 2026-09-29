@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "BSB",
+    "IEI"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "R": { "item": "minecraft:redstone" },
+    "B": { "item": "minecraft:bamboo" },
+    "S": { "item": "minecraft:note_block" },
+    "E": { "tag": "zitraksmode:jbl_buttons" }
+  },
+  "result": {
+    "item": "zitraksmode:jbl_speaker"
+  }
+}

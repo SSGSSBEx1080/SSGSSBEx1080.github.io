@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "123",
+    "456", 
+    "789"
+  ],
+  "key": {
+    "1": { "item": "zitraksmode:one" },
+    "2": { "item": "zitraksmode:two" },
+    "3": { "item": "zitraksmode:three" },
+    "4": { "item": "zitraksmode:four" },
+    "5": { "item": "zitraksmode:five" },
+    "6": { "item": "zitraksmode:six" },
+    "7": { "item": "zitraksmode:seven" },
+    "8": { "item": "zitraksmode:eight" },
+    "9": { "item": "zitraksmode:nine" }
+  },
+  "result": {
+    "item": "zitraksmode:zero",
+    "count": 1
+  }
+}

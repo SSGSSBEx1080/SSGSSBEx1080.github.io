@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " Q ",
+    " Q ",
+    "QQQ"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "result": {
+    "item": "zitraksmode:iron_dildo"
+  }
+}

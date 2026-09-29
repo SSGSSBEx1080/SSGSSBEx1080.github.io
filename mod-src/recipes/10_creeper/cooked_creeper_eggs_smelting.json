@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {"item": "zitraksmode:creeper_eggs"},
+  "result": "zitraksmode:cooked_creeper_eggs",
+  "experience": 0.35,
+  "cookingtime": 200
+}

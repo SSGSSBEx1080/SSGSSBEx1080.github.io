@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№06 · Лабубу-система — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №06 мода ZitraksMode: Лабубу-система. Лабубу-бокс с рулеткой, 26 фигурок пяти редкостей, ауры в радиусе 6 блоков, фьюжн 9 в 1 и полная коллекция.">
+<meta name="theme-color" content="#12061a">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- фон: конфетти редкостей -->
+<canvas id="bgCv" aria-hidden="true"></canvas>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="lb-hero" id="hero">
+    <div class="lb-hero-copy">
+      <div class="lb-tag"><b>ПУНКТ №06</b><span>31.12.2025</span><span class="lb-tag-ny">новогодний</span></div>
+      <h1 class="lb-title"><span class="lb-t1">ЛАБУБУ</span><span class="lb-t2">система</span></h1>
+      <p class="lb-lead">Коробка-сюрприз с рулеткой, как в кейсах. Внутри одна из <b>26 фигурок</b> пяти редкостей. Фигурку можно поставить на стол, и тогда она работает как <b>аура</b>: пока стоишь в радиусе 6 блоков, у тебя есть её эффект. Одинаковые фигурки складываются. Девять фигурок одной редкости переплавляются в одну редкостью выше.</p>
+      <div class="lb-stats" id="heroStats"></div>
+      <div class="lb-cta">
+        <a class="lb-btn hot" href="#case" id="heroOpen">Открыть кейс</a>
+        <a class="lb-btn" href="#collection">Коллекция <span id="heroCol">0/26</span></a>
+      </div>
+    </div>
+    <div class="lb-stage" id="heroStage">
+      <div class="lb-rays" id="heroRays"></div>
+      <div class="lb-ped"><i></i></div>
+      <div class="lb-model" id="heroModel"></div>
+      <div class="lb-hero-card" id="heroCard"></div>
+      <div class="lb-drag">↻ тяни</div>
+    </div>
+    <div class="lb-shelf" id="heroShelf" aria-label="Все фигурки"></div>
+  </section>
+
+  <div class="lb-tape" aria-hidden="true"><div class="tp a"><div class="tp-run" data-tape="e"></div></div></div>
+
+  <!-- ============ КЕЙС ============ -->
+  <section class="lb-sec" id="case" data-bg="CASE">
+    <header class="lb-head reveal"><span class="lb-n">06.1</span><h2>Лабубу-бокс</h2><span class="lb-q">140 слотов · 5 секунд</span></header>
+    <p class="lb-p reveal">ПКМ по поставленному боксу: блок исчезает, и открывается рулетка. Лента из 140 слотов 70 тиков летит почти на полной скорости и проходит 90% пути, потом 30 тиков тормозит. Приз всегда в слоте №95. Каждый слот ленты тянется из той же таблицы весов, что и сам приз, поэтому легендарки мелькают так же редко, как выпадают.</p>
+    <div class="cs-grid reveal">
+      <div class="cs-box pnl">
+        <div class="cs-box-stage" id="boxStage"><div class="cs-box-model" id="boxModel"></div><div class="cs-box-glow"></div></div>
+        <div class="cs-item">
+          <div class="cs-item-name">Лабубу-бокс</div>
+          <div class="cs-item-row"><span>прочность</span><b>2</b><span>взрывоустойчивость</span><b>3</b></div>
+          <div class="cs-item-row"><span>хитбокс</span><b>14×14×14</b><span>ломается при открытии</span><b>да</b></div>
+          <div class="cs-item-id">zitraksmode:labubu_box</div>
+        </div>
+        <div class="cs-craft">
+          <div class="cs-craft-h"><b>Крафт</b><span>верстак 3×3 · выход 1 шт. · форма фиксированная</span></div>
+          <div class="cs-gui-wrap"><div class="cs-gui" id="boxGui"></div></div>
+          <div class="cs-unlock" id="boxUnlock"></div>
+        </div>
+        <div class="cs-inv">
+          <div class="cs-slot" id="boxSlot" data-tip="Лабубу-бокс" data-tip-sub="zitraksmode:labubu_box"></div>
+          <button type="button" class="lb-btn sm" id="boxTake" title="Как из креатива">+ бокс</button>
+          <button type="button" class="lb-btn hot" id="boxOpen">Открыть <small>ПКМ</small></button>
+        </div>
+        <label class="cs-fast"><input type="checkbox" id="boxFast"> без анимации</label>
+      </div>
+      <div class="cs-odds pnl">
+        <h3>Шансы <small>вес / сумма весов 495</small></h3>
+        <div id="odds"></div>
+        <div class="cs-mine">
+          <div class="cs-mine-h"><b>Твои открытия</b><span id="mineN">0</span><button type="button" class="lb-x" id="mineReset" title="Сбросить статистику">↺</button></div>
+          <div id="mine"></div>
+        </div>
+        <div class="cs-last" id="lastDrops" aria-label="Последние дропы"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="lb-tape" aria-hidden="true"><div class="tp a"><div class="tp-run" data-tape="a"></div></div><div class="tp b"><div class="tp-run" data-tape="b"></div></div></div>
+
+  <!-- ============ КРАН-МАШИНА ============ -->
+  <section class="lb-sec" id="claw" data-bg="CATCH">
+    <header class="lb-head reveal"><span class="lb-n">06.2</span><h2>Кран-машина</h2><span class="lb-q" id="clQ">выловлено 0</span></header>
+    <p class="lb-p reveal">Во всём мире Лабубу достают из автоматов, так что и тут без него никак. В игре бокс просто крафтится, а здесь его надо вытащить клешнёй. Двигай кран стрелками, мышкой или пальцем по стеклу. Кнопка «ВНИЗ» или пробел опускает клешню. Хватай бокс по центру: если зацепил краем, он выскользнет на полпути. Выловленное падает в лоток и сразу уходит в инвентарь кейса выше. Золотой бокс даёт три обычных.</p>
+    <div class="cl-grid reveal">
+      <div class="cl-cab">
+        <div class="cl-sign"><span>LABUBU</span><small>catcher</small></div>
+        <div class="cl-bulbs" id="clBulbs"></div>
+        <div class="cl-glass" id="clGlass"><canvas id="clCv"></canvas><div class="cl-shine"></div><div class="cl-msg" id="clMsg"></div></div>
+        <div class="cl-desk">
+          <div class="cl-stick" id="clStick"><button type="button" class="cl-arr" id="clL" aria-label="Влево">◀</button><i class="cl-knob" id="clKnob"></i><button type="button" class="cl-arr" id="clR" aria-label="Вправо">▶</button></div>
+          <button type="button" class="cl-go" id="clGo">ВНИЗ</button>
+          <div class="cl-slot"><i></i><span>лоток</span></div>
+        </div>
+      </div>
+      <div class="cl-side pnl">
+        <div class="cl-inv" id="clInv"></div>
+        <h3>Статистика автомата</h3>
+        <div class="cl-stats" id="clStats"></div>
+        <h3>Как устроено</h3>
+        <ul class="cl-rules">
+          <li><b>Сила хвата</b> зависит от того, насколько точно клешня встала над боксом. По центру держит почти всегда, краем в основном роняет.</li>
+          <li><b>Проскальзывание</b> проверяется на подъёме и по пути к лотку, как в настоящих автоматах.</li>
+          <li><b>Золотой бокс</b> встречается примерно один на двенадцать и даёт три бокса.</li>
+          <li>Если в стекле кончатся боксы, автомат досыплет новых.</li>
+        </ul>
+        <div class="cl-log" id="clLog"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="lb-tape rev" aria-hidden="true"><div class="tp a"><div class="tp-run" data-tape="c"></div></div><div class="tp b"><div class="tp-run" data-tape="d"></div></div></div>
+
+  <!-- ============ КОЛЛЕКЦИЯ ============ -->
+  <section class="lb-sec" id="collection" data-bg="COLLECT">
+    <header class="lb-head reveal"><span class="lb-n">06.3</span><h2>Коллекция</h2><span class="lb-q" id="colQ">0 / 26</span></header>
+    <div class="col-top reveal">
+      <div class="col-prog"><i id="colBar"></i><span id="colTxt"></span></div>
+      <div class="col-tabs" id="colTabs" role="tablist"></div>
+    </div>
+    <div class="col-grid reveal" id="colGrid"></div>
+  </section>
+
+  <!-- ============ ФЬЮЖН ============ -->
+  <section class="lb-sec" id="fusion" data-bg="FUSION">
+    <header class="lb-head reveal"><span class="lb-n">06.4</span><h2>Фьюжн</h2><span class="lb-q">9 → 1</span></header>
+    <p class="lb-p reveal">Добавлен в финальном апдейте. Кладёшь в верстак девять фигурок <b>одной редкости</b> (любых, хоть все разные) и забираешь одну случайную фигурку <b>следующей</b> редкости. Легендарные дальше не сплавляются. Фигурки берутся из твоей коллекции: кликни по фигурке внизу, чтобы положить её в сетку, по слоту сетки, чтобы убрать.</p>
+    <div class="fu-grid reveal">
+      <div class="fu-left pnl">
+        <div class="fu-gui-wrap"><div class="fu-gui" id="fuGui"></div></div>
+        <div class="fu-inv-h"><b>Твои фигурки</b><span id="fuInvN"></span>
+          <div class="fu-fill" id="fuFill"></div>
+        </div>
+        <div class="fu-inv" id="fuInv"></div>
+      </div>
+      <div class="fu-right pnl">
+        <h3>Лестница редкостей</h3>
+        <div class="fu-ladder" id="fuLadder"></div>
+        <h3>Сколько боксов до…</h3>
+        <div class="fu-calc" id="fuCalc"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ АУРЫ ============ -->
+  <section class="lb-sec" id="auras" data-bg="AURA">
+    <header class="lb-head reveal"><span class="lb-n">06.5</span><h2>Ауры</h2><span class="lb-q">радиус 6 · каждые 2 тика</span></header>
+    <p class="lb-p reveal">Раз в 2 тика мод ищет поставленные фигурки в кубе вокруг игрока: 6 блоков в каждую сторону, то есть 13×13×13. Это куб, а не шар, поэтому углы тоже считаются. Исключения: у Лабубу-анонимуса радиус 3, у Будды Лабубу 8. Чем больше одинаковых фигурок в зоне, тем сильнее эффект. Расставь фигурки на карте (вид сверху) и посмотри, что получит игрок. Игрока можно таскать.</p>
+    <div class="au-grid reveal">
+      <div class="au-map pnl">
+        <div class="au-tools">
+          <div class="au-pal" id="auPal"></div>
+        </div>
+        <div class="au-field-wrap" id="auWrap"><canvas id="auCv"></canvas><div class="au-fx" id="auFx"></div></div>
+        <div class="au-opts">
+          <button type="button" class="lb-chip" id="auNight" aria-pressed="false">☀ день</button>
+          <button type="button" class="lb-chip" id="auSneak" aria-pressed="false">присед: нет</button>
+          <button type="button" class="lb-chip" id="auQuran" aria-pressed="false">Коран в руке: нет</button>
+          <button type="button" class="lb-chip" id="auFill">случайно</button>
+          <button type="button" class="lb-chip" id="auClear">очистить</button>
+        </div>
+      </div>
+      <div class="au-side pnl">
+        <div class="au-sum" id="auSum"></div>
+        <div class="au-list" id="auList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ДОСТИЖЕНИЯ ============ -->
+  <section class="lb-sec" id="adv" data-bg="ADV">
+    <header class="lb-head reveal"><span class="lb-n">06.6</span><h2>Достижения</h2><span class="lb-q" id="advQ">210 XP</span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 0</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ ХРОНОЛОГИЯ ============ -->
+  <section class="lb-sec" id="history" data-bg="LOG">
+    <header class="lb-head reveal"><span class="lb-n">06.7</span><h2>Хронология</h2><span class="lb-q">5 версий</span></header>
+    <div class="hi-feed reveal" id="timeline"></div>
+  </section>
+
+  <div class="lb-tape rev" aria-hidden="true"><div class="tp a"><div class="tp-run" data-tape="a"></div></div><div class="tp b"><div class="tp-run" data-tape="b"></div></div></div>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="lb-fin" id="finale">
+    <div class="lb-fin-row" id="finRow"></div>
+    <h2 class="lb-fin-h">Коробка пустая</h2>
+    <p class="lb-fin-p">Её не вернуть: бокс ломается в ту же секунду, как ты его открыл. Зато фигурка уже стоит на столе и что-то тебе даёт. Или нет, если выпал третий красный.</p>
+    <nav class="lb-fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<!-- ============ ОКНО РУЛЕТКИ (LabubuCaseScreen) ============ -->
+<div class="rl" id="rl" hidden>
+  <div class="rl-panel">
+    <div class="rl-title">LABUBU CASE</div>
+    <div class="rl-sub" id="rlSub">Открытие...</div>
+    <div class="rl-track" id="rlTrack"><div class="rl-strip" id="rlStrip"></div><div class="rl-line"></div><div class="rl-shine"></div></div>
+    <div class="rl-reveal" id="rlReveal"></div>
+    <div class="rl-btns"><button type="button" class="lb-btn" id="rlSkip">пропустить</button><button type="button" class="lb-btn hot" id="rlTake" hidden>Забрать</button><button type="button" class="lb-btn" id="rlAgain" hidden>Ещё бокс</button></div>
+  </div>
+</div>
+
+<!-- ============ ВИТРИНА ФИГУРКИ ============ -->
+<div class="vw" id="vw" hidden>
+  <div class="vw-panel" role="dialog" aria-modal="true" aria-labelledby="vwName">
+    <button type="button" class="vw-x" id="vwX" aria-label="Закрыть">×</button>
+    <div class="vw-stage" id="vwStage"><div class="vw-model" id="vwModel"></div><div class="lb-drag">↻ тяни</div></div>
+    <div class="vw-info" id="vwInfo"></div>
+  </div>
+</div>
+
+<button type="button" class="lb-snd on" id="sndBtn" aria-pressed="true" title="Звук"><i></i><span>звук</span></button>
+
+<script src="../../shared/points.js"></script>
+<script src="../../shared/core.js"></script>
+<script src="../../data/p06_labubu.js"></script>
+<script src="../../data/p06_models.js"></script>
+<script src="../../data/p06_tex.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

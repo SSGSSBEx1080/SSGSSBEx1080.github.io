@@ -1,0 +1,18 @@
+{
+  "parent": "zitraksmode:02_tnt_armor/repair_kit_craft",
+  "display": {
+    "icon": { "item": "minecraft:gunpowder" },
+    "title": "§e§lKILLER QUEEN",
+    "description": "§7Убей кого-то с помощью взрыва в ТНТ-броне. Низвёл до атомов.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "kill_by_explosion": {
+      "trigger": "zitraksmode:tnt_explosion_kill"
+    }
+  },
+  "rewards": { "experience": 20 }
+}

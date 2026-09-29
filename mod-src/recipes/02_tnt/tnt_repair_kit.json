@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I T",
+    " I ",
+    "P R"
+  ],
+  "key": {
+    "T": { "item": "minecraft:tnt" },
+    "I": { "item": "minecraft:iron_ingot" },
+    "P": { "item": "minecraft:gunpowder" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "item": "zitraksmode:tnt_repair_kit",
+    "count": 1
+  }
+}

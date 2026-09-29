@@ -1,0 +1,21 @@
+{
+  "parent": "zitraksmode:06_labubu/common_drop",
+  "display": {
+    "icon": { "item": "zitraksmode:labubu_russian" },
+    "title": "§a§lЭпическая удача",
+    "description": "§7Тебе выпал Эпик! Вот это уже нормалдаки",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "get_epic": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "tag": "zitraksmode:labubu_epic" }]
+      }
+    }
+  },
+  "rewards": { "experience": 15 }
+}

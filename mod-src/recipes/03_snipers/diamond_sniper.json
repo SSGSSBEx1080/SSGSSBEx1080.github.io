@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ddd",
+    "dgd",
+    "ddd"
+  ],
+  "key": {
+    "d": { "item": "minecraft:diamond_block" },
+    "g": { "item": "zitraksmode:golden_sniper" }
+  },
+  "result": {
+    "item": "zitraksmode:diamond_sniper",
+    "count": 1
+  }
+}

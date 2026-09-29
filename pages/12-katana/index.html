@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№12 · Катана — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №12 мода ZitraksMode: катана. Комбо без повторов, парирование в стиле Sekiro и ульта «Мировой разрез», которая режет землю на 35 блоков.">
+<meta name="theme-color" content="#07060c">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- фон целиком кодом: луна, горы, лепестки, туман -->
+<canvas class="kt-bg" id="bg" aria-hidden="true"></canvas>
+<canvas class="kt-pagefx" id="pageFx" aria-hidden="true"></canvas>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="kt-hero" id="hero">
+    <div class="kt-kanji" aria-hidden="true">刀</div>
+    <div class="kt-hero-txt">
+      <div class="kt-tag"><span>№12</span><i></i>20.04.2026<i></i><span class="id">zitraksmode:katana</span></div>
+      <h1 class="kt-title"><span class="kt-t1">Катана</span></h1>
+      <p class="kt-sub">Три удара, которые никогда не повторяются подряд. Парирование, после которого враг получает свой же урон. И ульта, от которой в горе остаётся тоннель на 35 блоков.</p>
+      <div class="kt-cta">
+        <a class="kt-btn" href="#stance"><span>型</span>В стойку</a>
+        <a class="kt-btn2" href="#ult">Мировой разрез</a>
+      </div>
+      <div class="kt-stats">
+        <a href="#adv"><b id="stGot">0/4</b><span>ачивки</span></a>
+        <a href="#ult"><b>25</b><span>урон ульты</span></a>
+        <a href="#ult"><b>35</b><span>блоков вперёд</span></a>
+      </div>
+    </div>
+    <div class="kt-stage">
+      <div class="kt-moonring" aria-hidden="true"></div>
+      <canvas class="kt-3d" id="hero3d" aria-label="3D-модель катаны: тяни мышью"></canvas>
+      <canvas class="fx12" id="heroFx" aria-hidden="true"></canvas>
+      <div class="khud-chip" id="heroHud"></div>
+      <div class="kt-taphint">тяни — крутить · клик — разрез</div>
+    </div>
+    <a class="kt-scroll" href="#stance" aria-label="Вниз"><i></i></a>
+  </section>
+
+  <!-- ============ I · СТОЙКА ============ -->
+  <section class="sec" id="stance">
+    <header class="sec-head reveal"><span class="sec-n">型</span><div class="sec-t"><span class="sec-k">I · GeckoLib</span><h2>Стойка</h2></div><span class="sec-q">ЛКМ · ПКМ · Shift + ПКМ</span></header>
+    <p class="sec-p reveal">Модель прямо из мода: катана и две руки, семь анимаций. Жми мышью по сцене как в игре. ЛКМ берёт случайный удар, но никогда тот же, что был только что. Shift + ПКМ держишь секунду и отпускаешь.</p>
+    <div class="st-wrap reveal">
+      <div class="st-view" id="stView" tabindex="0">
+        <canvas class="st-3d" id="rig3d"></canvas>
+        <canvas class="st-trail" id="trail"></canvas>
+        <canvas class="fx12" id="stFx" aria-hidden="true"></canvas>
+        <div class="st-enso" aria-hidden="true"></div>
+        <div class="st-anim" id="stAnim">idle</div>
+        <div class="st-charge" id="stCharge"><i></i></div>
+        <div class="khud" id="stHud"></div>
+        <div class="st-hint" id="stHint">ЛКМ удар · ПКМ парирование · Shift + ПКМ ульта</div>
+      </div>
+      <div class="st-side">
+        <div class="st-pads">
+          <button type="button" class="pad" id="pLmb" data-nosfx><b>ЛКМ</b><span>удар</span></button>
+          <button type="button" class="pad" id="pRmb" data-nosfx><b>ПКМ</b><span>парирование</span></button>
+          <button type="button" class="pad wide" id="pUlt" data-nosfx><b>Shift + ПКМ</b><span>держи 1 с и отпусти</span></button>
+        </div>
+        <div class="st-list" id="stList"></div>
+        <div class="st-log" id="stLog" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ II · ПАРИРОВАНИЕ ============ -->
+  <section class="sec" id="parry">
+    <header class="sec-head reveal"><span class="sec-n">弾</span><div class="sec-t"><span class="sec-k">II · KatanaParryHandler</span><h2>Парирование</h2></div><span class="sec-q" id="prQ">ПКМ / пробел</span></header>
+    <p class="sec-p reveal">Враг замахивается, скелет натягивает лук, крипер шипит. Жми в момент удара. Поймал: урон отменён, вокруг вспыхивает кольцо искр, а атакующий получает столько же, сколько хотел нанести тебе. Скелета можно убить его же стрелами.</p>
+    <div class="pr-wrap reveal">
+      <div class="pr-view" id="prView" tabindex="0">
+        <canvas id="prCv"></canvas>
+        <canvas class="fx12" id="prFx" aria-hidden="true"></canvas>
+        <div class="pr-dead" id="prDead" hidden><b>Ты умер!</b><span id="prDeadWhy"></span><button type="button" class="mcbtn" id="prRespawn">Возродиться</button></div>
+      </div>
+      <div class="pr-ctl">
+        <div class="pr-row">
+          <button type="button" class="chip" data-spawn="zombie"><img src="../../assets/textures/p12/rotten_flesh.png" alt="">Зомби</button>
+          <button type="button" class="chip" data-spawn="skeleton"><img src="../../assets/textures/p12/bone.png" alt="">Скелет</button>
+          <button type="button" class="chip" data-spawn="creeper"><img src="../../assets/textures/p12/gunpowder.png" alt="">Крипер</button>
+          <button type="button" class="chip" data-spawn="fall"><img src="../../assets/textures/p12/feather.png" alt="">Прыжок с 5 блоков</button>
+          <label class="chip tog"><input type="checkbox" id="prAuto">Волны сами</label>
+        </div>
+        <div class="pr-stat" id="prStat"></div>
+        <button type="button" class="kt-parry-btn" id="prBtn" data-nosfx>Парировать</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ III · МИРОВОЙ РАЗРЕЗ ============ -->
+  <section class="sec" id="ult">
+    <header class="sec-head reveal"><span class="sec-n">斬</span><div class="sec-t"><span class="sec-k">III · VerticalSlashEntity</span><h2>Мировой разрез</h2></div><span class="sec-q">35 блоков · 25 урона</span></header>
+    <p class="sec-p reveal">Вертикальная дуга 10 блоков в высоту и 3 в ширину летит по взгляду 4,5 блока за тик, пока не пройдёт 35. Всё, что мягче обсидиана, режется. Обычный блок падает с шансом 50%, как будто его сломали незеритовой киркой. Хранилища и важные блоки падают всегда. Моб в дуге получает 25 урона. Каждый разрез стоит катане 67 прочности, так что с почти сломанной катаной ульта не сработает.</p>
+    <div class="ul-wrap reveal">
+      <div class="ul-view" id="ulView" tabindex="0">
+        <div class="ul-scroll"><canvas id="ulCv"></canvas></div>
+        <div class="khud" id="ulHud"></div>
+        <div class="ul-charge" id="ulCharge"><i></i><span>замах</span></div>
+      </div>
+      <div class="ul-ctl">
+        <div class="ul-box lvbox">
+          <div class="lbl12"><img class="lv-book" src="../../assets/textures/p12/enchanted_book.png" alt="">Мировой разрез</div>
+          <input type="range" id="ws" min="0" max="5" step="1" value="0" hidden>
+          <div class="lv12" id="lvPick" role="radiogroup" aria-label="Уровень зачарования"></div>
+          <div class="lv-read" id="wsQ"></div>
+        </div>
+        <div class="ul-box">
+          <label class="tog2"><input type="checkbox" id="mi"><span></span><b>Mining Industry</b></label>
+          <div class="ul-q">Руды падают всегда, как с незеритовой кирки, плюс опыт. Остальной мусор исчезает молча, без дропа и без крошек.</div>
+        </div>
+        <div class="ul-box">
+          <div class="lbl12">Взгляд <span class="gr12" id="pitchLbl">0°</span></div>
+          <input type="range" id="pitch" min="-35" max="35" step="1" value="0" aria-label="Наклон взгляда">
+          <label class="tog2 sm"><input type="checkbox" id="slow" checked><span></span><b>Замедление ×10</b></label>
+        </div>
+        <div class="ul-btns">
+          <button type="button" class="kt-parry-btn" id="ulBtn" data-nosfx>Зажми: замах</button>
+          <button type="button" class="btn-ghost" id="ulReset">↺ новая гора</button>
+        </div>
+      </div>
+    </div>
+    <div class="ul-drops reveal">
+      <div class="lbl12">Что выпало <span class="gr12" id="dropSum"></span></div>
+      <div class="ul-grid" id="dropGrid"></div>
+    </div>
+    <div class="ench12 reveal" id="ench">
+      <div class="ench-head"><span class="ench-k">付</span><div><b>Зачарования катаны</b><span>Энчант-апдейт · v1.1.0 · 18.07.2026</span></div></div>
+      <div class="ench-grid" id="enchGrid"></div>
+    </div>
+    <div class="rules12 reveal" id="ruGrid"></div>
+  </section>
+
+  <!-- ============ IV · КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">鍛</span><div class="sec-t"><span class="sec-k">IV · crafting_shaped</span><h2>Крафт</h2></div><span class="sec-q">стак 1</span></header>
+    <p class="sec-p reveal">Железный меч в угол, два щита, два слитка по диагонали. Клинок куётся из меча, щиты уходят на гарду.</p>
+    <div class="crf reveal">
+      <div class="cg12" id="craftGrid"></div>
+      <div class="crf-side">
+        <div class="crf-msg" id="craftMsg"></div>
+        <div class="crf-inv"><span>В инвентаре:</span><span class="inv9" id="inv9"></span><button type="button" class="btn-ghost" id="creativeTake">взять из креатива</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ V · ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">誉</span><div class="sec-t"><span class="sec-k">V · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <p class="sec-p reveal">Скрытые, как в игре: пока не получишь, не видно, что это. Все четыре можно взять прямо на этой странице.</p>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 0</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ VI · ИСТОРИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal"><span class="sec-n">史</span><div class="sec-t"><span class="sec-k">VI · changelog</span><h2>История</h2></div></header>
+    <div class="timeline reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <canvas class="fx12" id="finFx" aria-hidden="true"></canvas>
+    <button type="button" class="fin-cut" id="finCut" data-nosfx aria-label="Разрезать">
+      <span class="fc a">Путь клинка</span><span class="fc b" aria-hidden="true">Путь клинка</span><i class="fc-line"></i>
+    </button>
+    <p class="fin-p">Жми по надписи.</p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<div class="mc-chat" id="chat" aria-live="polite"></div>
+<button type="button" class="sndbtn" id="sndBtn" aria-pressed="true" data-nosfx><i></i><span>звук</span></button>
+
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/geo3d.js"></script>
+<script src="../../data/p12_katana.js"></script>
+<script src="../../data/p12_geo.js"></script>
+<script src="../../data/p12_tex.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

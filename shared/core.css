@@ -1,0 +1,186 @@
+/* =====================================================================
+   ZitraksMode Wiki · shared/core.css
+   Общая база для всех страниц: шрифты, сброс, верхняя панель,
+   Minecraft-тосты, 3D-куб блока. Стиль конкретной страницы живёт
+   в её собственном style.css.
+   ===================================================================== */
+@font-face{font-family:'JetBrains Mono';font-weight:400;font-display:swap;src:url(../assets/fonts/JetBrainsMono-400-cyrillic.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}
+@font-face{font-family:'JetBrains Mono';font-weight:400;font-display:swap;src:url(../assets/fonts/JetBrainsMono-400-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family:'JetBrains Mono';font-weight:700;font-display:swap;src:url(../assets/fonts/JetBrainsMono-700-cyrillic.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}
+@font-face{font-family:'JetBrains Mono';font-weight:700;font-display:swap;src:url(../assets/fonts/JetBrainsMono-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family:'Unbounded';font-weight:500;font-display:swap;src:url(../assets/fonts/Unbounded-500-cyrillic.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}
+@font-face{font-family:'Unbounded';font-weight:500;font-display:swap;src:url(../assets/fonts/Unbounded-500-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family:'Unbounded';font-weight:700;font-display:swap;src:url(../assets/fonts/Unbounded-700-cyrillic.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}
+@font-face{font-family:'Unbounded';font-weight:700;font-display:swap;src:url(../assets/fonts/Unbounded-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family:'Unbounded';font-weight:900;font-display:swap;src:url(../assets/fonts/Unbounded-900-cyrillic.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}
+@font-face{font-family:'Unbounded';font-weight:900;font-display:swap;src:url(../assets/fonts/Unbounded-900-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+@font-face{font-family:'Tiny5';font-weight:400;font-display:swap;src:url(../assets/fonts/Tiny5-400-cyrillic.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}
+@font-face{font-family:'Tiny5';font-weight:400;font-display:swap;src:url(../assets/fonts/Tiny5-400-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
+
+:root{
+  --f-head:'Unbounded',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+  --f-pixel:'Tiny5','JetBrains Mono',monospace;
+  --ease-out:cubic-bezier(.2,.8,.2,1);
+  --topbar-h:56px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{font-family:var(--f-mono);line-height:1.55;min-height:100vh;overflow-x:hidden}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+.pixel{image-rendering:pixelated;image-rendering:crisp-edges}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Верхняя панель ---------- */
+.zm-topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);z-index:90;display:flex;align-items:center;gap:14px;padding:0 20px;
+  background:var(--topbar-bg,rgba(8,8,10,.72));backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);
+  border-bottom:1px solid var(--topbar-line,rgba(255,255,255,.08));color:var(--topbar-fg,#fff)}
+.zm-topbar .zm-home{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--f-head);font-weight:900;letter-spacing:.12em;font-size:13px}
+.zm-topbar .zm-home i{font-style:normal;opacity:.5;font-weight:500;transition:transform .3s var(--ease-out)}
+.zm-topbar .zm-home:hover i{transform:translateX(-4px);opacity:1}
+.zm-topbar .zm-sep{opacity:.25}
+.zm-topbar .zm-crumb{font-size:12px;letter-spacing:.08em;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zm-topbar .zm-nav{margin-left:auto;display:flex;gap:6px}
+.zm-topbar .zm-nav a{font-size:12px;text-decoration:none;padding:7px 11px;border:1px solid var(--topbar-line,rgba(255,255,255,.12));border-radius:8px;opacity:.8;transition:.2s;white-space:nowrap}
+.zm-topbar .zm-nav a:hover{opacity:1;background:rgba(255,255,255,.06)}
+.zm-topbar .zm-nav a.off{display:none}
+.zm-topbar .zm-short{display:none}
+.zm-topbar .zm-me{display:flex;align-items:center;gap:8px;flex:none;text-decoration:none;padding:4px 10px 4px 4px;border:1px solid var(--topbar-line,rgba(255,255,255,.12));border-radius:9px;font-size:12px;transition:.2s}
+.zm-topbar .zm-nav+.zm-me{margin-left:0}
+.zm-topbar .zm-me:hover{background:rgba(255,255,255,.06)}
+.zm-topbar .zm-me img{width:26px;height:26px;image-rendering:pixelated;border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.6);object-fit:contain;background:rgba(0,0,0,.25)}
+.zm-topbar .zm-me-n{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zm-topbar .zm-me b{font-family:var(--f-pixel);font-weight:400;color:#ffd84a}
+@media(max-width:640px){.zm-topbar{padding:0 12px;gap:8px}.zm-topbar .zm-full{display:none}.zm-topbar .zm-short{display:inline}
+  .zm-topbar .zm-crumb{font-size:11px;min-width:0}.zm-topbar .zm-me-n{display:none}.zm-topbar .zm-me{padding:3px 7px 3px 3px}.zm-topbar .zm-nav a{padding:6px 9px;font-size:11px}}
+
+/* ---------- Minecraft-тост достижения (ванильная текстура toasts.png) ---------- */
+.mc-toasts{position:fixed;top:calc(var(--topbar-h) + 12px);right:12px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.mc-toast{width:320px;height:64px;display:flex;align-items:center;gap:14px;padding:0 14px 0 16px;
+  background:url(../assets/textures/mc/ui/toast.png) center/100% 100% no-repeat;image-rendering:pixelated;
+  font-family:var(--f-pixel);color:#fff;transform:translateX(130%);transition:transform .5s var(--ease-out);filter:drop-shadow(0 8px 20px rgba(0,0,0,.6))}
+.mc-toast.show{transform:none}
+.mc-toast .mt-ico{width:32px;height:32px;flex:none;display:grid;place-items:center}
+.mc-toast .mt-ico img{width:32px;height:32px}
+.mc-toast .mt-head{font-size:14px;color:#ffff55;line-height:1.1}
+.mc-toast.challenge .mt-head{color:#ff55ff}
+.mc-toast .mt-title{font-size:15px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+
+/* Рамки достижений: ванильные спрайты из gui/advancements/widgets.png */
+.adv-frame{position:absolute;inset:0;background:url(../assets/textures/mc/ui/frame_task_done.png) center/100% 100% no-repeat;image-rendering:pixelated}
+.adv-frame.challenge{background-image:url(../assets/textures/mc/ui/frame_challenge_done.png)}
+.adv-frame.goal{background-image:url(../assets/textures/mc/ui/frame_goal_done.png)}
+.adv-frame.locked{background-image:url(../assets/textures/mc/ui/frame_task_todo.png)}
+.adv-frame.challenge.locked{background-image:url(../assets/textures/mc/ui/frame_challenge_todo.png)}
+.adv-frame.goal.locked{background-image:url(../assets/textures/mc/ui/frame_goal_todo.png)}
+
+/* Предмет-блок в инвентаре: изометрический кубик, как в GUI Minecraft */
+.inv-block{width:100%;height:100%;display:grid;place-items:center;perspective:none}
+.inv-block .mc-cube{transform:rotateX(-30deg) rotateY(45deg)}
+
+/* Тултип предмета как в игре */
+.mc-tip{position:fixed;z-index:300;pointer-events:none;padding:5px 8px 6px;background:rgba(16,0,16,.94);border:2px solid #25015b;outline:2px solid #100010;
+  font-family:var(--f-pixel);font-size:15px;color:#fff;line-height:1.25;white-space:nowrap;opacity:0;transition:opacity .1s}
+.mc-tip small{display:block;color:#5555ff;font-size:13px}
+.mc-tip i{display:block;color:#aaa;font-style:normal;font-size:13px}
+
+/* Цвета § кодов Minecraft */
+.mc-dark_purple{color:#aa00aa}.mc-light_purple{color:#ff55ff}.mc-gold{color:#ffaa00}.mc-gray{color:#aaa}
+.mc-dark_gray{color:#555}.mc-red{color:#ff5555}.mc-green{color:#55ff55}.mc-aqua{color:#55ffff}.mc-yellow{color:#ffff55}
+.mc-blue{color:#5555ff}.mc-white{color:#fff}.mc-black{color:#000}.mc-bold{font-weight:700}
+
+/* ---------- 3D-куб блока (CSS 3D, работает без WebGL) ---------- */
+.mc-cube{--s:120px;width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d}
+.mc-cube .f{position:absolute;inset:0;background-size:100% 100%;image-rendering:pixelated;image-rendering:crisp-edges;backface-visibility:hidden;
+  transition:transform .9s var(--ease-out),opacity .4s}
+.mc-cube .f::after{content:"";position:absolute;inset:0;background:#000;opacity:var(--shade,0);pointer-events:none;transition:opacity .4s}
+/* Затенение граней как в самом Minecraft: верх 100%, север/юг 80%, запад/восток 60%, низ 50% */
+.mc-cube .f{--tx:0px;--ty:0px;--rx:0deg;--ry:0deg;--tz:calc(var(--s)/2);
+  transform:translate3d(var(--tx),var(--ty),0) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(var(--tz))}
+.mc-cube .f.s{--shade:.2}
+.mc-cube .f.n{--shade:.2;--ry:180deg}
+.mc-cube .f.e{--shade:.4;--ry:90deg}
+.mc-cube .f.w{--shade:.4;--ry:-90deg}
+.mc-cube .f.u{--shade:0;--rx:90deg}
+.mc-cube .f.d{--shade:.5;--rx:-90deg}
+
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+/* ====== Ветка достижений: общий компонент для всех пунктов (перенесено со страницы 01) ====== */
+.adv-board{border:2px solid #000;box-shadow:0 0 0 2px #3a3a3a;border-radius:4px;overflow:hidden;background:#0d0d0d}
+.adv-scroll{overflow-x:auto;padding:50px 34px 40px;
+  background-color:#141414;background-image:linear-gradient(rgba(10,10,10,.9),rgba(10,10,10,.9)),var(--tile);background-size:auto,48px 48px;image-rendering:pixelated}
+.adv-chain{display:flex;align-items:center;min-width:max-content;width:fit-content;margin:0 auto}
+.adv-node{position:relative;width:52px;height:52px;display:grid;place-items:center;flex:none;cursor:pointer;transition:transform .2s}
+.adv-node:hover{transform:scale(1.1)}
+.adv-node.sel{transform:scale(1.15)}
+.adv-node.sel::after{content:"";position:absolute;inset:-7px;border:2px dashed #fff;animation:rot 6s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.adv-node .ic{position:relative;z-index:1;display:grid;place-items:center}
+.adv-node .q{position:relative;z-index:1;font-family:var(--f-pixel);color:#fff;font-size:22px;text-shadow:2px 2px 0 #3f3f3f}
+.adv-node.root{width:60px;height:60px}
+.adv-link{width:40px;height:6px;background:#000;position:relative;flex:none}
+.adv-link::after{content:"";position:absolute;inset:1.5px 0;background:#fff;opacity:.25;transition:opacity .4s}
+.adv-link.on::after{opacity:1}
+.adv-branch{display:flex;flex-direction:column;align-items:flex-start;flex:none;position:relative}
+.adv-node.pulse::before{content:"";position:absolute;inset:-8px;border:2px solid #fff;animation:ping 1s var(--ease-out) forwards;z-index:2}
+@keyframes ping{from{opacity:1;transform:scale(.8)}to{opacity:0;transform:scale(1.5)}}
+.adv-detail{display:flex;gap:16px;align-items:center;padding:16px 20px;border-top:2px solid #000;background:#101010;min-height:92px;flex-wrap:wrap}
+.adv-detail .big{width:60px;height:60px;position:relative;display:grid;place-items:center;flex:none}
+.adv-detail .big .ic{position:relative;z-index:1}
+.adv-detail .txt{flex:1;min-width:200px}
+.adv-detail .tt{font-family:var(--f-pixel);font-size:20px;line-height:1.2}
+.adv-detail .dd{color:#bbb;font-size:13px}
+.adv-detail .cc{color:#888;font-size:12px;margin-top:4px}
+.adv-detail .meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:12px;color:#888;margin-left:auto}
+.adv-detail .meta b{color:#7cfc00}
+.adv-detail .st{font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid #444;color:#aaa}
+.adv-detail .st.ok{background:#55ff55;color:#000;border-color:#55ff55;font-weight:700}
+.adv-foot{display:flex;align-items:center;gap:14px;padding:12px 16px;background:#0c0c0c;border-top:2px solid #000;font-size:12px;color:#aaa;flex-wrap:wrap}
+.adv-prog{flex:1;min-width:120px;height:8px;background:#222;border:1px solid #000}
+.adv-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#55ff55,#7cfc00);transition:width .6s var(--ease-out)}
+.btn-ghost{font-size:12px;color:#888;border:1px solid #333;padding:6px 10px;border-radius:6px;transition:.2s}
+.btn-ghost:hover{color:#fff;border-color:#777}
+.adv-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;margin-top:18px}
+.adv-row{display:flex;align-items:center;gap:12px;padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.6);cursor:pointer;transition:.2s;text-align:left;width:100%}
+.adv-row:hover{border-color:#777}
+.adv-row .fr{width:40px;height:40px;position:relative;display:grid;place-items:center;flex:none}
+.adv-row .fr .ic{position:relative;z-index:1}
+.adv-row .t{font-family:var(--f-pixel);font-size:15px;line-height:1.1}
+.adv-row .d{font-size:11.5px;color:#999}
+.adv-row .x{margin-left:auto;font-size:11px;color:#666;text-align:right;white-space:nowrap}
+.adv-row.has .x{color:#55ff55}
+.adv-row.secret{border-style:dashed}
+.adv-row.locked{cursor:default;border-style:dashed;opacity:.75}
+.adv-row.locked:hover{border-color:var(--line)}
+.adv-more{font-family:var(--f-pixel);color:#777;font-size:14px;white-space:nowrap;padding:0 4px}
+.adv-link:not(.on){opacity:.35}
+.adv-empty{font-size:13px;color:#999;text-align:center;line-height:1.6;padding:6px 20px;max-width:520px}
+.adv-detail .q{position:relative;z-index:1;font-family:var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #3f3f3f;font-size:22px}
+.adv-row .q{position:relative;z-index:1;font-family:var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #3f3f3f;font-size:22px}
+
+/* ---------- общая кнопка звука (если у страницы нет своей) ---------- */
+.zm-sfx{position:fixed;right:16px;bottom:16px;z-index:60;display:inline-flex;align-items:center;gap:8px;padding:9px 14px 9px 11px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);background:rgba(10,10,10,.72);color:#eee;font:600 12px/1 system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;backdrop-filter:blur(6px);transition:border-color .2s,opacity .2s}
+.zm-sfx:hover{border-color:rgba(255,255,255,.5)}
+.zm-sfx i{width:16px;height:14px;background:currentColor;-webkit-mask:linear-gradient(#000 0 0) 0 4px/5px 6px no-repeat,conic-gradient(from 225deg at 100% 50%,#000 90deg,transparent 0) 4px 0/7px 14px no-repeat;mask:linear-gradient(#000 0 0) 0 4px/5px 6px no-repeat,conic-gradient(from 225deg at 100% 50%,#000 90deg,transparent 0) 4px 0/7px 14px no-repeat;position:relative}
+.zm-sfx[aria-pressed="false"]{opacity:.6}
+.zm-sfx[aria-pressed="false"] span{text-decoration:line-through}
+@media (max-width:640px){.zm-sfx{bottom:auto;top:calc(var(--topbar-h,56px) + 10px);right:10px;padding:7px 11px 7px 9px;font-size:11px}}
+
+/* ---------- телефон: крупнее цели касания, компактная кнопка звука (ПК не затрагивается) ---------- */
+@media (max-width:640px){
+  .zm-topbar .zm-home{padding:12px 8px;margin:-12px -8px}
+  .zm-sfx,button#snd.snd,button#sndBtn.sndbtn,button#sndBtn.lb-snd{top:auto!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;right:10px!important;left:auto!important;width:42px;height:42px;padding:0!important;gap:0!important;justify-content:center;align-items:center;border-radius:50%!important;font-size:0!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .zm-sfx>span,button#snd.snd>.snd-txt,button#sndBtn>span{display:none}
+  .adv-chain:has(>.adv-empty){min-width:0!important;width:auto!important}
+  .adv-empty{white-space:normal!important;max-width:100%!important;padding:6px 10px}
+}
+@media (pointer:coarse){
+  #svNew,#autoAtk,#merAll,#rgCreative,#boxFast,#prAuto{width:20px;height:20px;flex:none}
+  label:has(>#svNew,>#autoAtk,>#merAll,>#rgCreative,>#boxFast,>#prAuto){min-height:34px;display:inline-flex;align-items:center;gap:8px}
+  input[type=range]:not(#blRange){min-height:30px}
+}

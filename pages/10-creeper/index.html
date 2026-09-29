@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№10 · Кастрация криперов — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №10 мода ZitraksMode: кастрация криперов. Ножницы по криперу, и он больше не взрывается. Яйца крипера, статуя, Супер-TNT силой 20 и вагонетка с ним.">
+<meta name="theme-color" content="#04100a">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- фон: кафель операционной, сетка монитора -->
+<div class="or-bg" aria-hidden="true"></div>
+<div class="flash10" id="flash" aria-hidden="true"></div>
+
+<main>
+  <!-- ============ HERO: операционная ============ -->
+  <section class="or-hero" id="hero">
+    <div class="or-photo" aria-hidden="true"></div>
+    <div class="or-lamp" aria-hidden="true"><i></i></div>
+    <div class="or-sign">
+      <div class="or-tag"><span>№10</span><i></i>23.02.2026<i></i><span class="ver">операционная</span></div>
+      <h1 class="or-title"><span>Кастрация</span><span>криперов</span></h1>
+      <p class="or-sub">Пациент на столе, ножницы в руке. Ткнёшь пальцем, и он зашипит: полторы секунды, чтобы успеть.</p>
+    </div>
+
+    <div class="or-room">
+      <div class="or-table" id="orTable">
+        <div class="or-drops" id="orDrops"></div>
+        <div class="or-creeper" id="orCreeper" title="Ткнуть · тянуть, чтобы покрутить">
+          <div class="cr3d" id="cr3d"></div>
+          <img id="crImg" class="cr2d" src="../../assets/textures/p10/creeper_front.png" alt="Крипер">
+        </div>
+        <div class="or-slab"></div>
+      </div>
+      <div class="or-monitor">
+        <div class="mon-top"><span id="monName">ПАЦИЕНТ: CREEPER</span><span class="mon-rec"><i></i>REC</span></div>
+        <canvas id="ecg" width="520" height="150" aria-label="Кардиограмма"></canvas>
+        <div class="mon-vitals">
+          <div><b id="vBpm">72</b><span>BPM</span></div>
+          <div id="vFuseBox"><b id="vFuse">3</b><span>сила взрыва</span></div>
+          <div><b id="vOps">0</b><span>операций</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="or-tools">
+      <div class="seg10" id="toolSeg" role="radiogroup" aria-label="Инструмент">
+        <button type="button" data-t="shears" class="on" data-tip="Ножницы" data-tip-sub="minecraft:shears"><img src="../../assets/textures/p10/shears.png" alt="">Ножницы</button>
+        <button type="button" data-t="knife" data-tip="Нож" data-tip-info="режет так же"><img src="../../assets/textures/p10/mod/knife.png" alt="">Нож</button>
+      </div>
+      <button type="button" class="btn-or" id="cutBtn" data-nosfx>Кастрировать</button>
+      <button type="button" class="btn-or2" id="boltBtn" data-nosfx title="Молния в крипера: станет заряженным">⚡ Молния</button>
+      <button type="button" class="btn-or2" id="nextBtn" data-nosfx>Новый пациент</button>
+    </div>
+    <div class="or-dur" id="orDur"></div>
+    <div class="or-stats">
+      <a href="#adv"><b id="stGot">0/8</b><span>ачивок</span></a>
+      <a href="#adv"><b id="stXp">0</b><span>из 140 XP</span></a>
+      <a href="#range"><b>20</b><span>сила Супер-TNT</span></a>
+      <a href="#history"><b>1.1.0</b><span>вагонетка</span></a>
+    </div>
+    <nav class="or-nav" aria-label="Разделы">
+      <a href="#surgery">Операция</a><a href="#eggs">Яйца</a><a href="#kitchen">Кухня</a><a href="#statue">Статуя</a><a href="#supertnt">Супер-TNT</a><a href="#range">Полигон</a><a href="#cart">Вагонетка</a><a href="#adv">Ачивки</a>
+    </nav>
+  </section>
+
+  <!-- ============ I · ПАЦИЕНТ ============ -->
+  <section class="sec" id="patient">
+    <header class="sec-head reveal"><span class="sec-n">I</span><div class="sec-t"><span class="sec-k">minecraft:creeper</span><h2>Пациент</h2></div><span class="sec-q">до и после</span></header>
+    <p class="sec-p reveal">Обычный ванильный крипер до стола. Тяни шторку и смотри, что с ним стало после.</p>
+    <div class="chart reveal">
+      <div class="ba" id="ba" aria-label="До и после">
+        <img src="../../assets/textures/p10/creeper_front.png" alt="До">
+        <div class="ba-after" id="baAfter"><img src="../../assets/textures/p10/casted_front.png" alt="После"></div>
+        <div class="ba-line" id="baLine"><i></i></div>
+        <span class="ba-l">до</span><span class="ba-r">после</span>
+      </div>
+      <div class="chart-body">
+        <div class="chart-grid" id="chartGrid"></div>
+        <div class="cmp" id="cmp"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ II · ОПЕРАЦИЯ ============ -->
+  <section class="sec" id="surgery">
+    <header class="sec-head reveal"><span class="sec-n">II</span><div class="sec-t"><span class="sec-k">протокол</span><h2>Операция</h2></div><span class="sec-q">ПКМ по криперу</span></header>
+    <p class="sec-p reveal">Весь протокол в четыре шага. Наркоза нет, ассистента тоже.</p>
+    <ol class="steps reveal" id="steps"></ol>
+    <div class="ch10 reveal">
+      <div class="ch-ic" id="chView"></div>
+      <div>
+        <b>Заряженный пациент</b>
+        <p>Крипер, в которого ударила молния, взрывается вдвое сильнее. Резать его страшнее, но с него падают <span class="aq10">Заряженные Яйца Крипера</span>, а без них не собрать Супер-TNT.</p>
+      </div>
+      <div class="ch-drop"><img src="../../assets/textures/p10/iso/charged_creeper_eggs.png" alt=""><span>1–2</span></div>
+    </div>
+  </section>
+
+  <!-- ============ III · ЯЙЦА ============ -->
+  <section class="sec" id="eggs">
+    <header class="sec-head reveal"><span class="sec-n">III</span><div class="sec-t"><span class="sec-k">food</span><h2>Яйца</h2></div><span class="sec-q">три вида</span></header>
+    <p class="sec-p reveal">Три предмета на одной модели. Крути мышкой. Съесть можно те, что лежат в хотбаре внизу экрана.</p>
+    <div class="egg-grid reveal" id="eggGrid"></div>
+  </section>
+
+  <!-- ============ IV · КУХНЯ ============ -->
+  <section class="sec" id="kitchen">
+    <header class="sec-head reveal"><span class="sec-n">IV</span><div class="sec-t"><span class="sec-k">smelting · smoking</span><h2>Кухня</h2></div><span class="sec-q">+0,35 опыта</span></header>
+    <p class="sec-p reveal">Сырые яйца жарятся в печи за 10 секунд, в коптильне вдвое быстрее. Уголь тут бесконечный.</p>
+    <div class="kitchen reveal">
+      <div class="pnl10 kit-l">
+        <div class="seg10" id="ovenSeg" role="radiogroup" aria-label="Печь">
+          <button type="button" data-o="furnace" class="on"><img src="../../assets/textures/p10/iso/furnace_on.png" alt="">Печь · 10 с</button>
+          <button type="button" data-o="smoker"><img src="../../assets/textures/p10/iso/smoker_on.png" alt="">Коптильня · 5 с</button>
+        </div>
+        <div class="oven" id="oven">
+          <span class="ov-t" id="ovenT">Печь</span>
+          <span class="ov-s in" id="ovIn" data-tip="Положить сырые яйца" data-tip-info="клик: из хотбара"></span>
+          <span class="ov-s fuel"><img src="../../assets/textures/p10/coal.png" alt=""><i>∞</i></span>
+          <span class="ov-flame" id="ovFlame"></span>
+          <span class="ov-arrow" id="ovArrow"></span>
+          <span class="ov-s out" id="ovOut" data-tip="Забрать" data-tip-info="клик"></span>
+        </div>
+        <div class="kit-ctl"><button type="button" class="btn-or2" id="ovLoad" data-nosfx>Положить все сырые</button><span id="ovMsg" class="kit-msg"></span></div>
+      </div>
+      <div class="pnl10 kit-r">
+        <div class="lbl10">Сытость за один предмет</div>
+        <div class="food-cmp" id="foodCmp"></div>
+        <p class="kit-note">Насыщение считается как еда × множитель × 2. Жареные яйца по сытости ровно как стейк.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ V · СТАТУЯ ============ -->
+  <section class="sec" id="statue">
+    <header class="sec-head reveal"><span class="sec-n">V</span><div class="sec-t"><span class="sec-k">zitraksmode:creeper_statue</span><h2>Статуя Крипера</h2></div><span class="sec-q">2 блока</span></header>
+    <p class="sec-p reveal">Крипер, который уже никогда не рванёт, потому что каменный. Смотрит туда, куда ставишь.</p>
+    <div class="statue reveal">
+      <div class="pnl10 st-view"><div class="v3d tall" id="stView"></div><span class="drag-hint">тяни, чтобы покрутить</span></div>
+      <div class="pnl10 st-info">
+        <div class="st-stats">
+          <div><b>2</b><span>блока в высоту</span></div>
+          <div><b>8×24</b><span>пикселей хитбокс</span></div>
+          <div><b>кирка</b><span>чтобы забрать</span></div>
+        </div>
+        <div class="lbl10">Сломать чем?</div>
+        <div class="seg10" id="brkSeg" role="radiogroup" aria-label="Инструмент">
+          <button type="button" data-b="pick" class="on"><img src="../../assets/textures/p10/iron_pickaxe.png" alt="">Кирка</button>
+          <button type="button" data-b="hand"><img src="../../assets/textures/p10/heart_full.png" alt="">Рукой</button>
+        </div>
+        <div class="st-scene" id="stScene"><canvas id="stCv" width="360" height="150"></canvas><div class="st-drop" id="stDrop"></div></div>
+        <div class="kit-ctl"><button type="button" class="btn-or2" id="stBreak" data-nosfx>Сломать</button><button type="button" class="btn-or" id="stPlace" data-nosfx>Поставить</button><span id="stMsg" class="kit-msg"></span></div>
+        <div class="lbl10" style="margin-top:16px">Рецепт: 9 сырых яиц</div><div class="cg10" id="stCraft"></div><div class="kit-msg" id="stCraftMsg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VI · СУПЕР-TNT ============ -->
+  <div class="storm10">
+  <section class="sec sec-storm" id="supertnt">
+    <header class="sec-head reveal"><span class="sec-n red">VI</span><div class="sec-t"><span class="sec-k">zitraksmode:super_tnt</span><h2>Супер-TNT</h2></div><span class="sec-q red">сила 20</span></header>
+    <p class="sec-p reveal">Восемь TNT вокруг заряженных яиц. Рвёт в пять раз сильнее обычного, потом сушит всю воду вокруг и зовёт десять молний.</p>
+    <div class="stnt reveal">
+      <div class="pnl10 stnt-view"><div class="v3d" id="tntView"></div><span class="drag-hint">тяни, чтобы покрутить</span></div>
+      <div class="pnl10 stnt-craft">
+        <div class="cg10" id="craftGrid"></div>
+        <div class="kit-msg" id="craftMsg"></div>
+        <div class="stnt-nums" id="tntNums"></div>
+      </div>
+    </div>
+    <div class="lbl10 reveal" style="margin-top:22px">Чем поджечь</div>
+    <div class="ign reveal" id="ignGrid"></div>
+  </section>
+
+  <!-- ============ VII · ПОЛИГОН ============ -->
+  <section class="sec sec-storm" id="range">
+    <header class="sec-head reveal"><span class="sec-n red">VII</span><div class="sec-t"><span class="sec-k">Explosion · LightningBolt</span><h2>Полигон</h2></div><span class="sec-q red" id="rangeQ">срез мира</span></header>
+    <p class="sec-p reveal">Разрез местности: озеро, деревья, мобы. Честные лучи ванильного взрыва, потом осушка и молнии, как в коде. Сравни с обычным TNT.</p>
+    <div class="pnl10 range reveal">
+      <canvas id="rangeCv" width="960" height="440" aria-label="Полигон"></canvas>
+      <div class="range-hud" id="rangeHud"></div>
+      <div class="range-ctl">
+        <div class="seg10" id="bombSeg" role="radiogroup" aria-label="Заряд">
+          <button type="button" data-k="tnt"><img src="../../assets/textures/p10/iso/tnt.png" alt="">TNT</button>
+          <button type="button" data-k="super" class="on"><img src="../../assets/textures/p10/iso/super_tnt.png" alt="">Супер-TNT</button>
+          <button type="button" data-k="cart"><img src="../../assets/textures/p10/mod/super_tnt_minecart.png" alt="">Вагонетка</button>
+        </div>
+        <div class="seg10" id="placeSeg" role="radiogroup" aria-label="Где">
+          <button type="button" data-p="land" class="on">на берегу</button>
+          <button type="button" data-p="water">на дне озера</button>
+        </div>
+        <label class="me10">Ты стоишь в <b id="meDv">60</b> бл. <input type="range" id="meD" min="6" max="78" value="60" aria-label="Расстояние до заряда"></label>
+        <button type="button" class="btn-or red" id="fireBtn" data-nosfx><img src="../../assets/textures/p10/flint_and_steel.png" alt="">Поджечь</button>
+        <button type="button" class="btn-or2" id="resetBtn" data-nosfx>↺ Мир</button>
+      </div>
+      <div class="range-out" id="rangeOut"></div>
+    </div>
+  </section>
+
+  <!-- ============ VIII · ВАГОНЕТКА ============ -->
+  <section class="sec sec-storm" id="cart">
+    <header class="sec-head reveal"><span class="sec-n red">VIII</span><div class="sec-t"><span class="sec-k">zitraksmode:super_tnt_minecart</span><h2>Вагонетка с Супер-TNT</h2></div><span class="sec-q">1.1.0 · стак 1</span></header>
+    <p class="sec-p reveal">Внутри едет целый блок Супер-TNT. Разгонишь сильнее, рванёт сильнее: к силе 20 прибавляется до двух за каждый блок скорости в тик.</p>
+    <div class="cartbox reveal">
+      <div class="pnl10 cart-ic"><img src="../../assets/textures/p10/mod/super_tnt_minecart.png" alt="Вагонетка с Супер-TNT"></div>
+      <div class="pnl10 cart-calc">
+        <div class="lbl10">Скорость в момент взрыва: <b id="cartV">0,4</b> бл/тик <span class="gr10" id="cartVs"></span></div>
+        <input type="range" id="cartSpd" min="0" max="60" value="4" aria-label="Скорость">
+        <div class="cart-pw"><div class="cart-bar"><i id="cartBar"></i><u id="cartBar2"></u></div><span id="cartPw"></span></div>
+        <p class="kit-note" id="cartNote"></p>
+        <div class="lbl10" style="margin-top:16px">Рецепт: Супер-TNT над вагонеткой</div><div class="cg10" id="cartCraft"></div><div class="kit-msg" id="cartCraftMsg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IX · КРЕАТИВ ============ -->
+  </div>
+  <section class="sec" id="creative">
+    <header class="sec-head reveal"><span class="sec-n">IX</span><div class="sec-t"><span class="sec-k">creative tab</span><h2>Креатив</h2></div><span class="sec-q">клик: взять</span></header>
+    <p class="sec-p reveal">Вкладка ZitraksMode, всё из этого пункта. Клик кладёт предмет в хотбар. Ачивки за «получить в инвентарь» засчитываются и отсюда, как в игре.</p>
+    <div class="ctab reveal">
+      <div class="ctab-head"><img src="../../assets/textures/p10/creeper_face.png" alt=""><span>ZitraksMode · №10</span></div>
+      <div class="ctab-grid" id="ctabGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ X · ПРАВИЛА ============ -->
+  <section class="sec" id="rules">
+    <header class="sec-head reveal"><span class="sec-n">X</span><div class="sec-t"><span class="sec-k">как это работает</span><h2>Правила</h2></div></header>
+    <div class="rules10 reveal" id="ruGrid"></div>
+  </section>
+
+  <!-- ============ XI · ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">XI</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <p class="sec-p reveal">Скрытые, как в игре: пока не получишь, не видно, что это. Вся ветка целиком живёт в общем древе мода на главной.</p>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 0</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ XII · ИСТОРИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal"><span class="sec-n">XII</span><div class="sec-t"><span class="sec-k">changelog</span><h2>История</h2></div></header>
+    <div class="timeline reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <div class="fin-cr" id="finCr" title="Ткнуть"><img src="../../assets/textures/p10/casted_front.png" alt=""></div>
+    <div class="fin-line" aria-hidden="true"></div>
+    <div class="fin-t">Ссссс…</div>
+    <p class="fin-p">Уже не страшно. Можно ткнуть.</p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<div class="hotbar10" id="hotbar" aria-label="Хотбар"></div>
+<div class="mc-chat" id="chat" aria-live="polite"></div>
+<button type="button" class="sndbtn" id="sndBtn" aria-pressed="true" data-nosfx><i></i><span>звук</span></button>
+
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="../../data/p10_creeper.js"></script>
+<script src="../../data/p10_models.js"></script>
+<script src="../../data/p10_tex.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

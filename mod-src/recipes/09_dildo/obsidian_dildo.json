@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" Q "," Q ","QQQ"],
+  "key": {"Q": {"item": "minecraft:obsidian"}},
+  "result": {"item": "zitraksmode:obsidian_dildo"}
+}

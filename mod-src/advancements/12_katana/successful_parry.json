@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:12_katana/use_ultimate",
+  "display": {
+    "icon": { "item": "minecraft:shield" },
+    "title": "§aSekiro: Shadows Die Twice",
+    "description": "§7Успешно спарируй что угодно.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "parry": { "trigger": "zitraksmode:katana_parry" }
+  },
+  "rewards": { "experience": 10 }
+}

@@ -1,0 +1,21 @@
+{
+  "parent": "zitraksmode:02_tnt_armor/leggings",
+  "display": {
+    "icon": { "item": "zitraksmode:tnt_boots" },
+    "title": "§fДрил для пидрил",
+    "description": "§7Дефолт асиксы с пойзона",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "get_boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": ["zitraksmode:tnt_boots"] }]
+      }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

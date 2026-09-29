@@ -1,0 +1,60 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"particle": "zitraksmode:item/labubu_box/texture1",
+		"texture1": "zitraksmode:item/labubu_box/texture1",
+		"texture2": "zitraksmode:item/labubu_box/texture2",
+		"texture3": "zitraksmode:item/labubu_box/texture3"
+	},
+	"elements": [
+		{
+			"from": [7.18351, 3.32263, 9.73224],
+			"to": [9.00905, 8.83063, 14.72799],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-3.47103, -6.63488, -3.13594]},
+			"faces": {
+				"north": {"uv": [0, 0, 3, 6], "texture": "#texture1"},
+				"east": {"uv": [0, 6, 2, 12], "texture": "#texture1"},
+				"south": {"uv": [4, 0, 7, 6], "texture": "#texture1"},
+				"west": {"uv": [2, 6, 4, 12], "texture": "#texture1"},
+				"up": {"uv": [7, 8, 4, 6], "texture": "#texture1"},
+				"down": {"uv": [11, 0, 8, 2], "texture": "#texture1"}
+			}
+		},
+		{
+			"from": [1.17581, 0.00346, 1.43431],
+			"to": [14.78441, 8.49871, 14.06416],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-3.47103, -6.63488, -3.13594]},
+			"faces": {
+				"north": {"uv": [5.5, 0, 10.75, 2.75], "texture": "#texture2"},
+				"east": {"uv": [5.5, 6, 8.75, 8.75], "texture": "#texture2"},
+				"south": {"uv": [5.5, 3, 10.75, 5.75], "texture": "#texture2"},
+				"west": {"uv": [0, 7, 3.25, 9.75], "texture": "#texture2"},
+				"up": {"uv": [5.25, 3.25, 0, 0], "texture": "#texture2"},
+				"down": {"uv": [5.25, 3.5, 0, 6.75], "texture": "#texture2"}
+			}
+		},
+		{
+			"from": [0.84389, 6.97371, 1.1024],
+			"to": [15.11632, 9.49446, 14.39607],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-3.47103, -6.63488, -3.13594]},
+			"faces": {
+				"north": {"uv": [5.5, 0, 11, 0.5], "texture": "#texture3"},
+				"east": {"uv": [5.5, 1, 9, 1.5], "texture": "#texture3"},
+				"south": {"uv": [5.5, 0.5, 11, 1], "texture": "#texture3"},
+				"west": {"uv": [5.5, 1.5, 9, 2], "texture": "#texture3"},
+				"up": {"uv": [5.5, 3.5, 0, 0], "texture": "#texture3"},
+				"down": {"uv": [5.5, 3.5, 0, 7], "texture": "#texture3"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "group",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1, 2]
+		}
+	]
+}

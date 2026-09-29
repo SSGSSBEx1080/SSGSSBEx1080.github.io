@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:10_creeper/place_creeper_statue",
+  "display": {
+    "icon": { "item": "zitraksmode:super_tnt" },
+    "title": "§c§lСупер-ТНТ",
+    "description": "§7Скрафти Супер-ТНТ. Мощнее не бывает. Опенгеймер в ахуе. Безопасная пиротехническая дистанция - 200 блоков. Смертельно.",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:super_tnt"] }] }
+    }
+  },
+  "rewards": { "experience": 50 }
+}

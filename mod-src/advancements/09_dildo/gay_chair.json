@@ -1,0 +1,18 @@
+{
+  "parent": "zitraksmode:09_dildo/craft_netherite",
+  "display": {
+    "icon": { "item": "minecraft:end_rod" },
+    "title": "§dГЕЙмерзкое кресло",
+    "description": "§7Когда пики точёные, а когда хуи дрочёные.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "sat_long": {
+      "trigger": "zitraksmode:dildo_sat_long"
+    }
+  },
+  "rewards": { "experience": 10 }
+}

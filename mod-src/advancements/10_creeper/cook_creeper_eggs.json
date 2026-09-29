@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:10_creeper/castrate_charged_creeper",
+  "display": {
+    "icon": { "item": "zitraksmode:cooked_creeper_eggs" },
+    "title": "§aЖареные яйца",
+    "description": "§7Приготовь яйца крипера в печи, попечи, подрочи, посоли, подожди, поеби, вскибиди.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "cook": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:cooked_creeper_eggs"] }] }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

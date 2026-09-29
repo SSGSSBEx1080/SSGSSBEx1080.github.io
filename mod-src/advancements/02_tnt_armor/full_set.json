@@ -1,0 +1,28 @@
+{
+  "parent": "zitraksmode:02_tnt_armor/boots",
+  "display": {
+    "icon": { "item": "zitraksmode:tnt_chestplate" },
+    "title": "§a§lПОЛНЫЙ СЕТ",
+    "description": "§7ТНТ-ARMOR, FULL SET!",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "wear_full_set": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "player": {
+          "equipment": {
+            "head": { "items": ["zitraksmode:tnt_helmet"] },
+            "chest": { "items": ["zitraksmode:tnt_chestplate"] },
+            "legs": { "items": ["zitraksmode:tnt_leggings"] },
+            "feet": { "items": ["zitraksmode:tnt_boots"] }
+          }
+        }
+      }
+    }
+  },
+  "rewards": { "experience": 15 }
+}

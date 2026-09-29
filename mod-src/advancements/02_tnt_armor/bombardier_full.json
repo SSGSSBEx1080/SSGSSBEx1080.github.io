@@ -1,0 +1,23 @@
+{
+  "parent": "zitraksmode:02_tnt_armor/explosion_kill",
+  "display": {
+    "icon": { 
+      "item": "zitraksmode:tnt_chestplate",
+      "nbt": "{Enchantments:[{id:\"zitraksmode:bombardier\",lvl:3s}]}"
+    },
+    "title": "§5§lБОМБАРДИР: МАКСИМУМ",
+    "description": "§7Весь сет зачарован на Бомбардир III. Ты — бог хаоса. Еби всё нахуй!",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "full_bombardier": {
+      "trigger": "zitraksmode:bombardier_set"
+    }
+  },
+  "rewards": { 
+    "experience": 50 
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:11_jbl/craft_jbl_speaker",
+  "display": {
+    "icon": { "item": "minecraft:note_block" },
+    "title": "§bМаксимальная громкость!",
+    "description": "§7Пизда басуха лупасит! Слушай трек на 100% громкости больше 15 секунд.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "listen": { "trigger": "zitraksmode:jbl_full_volume" }
+  },
+  "rewards": { "experience": 10 }
+}

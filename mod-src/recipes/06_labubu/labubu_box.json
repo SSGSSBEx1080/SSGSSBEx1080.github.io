@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SRS",
+    "GIB",
+    "bbb"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stone"
+    },
+    "R": {
+      "item": "minecraft:red_dye"
+    },
+    "G": {
+      "item": "minecraft:green_dye"
+    },
+    "I": {
+      "item": "minecraft:emerald"
+    },
+    "B": {
+      "item": "minecraft:blue_dye"
+    },
+    "b": {
+      "item": "minecraft:gold_block"
+    }
+  },
+  "result": {
+    "item": "zitraksmode:labubu_box",
+    "count": 1
+  }
+}

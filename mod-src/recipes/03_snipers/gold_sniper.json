@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ggg",
+    "gig",
+    "ggg"
+  ],
+  "key": {
+    "g": { "item": "minecraft:gold_block" },
+    "i": { "item": "zitraksmode:iron_sniper" }
+  },
+  "result": {
+    "item": "zitraksmode:golden_sniper",
+    "count": 1
+  }
+}

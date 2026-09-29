@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X#X",
+    "XXX",
+    "##X"
+  ],
+  "key": {
+    "#": { "item": "minecraft:quartz" },
+    "X": { "item": "minecraft:coal" }
+  },
+  "result": {
+    "item": "zitraksmode:four",
+    "count": 1
+  }
+}

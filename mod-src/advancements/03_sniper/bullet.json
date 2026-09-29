@@ -1,0 +1,23 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:bullet" },
+    "title": "§fПатрончик",
+    "description": "§7Начало пути снайпера. 1 оставь для себя.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true,
+    "x": 15,
+    "y": 30
+  },
+  "criteria": {
+    "get_bullet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": ["zitraksmode:bullet"] }]
+      }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

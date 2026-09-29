@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " L ",
+    " H ",
+    "   "
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lantern"
+    },
+    "H": {
+      "item": "minecraft:golden_helmet"
+    }
+  },
+  "result": {
+    "item": "zitraksmode:miner_helmet",
+    "count": 1
+  }
+}

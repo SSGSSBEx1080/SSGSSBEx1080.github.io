@@ -1,0 +1,13 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "pattern": [
+  "TCT",
+  "TTT",
+  "TTT"
+ ],
+ "key": {
+  "T": { "item": "minecraft:tnt" },
+  "C": { "item": "minecraft:iron_chestplate" }
+ },
+ "result": { "item": "zitraksmode:tnt_chestplate" }
+}

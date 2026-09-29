@@ -1,0 +1,21 @@
+{
+  "parent": "zitraksmode:02_tnt_armor/helmet",
+  "display": {
+    "icon": { "item": "zitraksmode:tnt_chestplate" },
+    "title": "§fРуки-дезоляторы",
+    "description": "§7Солдатик",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "get_chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": ["zitraksmode:tnt_chestplate"] }]
+      }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№05 · Житель-Даун — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №05 мода ZitraksMode: Житель-Даун. Житель без профессии, который продаёт землю за изумруды, ничему не учится и не исчезает. Лавка, спавн, звуки, яйцо призыва.">
+<meta name="theme-color" content="#120c07">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- фон: живой график курса DIRT/EMR -->
+<canvas id="chartCv" aria-hidden="true"></canvas>
+
+<!-- бегущая строка биржи -->
+<div class="tick" aria-hidden="true"><div class="tick-in" id="tick"></div></div>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-copy">
+      <div class="hero-tag"><b>ПУНКТ №05</b><span>добавлено 08.11.2025</span><span class="tk">ТИКЕР: ADUN</span></div>
+      <h1 class="hero-h"><span class="l1">ЖИТЕЛЬ</span><span class="l2">ДАУН</span></h1>
+      <p class="hero-p">Житель без профессии, который торгует землёй. Покупает её по <b>52 блока за изумруд</b>, продаёт по <b>изумруду за блок</b> и ничему не учится: уровень навсегда первый, опыта за сделки ноль. Зато не исчезает, не размножается и живёт по одному на 64 блока вокруг.</p>
+      <div class="hero-stats" id="heroStats"></div>
+      <p class="hero-hint"><span class="k">ЛКМ</span> по жителю: ударить · <span class="k">ПКМ</span> открыть лавку · тяни, чтобы повернуть</p>
+    </div>
+    <div class="hero-stage" id="heroStage">
+      <div class="hs-hp" id="hsHp" aria-label="Здоровье"></div>
+      <div class="hs-say" id="hsSay"></div>
+      <div class="hs-model" id="hsModel"></div>
+      <div class="hs-block" aria-hidden="true"><i class="t"></i><i class="f"></i></div>
+      <div class="hs-poof" id="hsPoof"></div>
+      <div class="hs-ph" id="hsPh" hidden>текстура временная: ванильный житель</div>
+      <div class="hs-kills" id="hsKills"></div>
+      <button type="button" class="hs-trade" id="hsTrade">⇄ торговать <small>ПКМ</small></button>
+    </div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <a class="hero-down" href="#dossier"><span>ТОРГИ ОТКРЫТЫ</span><i></i></a>
+  </section>
+
+  <!-- ============ ДОСЬЕ ============ -->
+  <section class="sec" id="dossier">
+    <header class="sec-head reveal"><span class="sec-n">05.1</span><h2>Досье</h2><span class="sec-q" id="q1"></span></header>
+    <div class="dos reveal">
+      <div class="dos-card pn" id="dosCard"></div>
+      <div class="dos-side">
+        <div class="pn dos-ai"><h3>Что у него в голове</h3><ol id="goals"></ol><p class="dos-note">Пять задач, и все мирные. Спать, работать, собираться у колокола и сплетничать, как обычные жители, он не умеет.</p></div>
+        <div class="pn dos-no"><h3>Чего с ним не будет</h3><div id="nope"></div></div>
+      </div>
+    </div>
+    <div class="jobs reveal pn">
+      <div class="jobs-h"><b>Рабочие места</b><span>ставь хоть все тринадцать: профессию он не возьмёт, код каждый тик сбрасывает его обратно в «без профессии»</span></div>
+      <div class="jobs-row" id="jobs"></div>
+    </div>
+  </section>
+
+  <!-- ============ ЛАВКА ============ -->
+  <section class="sec" id="shop">
+    <header class="sec-head reveal"><span class="sec-n">05.2</span><h2>Лавка</h2><span class="sec-q" id="q2"></span></header>
+    <p class="sec-p reveal">Настоящее окно торговли из игры. Выбери сделку слева, забери результат из правого слота. Сделка на изумруд кончается после трёх раз, а пополнять её негде: рабочего места у него нет. Полоска опыта наверху не сдвинется никогда.</p>
+    <div class="shop reveal">
+      <div class="gui-wrap" id="guiWrap"><div class="gui" id="gui"></div></div>
+      <div class="ledger pn" id="ledger"></div>
+    </div>
+  </section>
+
+  <!-- ============ СПАВН ============ -->
+  <section class="sec" id="spawn">
+    <header class="sec-head reveal"><span class="sec-n">05.3</span><h2>Где он берётся</h2><span class="sec-q" id="q3"></span></header>
+    <p class="sec-p reveal">Спавнится сам в любом биоме верхнего мира, по одному. Но у каждой попытки три фильтра: сначала бросок <b>1 из 10</b>, потом обычные правила спавна мобов, потом проверка, что в квадрате <b>±64 блока</b> нет другого Жителя-Дауна. Квадрат, а не круг: игра ищет соседей коробкой. Тыкни по карте, чтобы кинуть яйцо: яйцу фильтры не указ.</p>
+    <div class="sp reveal">
+      <div class="sp-map pn"><canvas id="spCv"></canvas><div class="sp-leg" id="spLeg"></div></div>
+      <div class="sp-side">
+        <div class="pn sp-funnel" id="spFunnel"></div>
+        <div class="sp-btns" id="spBtns"></div>
+        <div class="pn sp-bypass"><h3>Всегда можно</h3><div id="spBypass"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ЗВУКИ ============ -->
+  <section class="sec" id="sounds">
+    <header class="sec-head reveal"><span class="sec-n">05.4</span><h2>Голос</h2><span class="sec-q" id="q4"></span></header>
+    <p class="sec-p reveal">Четыре своих звука вместо ванильного «хм». Жми на карточку.</p>
+    <div class="snd reveal" id="snd"></div>
+  </section>
+
+  <!-- ============ ЯЙЦО ============ -->
+  <section class="sec" id="egg">
+    <header class="sec-head reveal"><span class="sec-n">05.5</span><h2>Яйцо призыва</h2><span class="sec-q" id="q5"></span></header>
+    <div class="egg reveal">
+      <div class="egg-stage pn" id="eggStage"><div class="egg-model" id="eggModel"></div><div class="hs-hint">↻ тяни</div></div>
+      <div class="egg-info pn" id="eggInfo"></div>
+    </div>
+  </section>
+
+  <!-- ============ ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">05.6</span><h2>Достижения</h2><span class="sec-q" id="q6"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 0</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ ХРОНОЛОГИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal"><span class="sec-n">05.7</span><h2>Хронология</h2><span class="sec-q" id="q7"></span></header>
+    <div class="tl5 reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <div class="fin-copy">
+      <div class="fin-board" id="finBoard"></div>
+      <h2 class="fin-h">Торги закрыты</h2>
+      <p class="fin-p">Он всё ещё стоит у твоего дома со скрещёнными руками и ждёт, что ты купишь землю.</p>
+      <nav class="fin-nav" id="finNav"></nav>
+    </div>
+  </section>
+</main>
+
+<button type="button" class="sndbtn" id="sndBtn" aria-pressed="true" title="Звук"><i></i><span>звук</span></button>
+
+<script src="../../shared/points.js"></script>
+<script src="../../shared/core.js"></script>
+<script src="../../data/p05_adun.js"></script>
+<script src="../../data/p05_models.js"></script>
+<script src="../../data/p05_tex.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

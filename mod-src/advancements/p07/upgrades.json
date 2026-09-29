@@ -1,0 +1,22 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:ender_safe" },
+    "title": "§b§lЭНДЕР-МАСТЕР",
+    "description": "§7Получи все 7 Эндер-предметов. Прогресс сохраняется навсегда.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "glass": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:reinforced_ender_glass"] }] } },
+    "furnace": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:ender_furnace"] }] } },
+    "safe": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:ender_safe"] }] } },
+    "door": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:ender_door"] }] } },
+    "trapdoor": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:ender_trapdoor"] }] } },
+    "button": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:ender_button"] }] } },
+    "plate": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:ender_pressure_plate"] }] } }
+  },
+  "rewards": { "experience": 50 }
+}

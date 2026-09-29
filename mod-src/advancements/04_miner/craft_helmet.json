@@ -1,0 +1,21 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:miner_helmet" },
+    "title": "§fЛучше чем факел.",
+    "description": "§7Разгрузка вагона с углём неграми ночью в шахте.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": ["zitraksmode:miner_helmet"] }]
+      }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

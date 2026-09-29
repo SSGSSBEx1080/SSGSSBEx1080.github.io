@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  I",
+    "HI ",
+    "SH "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "minecraft:iron_sword"
+    },
+    "H": {
+      "item": "minecraft:shield"
+    }
+  },
+  "result": {
+    "item": "zitraksmode:katana",
+    "count": 1
+  }
+}

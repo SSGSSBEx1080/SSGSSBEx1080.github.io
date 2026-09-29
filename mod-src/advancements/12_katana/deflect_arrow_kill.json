@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:12_katana/successful_parry",
+  "display": {
+    "icon": { "item": "minecraft:arrow" },
+    "title": "§c§lОтражённая Смерть",
+    "description": "§7Убей скелета его собственной отражённой стрелой.",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "deflect_kill": { "trigger": "zitraksmode:katana_deflect_arrow_kill" }
+  },
+  "rewards": { "experience": 50 }
+}

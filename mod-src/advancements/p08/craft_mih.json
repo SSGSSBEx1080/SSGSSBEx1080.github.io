@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:made_in_heaven" },
+    "title": "§fРецепт из дневника DIO.",
+    "description": "§7Rasen Kaidan… Kabutomushi! Haikyo no Machi! Ichijiku no Taruto! Kabutomushi… Dororōsa e no Michi! Kabutomushi! Tokuiten! Jotto! Tenshi! Ajisai! Kabutomushi! Tokuiten! Himitsu no Kōtei!",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:made_in_heaven"] }] }
+    }
+  },
+  "rewards": { "experience": 10 }
+}

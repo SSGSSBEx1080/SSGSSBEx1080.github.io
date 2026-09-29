@@ -1,0 +1,17 @@
+{
+  "display": {
+    "icon": { "item": "zitraksmode:one" },
+    "title": { "translate": "advancement.zitraksmode.root.title" },
+    "description": { "translate": "advancement.zitraksmode.root.description" },
+    "background": "zitraksmode:textures/gui/advancements/dynamic_bg.png",
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№02 · ТНТ-броня — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №02 мода ZitraksMode: ТНТ-броня со взрывной способностью, ремонтный ТНТ-набор и житель-подрывник.">
+<meta name="theme-color" content="#140c0a">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="embers" aria-hidden="true"></canvas>
+
+<!-- Фитиль: догорает по мере прокрутки страницы -->
+<div class="fuse" id="fuse" aria-hidden="true">
+  <div class="fuse-rope"></div>
+  <div class="fuse-ash" id="fuseAsh"></div>
+  <div class="fuse-spark" id="fuseSpark"><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+
+<button class="snd" id="snd" type="button" aria-pressed="true" title="Звук взрыва"><span class="snd-ico"></span><span class="snd-txt">звук</span></button>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-tag reveal"><b>ПУНКТ №02</b><span>добавлен 30.10.2025</span><span class="warn">ВЗРЫВООПАСНО</span></div>
+        <h1 class="tnt-label reveal" aria-label="ТНТ-броня">
+          <span class="tl-band"><span class="tl-t">ТНТ</span><span class="tl-dash">-</span><span class="tl-b">БРОНЯ</span></span>
+        </h1>
+        <p class="hero-sub reveal">Полный комплект из <b>четырёх</b> частей, собранный из железной брони и динамита. Каждый <b>полученный удар копит заряд</b>, а полная полоска по клавише <kbd>R</kbd> превращается во <b>взрыв</b> радиусом от 5 блоков. Чинится ремонтным ТНТ-набором за секунду. Продаёт её житель-<b>подрывник</b>.</p>
+        <div class="hero-stats reveal" id="heroStats"></div>
+        <nav class="hero-nav reveal" aria-label="Разделы страницы">
+          <a href="#set">Комплект</a><a href="#boom">Детонация</a><a href="#ench">Зачарования</a><a href="#craft">Крафт</a><a href="#kit">Ремкомплект</a><a href="#villager">Подрывник</a><a href="#adv">Ачивки</a>
+        </nav>
+      </div>
+
+      <!-- Разнесённый вид: при прокрутке детали собираются в комплект -->
+      <div class="xview reveal" id="xview" aria-label="Детали ТНТ-брони"></div>
+    </div>
+    <a class="scroll-cue" href="#set"><span>фитиль подожжён, листай</span><i></i></a>
+  </section>
+
+  <!-- ============ КОМПЛЕКТ ============ -->
+  <section class="sec" id="set">
+    <header class="sec-head reveal">
+      <span class="sec-n">02.1</span>
+      <h2>Комплект</h2>
+      <p><b>Нажимай на слоты</b>: надевай и снимай части, полоска брони пересчитается как в игре. Цифры взяты из <code>ModArmorMaterials.ZITRAKS</code>.</p>
+    </header>
+    <div class="set reveal">
+      <div class="mc-panel set-inv">
+        <div class="set-slots" id="setSlots"></div>
+        <div class="set-doll" id="setDoll"></div>
+        <div class="set-hud">
+          <div class="hud-row" id="setArmorBar" aria-label="Полоска брони"></div>
+          <div class="set-sum" id="setSum"></div>
+        </div>
+      </div>
+      <div class="set-info">
+        <div class="set-pieces" id="setPieces"></div>
+        <div class="set-props" id="setProps"></div>
+      </div>
+    </div>
+    <div class="cmp reveal">
+      <h3>ТНТ против ванили</h3>
+      <div class="cmp-tabs" id="cmpTabs" role="tablist"></div>
+      <div class="cmp-bars" id="cmpBars"></div>
+      <p class="cmp-note">Полный комплект. Прочность = сумма всех четырёх частей.</p>
+    </div>
+  </section>
+
+  <!-- ============ ДЕТОНАЦИЯ ============ -->
+  <section class="sec" id="boom">
+    <header class="sec-head reveal">
+      <span class="sec-n">02.2</span>
+      <h2>Детонация</h2>
+      <p>Энергия копится от <b>урона, который получаешь ты</b> (в полном комплекте). Зомби на полигоне сам лезет драться, а ещё можно подставиться под стрелу или крипера. Когда полоска заполнится, жми <kbd>R</kbd>: две секунды частиц, и взрыв сносит землю, камень и постройки. Всё посчитано по формулам из кода мода.</p>
+    </header>
+    <div class="det reveal">
+      <div class="scene" id="scene">
+        <canvas id="world" aria-label="Полигон: срез мира с блоками"></canvas>
+        <div class="sc-fx" id="fx"></div>
+        <div class="sc-flash" id="flash"></div>
+        <div class="sc-info" id="scInfo"></div>
+        <div class="sc-prompt" id="prompt">ЖМИ R</div>
+        <div class="sc-hint" id="scHint">получай урон</div>
+        <div class="hud">
+          <div class="charge" id="charge" role="progressbar" aria-label="Заряд ТНТ-брони" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="charge-fill" id="chargeFill"></div>
+          </div>
+          <div class="hud-top">
+            <div class="hud-row" id="hudHearts"></div>
+            <div class="hud-row" id="hudArmor"></div>
+          </div>
+          <div class="hotbar" id="hotbar"></div>
+        </div>
+      </div>
+      <div class="det-side">
+        <button class="big-btn" id="detBtn" type="button" disabled>
+          <span class="bb-top" id="detTop">КОПИ ЗАРЯД</span><span class="bb-pct" id="detPct">0%</span><span class="bb-key">R</span>
+        </button>
+        <div class="det-tools">
+          <button type="button" class="chip" id="hitBtn">⚔ ударить зомби</button>
+          <button type="button" class="chip" id="worldBtn">⟳ новый мир</button>
+        </div>
+        <div class="det-src" id="detSrc"></div>
+        <div class="det-dura" id="detDura"></div>
+        <ol class="det-steps">
+          <li><b>Получай урон в полном комплекте.</b> Энергия = урон × 2.5, но не меньше 2 и не больше 35 за удар. До 100.</li>
+          <li><b>Полоска на месте опыта.</b> 10 красных делений. Полная полоска = звук опыта и готовность.</li>
+          <li><b>Жми <kbd>R</kbd>.</b> 40 тиков (2 с): круг у ног, спираль вверх, опускающаяся пентаграмма. Потом бабах, а броня теряет 10% прочности.</li>
+        </ol>
+        <div class="det-snd">
+          <span class="ds-ico"></span>
+          <div><b>Звук:</b> «Crimson Moon», Бенимару из «Пламенной бригады пожарных».<br><button type="button" id="sndTest" class="link">▶ послушать</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ЗАЧАРОВАНИЯ ============ -->
+  <section class="sec" id="ench">
+    <header class="sec-head reveal">
+      <span class="sec-n">02.3</span>
+      <h2>Зачарования</h2>
+      <p>На ТНТ-броню есть ровно <b>два</b> своих зачарования, и тянут они в разные стороны: <b>Бомбардир</b> раздувает радиус, <b>Миротворец</b> гасит разрушения. По коду они <b>работают одновременно</b>, если надеть оба. Всё, что выставишь здесь, сразу применяется к взрыву на полигоне выше.</p>
+    </header>
+    <div class="ench reveal">
+      <div class="ench-tabs" role="tablist" id="enchTabs">
+        <button type="button" role="tab" data-m="bomb" aria-selected="true"><span class="et-book"></span><span><b>Бомбардир</b><small>I–III · на каждую часть</small></span></button>
+        <button type="button" role="tab" data-m="peace" aria-selected="false"><span class="et-book peace"></span><span><b>Миротворец</b><small>I–III · считается лучший уровень</small></span></button>
+      </div>
+      <div class="ench-body" id="enchBody"></div>
+    </div>
+  </section>
+
+  <!-- ============ КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal">
+      <span class="sec-n">02.4</span>
+      <h2>Крафт и починка</h2>
+      <p>Каждая часть собирается из <b>железной</b> части и <b>ТНТ</b> вокруг неё. Чинится броня тоже динамитом.</p>
+    </header>
+    <div class="craft reveal">
+      <div class="craft-tabs" id="craftTabs" role="tablist"></div>
+      <div class="craft-gui" id="craftGui"></div>
+      <div class="craft-cost" id="craftCost"></div>
+    </div>
+    <div class="repair reveal">
+      <div class="rp">
+        <div class="rp-h">Наковальня</div>
+        <div class="rp-row" id="rpAnvil"></div>
+        <p>Материал ремонта у ТНТ-брони: <b>блок ТНТ</b>, как железный слиток у железной.</p>
+      </div>
+      <div class="rp">
+        <div class="rp-h">Точило или верстак</div>
+        <div class="rp-row" id="rpSmith"></div>
+        <p>Две побитые одинаковые части складываются в одну: прочность суммируется плюс 5% бонуса. Ванильная механика, но <b>зачарования на точиле слетают</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ РЕМКОМПЛЕКТ ============ -->
+  <section class="sec" id="kit">
+    <header class="sec-head reveal">
+      <span class="sec-n">02.5</span>
+      <h2>Ремонтный ТНТ-набор</h2>
+      <p>Появился в версии <b>1.0.2</b>. <b>ПКМ</b> с набором в руке разом чинит <b>все четыре</b> части до полной прочности, без наковальни и опыта. Работает только в <b>полном комплекте</b>, тратит один набор. Износ здесь общий с полигоном: взорвался там, чинишь тут. Нажми на часть, чтобы снять или надеть.</p>
+    </header>
+    <div class="kit reveal">
+      <div class="kit-art" id="kitArt">
+        <div class="kit-glow"></div>
+        <img src="../../assets/textures/item/tnt_repair_kit.webp" alt="Ремонтный ТНТ-набор: молоток и гаечный ключ, обмотанные динамитом" width="640" height="640" draggable="false">
+      </div>
+      <div class="kit-side">
+        <div class="mc-panel kit-sim">
+          <div class="ks-h">Износ брони <span id="ksTotal"></span><span class="ks-kits" id="ksKits" title="Наборов в инвентаре"></span></div>
+          <div class="ks-items" id="ksItems"></div>
+          <div class="ks-bar" id="ksBar" aria-live="polite"></div>
+          <div class="ks-btns">
+            <button type="button" class="mc-btn" id="ksHit">💥 получить урон</button>
+            <button type="button" class="mc-btn kit-use" id="ksFix"><img src="../../assets/textures/item/tnt_repair_kit.png" alt="" width="20" height="20"> ПКМ набором</button>
+            <button type="button" class="mc-btn" id="ksMore">+1 набор</button>
+          </div>
+        </div>
+        <div class="kit-where">
+          <div class="kw"><b>Крафт</b><div id="kitRecipe"></div></div>
+          <div class="kw"><b>Или купить</b><p>У подрывника на уровне <b>Подмастерье</b>: 12 изумрудов, до 4 штук.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ПОДРЫВНИК ============ -->
+  <section class="sec" id="villager">
+    <header class="sec-head reveal">
+      <span class="sec-n">02.6</span>
+      <h2>Житель-подрывник</h2>
+      <p>Новая профессия из версии <b>1.0.4</b>. Торгует ТНТ, редстоуном, бронёй и книгами «Бомбардир». <b>Жми «Обменять»</b>: житель получает опыт и открывает новые сделки, как в игре. <b>Покрути жителя</b> мышкой или пальцем.</p>
+    </header>
+    <div class="vil reveal">
+      <div class="vil-stage" id="vilStage">
+        <div class="vil-tag"><span id="vilName">Подрывник</span><em id="vilLvl">Новичок</em></div>
+        <div class="vil-3d"><div class="vil-rig" id="vilRig"></div></div>
+        <div class="vil-shadow"></div>
+        <div class="vil-hint">↔ покрути</div>
+      </div>
+      <div class="mc-panel merchant">
+        <div class="mer-head">
+          <div class="mer-title">Подрывник · <span id="merLvlName">Новичок</span></div>
+          <div class="vxp"><i id="vxpFill"></i></div>
+          <div class="mer-xp" id="merXp"></div>
+        </div>
+        <div class="mer-tabs" id="merTabs" role="tablist"></div>
+        <div class="mer-body">
+          <div class="mer-list" id="merList"></div>
+          <div class="mer-detail" id="merDetail"></div>
+        </div>
+        <div class="mer-foot"><label><input type="checkbox" id="merAll"> открыть все уровни сразу</label><button type="button" class="link" id="merReset">↺ новый житель</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal">
+      <span class="sec-n">02.7</span>
+      <h2>Достижения</h2>
+      <p>Ветка ТНТ-брони: 9 ачивок одной цепочкой, все скрытые. Всё как в игре: ачивку не видно, пока её не получишь, и тогда она появляется в ветке. <b>Нажми на рамку</b>, чтобы посмотреть условие. Всё можно получить прямо на этой странице.</p>
+    </header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 9</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+
+    <h3 class="sub-h reveal"><span>Минное поле</span></h3>
+    <p class="sub-p reveal">Те же ачивки, только под блоками ТНТ: пока ачивка не получена, её клетка <b>не взорвана</b>. Шнур между клетками загорается, когда открыты обе соседние.</p>
+    <div class="mines reveal">
+      <div class="mine-grid" id="mineGrid"></div>
+      <div class="mine-side" id="mineSide"></div>
+    </div>
+  </section>
+
+  <!-- ============ ИСТОРИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal">
+      <span class="sec-n">02.8</span>
+      <h2>Хронология</h2>
+      <p>Как пункт рос от версии к версии.</p>
+    </header>
+    <div class="tl reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <div class="fin-tnt" id="finTnt"></div>
+    <h2 class="fin-h">Фитиль догорел</h2>
+    <p class="fin-p">Ты долистал до конца.</p>
+    <button type="button" class="big-btn fin-btn" id="finBtn"><span class="bb-top">ЕЩЁ РАЗ</span><span class="bb-pct">БАБАХ</span></button>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<script src="../../shared/points.js"></script>
+<script src="../../shared/core.js"></script>
+<script src="../../data/p02_tnt.js"></script>
+<script src="../../data/p02_recipes.js"></script>
+<script src="world.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

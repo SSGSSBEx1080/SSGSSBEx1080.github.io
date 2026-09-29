@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "i  ",
+    " g ",
+    "  r"
+  ],
+  "key": {
+    "i": { "item": "minecraft:iron_nugget" },
+    "g": { "item": "minecraft:gunpowder" },
+    "r": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "item": "zitraksmode:bullet",
+    "count": 1
+  }
+}

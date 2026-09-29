@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№03 · Снайперки — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №03 мода ZitraksMode: четыре снайперки (железная, золотая, алмазная, незеритовая), пуля, три зачарования и ульта незеритовой снайперки.">
+<meta name="theme-color" content="#050b09">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="nv-grain" aria-hidden="true"></div>
+
+<button class="snd" id="snd" type="button" aria-pressed="true" title="Звук"><span class="snd-ico"></span><span class="snd-txt">звук</span></button>
+
+<main>
+  <!-- ============ HERO: ночной полигон + линза прицела за курсором ============ -->
+  <section class="hero" id="hero">
+    <canvas id="heroCv" aria-hidden="true"></canvas>
+    <div class="hero-hud" aria-hidden="true">
+      <span class="hh h-tl">REC ● <b id="hhTime">00:00:00</b></span>
+      <span class="hh h-tr">FOV <b id="hhFov">70</b> · ×<b id="hhZoom">1.0</b></span>
+      <span class="hh h-bl">X 0 · Y 64 · Z 0<br>ПУНКТ №03</span>
+      <span class="hh h-br" id="hhAim">ЦЕЛЬ: —</span>
+      <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i>
+    </div>
+    <div class="hero-copy">
+      <div class="hero-tag"><b>ПУНКТ №03</b><span>добавлено 04.11.2025</span><span class="live">ЦЕЛЬ ЗАХВАЧЕНА</span></div>
+      <h1 class="hero-h" aria-label="Снайперки"><span data-t="СНАЙПЕРКИ">СНАЙПЕРКИ</span></h1>
+      <p class="hero-p">Четыре снайперки на одной модели, пуля, которая летит <b>576 км/ч</b>, три зачарования и ульта, которая прожигает <b>200 блоков</b> насквозь. Звуки выстрела и прицела взяты 1:1 из CS:GO (AWP).</p>
+      <div class="hero-cta">
+        <a class="op-btn" href="#range"><span>▶ В ТИР</span><small>стрелять прямо тут</small></a>
+        <a class="op-btn ghost" href="#arsenal"><span>АРСЕНАЛ</span><small>4 тира</small></a>
+      </div>
+      <p class="hero-hint">Води мышкой: это настоящая текстура прицела из мода</p>
+    </div>
+    <div class="hero-strip" id="heroStrip"></div>
+  </section>
+
+  <!-- ============ АРСЕНАЛ ============ -->
+  <section class="sec" id="arsenal">
+    <header class="sec-head reveal">
+      <span class="sec-n">03.1</span>
+      <h2>Арсенал</h2>
+      <p>У всех четырёх снайперок <b>одна и та же 3D-модель</b>, отличаются только текстуры. Модель из 14 элементов, крути её мышкой или пальцем.</p>
+    </header>
+    <div class="ars reveal">
+      <div class="ars-tabs" id="arsTabs" role="tablist"></div>
+      <div class="ars-body">
+        <div class="ars-stage" id="arsStage">
+          <div class="ars-grid" aria-hidden="true"></div>
+          <div class="ars-model" id="arsModel"></div>
+          <div class="ars-badge"><b>∞</b><span>ВЕЧНАЯ<br><small>не ломается</small></span></div>
+          <div class="ars-ph" id="arsPh" hidden></div>
+          <div class="ars-hint">↻ тяни, чтобы повернуть</div>
+        </div>
+        <div class="ars-spec" id="arsSpec"></div>
+      </div>
+      <div class="ars-kill" id="arsKill"></div>
+    </div>
+  </section>
+
+  <!-- ============ ТИР ============ -->
+  <section class="sec" id="range">
+    <header class="sec-head reveal">
+      <span class="sec-n">03.2</span>
+      <h2>Тир</h2>
+      <p>Полигон на 320 блоков. Мобы, стены, мишени, всё как в игре. Нажми «Начать», и мышь захватится, как в игре: двигаешь мышью, крутится камера. <b>ЛКМ или ПКМ</b> стреляют сразу в момент нажатия, а прицел держится, пока кнопка зажата. Esc отпускает мышь. На телефоне тяни экран, чтобы целиться, и зажимай кнопку «огонь».</p>
+    </header>
+    <div class="rg reveal">
+      <div class="rg-view">
+        <canvas id="rangeCv"></canvas>
+        <div class="rg-start" id="rgStart"><button type="button" class="op-btn"><span id="rgStartT">▶ НАЧАТЬ</span><small id="rgStartS">мышь захватится, как в игре · Esc отпустит</small></button></div>
+        <div class="rg-lock" id="rgLock" hidden>ESC — ОТПУСТИТЬ МЫШЬ · ЛКМ/ПКМ — ВЫСТРЕЛ · R — УЛЬТА · 1–4 — ТИР</div>
+        <div class="rg-touch" id="rgTouch">
+          <button type="button" class="rt-fire" id="rtFire">ОГОНЬ<small>держи = прицел</small></button>
+          <button type="button" class="rt-ult" id="rtUlt">R<small>ульта</small></button>
+        </div>
+        <div class="rg-kill" id="rgFeed" aria-live="polite"></div>
+      </div>
+      <aside class="rg-side">
+        <div class="rg-blk">
+          <div class="rg-lbl">Снайперка <kbd>1</kbd>–<kbd>4</kbd></div>
+          <div class="rg-tiers" id="rgTiers"></div>
+        </div>
+        <div class="rg-blk">
+          <div class="rg-lbl">Зачарования</div>
+          <div class="rg-ench" id="rgEnch"></div>
+        </div>
+        <div class="rg-blk">
+          <div class="rg-lbl">Патроны</div>
+          <div class="rg-ammo">
+            <span class="ra-n"><img id="rgAmmoIc" alt="" draggable="false"><b id="rgAmmo">64</b></span>
+            <button type="button" class="chip" id="rgAdd">+64</button>
+            <label class="chip tg"><input type="checkbox" id="rgCreative"><span>творческий ∞</span></label>
+          </div>
+        </div>
+        <button type="button" class="link" id="rgReset">↺ отстроить полигон заново</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ ПУЛЯ ============ -->
+  <section class="sec" id="bullet">
+    <header class="sec-head reveal">
+      <span class="sec-n">03.3</span>
+      <h2>Пуля</h2>
+      <p>Пуля собрана из 141 элемента. Летит по прямой без гравитации и разброса, <b>8 блоков за тик</b>. Подобрать её после выстрела нельзя.</p>
+    </header>
+    <div class="bl reveal">
+      <div class="bl-stage" id="blStage"><div class="bl-model" id="blModel"></div><div class="bl-ruler" aria-hidden="true"></div></div>
+      <div class="bl-facts" id="blFacts"></div>
+    </div>
+    <div class="traj reveal">
+      <div class="traj-head">
+        <div><b>Пуля против всего, что летает</b><span>одинаковый угол, вид сбоку, реальная скорость (20 тиков в секунду). Включай и выключай снаряды кнопками снизу</span></div>
+        <label class="traj-sl">Угол <input type="range" id="trAng" min="-10" max="90" value="10" step="1"><output id="trAngO">10°</output></label>
+        <button type="button" class="chip" id="trGo">▶ пуск</button>
+      </div>
+      <canvas id="trajCv"></canvas>
+      <div class="traj-pick" id="trPick"></div>
+      <div class="traj-note" id="trNote"></div>
+    </div>
+  </section>
+
+  <!-- ============ ЗАЧАРОВАНИЯ ============ -->
+  <section class="sec" id="ench">
+    <header class="sec-head reveal">
+      <span class="sec-n">03.4</span>
+      <h2>Зачарования</h2>
+      <p>Три своих зачарования, только для снайперок. Все совместимы друг с другом, падают из книг и со стола зачарований, но не относятся к сокровищам.</p>
+    </header>
+    <div class="en-grid" id="enGrid"></div>
+  </section>
+
+  <!-- ============ УЛЬТА ============ -->
+  <section class="sec ult-sec" id="ult">
+    <header class="sec-head reveal">
+      <span class="sec-n">03.5</span>
+      <h2>Ульта незеритовой</h2>
+      <p>Только у незеритовой снайперки. Нажми <kbd>R</kbd>, и из ствола бьёт луч на <b>200 блоков</b>. Он ломает всё на своём пути, кроме бедрока, и сносит каждому мобу на линии <b>400 урона</b>.</p>
+    </header>
+    <div class="ult reveal">
+      <canvas id="ultCv"></canvas>
+      <div class="ult-side">
+        <div class="ult-stats" id="ultStats"></div>
+        <button type="button" class="op-btn ult-btn" id="ultFire"><span>R · ОГОНЬ</span><small>пробить разрез</small></button>
+        <button type="button" class="link" id="ultNew">↺ новый разрез мира</button>
+        <p class="ult-note" id="ultNote">Разрез мира сбоку: земля, камень, руды, обсидиан и бедрок. Луч идёт под случайным углом.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal">
+      <span class="sec-n">03.6</span>
+      <h2>Крафт</h2>
+      <p>Каждая следующая снайперка собирается из предыдущей. Незеритовая требует <b>все три</b> младшие сразу. Внизу есть полный подсчёт ресурсов с нуля.</p>
+    </header>
+    <div class="cr reveal">
+      <div class="cr-tabs" id="crTabs"></div>
+      <div class="cr-main">
+        <div class="cr-table" id="crTable"></div>
+        <div class="cr-info" id="crInfo"></div>
+      </div>
+    </div>
+    <div class="cost reveal">
+      <div class="cost-head"><b>Полная стоимость с нуля</b><div class="cost-tabs" id="costTabs"></div></div>
+      <div class="cost-body">
+        <div class="cost-tree" id="costTree"></div>
+        <div class="cost-sum" id="costSum"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal">
+      <span class="sec-n">03.7</span>
+      <h2>Достижения</h2>
+      <p>Ветка снайперок. Как в игре: ачивку не видно, пока не получишь. <b>Нажми на рамку</b>, чтобы посмотреть условие. Получить можно прямо в тире.</p>
+    </header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 1</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+    <div class="scope-rec reveal" id="scopeRec"></div>
+  </section>
+
+  <!-- ============ ХРОНОЛОГИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal">
+      <span class="sec-n">03.8</span>
+      <h2>Хронология</h2>
+    </header>
+    <div class="tl reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <div class="fin-scope" id="finScope" aria-hidden="true"></div>
+    <div class="fin-copy">
+      <h2 class="fin-h">Отстрелялись</h2>
+      <p class="fin-p">Это были снайперки. Остальное на главной.</p>
+      <nav class="fin-nav" id="finNav"></nav>
+    </div>
+  </section>
+</main>
+
+<script src="../../shared/points.js"></script>
+<script src="../../shared/core.js"></script>
+<script src="../../data/p03_snipers.js"></script>
+<script src="../../data/p03_models.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../data/p03_tex.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="range.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

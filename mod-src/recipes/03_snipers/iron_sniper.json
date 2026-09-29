@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " s ",
+    "xxx",
+    " bi"
+  ],
+  "key": {
+    "x": { "item": "minecraft:iron_block" },
+    "s": { "item": "minecraft:spyglass" },
+    "b": { "item": "zitraksmode:bullet" },
+    "i": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "item": "zitraksmode:iron_sniper",
+    "count": 1
+  }
+}

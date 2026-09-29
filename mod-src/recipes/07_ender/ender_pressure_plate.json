@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OEO",
+    "OPO",
+    "OOO"
+  ],
+  "key": {
+    "O": { "item": "minecraft:obsidian" },
+    "E": { "item": "minecraft:ender_eye" },
+    "P": { "item": "minecraft:stone_pressure_plate" }
+  },
+  "result": { "item": "zitraksmode:ender_pressure_plate" }
+}

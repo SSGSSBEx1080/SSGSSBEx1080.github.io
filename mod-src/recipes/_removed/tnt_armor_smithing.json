@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:smithing",
+  "base": { "item": "zitraksmode:tnt_helmet" },
+  "addition": { "item": "minecraft:tnt" },
+  "result": { "item": "zitraksmode:tnt_helmet" }
+}

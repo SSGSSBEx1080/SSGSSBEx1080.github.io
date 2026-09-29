@@ -1,0 +1,40 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "zitraksmode:item/creeper_eggs",
+		"particle": "zitraksmode:item/creeper_eggs"
+	},
+	"elements": [
+		{
+			"from": [4, -10, 6],
+			"to": [12, 2, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 2]},
+			"faces": {
+				"north": {"uv": [4, 10, 8, 16], "texture": "#0"},
+				"east": {"uv": [8.25, 10, 10, 16], "texture": "#0"},
+				"south": {"uv": [5, 10.5, 8, 15.75], "texture": "#0"},
+				"west": {"uv": [8, 10, 10, 16], "texture": "#0"},
+				"up": {"uv": [4, 0, 8, 4], "texture": "#missing"},
+				"down": {"uv": [2.25, 10, 5.25, 13], "texture": "#0"}
+			}
+		},
+		{
+			"from": [4, 2, 4],
+			"to": [12, 10, 12],
+			"faces": {
+				"north": {"uv": [4.25, 0, 6, 3.75], "texture": "#0"},
+				"east": {"uv": [4, 4, 6, 8], "texture": "#0"},
+				"south": {"uv": [4, 4, 2, 8], "texture": "#0"},
+				"west": {"uv": [0, 4, 2, 8], "texture": "#0"},
+				"up": {"uv": [2, 0, 4.25, 4], "texture": "#0"},
+				"down": {"uv": [4.5, 4.25, 7.75, 7.5], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"scale": [0.34, 0.31, 0.39]
+		}
+	}
+}

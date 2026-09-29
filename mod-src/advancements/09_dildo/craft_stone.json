@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:09_dildo/craft_mud",
+  "display": {
+    "icon": { "item": "zitraksmode:stone_dildo" },
+    "title": "§fКаменный стояк",
+    "description": "§7Скрафти каменный дилдак. В каменном веке было весело.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:stone_dildo"] }] }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

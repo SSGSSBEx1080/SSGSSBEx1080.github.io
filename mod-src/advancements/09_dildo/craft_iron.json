@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:09_dildo/craft_stone",
+  "display": {
+    "icon": { "item": "zitraksmode:iron_dildo" },
+    "title": "§fЖелезная елда",
+    "description": "§7Великий учёный, Никола Тесла, очень устал, опустился в кресло...",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:iron_dildo"] }] }
+    }
+  },
+  "rewards": { "experience": 5 }
+}

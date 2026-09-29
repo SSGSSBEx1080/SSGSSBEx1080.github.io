@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "nnn",
+    "igd",
+    "oec"
+  ],
+  "key": {
+    "n": { "item": "minecraft:netherite_block" },
+    "e": { "item": "minecraft:nether_star" },
+    "o": { "item": "minecraft:obsidian" },
+    "c": { "item": "minecraft:end_crystal" },
+    "d": { "item": "zitraksmode:diamond_sniper" },
+    "g": { "item": "zitraksmode:golden_sniper" },
+    "i": { "item": "zitraksmode:iron_sniper" }
+  },
+  "result": {
+    "item": "zitraksmode:netherite_sniper",
+    "count": 1
+  }
+}

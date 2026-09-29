@@ -1,0 +1,26 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:netherite_dildo" },
+    "title": "§b§lГЕЙ-МАСТЕР",
+    "description": "§7Собери все 9 видов дилдаков. Прогресс сохраняется навсегда. Как и титул...",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "mud": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:mud_dildo"] }] } },
+    "stone": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:stone_dildo"] }] } },
+    "iron": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:iron_dildo"] }] } },
+    "gold": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:gold_dildo"] }] } },
+    "diamond": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:diamond_dildo"] }] } },
+    "emerald": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:emerald_dildo"] }] } },
+    "obsidian": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:obsidian_dildo"] }] } },
+    "netherite": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:netherite_dildo"] }] } },
+    "tnt": { "trigger": "minecraft:inventory_changed", "conditions": { "items": [{ "items": ["zitraksmode:tnt_dildo"] }] } }
+  },
+  "rewards": {
+    "experience": 100
+  }
+}

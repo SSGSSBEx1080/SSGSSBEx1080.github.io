@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:12_katana/craft_katana",
+  "display": {
+    "icon": { "item": "minecraft:iron_sword" },
+    "title": "§bСекретная Техника",
+    "description": "§7Примени ультимативную атаку катаны. Мировой разрез.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "ultimate": { "trigger": "zitraksmode:katana_ultimate" }
+  },
+  "rewards": { "experience": 10 }
+}

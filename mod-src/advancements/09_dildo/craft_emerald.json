@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:09_dildo/craft_diamond",
+  "display": {
+    "icon": { "item": "zitraksmode:emerald_dildo" },
+    "title": "§a§lМечта Жителя",
+    "description": "§7Кто знает, но ходят слухи что жители готовы отдаться в рабство, и отдать всё своё имущество ради этого артефакта...",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:emerald_dildo"] }] }
+    }
+  },
+  "rewards": { "experience": 25 }
+}

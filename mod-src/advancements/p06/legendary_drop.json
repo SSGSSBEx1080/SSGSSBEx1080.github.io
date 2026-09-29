@@ -1,0 +1,21 @@
+{
+  "parent": "zitraksmode:06_labubu/epic_drop",
+  "display": {
+    "icon": { "item": "zitraksmode:labubu_galactic" },
+    "title": "§5§lЛЕГЕНДА!",
+    "description": "§7Легендарный Лабубу в твоих руках! Вот это нихуя себе!",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "get_legendary": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "tag": "zitraksmode:labubu_legendary" }]
+      }
+    }
+  },
+  "rewards": { "experience": 30 }
+}

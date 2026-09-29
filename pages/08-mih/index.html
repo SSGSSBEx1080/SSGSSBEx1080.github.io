@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№08 · Made in Heaven — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №08 мода ZitraksMode: Made in Heaven. Одноразовый предмет, который разгоняет время, за 36 секунд прокручивает почти месяц и перезаписывает мир вокруг.">
+<meta name="theme-color" content="#cfe6ff">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- фон: рай над облаками, живые золотые лучи, перья. Во время активации поверх проступает небо Minecraft -->
+<div class="heaven" aria-hidden="true"></div>
+<canvas id="sky" aria-hidden="true"></canvas>
+<canvas id="rays" aria-hidden="true"></canvas>
+<div class="heaven-veil" aria-hidden="true"></div>
+<div class="gogo-layer" id="gogo" aria-hidden="true"></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
+
+<div id="world">
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="mh-hero" id="hero">
+    <div class="mh-head">
+      <div class="mh-kana jp">『メイド・イン・ヘブン』</div>
+      <div class="mh-eyebrow"><span>№08</span><i></i>стенд-предмет<i></i><span>18.02.2026</span></div>
+      <h1 class="mh-title"><span>Made in</span> <span>Heaven</span></h1>
+      <div class="mh-sub"><span class="jp">時は加速する</span><em>время ускоряется</em></div>
+    </div>
+
+    <div class="mh-stage" id="stage">
+      <div class="mh-gogo" aria-hidden="true"><i class="jp">ゴ</i><i class="jp">ゴ</i><i class="jp">ゴ</i><i class="jp">ゴ</i><i class="jp">ゴ</i><i class="jp">ゴ</i></div>
+      <div class="mh-halo" aria-hidden="true"><i></i><i></i><i></i><b></b></div>
+      <canvas id="fxCv" aria-hidden="true"></canvas>
+      <img class="mh-item" id="heroItem" src="../../assets/textures/p8/made_in_heaven_hd.png" alt="Made in Heaven" draggable="false">
+      <div class="mh-hotbar" id="hotbar" aria-label="Хотбар"></div>
+      <div class="mh-use">
+        <button type="button" class="mh-btn" id="useBtn" data-nosfx><span class="k">ПКМ</span><span class="t" id="useTxt">Активировать</span></button>
+        <button type="button" class="mh-die" id="dieBtn" hidden data-nosfx>☠ умереть</button>
+      </div>
+      <p class="mh-hint" id="useHint">Музыка на весь сервер, громкость 100. Звук лучше включить.</p>
+    </div>
+
+    <p class="mh-lead">Фрагмент самого времени. Один раз нажимаешь ПКМ, и сутки пролетают за секунды. Через 36 секунд вселенная совершает полный круг, а ты стоишь в полдень новой.</p>
+    <div class="mh-facts">
+      <div><b>36 с</b><span>до сброса</span></div>
+      <div><b id="factDays">29</b><span>суток пролетит</span></div>
+      <div><b>×8</b><span>скорость бега</span></div>
+      <div><b>1</b><span>раз, и всё</span></div>
+    </div>
+    <figure class="mh-quote"><blockquote id="qPrimes"></blockquote><figcaption>Энрико Пуччи</figcaption></figure>
+  </section>
+
+  <!-- ============ I · ДНЕВНИК DIO ============ -->
+  <section class="sec" id="diary">
+    <header class="sec-head reveal"><span class="sec-n">I</span><div class="sec-t"><span class="sec-k jp">天国へ行く方法</span><h2>Дневник DIO</h2></div><span class="sec-q">14 слов</span></header>
+    <p class="sec-p reveal">Способ попасть на небеса DIO оставил в дневнике: четырнадцать слов, которые надо произнести по порядку. Ачивка за крафт так и называется, «Рецепт из дневника DIO.», а её описание и есть эти слова. Жми по порядку.</p>
+    <div class="pnl dr-page reveal">
+      <div class="dr-words" id="drWords"></div>
+      <div class="dr-foot"><div class="dr-prog"><i id="drBar"></i></div><span id="drTxt">0 / 14</span><button type="button" class="chip" id="drAuto">прочитать вслух</button></div>
+      <div class="dr-done" id="drDone" hidden><span class="jp">完成した</span><b>Свершилось</b><em>Путь на небеса открыт. Верстак ниже.</em></div>
+    </div>
+  </section>
+
+  <!-- ============ II · ПРЕДМЕТ ============ -->
+  <section class="sec" id="item">
+    <header class="sec-head reveal"><span class="sec-n">II</span><div class="sec-t"><span class="sec-k jp">スタンド能力</span><h2>Предмет</h2></div><span class="sec-q">zitraksmode:made_in_heaven</span></header>
+    <p class="sec-p reveal">Восемь алмазных блоков вокруг часов, то есть <b>72 алмаза</b> за 36 секунд. Складывается по одному, после активации исчезает. Зачаровывается, и чары меняют то, чем мир перезапишется.</p>
+    <div class="it-grid reveal">
+      <div class="pnl it-tip-wrap">
+        <div class="it-slot" id="itSlot"></div>
+        <div class="it-tip" id="itTip"></div>
+        <div class="it-meta">
+          <div><span>стак</span><b>1</b></div>
+          <div><span>зачаруемость</span><b>15</b></div>
+          <div><span>после ПКМ</span><b>исчезает</b></div>
+        </div>
+      </div>
+      <div class="pnl it-craft">
+        <div class="pn-h"><b>Верстак</b><span>забери результат</span></div>
+        <div class="cg-gui" id="craftGui"></div>
+        <div class="it-inv"><span>в инвентаре:</span><b id="invN">1</b></div>
+      </div>
+      <div class="pnl it-cost">
+        <div class="pn-h"><b>Цена</b><span>если считать в сырье</span></div>
+        <div class="cost-row"><img class="px" src="../../assets/textures/p8/iso_diamond_block.png" alt=""><span>8 алмазных блоков</span><b>= 72</b><img class="px sm" src="../../assets/textures/p8/diamond.png" alt=""></div>
+        <div class="cost-row"><img class="px" src="../../assets/textures/p8/clock.png" alt=""><span>1 часы</span><b>= 4</b><img class="px sm" src="../../assets/textures/p8/gold_ingot.png" alt=""><b>+ 1</b><img class="px sm" src="../../assets/textures/p8/redstone.png" alt=""></div>
+        <div class="cost-sum"><b>2</b> алмаза за секунду ускорения</div>
+      </div>
+    </div>
+    <!-- карточка стенда как в JoJo -->
+    <div class="pnl st-card reveal">
+      <div class="st-hex" id="stHex"></div>
+      <div class="st-info">
+        <div class="st-kana jp">『メイド・イン・ヘブン』</div>
+        <div class="st-name">Made in Heaven</div>
+        <div class="st-rows">
+          <div><span>стенд</span><b>Made in Heaven</b></div>
+          <div><span>владелец</span><b>Энрико Пуччи</b></div>
+          <div><span>способность</span><b>ускоряет время до конца вселенной</b></div>
+        </div>
+        <div class="st-grades" id="stGrades"></div>
+        <p class="st-note">В моде стенд помещается в один предмет. Способность та же: время разгоняется, пока вселенная не пройдёт круг, и мир вокруг начинается заново.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ III · ХРОНОМЕТР ============ -->
+  <section class="sec" id="curve">
+    <header class="sec-head reveal"><span class="sec-n">III</span><div class="sec-t"><span class="sec-k jp">時は加速する</span><h2>Хронометр</h2></div><span class="sec-q">720 тиков до сброса</span></header>
+    <p class="sec-p reveal">Каждый тик к времени мира прибавляется всё больше. Сначала 20 тиков за тик, это время ×20. В самом конце почти 17 000, и игровые сутки проходят <b>за 0,07 секунды</b>. Тяни ползунок.</p>
+    <div class="pnl cv-wrap reveal">
+      <div class="cv-plot"><canvas id="cvPlot"></canvas></div>
+      <input type="range" id="cvRange" min="0" max="940" value="360" aria-label="Тик">
+      <div class="cv-read" id="cvRead"></div>
+      <div class="cv-foot">
+        <button type="button" class="chip" id="cvPlay">▶ проиграть за 47 с</button>
+        <span class="cv-note">На 504-м тике скорость даже проседает с 544 до 500: там стыкуются две формулы. В игре этого не заметно.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IV · ОТРАЖЕНИЕ ============ -->
+  <section class="sec" id="reflect">
+    <header class="sec-head reveal"><span class="sec-n">IV</span><div class="sec-t"><span class="sec-k jp">無駄無駄無駄</span><h2>Не долетит</h2></div><span class="sec-q">радиус 4,5 блока</span></header>
+    <p class="sec-p reveal">Пока время ускорено, всё, что в тебя летит, разворачивается в 4,5 блока от тебя и уходит обратно. Хозяином снаряда становишься ты, так что попадание по стрелку засчитывается тебе.</p>
+    <div class="rf-grid reveal">
+      <div class="pnl frame rf-arena"><canvas id="rfCv"></canvas><div class="rf-hud" id="rfHud"></div></div>
+      <div class="rf-side">
+        <button type="button" class="rf-tog" id="rfTog" role="switch" aria-checked="true"><span class="sw"></span><span><b>Made in Heaven</b><small id="rfTogS">время ускорено</small></span></button>
+        <div class="pnl rf-stats">
+          <div><b id="rfN">0</b><span>развёрнуто</span></div>
+          <div><b id="rfK">0</b><span>вернулось в стрелка</span></div>
+          <div><b id="rfH">0</b><span>попало в тебя</span></div>
+        </div>
+        <div class="rf-legend" id="rfLegend"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ V · СБРОС ============ -->
+  <section class="sec" id="reset">
+    <header class="sec-head reveal"><span class="sec-n">V</span><div class="sec-t"><span class="sec-k jp">一巡した宇宙</span><h2>Сброс вселенной</h2></div><span class="sec-q">тик 720</span></header>
+    <p class="sec-p reveal">На 720-м тике блоки вокруг заменяются. До 8 блоков от тебя всё, дальше шанс падает на 5% с каждым блоком, до 20. Без чар на место встаёт случайный блок, <b>только из ванильного Minecraft и ZitraksMode</b>, ничего из других модов. Вода, двери, кровати, цветы, факелы и бедрок не трогаются. Вид сверху, ты в центре.</p>
+    <div class="en-cards reveal" id="enCards"></div>
+    <div class="rs-grid reveal">
+      <div class="pnl frame rs-map"><canvas id="rsCv"></canvas><div class="rs-tip" id="rsTip"></div></div>
+      <div class="rs-side">
+        <div class="pn-h"><b>Зачарования</b><span id="rsVer"></span></div>
+        <div class="rs-ench" id="rsEnch" role="radiogroup" aria-label="Зачарования"></div>
+        <div class="rs-btns">
+          <button type="button" class="mh-btn sm" id="rsGo" data-nosfx><span class="t">⚡ Сбросить</span></button>
+          <button type="button" class="chip" id="rsBack">↺ вернуть мир</button>
+        </div>
+        <div class="pnl rs-stat" id="rsStat"></div>
+        <div class="rs-got" id="rsGot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VI · ЭФФЕКТ ВСЕЛЕННОЙ ============ -->
+  <section class="sec" id="buff">
+    <header class="sec-head reveal"><span class="sec-n">VI</span><div class="sec-t"><span class="sec-k jp">新しい世界</span><h2>Эффект вселенной</h2></div><span class="sec-q">2:00 · уровень II</span></header>
+    <p class="sec-p reveal">Сразу после сброса новая вселенная выдаёт один случайный эффект из двенадцати. Две минуты, второй уровень. Шанс у всех одинаковый.</p>
+    <div class="pnl bf-wrap reveal">
+      <div class="bf-reel"><div class="bf-strip" id="bfStrip"></div><i class="bf-mark"></i></div>
+      <div class="bf-row"><button type="button" class="mh-btn sm" id="bfGo" data-nosfx><span class="t">Крутить</span></button><div class="bf-out" id="bfOut">Жми и смотри, что выпадет</div></div>
+      <div class="bf-all" id="bfAll"></div>
+    </div>
+  </section>
+
+  <!-- ============ VII · ЗАКОНЫ ============ -->
+  <section class="sec" id="rules">
+    <header class="sec-head reveal"><span class="sec-n">VII</span><div class="sec-t"><span class="sec-k jp">覚悟</span><h2>Законы нового мира</h2></div></header>
+    <div class="ru-grid reveal" id="ruGrid"></div>
+  </section>
+
+  <!-- ============ VIII · ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">VIII</span><div class="sec-t"><span class="sec-k jp">実績</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <p class="sec-p reveal">Три скрытые ачивки, по одной на каждый шаг: скрафтить, нажать, дожить до сброса. Здесь они выдаются так же, как в игре.</p>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 0</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ IX · ИСТОРИЯ ============ -->
+  <section class="sec" id="history">
+    <header class="sec-head reveal"><span class="sec-n">IX</span><div class="sec-t"><span class="sec-k jp">記録</span><h2>История</h2></div></header>
+    <div class="tl8 reveal" id="timeline"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <div class="fin-halo" aria-hidden="true"></div>
+    <img class="fin-item" id="finItem" src="../../assets/textures/p8/made_in_heaven_hd.png" alt="" draggable="false">
+    <div class="fin-kana jp">運命</div>
+    <h2 class="fin-h">Вселенная прошла круг</h2>
+    <figure class="mh-quote fin-q"><blockquote id="qFate"></blockquote><figcaption>Энрико Пуччи</figcaption></figure>
+    <nav class="fin-nav" id="finNav"></nav>
+    <div class="fin-tbc" aria-hidden="true"><span>To Be Continued</span></div>
+  </section>
+</main>
+</div>
+
+<!-- заставка стенда при активации -->
+<div class="stand-card" id="standCard" aria-hidden="true">
+  <div class="sc-kana jp">『メイド・イン・ヘブン』</div>
+  <div class="sc-name">Made in Heaven</div>
+  <div class="sc-user">Стенд · Энрико Пуччи</div>
+</div>
+<div class="stand-card cyc" id="cycleCard" aria-hidden="true">
+  <div class="sc-kana jp big">一巡</div>
+  <div class="sc-user">вселенная совершила полный круг</div>
+</div>
+
+<!-- HUD активации -->
+<div class="hud" id="hud" hidden>
+  <div class="hud-top">
+    <div class="hud-clock"><i id="hudClock"></i></div>
+    <div class="hud-main">
+      <div class="hud-l1"><b id="hudDay">День 1</b><span id="hudTime">06:00</span><span class="hud-x" id="hudX">×20</span></div>
+      <div class="hud-bar"><i id="hudBar"></i><s style="left:calc(500/720*100%)" title="лазеры"></s><s style="left:calc(520/720*100%)" title="тряска"></s></div>
+      <div class="hud-l2"><span id="hudStage">разгон</span><span id="hudSpd">скорость ×2,5</span><span id="hudTick">тик 0</span></div>
+      <div class="hud-primes" id="hudPrimes" title="Пуччи считает простые числа, чтобы успокоиться"></div>
+    </div>
+  </div>
+</div>
+<div class="mc-chat chat8" id="chat" aria-live="polite"></div>
+<div class="tbc" id="tbc" aria-hidden="true"><span>To Be Continued</span></div>
+<button type="button" class="sndbtn" id="sndBtn" aria-pressed="true" title="Звук"><i></i><span>звук</span></button>
+
+<script src="../../shared/points.js"></script>
+<script src="../../shared/core.js"></script>
+<script src="../../data/p08_mih.js"></script>
+<script src="../../data/p08_registry.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

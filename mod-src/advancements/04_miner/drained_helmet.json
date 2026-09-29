@@ -1,0 +1,21 @@
+{
+  "parent": "zitraksmode:04_miner/craft_helmet",
+  "display": {
+    "icon": { 
+      "item": "zitraksmode:miner_helmet",
+      "nbt": "{Damage:890}"
+    },
+    "title": "§a§lСвет погас",
+    "description": "§7Ты проносил его до полного истощения. Подземелье поглотило твой свет. Тебе пиздец если не съебёшься.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "drained": {
+      "trigger": "zitraksmode:miner_drained"
+    }
+  },
+  "rewards": { "experience": 15 }
+}

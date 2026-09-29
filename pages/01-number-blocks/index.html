@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№01 · Цифроблоки — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №01 мода ZitraksMode: десять блоков с цифрами, их характеристики и скрытые достижения.">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="rain" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-tag reveal"><span class="blink">■</span> ПУНКТ №01 <b>/</b> добавлен 26.10.2025 <b>/</b> первый пункт мода</div>
+    <h1 class="hero-title reveal" aria-label="Цифроблоки">
+      <span class="glitch" data-text="ЦИФРО">ЦИФРО</span><span class="glitch alt" data-text="БЛОКИ">БЛОКИ</span>
+    </h1>
+    <p class="hero-sub reveal">Десять блоков от <b>0</b> до <b>9</b>. Из них можно выложить любое число прямо в мире. За каждую цифру полагается скрытое достижение со своей шуткой, а за ноль целое испытание.</p>
+    <div class="hero-row reveal" id="heroRow" aria-hidden="true"></div>
+    <div class="hero-stats reveal">
+      <a href="#cards"><b id="stBlocks">10</b><span>блоков</span></a>
+      <a href="#tree"><b id="stAdv">11</b><span>ачивок</span></a>
+      <a href="#tree"><b id="stXp">0</b><span>XP всего</span></a>
+      <a href="#tree"><b id="stGot">0/11</b><span>получено</span></a>
+    </div>
+    <nav class="hero-nav reveal" aria-label="Разделы страницы">
+      <a href="#cards">Коллекция</a><a href="#craft">Крафты</a><a href="#tree">Ачивки</a><a href="#builder">Собери число</a>
+    </nav>
+    <a class="scroll-cue" href="#cards"><span>листай</span><i></i></a>
+  </section>
+
+  <!-- ============ КАРТОЧКИ ============ -->
+  <section class="block-sec" id="cards">
+    <header class="sec-head reveal">
+      <span class="sec-n">01.1</span>
+      <h2>Коллекция</h2>
+      <p><b>Свайпни карточку</b> или тапни по ней: на обороте характеристики и ачивка. <b>Зажми блок</b>, чтобы добыть его.</p>
+    </header>
+
+    <div class="tools reveal" role="radiogroup" aria-label="Инструмент для добычи">
+      <span class="tools-lbl">Чем копаем:</span>
+      <div class="tools-list" id="tools"></div>
+      <span class="tools-time" id="toolTime"></span>
+    </div>
+
+    <div class="cards" id="cardGrid"></div>
+  </section>
+
+  <!-- ============ КРАФТЫ ============ -->
+  <section class="block-sec" id="craft">
+    <header class="sec-head reveal">
+      <span class="sec-n">01.2</span>
+      <h2>Крафты</h2>
+      <p>Цифры 1–9 крафтятся из <b>угля</b> и <b>кварца</b>: уголь рисует цифру, кварц служит фоном. <b>Ноль</b> собирается из всех девяти цифр. Выбери цифру и <b>нажми на результат</b>: блок упадёт в инвентарь.</p>
+    </header>
+    <div class="craft reveal">
+      <div class="craft-tabs" id="craftTabs" role="tablist"></div>
+      <div class="craft-body">
+        <div class="craft-gui" id="craftGui"></div>
+        <div class="craft-info" id="craftInfo"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ДОСТИЖЕНИЯ ============ -->
+  <section class="block-sec" id="tree">
+    <header class="sec-head reveal">
+      <span class="sec-n">01.3</span>
+      <h2>Достижения</h2>
+      <p>В ветке 11 ачивок: 10 за цифры и одна секретная. Всё как в игре: ачивка не видна, пока её не получишь. Добудь блок (зажми на карточке) или скрафть его, и она появится здесь. <b>Нажми на рамку</b>, чтобы посмотреть условие.</p>
+    </header>
+    <div class="adv-board reveal">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot">
+        <div class="adv-prog"><i id="advBar"></i></div>
+        <span id="advTxt">0 / 11</span>
+        <button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button>
+      </div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ КОНСТРУКТОР ============ -->
+  <section class="block-sec" id="builder">
+    <header class="sec-head reveal">
+      <span class="sec-n">01.4</span>
+      <h2>Собери число</h2>
+      <p>Для этого цифроблоки и нужны. Введи число, и оно выложится блоками, как в мире.</p>
+    </header>
+    <div class="builder reveal">
+      <label class="b-input">
+        <span>/setblock</span>
+        <input id="bInput" inputmode="numeric" autocomplete="off" maxlength="12" value="2025" aria-label="Число">
+      </label>
+      <div class="b-stage" id="bStage"><div class="b-wall" id="bWall"></div></div>
+      <div class="b-note" id="bNote"></div>
+    </div>
+  </section>
+
+  <footer class="page-foot">
+    <div>Характеристики из <code>ModBlocks.registerNumberBlock()</code>. Интерфейс в стиле ванильного Minecraft 1.19.2.</div>
+    <div class="pf-nav" id="pfNav"></div>
+  </footer>
+</main>
+
+<!-- Хотбар: сюда падают добытые блоки -->
+<div class="hotbar" id="hotbar" aria-label="Инвентарь"></div>
+
+<script src="../../data/p01_numbers.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

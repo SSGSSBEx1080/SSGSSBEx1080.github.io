@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:10_creeper/craft_super_tnt",
+  "display": {
+    "icon": { "item": "zitraksmode:super_tnt_minecart" },
+    "title": "§c§lТНТ-вагон. Фейк такси.",
+    "description": "§7Засунул Супер-ТНТ в вагонетку, всему РЖД пиздец. Ах этот запах вокзала.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "craft": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": { "items": [{ "items": ["zitraksmode:super_tnt_minecart"] }] }
+    }
+  },
+  "rewards": { "experience": 25 }
+}
