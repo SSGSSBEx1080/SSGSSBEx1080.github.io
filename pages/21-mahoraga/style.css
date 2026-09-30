@@ -378,11 +378,9 @@ h3{font:700 30px/1.1 var(--f-big);color:var(--bone);margin:0 0 10px}
   .mh-log{left:10px;bottom:10px;font-size:12px}
   .mh-dl>div{grid-template-columns:1fr;gap:2px}
 }
-
-/* hero: деления на боссбаре и кликабельная подпись */
-.mh-bar div{position:relative}
-.mh-bar div::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),#000 calc(10% - 1px) 10%);pointer-events:none}
-.mh-stage figcaption{z-index:3}
-.mh-stage figcaption a{color:var(--gold);pointer-events:auto;text-decoration:underline;text-underline-offset:3px}
-#heroPops{z-index:3}
-#heroPops span{top:30%}
+/* удары по Махораге в шапке */
+.mh-hpop{position:absolute;top:34%;transform:translateX(-50%);font:16px var(--f-pixel);color:#ff5555;text-shadow:1px 1px 0 #3f0000;pointer-events:none;animation:mhHpop .9s ease-out forwards;z-index:3;white-space:nowrap}
+.mh-hpop.imm{color:#c9c9c9;text-shadow:1px 1px 0 #333}
+.mh-hpop.adp{color:#ffcc55;text-shadow:1px 1px 0 #5a3a00;font-size:18px}
+@keyframes mhHpop{from{opacity:1;translate:0 0}to{opacity:0;translate:0 -46px}}
+.mh-stage figcaption a{color:var(--gold,#c9a45c);text-decoration:underline;pointer-events:auto}

@@ -99,10 +99,7 @@
 
     // --- анимации: idle крутится всегда, действие поверх (как два контроллера GeckoLib) ---
     const AN = opt.anim || {};
-    const st = { idle: opt.idle || null, idleT: 0, act: null, actT: 0, onEnd: null, speed: 1, fade: null };
-    // opt.gecko: поведение как у двух контроллеров GeckoLib 3: каналы (поворот/сдвиг/масштаб) перекрываются по отдельности,
-    // переход в действие за blendIn секунд, выход плавный за blendOut, opt.hold = {имя: сек} держит последний кадр
-    const GK = opt.gecko || null, over = {};
+    const st = { idle: opt.idle || null, idleT: 0, act: null, actT: 0, onEnd: null, speed: 1 };
     function pose(name, T) {
       const a = AN[name]; if (!a) return {};
       let t = T;
@@ -113,26 +110,32 @@
     }
     const cam = Object.assign({ yaw: 30, pitch: 10, dist: 60, target: [0, 8, 0], fov: 40, up: [0, 1, 0] }, opt.cam || {});
     let extra = M.id();   // доп. поворот всей модели (вращение мышью)
-    const lerp3 = (a, b, k) => (a && b ? [0, 1, 2].map((i) => a[i] + (b[i] - a[i]) * k) : k >= 0.5 ? b : a);
-    function mix(ii, ai, w, one) { // канал из idle (ii) и действия (ai) с весом w
-      if (!ai) return ii; if (w >= 1 || !ii && !one) return ai;
-      return lerp3(ii || one, ai, w);
-    }
-    function boneMats() {
-      const pi = st.idle ? pose(st.idle, st.idleT) : {};
-      let pa = {}, w = 1;
-      if (st.act) { pa = pose(st.act, st.actT); if (GK) w = Math.min(1, st.actT / (GK.blendIn || 0.1)); }
-      else if (GK && st.fade) { pa = pose(st.fade.name, 1e9); w = 1 - st.fade.t / (GK.blendOut || 0.25); if (w <= 0) st.fade = null; }
+    // каналы кости в текущем состоянии: r (градусы), p, s. exclusive = как два контроллера GeckoLib,
+    // где «движение» останавливается на время атаки (кости без ключей атаки встают в покой)
+    const over = {};   // принудительные повороты костей (IBone.setRotationX/Y/Z из кода мода)
+    function chans() {
+      const pi = st.idle ? pose(st.idle, st.idleT) : {}, pa = st.act ? pose(st.act, st.actT) : {};
       const out = {};
+      for (const n in bones) {
+        const b = bones[n];
+        const an = opt.exclusive ? (st.act ? pa[n] : pi[n]) || {} : pa[n] || pi[n] || {};
+        out[n] = { r: an.r ? [b.rot[0] + an.r[0], b.rot[1] + an.r[1], b.rot[2] + an.r[2]] : b.rot.slice(), p: an.p ? an.p.slice() : [0, 0, 0], s: an.s ? an.s.slice() : [1, 1, 1] };
+      }
+      if (blend.from && blend.t < blend.len) {
+        const k = blend.t / blend.len, e = k * k * (3 - 2 * k), L = (a, b) => a.map((v, i) => v + (b[i] - v) * e);
+        for (const n in out) { const f = blend.from[n]; if (f) out[n] = { r: L(f.r, out[n].r), p: L(f.p, out[n].p), s: L(f.s, out[n].s) }; }
+      }
+      for (const n in over) if (out[n]) over[n].forEach((v, i) => { if (v != null) out[n].r[i] = v; });
+      return out;
+    }
+    const blend = { from: null, t: 0, len: 0 };
+    const startBlend = (len) => { if (!len) { blend.from = null; return; } blend.from = chans(); blend.t = 0; blend.len = len; };
+    function boneMats() {
+      const ch = chans(), out = {};
       const get = (n) => {
         if (out[n]) return out[n]; const b = bones[n]; if (!b) return M.id();
-        let an;
-        if (GK) { const ii = pi[n] || {}, ai = pa[n] || {}; an = { r: mix(ii.r, ai.r, w, [0, 0, 0]), p: mix(ii.p, ai.p, w, [0, 0, 0]), s: mix(ii.s, ai.s, w, [1, 1, 1]) }; }
-        else an = pa[n] || pi[n] || {};
-        let r = an.r ? [b.rot[0] + an.r[0], b.rot[1] + an.r[1], b.rot[2] + an.r[2]] : b.rot;
-        const o = over[n]; if (o) { r = r.slice(); if (o.ry != null) r[1] = o.ry; if (o.rx != null) r[0] = o.rx; if (o.rz != null) r[2] = o.rz; }
-        const p = an.p ? [-an.p[0], an.p[1], an.p[2]] : [0, 0, 0];
-        const sc = an.s ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i) => (i === 0 ? an.s[0] : i === 5 ? an.s[1] : i === 10 ? an.s[2] : i === 15 ? 1 : 0)) : null;
+        const c = ch[n], r = c.r, p = [-c.p[0], c.p[1], c.p[2]];
+        const sc = c.s[0] !== 1 || c.s[1] !== 1 || c.s[2] !== 1 ? [c.s[0], 0, 0, 0, 0, c.s[1], 0, 0, 0, 0, c.s[2], 0, 0, 0, 0, 1] : null;
         let m = M.mul(M.t(b.piv[0] + p[0], b.piv[1] + p[1], b.piv[2] + p[2]), M.mul(sc ? M.mul(M.euler(r), sc) : M.euler(r), M.t(-b.piv[0], -b.piv[1], -b.piv[2])));
         if (b.parent) m = M.mul(get(b.parent), m);
         return (out[n] = m);
@@ -151,15 +154,15 @@
       resize() { const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d)); if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; } },
       setExtra(m) { extra = m; },
       M,
-      play(name, onEnd) { st.act = name; st.actT = 0; st.onEnd = onEnd || null; st.fade = null; },
-      over,   // ручные повороты костей поверх анимации (как setRotationY в setLivingAnimations)
-      stop() { st.act = null; },
+      play(name, onEnd) { startBlend(opt.blend && opt.blend[0]); st.act = name; st.actT = 0; st.onEnd = onEnd || null; },
+      stop() { if (st.act) startBlend(opt.blend && opt.blend[1]); st.act = null; },
+      // поворот кости «из кода» (градусы, null = не трогать ось)
+      setBoneRot(n, r) { if (r) over[n] = r; else delete over[n]; },
       hide(n, on) { on ? hide.add(n) : hide.delete(n); },
       tick(dt) {
         st.idleT += dt * st.speed;
-        if (st.fade) st.fade.t += dt * st.speed;
-        if (st.act) { st.actT += dt * st.speed; const a = AN[st.act]; const hold = (GK && opt.hold && opt.hold[st.act]) || 0;
-          if (a && a.loop === false && st.actT >= a.len + hold) { const cb = st.onEnd; if (GK) st.fade = { name: st.act, t: 0 }; st.act = null; st.onEnd = null; cb && cb(); } }
+        if (blend.from) { blend.t += dt; if (blend.t >= blend.len) blend.from = null; }
+        if (st.act) { st.actT += dt * st.speed; const a = AN[st.act]; if (a && a.loop === false && st.actT >= a.len && !st.hold) { const cb = st.onEnd; startBlend(opt.blend && opt.blend[1]); st.act = null; st.onEnd = null; cb && cb(); } }
       },
       // мировые координаты точки кости (для частиц/следа клинка)
       point(bone, p) { const m = M.mul(extra, boneMats()[bone]); return M.ap(m, p); },
