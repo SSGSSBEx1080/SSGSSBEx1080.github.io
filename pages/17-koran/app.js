@@ -181,6 +181,43 @@
     { date: "16.05.2026", t: "Дроп с Махораги", d: "С выходом Махораги книга начала выпадать с него с шансом 30%.", c: "#8fbf9a" },
     { date: "29.05.2026", t: "Ачивки", d: "В древе достижений появилась ветка из четырёх ачивок: две половины, целая книга и «Знание — сила».", c: "#55ffff" },
   ]);
+
+  /* ================= NBT книги ================= */
+  (function nbt() {
+    const who = ["Ты", "Друг"];
+    let book, holder = 0; const got = [false, false];
+    const fresh = () => ({ pages: null, flag: false, edited: false });
+    book = fresh();
+    const log = (t, c = "") => { const d = document.createElement("div"); d.className = c; d.textContent = t; const L = $("#nbtLog"); L.prepend(d); while (L.children.length > 5) L.lastChild.remove(); };
+    function draw() {
+      $("#nbtWho").innerHTML = who.map((w, i) => `<div class="${i === holder ? "on" : ""}"><b>${w}</b><span>${i === holder ? "держит книгу" : "стоит рядом"}</span><em class="${got[i] ? "ok" : ""}">${got[i] ? "✔ Знание — сила" : "нет ачивки"}</em></div>`).join("");
+      const first = book.edited ? '{"text":"тут был я"}' : '{"text":"Сура 1488 Аят 67…","color":"dark_red","bold":true}';
+      $("#nbtTag").innerHTML = book.pages === null && !book.edited ? `<i>{}</i>\n<span class="c">// у новой книги тега нет вообще</span>` :
+        `{\n  <b>pages</b>: [\n    <span class="${book.edited ? "bad" : ""}">'${esc(first)}'</span>,\n    <span class="c">… ещё ${book.pages === null ? 0 : 19} страниц</span>\n  ],` + (book.flag ? `\n  <b class="f">KoranAchievementGiven</b>: 1b` : "") + `\n}`;
+    }
+    $("#nbtUse").addEventListener("click", () => {
+      const wasEdited = book.edited; book.pages = 20; book.edited = false; snd("page"); ZM.sfx("page", 0.5);
+      if (wasEdited) log("Страницы переписаны заново — правка пропала.", "w");
+      if (!book.flag) { book.flag = true; if (!got[holder]) { got[holder] = true; ZM.sfx("toast_in", 0.5); } log(`${who[holder]}: страниц 20, отметки нет → ачивка, отметка поставлена.`, "ok"); }
+      else log(`${who[holder]}: в книге уже стоит отметка → ачивки не будет.`, got[holder] ? "" : "bad");
+      draw();
+    });
+    $("#nbtEdit").addEventListener("click", () => { book.edited = true; if (book.pages === null) book.pages = 0; ZM.sfx("click", 0.4); log("Страница 1 изменена командой /data."); draw(); });
+    $("#nbtGive").addEventListener("click", () => { holder = 1 - holder; ZM.sfx("pop", 0.5); log(`Книга перешла: ${who[holder]}.`); draw(); });
+    $("#nbtNew").addEventListener("click", () => { book = fresh(); ZM.sfx("pop", 0.5); log(`${who[holder]} берёт новую книгу.`); draw(); });
+    log("Начни с ПКМ. Потом передай книгу другу и попробуй снова.");
+    draw();
+
+    const F = [
+      ["Отдал свою — друг без ачивки", "Отметка о выданной ачивке пишется в саму книгу, а не игроку. Друг, открыв твою уже прочитанную книгу, ничего не получит. Ему нужна своя, свежая."],
+      ["Правки не держатся", "Все 20 страниц записываются заново при каждом открытии. Поменяешь текст командой — при следующем ПКМ он вернётся."],
+      ["Одна в ячейке", "Книги не складываются, в ячейке всегда одна. Десяток Коранов займёт десять ячеек."],
+      ["Не ванильная книга", "Это отдельный предмет, а не «Написанная книга». Кафедра её не примет, скопировать на верстаке тоже не выйдет."],
+      ["Статистика считает открытия", "Каждый ПКМ идёт в «Использовано» в статистике. Сколько раз открывал — столько и насчитает."],
+      ["Лава не берёт, кактус — да", "Огонь и лава книге не страшны, как незериту. А кактус, пустота и взрыв уничтожают её, как любой другой предмет."],
+    ];
+    $("#fineBox").innerHTML = F.map(([t, d]) => `<article class="pnl"><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join("");
+  })();
   K.finNav(17, $("#finNav"));
   ZM.reveal && ZM.reveal();
 })();
