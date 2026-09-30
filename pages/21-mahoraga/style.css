@@ -378,11 +378,8 @@ h3{font:700 30px/1.1 var(--f-big);color:var(--bone);margin:0 0 10px}
   .mh-log{left:10px;bottom:10px;font-size:12px}
   .mh-dl>div{grid-template-columns:1fr;gap:2px}
 }
-/* hero: деления на полосе босса и подсказка после адаптации */
-.mh-bar div{position:relative}
-.mh-bar div::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),#000 calc(10% - 1px) 10%);pointer-events:none}
-#heroStage .mh-ad-pops span{top:30%}
-.mh-hero-note{position:absolute;left:50%;bottom:44px;transform:translate(-50%,8px);width:min(92%,380px);padding:10px 14px;background:rgba(8,9,12,.88);border:1px solid rgba(201,164,92,.45);font:500 14px/1.4 var(--f-c);color:var(--bone);text-align:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:3}
-.mh-hero-note.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
-.mh-hero-note b{color:var(--gold)}
-.mh-hero-note a{color:var(--gold);text-decoration:underline}
+
+/* hero: статус адаптации под полоской */
+.mh-bar em{display:block;margin-top:6px;min-height:14px;font:italic 12px/1.2 var(--f-body,system-ui);color:#e8e2cf;text-shadow:0 1px 2px #000;letter-spacing:.02em;opacity:0;transition:opacity .25s}
+.mh-bar em.on{opacity:1}
+.mh-bar em b{color:#ffd76a;font-style:normal}

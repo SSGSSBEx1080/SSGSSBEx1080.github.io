@@ -179,7 +179,7 @@ input[type=range]{width:100%;accent-color:var(--ac)}
 .aq-row>span:nth-child(5) i{height:6px;border-radius:3px;background:linear-gradient(90deg,#ff4444,#ff8a8a);transition:width .25s}
 .aq-row.me{background:linear-gradient(90deg,rgba(255,201,14,.16),transparent);border-radius:8px}
 .aq-row.me>span:nth-child(2){color:var(--ac);font-weight:700}
-/* ---------- 06 мелкий шрифт ---------- */
+/* ---------- 06 тонкости ---------- */
 .aq-work{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:18px;align-items:start}
 .aq-dig{padding:18px;display:grid;gap:12px}
 .aq-dig h3{margin:0;font:400 22px var(--f-t);color:var(--ac)}

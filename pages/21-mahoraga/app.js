@@ -63,32 +63,11 @@
   /* ================= общая 3D-модель ================= */
   function mahoraga(cv, opt = {}) {
     if (!GL) return null;
-    // как в моде: во время атаки idle выключен (movement → STOP), переходы 2 и 5 тиков
-    const g = ZMGeo.create(cv, { geo: G.m.geo, anim: G.m.anim, tex: TEX.m, idle: "idle", exclusive: true, trans: { in: 0.1, out: 0.25 } });
+    const g = ZMGeo.create(cv, { geo: G.m.geo, anim: G.m.anim, tex: TEX.m, idle: "idle", blend: 0.12 });
     const bb = g.bbox(Object.keys(g.bones).filter((n) => g.bones[n].n));
-    const base = { target: [bb.c[0], bb.c[1] + (opt.dy || 0), bb.c[2]], dist: bb.size[1] * (opt.k || 1.7) };
-    Object.assign(g.cam, { target: base.target.slice(), dist: base.dist, yaw: opt.yaw ?? 0, pitch: opt.pitch ?? 6, fov: 40 });
-    g.bb = bb;
-    // колесо крутит код (MahoragaModel.setLivingAnimations → wheel.setRotationY), 45° за 10 тиков
-    let wDeg = 0, wTo = 0;
-    g.over.wheel = (r) => { r[1] = -wDeg; return r; };
-    g.turnWheel = () => { wTo = Math.round(wTo / 45) * 45 + 45; };
-    // камера держит его в кадре, даже когда он прыгает, делает рывок или падает
-    const WIDE = { leap: 1.3, speed_blitz: 1.45, death: 1.35, scream: 1.15 };
-    const piv = g.bones.body ? g.bones.body.piv : bb.c;
-    g.step = (dt) => {
-      g.tick(dt);
-      if (wDeg < wTo) wDeg = Math.min(wTo, wDeg + 90 * dt);
-      const want = WIDE[g.st.act] || 1, k = Math.min(1, dt * 3);
-      g.cam.dist += (base.dist * want - g.cam.dist) * k;
-      if (g.st.act && WIDE[g.st.act]) {
-        const w = g.point("body", piv), d = [w[0] - piv[0], w[1] - piv[1], w[2] - piv[2]];
-        for (let i = 0; i < 3; i++) g.cam.target[i] += (base.target[i] + d[i] * 0.8 - g.cam.target[i]) * k;
-      } else for (let i = 0; i < 3; i++) g.cam.target[i] += (base.target[i] - g.cam.target[i]) * k;
-    };
-    return g;
+    Object.assign(g.cam, { target: [bb.c[0], bb.c[1] + (opt.dy || 0), bb.c[2]], dist: bb.size[1] * (opt.k || 1.7), yaw: opt.yaw ?? 0, pitch: opt.pitch ?? 6, fov: 40 });
+    g.bb = bb; return g;
   }
-  if (G.m.anim.death) G.m.anim.death.hold = true;
   const ATK = [["attack_left", 0.4], ["attack_right", 0.4], ["attack_double", 0.2]];
   const pickAtk = () => { let r = Math.random(); for (const [n, p] of ATK) { if ((r -= p) < 0) return n; } return "attack_right"; };
 
@@ -98,29 +77,28 @@
     const g = mahoraga(cv, { k: 2.0, pitch: 8 });
     if (!g) { cv.replaceWith(Object.assign(new Image(), { src: T("scroll_big"), className: "mh-model", style: "object-fit:contain;padding:20%" })); return; }
     const st = K.spinner(cv, { ry: -25, rx: 0 }, 30);
-    const pops = document.createElement("div"); pops.className = "mh-ad-pops"; stage.appendChild(pops);
-    const note = document.createElement("div"); note.className = "mh-hero-note"; stage.appendChild(note);
-    const pop = (t, c) => { const s = document.createElement("span"); s.textContent = t; if (c) s.className = c; s.style.left = 50 + rnd(-16, 16) + "%"; pops.appendChild(s); setTimeout(() => s.remove(), 1000); };
-    // удар рукой/мечом — это «Ближний бой». Первый сегмент добит — к ближнему бою иммунитет
-    const HIT = 12.5; let hp = 500, immune = false, down = null, resetT = 0;
+    // клик = удар мечом в упор: урон режется до конца сегмента, на границе он адаптируется к ближнему бою
+    let down = null, hp = 500, wheelA = 0, immune = false, idleT = 0;
     const bar = () => ($("#heroBar i").style.width = hp / 5 + "%");
-    const reset = () => { hp = 500; immune = false; bar(); note.classList.remove("on"); };
+    const say = (h) => { const e = $("#heroSt"); e.innerHTML = h; e.classList.toggle("on", !!h); };
+    const turn = () => { wheelA += 45; $("#heroWheel").style.transform = `rotate(${wheelA}deg)`; };
+    const resetHero = () => { hp = 500; immune = false; bar(); say(""); };
     cv.addEventListener("pointerdown", (e) => (down = { x: e.clientX, y: e.clientY }));
     cv.addEventListener("pointerup", (e) => {
       if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) return; down = null;
-      clearTimeout(resetT); resetT = setTimeout(reset, 9000);
+      clearTimeout(idleT); idleT = setTimeout(resetHero, 9000);
       if (immune) {
-        pop("иммунитет", "imm"); ZM.sfx("stone", 0.4, 1.4);
-        if (!g.st.act) { g.play(pickAtk()); snd("attack", 0.6, rnd(0.9, 1.1)); }
-        note.classList.add("on"); return;
+        ZM.sfx("stone", 0.45, 1.4); say("<b>иммунитет</b> · ближний бой больше не проходит");
+        if (!g.st.act) { g.play(pickAtk()); snd("attack", 0.7, rnd(0.9, 1.1)); }
+        return;
       }
-      hp = Math.max(450, hp - HIT); bar(); pop("−" + HIT); ZM.sfx("hit", 0.5);
-      if (!g.st.act && Math.random() < 0.5) { g.play(pickAtk()); snd("attack", 0.55, rnd(0.9, 1.1)); }
+      const dmg = 8; hp = Math.max(450, hp - dmg); bar(); ZM.sfx("hit", 0.5, rnd(0.9, 1.1));
       if (hp <= 450) {
-        immune = true; g.turnWheel(); snd("adapt", 0.55); pop("адаптировался", "adp");
-        $("#heroWheel").style.transform = `rotate(45deg)`;
-        note.innerHTML = `<b>Ближний бой больше не работает.</b> Остальные 15 видов урона — в разделе <a href="#adapt">«Адаптация»</a>`;
-        setTimeout(() => note.classList.add("on"), 400);
+        immune = true; g.play("adapt"); snd("adapt", 0.55); turn();
+        say("колесо повернулось: <b>адаптировался к ближнему бою</b>");
+      } else {
+        say(`−${dmg} · до конца сегмента ${hp - 450}`);
+        if (!g.st.act && Math.random() < 0.5) { g.play(pickAtk()); snd("attack", 0.6, rnd(0.9, 1.1)); }
       }
     });
     const vis = visible(cv); let last = performance.now();
@@ -128,7 +106,7 @@
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
       if (vis()) {
         if (st.idle() && motion()) st.ry += dt * 14;
-        g.step(dt); const c = g.bb.c, M = g.M;
+        g.tick(dt); const c = g.bb.c, M = g.M;
         g.setExtra(M.mul(M.t(c[0], c[1], c[2]), M.mul(M.rx(st.rx * Math.PI / 180), M.mul(M.ry(st.ry * Math.PI / 180), M.t(-c[0], -c[1], -c[2])))));
         g.render();
       }
@@ -421,7 +399,7 @@
       if (p2) { segs.innerHTML = "<i></i>"; segs.firstChild.style.setProperty("--f", (hp / 100) * 100 + "%"); }
       else {
         if (segs.children.length !== 10) segs.innerHTML = Array.from({ length: 10 }, () => "<i></i>").join("");
-        // как обычная полоса босса: пустеет справа налево, крайний правый сегмент = 500..450
+        // как полоска босса: убывает справа налево, крайний правый сегмент = 500..450
         [...segs.children].forEach((el, i) => { const lo = i * 50, f = clamp((hp - lo) / 50, 0, 1); el.style.setProperty("--f", f * 100 + "%"); el.classList.toggle("done", i >= 10 - stage); });
       }
       $("#adHpT").textContent = `${Math.ceil(hp * 10) / 10} / ${p2 ? 100 : 500}`;
@@ -483,28 +461,26 @@
     { k: "blitz", jp: "閃", n: "Рывок", anim: "speed_blitz", s: "speedblitz", d: "Цель в 3–15 блоках и почти на одной высоте (до 5). Бросок по прямой, первого задетого хватает, бьёт дважды и отшвыривает.", n1: "8 при касании, 2×10", n2: "14 при касании, 2×16", cd: "14 с / 8 с" },
     { k: "laser", jp: "光", n: "Лазер", anim: "laser", s: "laser", d: "Цель дальше 14 блоков. Луч на 20 блоков растёт по 1,35 блока за тик, выжигает тоннель 3×3 и ранит всех на пути, кроме самого Махораги.", n1: "18", n2: "28", cd: "15 с / 9 с" },
     { k: "scream", jp: "咆", n: "Крик", anim: "scream", s: "scream", d: "Если вокруг, в радиусе 10, хотя бы 6 отмеченных врагов. Все получают Замедление IV и Слабость II на 4 секунды.", n1: "дебафф", n2: "дебафф", cd: "15 с / 9 с" },
-    { k: "adapt", jp: "適", n: "Поворот колеса", anim: null, s: "adapt", d: "Не атака, а реакция: сегмент сломан, и колесо над головой за полсекунды проворачивается на 45°, в воздух летят искры и частицы портала. Сам Махорага при этом не замирает.", n1: "—", n2: "во 2 фазе не бывает", cd: "по событию" },
+    { k: "adapt", jp: "適", n: "Поворот колеса", anim: "adapt", s: "adapt", d: "Не атака, а реакция: сегмент сломан, колесо проворачивается на 45°, в воздух летят искры и частицы портала.", n1: "—", n2: "во 2 фазе не бывает", cd: "по событию" },
     { k: "death", jp: "終", n: "Смерть", anim: "death", s: "death", d: "Падение на 2,5 секунды, после него лут и 500 опыта. Свиток хозяина сгорает, если он ещё был.", n1: "—", n2: "—", cd: "один раз" },
   ];
   (function arsenal() {
     $("#arList").innerHTML = SK.map((s, i) => `<button type="button" class="mh-sk" data-i="${i}"><span class="ic">${s.jp}</span><span><b>${esc(s.n)}</b><p>${esc(s.d)}</p></span><span class="n"><span>ф1 <em>${esc(s.n1)}</em></span><span>ф2 <em>${esc(s.n2)}</em></span><span>КД ${esc(s.cd)}</span></span></button>`).join("");
     const cv = $("#ar3d"), g = mahoraga(cv, { k: 2.6, yaw: 25, pitch: 6 });
-    const name = (s) => ($("#arName").innerHTML = `${esc(s.n)}<small>${typeof s.anim === "string" ? "animation." + s.anim : s.anim ? "attack_left / right / double" : "wheel +45° · из кода"}</small>`);
+    const name = (s) => ($("#arName").innerHTML = `${esc(s.n)}<small>${typeof s.anim === "string" ? "animation." + s.anim : "attack_left / right / double"}</small>`);
     name(SK[0]);
     $("#arList").addEventListener("click", (e) => {
       const b = e.target.closest(".mh-sk"); if (!b) return; const s = SK[+b.dataset.i];
       $$(".mh-sk").forEach((x) => x.classList.toggle("on", x === b)); name(s);
-      snd(s.s, 0.55); if (!g) return;
-      clearTimeout(g._dt);
-      if (!s.anim) { if (g.st.act === "death") g.stop(); g.turnWheel(); return; }
-      g.play(typeof s.anim === "function" ? s.anim() : s.anim);
-      if (s.anim === "death") g._dt = setTimeout(() => g.st.act === "death" && g.stop(), 4200);
+      snd(s.s, 0.55);
+      if (g) { clearTimeout(g._rt); if (s.k === "death") g.play("death", () => { g._rt = setTimeout(() => g.stop(), 1600); }, { hold: true }); else g.play(typeof s.anim === "function" ? s.anim() : s.anim); }
     });
     if (!g) return;
     const st = K.spinner(cv, { ry: 25, rx: 0 }, 25), vis = visible(cv); let last = performance.now();
     (function loop(now) {
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
-      if (vis()) { if (st.idle() && motion()) st.ry += dt * 8; g.step(dt); const c = g.bb.c, M = g.M; g.setExtra(M.mul(M.t(c[0], c[1], c[2]), M.mul(M.rx(st.rx * Math.PI / 180), M.mul(M.ry(st.ry * Math.PI / 180), M.t(-c[0], -c[1], -c[2]))))); g.render(); }
+      if (vis()) { if (st.idle() && motion()) st.ry += dt * 8; g.tick(dt);
+        { const dn = g.st.act === "death" ? 1 : 0; g._dz = (g._dz || 0) + (dn - (g._dz || 0)) * Math.min(1, dt * 3); g.cam.target[1] = g.bb.c[1] - g.bb.size[1] * 0.28 * g._dz; g.cam.dist = g.bb.size[1] * (2.6 + 0.5 * g._dz); } const c = g.bb.c, M = g.M; g.setExtra(M.mul(M.t(c[0], c[1], c[2]), M.mul(M.rx(st.rx * Math.PI / 180), M.mul(M.ry(st.ry * Math.PI / 180), M.t(-c[0], -c[1], -c[2]))))); g.render(); }
       requestAnimationFrame(loop);
     })(last);
   })();

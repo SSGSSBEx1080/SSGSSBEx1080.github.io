@@ -158,7 +158,7 @@
   renderColl();
   setInterval(() => { if (collDirty) { collDirty = false; saveSeen(); renderColl(); } }, 400);
 
-  /* ================= мелкий шрифт ================= */
+  /* ================= тонкости ================= */
   (function fine() {
     $("#srvCubes").innerHTML = [0, 1].map(() => `<div class="hb-srv">${FACES.slice(0, 3).map((f, i) => `<i class="s${i}">${faceHtml(i === 1 ? "hentai/1" : "pron/1", false).replace(/<span class="lb[^]*?<\/span>/, "")}</i>`).join("")}</div>`).join("");
     const F = [

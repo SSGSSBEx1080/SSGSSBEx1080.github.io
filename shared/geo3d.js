@@ -110,33 +110,37 @@
     }
     const cam = Object.assign({ yaw: 30, pitch: 10, dist: 60, target: [0, 8, 0], fov: 40, up: [0, 1, 0] }, opt.cam || {});
     let extra = M.id();   // доп. поворот всей модели (вращение мышью)
-    // opt.exclusive: пока идёт действие, idle не применяется (контроллер движения GeckoLib отдаёт STOP)
-    // opt.trans = {in, out}: плавный переход между позами, как transitionLength у контроллеров
-    const TR = opt.trans || null, over = {};
-    let lastPose = {}, blend = null;
-    const lerp3 = (a, b, k) => (a || b ? [0, 1, 2].map((j) => (a ? a[j] : 0) + ((b ? b[j] : 0) - (a ? a[j] : 0)) * k) : null);
-    const lerpS = (a, b, k) => (a || b ? [0, 1, 2].map((j) => (a ? a[j] : 1) + ((b ? b[j] : 1) - (a ? a[j] : 1)) * k) : null);
-    function startBlend(dur) { if (TR && dur > 0) blend = { from: lastPose, t: 0, dur }; }
+    // значения кости в текущем кадре (с плавным переходом между анимациями, как transitionLength у GeckoLib)
+    const BL = { from: null, t: 0, len: opt.blend || 0 };
+    function rawVals() {
+      const pi = st.idle ? pose(st.idle, st.idleT) : {}, pa = st.act ? pose(st.act, st.actT) : {};
+      const o = {};
+      for (const n in bones) {
+        const b = bones[n], A = pa[n] || {}, I = pi[n] || {}, an = { r: A.r || I.r, p: A.p || I.p, s: A.s || I.s };
+        o[n] = { r: an.r ? [b.rot[0] + an.r[0], b.rot[1] + an.r[1], b.rot[2] + an.r[2]] : b.rot.slice(), p: an.p ? an.p.slice() : [0, 0, 0], s: an.s ? an.s.slice() : [1, 1, 1] };
+      }
+      return o;
+    }
+    function curVals() {
+      const v = rawVals();
+      if (BL.from && BL.len > 0 && BL.t < BL.len) {
+        const k = BL.t / BL.len, e = k * k * (3 - 2 * k), L = (a, b) => a.map((x, i) => x + (b[i] - x) * e);
+        for (const n in v) { const f = BL.from[n]; if (f) v[n] = { r: L(f.r, v[n].r), p: L(f.p, v[n].p), s: L(f.s, v[n].s) }; }
+      }
+      return v;
+    }
+    function snap() { if (BL.len > 0) { BL.from = curVals(); BL.t = 0; } }
     function boneMats() {
-      const pi = st.idle && !(opt.exclusive && st.act) ? pose(st.idle, st.idleT) : {}, pa = st.act ? pose(st.act, st.actT) : {};
-      const out = {}, cur = {};
+      const V = curVals(), out = {};
       const get = (n) => {
         if (out[n]) return out[n]; const b = bones[n]; if (!b) return M.id();
-        let an;
-        if (opt.exclusive) { const A = pa[n], I = pi[n]; an = { r: (A && A.r) || (!st.act && I && I.r) || null, p: (A && A.p) || (!st.act && I && I.p) || null, s: (A && A.s) || (!st.act && I && I.s) || null }; }
-        else an = pa[n] || pi[n] || {};
-        cur[n] = an;
-        if (blend) { const f = blend.from[n] || {}, k = Math.min(1, blend.t / blend.dur), e = k * k * (3 - 2 * k); an = { r: lerp3(f.r, an.r, e), p: lerp3(f.p, an.p, e), s: lerpS(f.s, an.s, e) }; cur[n] = an; }
-        let r = an.r ? [b.rot[0] + an.r[0], b.rot[1] + an.r[1], b.rot[2] + an.r[2]] : b.rot;
-        if (over[n]) r = over[n](r.slice());
-        const p = an.p ? [-an.p[0], an.p[1], an.p[2]] : [0, 0, 0];
-        const sc = an.s ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i) => (i === 0 ? an.s[0] : i === 5 ? an.s[1] : i === 10 ? an.s[2] : i === 15 ? 1 : 0)) : null;
+        const v = V[n], r = v.r, p = [-v.p[0], v.p[1], v.p[2]], s = v.s;
+        const sc = s[0] !== 1 || s[1] !== 1 || s[2] !== 1 ? [s[0], 0, 0, 0, 0, s[1], 0, 0, 0, 0, s[2], 0, 0, 0, 0, 1] : null;
         let m = M.mul(M.t(b.piv[0] + p[0], b.piv[1] + p[1], b.piv[2] + p[2]), M.mul(sc ? M.mul(M.euler(r), sc) : M.euler(r), M.t(-b.piv[0], -b.piv[1], -b.piv[2])));
         if (b.parent) m = M.mul(get(b.parent), m);
         return (out[n] = m);
       };
       for (const n in bones) get(n);
-      lastPose = cur;
       return out;
     }
     function viewProj() {
@@ -150,14 +154,13 @@
       resize() { const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d)); if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; } },
       setExtra(m) { extra = m; },
       M,
-      play(name, onEnd) { st.act = name; st.actT = 0; st.onEnd = onEnd || null; startBlend(TR && TR.in); },
-      stop() { if (st.act) startBlend(TR && TR.out); st.act = null; },
-      over,
+      play(name, onEnd, o) { snap(); st.act = name; st.actT = 0; st.onEnd = onEnd || null; st.hold = !!(o && o.hold); },
+      stop() { if (st.act) snap(); st.act = null; st.hold = false; },
       hide(n, on) { on ? hide.add(n) : hide.delete(n); },
       tick(dt) {
         st.idleT += dt * st.speed;
-        if (blend) { blend.t += dt; if (blend.t >= blend.dur) blend = null; }
-        if (st.act) { st.actT += dt * st.speed; const a = AN[st.act]; if (a && a.loop === false && st.actT >= a.len && !a.hold) { const cb = st.onEnd; startBlend(TR && TR.out); st.act = null; st.onEnd = null; cb && cb(); } }
+        if (BL.from) { BL.t += dt; if (BL.t >= BL.len) BL.from = null; }
+        if (st.act) { st.actT += dt * st.speed; const a = AN[st.act]; if (a && a.loop === false && st.actT >= a.len) { const cb = st.onEnd; if (st.hold) st.actT = a.len; else { snap(); st.act = null; } st.onEnd = null; cb && cb(); } }
       },
       // мировые координаты точки кости (для частиц/следа клинка)
       point(bone, p) { const m = M.mul(extra, boneMats()[bone]); return M.ap(m, p); },
