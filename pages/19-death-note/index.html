@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№19 · Тетрадь смерти — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №19 мода ZitraksMode: Тетрадь смерти и Тетрадь смерти Реквием. Правила, прочность от чёрного материала, шесть способов казни и симулятор записи имени.">
+<meta name="theme-color" content="#060606">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="dn-rain" id="rain" aria-hidden="true"></canvas>
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="dn-hero" id="hero">
+    <div class="dn-hero-txt">
+      <div class="dn-tag"><span>№19</span>05.05.2026<i></i>предмет · проклятый</div>
+      <h1 class="dn-logo"><small>Death Note</small>Тетрадь<br>смерти</h1>
+      <p class="dn-sub">Напиши имя — и через сорок секунд цель умрёт. Игрока тетрадь найдёт по нику где угодно, моба — в радиусе 256 блоков. У Реквиема можно выбрать и время, и способ: от наковальни с неба до молнии.</p>
+      <div class="dn-cta"><a class="k-btn" href="#sim">Записать имя</a><a class="k-btn2" href="#rules">Правила</a></div>
+      <div class="dn-stats">
+        <a href="#rules"><b>40 с</b><span>до смерти</span></a>
+        <a href="#ways"><b>6</b><span>способов казни</span></a>
+        <a href="#uses"><b>1–10</b><span>записей в обычной</span></a>
+        <a href="#adv"><b id="stGot">0/5</b><span>ачивки</span></a>
+      </div>
+    </div>
+    <figure class="dn-stage">
+      <div class="dn-book-wrap" id="bookWrap">
+        <div class="dn-book" id="book">
+          <div class="dn-half r"><div class="dn-f out"></div><div class="dn-f in"></div><div class="dn-pg"></div><div class="dn-sp"></div></div>
+          <div class="dn-half l"><div class="dn-f out"></div><div class="dn-f in"><p class="dn-hw" id="heroHw">HOW TO USE IT</p></div><div class="dn-pg"></div><div class="dn-sp"></div></div>
+        </div>
+        <div class="dn-shadow"></div>
+      </div>
+      <div class="dn-mode" role="group" aria-label="Какая тетрадь">
+        <button type="button" class="on" data-m="n">Тетрадь смерти</button><button type="button" data-m="r">Реквием</button>
+      </div>
+      <figcaption>клик — открыть, как в игре · тяни — повернуть</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 01 КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">crafting</span><h2>Крафт</h2></div><span class="sec-q">стак 1 · вкладка ZitraksMode</span></header>
+    <div class="dn-craft reveal">
+      <div class="dn-craft-a">
+        <h3>Тетрадь смерти</h3>
+        <p class="dn-p">Книга с пером в центре и восемь чёрных материалов вокруг. Материалы можно мешать: прочность тетради берётся по <b>первому</b> распознанному слоту, считая слева направо и сверху вниз.</p>
+        <div class="dn-mats" id="mats" role="listbox" aria-label="Чёрный материал"></div>
+        <div class="dn-craft-row">
+          <div class="k-craft dn-kc"><div class="ct">Верстак</div><div class="cb"><div class="cg" id="grid"></div><div class="ca"></div><button type="button" class="k-slot cr" id="res" aria-label="Забрать тетрадь"></button></div></div>
+          <div class="dn-craft-side">
+            <button type="button" class="dn-b" id="fillAll">Залить всё выбранным</button>
+            <button type="button" class="dn-b" id="trick">Хитрость: 1 обсидиан + 7 ковров</button>
+            <div class="dn-matinfo" id="matInfo"></div>
+          </div>
+        </div>
+      </div>
+      <div class="dn-craft-b">
+        <h3>Тетрадь смерти Реквием</h3>
+        <p class="dn-p">Рецепт откроется после ачивки «Серийный убийца». В центр ложится только та Тетрадь, на счету которой <b>пять убийств</b>, иначе верстак ничего не покажет.</p>
+        <div id="craftB"></div>
+        <p class="dn-lock" id="reqLock"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 ПРАВИЛА ============ -->
+  <section class="sec" id="rules">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">how to use it</span><h2>Правила</h2></div><span class="sec-q">переписаны прямо из кода</span></header>
+    <div class="dn-rules reveal" id="rulesBox"></div>
+  </section>
+
+  <!-- ============ 03 СИМУЛЯТОР ============ -->
+  <section class="sec" id="sim">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">write a name</span><h2>Запиши имя</h2></div><span class="sec-q">таймер настоящий: 40 секунд</span></header>
+    <div class="dn-sim reveal">
+      <div class="dn-note" id="note">
+        <div class="dn-note-tabs" role="tablist">
+          <button type="button" class="on" data-n="n" id="tabN">Тетрадь смерти</button><button type="button" data-n="r" id="tabR">Реквием</button>
+        </div>
+        <div class="dn-sheet">
+          <div class="dn-sheet-h" id="sheetH">DEATH NOTE</div>
+          <label class="dn-line"><span>Имя цели:</span><input id="name" maxlength="16" autocomplete="off" spellcheck="false" placeholder="…"></label>
+          <div class="dn-req" id="reqOpts">
+            <div class="dn-opt-l">Время:</div>
+            <div class="dn-opts" id="times"></div>
+            <div class="dn-opt-l">Метод казни:</div>
+            <div class="dn-opts three" id="methods"></div>
+          </div>
+          <button type="button" class="dn-write" id="write">Записать</button>
+          <div class="dn-written" id="written"></div>
+        </div>
+        <div class="dn-inv">
+          <div class="dn-item" id="item"><img id="itemImg" src="" alt=""><i><b id="durBar"></b></i></div>
+          <div class="dn-inv-t"><b id="itemName">Тетрадь смерти</b><span id="itemSub"></span><span class="dn-kills" id="kills"></span></div>
+          <button type="button" class="dn-b sm" id="newNote">Новая</button>
+        </div>
+        <div class="dn-mask" id="mask" aria-label="Испробованные способы"></div>
+      </div>
+      <div class="dn-scene">
+        <div class="dn-view" id="view">
+          <canvas id="cv"></canvas>
+          <div class="dn-timer" id="timer" hidden><b id="tSec">40</b><span id="tWho"></span></div>
+          <button type="button" class="dn-skip" id="skip" hidden>промотать ⏭</button>
+          <div class="dn-log" id="log" aria-live="polite"></div>
+          <div class="dn-dead" id="dead" hidden><b>Вы умерли!</b><span id="deadWhy"></span><button type="button" class="dn-b" id="respawn">Возродиться</button></div>
+        </div>
+        <div class="dn-targets" id="targets"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 ПРОЧНОСТЬ ============ -->
+  <section class="sec" id="uses">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">durability</span><h2>Сколько записей</h2></div><span class="sec-q">DeathNoteRecipe.getMaxUsesForBlock</span></header>
+    <p class="dn-lead reveal">Тетрадь ломается на той записи, которая съедает последнюю единицу прочности, и эта запись уже не исполняется: предмет исчезает раньше, чем наступает срок. Поэтому казней всегда <b>на одну меньше</b>, чем прочность. Для Реквиема нужно пять убийств одной тетрадью, а значит прочность от шести: подходят только обсидиан, незерит и плачущий обсидиан.</p>
+    <div class="dn-uses reveal" id="usesTbl"></div>
+  </section>
+
+  <!-- ============ 05 СПОСОБЫ ============ -->
+  <section class="sec" id="ways">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">kill methods</span><h2>Шесть смертей</h2></div><span class="sec-q">только в Реквиеме</span></header>
+    <div class="dn-ways reveal" id="waysBox"></div>
+  </section>
+
+  <!-- ============ 06 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 07 ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <p class="fin-q">Я — справедливость.<br><em>остальное — вопрос прочности</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../data/p19_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
