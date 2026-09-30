@@ -212,6 +212,8 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc-20 .pc-bg::before{content:"67";position:absolute;right:9%;top:52%;font:400 40px/1 'LG Dela',sans-serif;color:#ffd700;letter-spacing:-.02em;transform:rotate(-5deg);text-shadow:0 3px 0 #8b4513}
 .pc-21 .pc-bg{background:radial-gradient(circle at 78% 30%,rgba(201,164,92,.35),transparent 40%),radial-gradient(ellipse at 10% 120%,rgba(15,107,112,.35),transparent 60%),linear-gradient(160deg,#16181c,#07080a)}
 .pc-21 .pc-bg::before{content:"\2638";position:absolute;right:7%;top:38%;font:400 54px/1 serif;color:#c9a45c;opacity:.85;text-shadow:0 0 18px rgba(201,164,92,.6)}
+.pc-22 .pc-bg{background:radial-gradient(ellipse 22% 18% at 20% 30%,#1d1a17 60%,transparent 62%),radial-gradient(ellipse 16% 22% at 70% 72%,#1d1a17 60%,transparent 62%),radial-gradient(ellipse 12% 10% at 88% 20%,#1d1a17 60%,transparent 62%),linear-gradient(160deg,#fbfaf6,#e4e1da)}
+.pc-22 .pc-bg::before{content:"Дойка";position:absolute;right:8%;top:14%;font:400 30px/1.2 'LG Pacifico',cursive;color:#2e6fd8;transform:rotate(-6deg);text-shadow:2px 2px 0 #fff,4px 4px 0 #1d1a17}
 @keyframes sbSpin{to{transform:rotate(360deg)}}
 @keyframes aqRise{from{transform:translateY(0)}to{transform:translateY(-220px)}}
 @keyframes prNoz{0%{transform:translate(-40px,0)}50%{transform:translate(30px,6px)}100%{transform:translate(-20px,12px)}}
@@ -436,6 +438,7 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 @font-face{font-family:'LG Dela';font-display:swap;src:url(../assets/fonts/DelaGothic-400-latin.woff2) format('woff2')}
 .lg-c[data-s="20"]{font-family:'LG Dela';font-weight:400;background:linear-gradient(180deg,#fffbe6,#ffd700 50%,#a86f12);-webkit-background-clip:text;background-clip:text;color:transparent;--d:#8b4513;text-shadow:none;filter:drop-shadow(0 3px 0 #5a2d0c)}
 .lg-c[data-s="21"]{font-family:'LG Cormorant';font-weight:700;font-size:1.1em;color:transparent;background:linear-gradient(180deg,#fffaf0,#e8e2cf 45%,#a89e86);-webkit-background-clip:text;background-clip:text;text-shadow:none;filter:drop-shadow(0 3px 0 #b3122b) drop-shadow(0 0 12px rgba(201,164,92,.4))}
+.lg-c[data-s="22"]{font-family:'LG Pacifico';font-weight:400;color:#2e6fd8;text-shadow:3px 3px 0 #fff,5px 6px 0 #1d1a17;--d:#1d1a17}
 @keyframes lgScan{from{background-position:0 100%}to{background-position:0 -100%}}
 .lg-tip{height:22px;margin-top:6px;font:400 14px var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-4px);transition:.2s}
 .lg-tip.on{opacity:1;transform:none}

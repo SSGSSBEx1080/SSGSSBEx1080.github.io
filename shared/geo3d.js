@@ -93,7 +93,7 @@
     const tex = gl.createTexture(); let ready = false;
     const img = new Image();
     img.onload = () => { gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      const F = opt.nearest ? gl.NEAREST : gl.LINEAR; gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, F); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, F);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); ready = true; api.render(); };
     img.src = opt.tex;
 
@@ -157,6 +157,8 @@
       play(name, onEnd) { startBlend(opt.blend && opt.blend[0]); st.act = name; st.actT = 0; st.onEnd = onEnd || null; },
       stop() { if (st.act) startBlend(opt.blend && opt.blend[1]); st.act = null; },
       // поворот кости «из кода» (градусы, null = не трогать ось)
+      // сменить текстуру на лету (та же развёртка)
+      setTex(src) { if (img.src !== src) img.src = src; },
       setBoneRot(n, r) { if (r) over[n] = r; else delete over[n]; },
       hide(n, on) { on ? hide.add(n) : hide.delete(n); },
       tick(dt) {
