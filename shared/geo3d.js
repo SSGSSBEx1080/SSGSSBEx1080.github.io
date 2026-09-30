@@ -44,6 +44,7 @@
 
   function sample(keys, t) {
     if (!keys || !keys.length) return null;
+    if (typeof keys[0][1] === "number") keys = keys.map(([t, v]) => [t, [v, v, v]]);
     if (t <= keys[0][0]) return keys[0][1];
     for (let i = 1; i < keys.length; i++) {
       if (t <= keys[i][0]) { const [t0, a] = keys[i - 1], [t1, b] = keys[i], k = (t - t0) / (t1 - t0 || 1); return [0, 1, 2].map((j) => a[j] + (b[j] - a[j]) * k); }
@@ -104,7 +105,7 @@
       let t = T;
       if (a.loop === true) t = T % a.len; else t = Math.min(T, a.len);
       const o = {};
-      for (const [bn, ch] of Object.entries(a.bones)) o[bn] = { r: sample(ch.rotation, t), p: sample(ch.position, t) };
+      for (const [bn, ch] of Object.entries(a.bones)) o[bn] = { r: sample(ch.rotation, t), p: sample(ch.position, t), s: ch.scale ? sample(ch.scale, t) : null };
       return o;
     }
     const cam = Object.assign({ yaw: 30, pitch: 10, dist: 60, target: [0, 8, 0], fov: 40, up: [0, 1, 0] }, opt.cam || {});
@@ -116,7 +117,8 @@
         if (out[n]) return out[n]; const b = bones[n]; if (!b) return M.id();
         const an = pa[n] || pi[n] || {}; const r = an.r ? [b.rot[0] + an.r[0], b.rot[1] + an.r[1], b.rot[2] + an.r[2]] : b.rot;
         const p = an.p ? [-an.p[0], an.p[1], an.p[2]] : [0, 0, 0];
-        let m = M.mul(M.t(b.piv[0] + p[0], b.piv[1] + p[1], b.piv[2] + p[2]), M.mul(M.euler(r), M.t(-b.piv[0], -b.piv[1], -b.piv[2])));
+        const sc = an.s ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i) => (i === 0 ? an.s[0] : i === 5 ? an.s[1] : i === 10 ? an.s[2] : i === 15 ? 1 : 0)) : null;
+        let m = M.mul(M.t(b.piv[0] + p[0], b.piv[1] + p[1], b.piv[2] + p[2]), M.mul(sc ? M.mul(M.euler(r), sc) : M.euler(r), M.t(-b.piv[0], -b.piv[1], -b.piv[2])));
         if (b.parent) m = M.mul(get(b.parent), m);
         return (out[n] = m);
       };

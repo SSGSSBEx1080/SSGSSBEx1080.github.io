@@ -210,6 +210,8 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc-19 .pc-bg::before{content:"Death Note";position:absolute;right:10%;top:16%;font:700 30px/1 'LG Amatic',cursive;color:rgba(255,255,255,.75);transform:rotate(-6deg);letter-spacing:.04em}
 .pc-20 .pc-bg{background:radial-gradient(ellipse at 50% -20%,rgba(255,215,0,.45),transparent 55%),conic-gradient(from 170deg at 50% -10%,transparent 0deg,rgba(255,230,140,.18) 10deg,transparent 20deg),linear-gradient(160deg,#2a1806,#0b0703)}
 .pc-20 .pc-bg::before{content:"67";position:absolute;right:9%;top:52%;font:400 40px/1 'LG Dela',sans-serif;color:#ffd700;letter-spacing:-.02em;transform:rotate(-5deg);text-shadow:0 3px 0 #8b4513}
+.pc-21 .pc-bg{background:radial-gradient(circle at 78% 30%,rgba(201,164,92,.35),transparent 40%),radial-gradient(ellipse at 10% 120%,rgba(15,107,112,.35),transparent 60%),linear-gradient(160deg,#16181c,#07080a)}
+.pc-21 .pc-bg::before{content:"\2638";position:absolute;right:7%;top:38%;font:400 54px/1 serif;color:#c9a45c;opacity:.85;text-shadow:0 0 18px rgba(201,164,92,.6)}
 @keyframes sbSpin{to{transform:rotate(360deg)}}
 @keyframes aqRise{from{transform:translateY(0)}to{transform:translateY(-220px)}}
 @keyframes prNoz{0%{transform:translate(-40px,0)}50%{transform:translate(30px,6px)}100%{transform:translate(-20px,12px)}}
@@ -433,6 +435,7 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .lg-c[data-s="19"]{font-family:'LG Amatic';font-weight:700;color:#f2f0e9;--d:#b00020;font-size:1.25em;text-shadow:0 3px 0 #b00020}
 @font-face{font-family:'LG Dela';font-display:swap;src:url(../assets/fonts/DelaGothic-400-latin.woff2) format('woff2')}
 .lg-c[data-s="20"]{font-family:'LG Dela';font-weight:400;background:linear-gradient(180deg,#fffbe6,#ffd700 50%,#a86f12);-webkit-background-clip:text;background-clip:text;color:transparent;--d:#8b4513;text-shadow:none;filter:drop-shadow(0 3px 0 #5a2d0c)}
+.lg-c[data-s="21"]{font-family:'LG Cormorant';font-weight:700;font-size:1.1em;color:transparent;background:linear-gradient(180deg,#fffaf0,#e8e2cf 45%,#a89e86);-webkit-background-clip:text;background-clip:text;text-shadow:none;filter:drop-shadow(0 3px 0 #b3122b) drop-shadow(0 0 12px rgba(201,164,92,.4))}
 @keyframes lgScan{from{background-position:0 100%}to{background-position:0 -100%}}
 .lg-tip{height:22px;margin-top:6px;font:400 14px var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-4px);transition:.2s}
 .lg-tip.on{opacity:1;transform:none}

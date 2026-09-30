@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№21 · Махорага — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №21 мода ZitraksMode: Махорага — босс-шикигами. Аванпост на полпути к крепости, свиток призыва, 23-секундный ритуал, колесо адаптации на десять спиц, четыре навыка, вторая фаза и лут на пол-инвентаря.">
+<meta name="theme-color" content="#07080a">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="mh-bg" id="bg" aria-hidden="true"></canvas>
+<div class="mh-mini" id="mini" aria-hidden="true" title="колесо адаптируется к странице"><svg viewBox="-50 -50 100 100"><use href="#wheelSym" x="-50" y="-50" width="100" height="100"/></svg><b id="miniN">0/10</b></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="wheelSym" viewBox="-50 -50 100 100">
+      <g fill="none" stroke="currentColor" stroke-linecap="round">
+        <circle r="31" stroke-width="5"/>
+        <circle r="9" stroke-width="4"/>
+        <g stroke-width="4">
+          <path d="M0-9V-31M0 9V31M-9 0H-31M9 0H31M6.4-6.4 21.9-21.9M-6.4-6.4-21.9-21.9M6.4 6.4 21.9 21.9M-6.4 6.4-21.9 21.9"/>
+        </g>
+        <g stroke-width="6">
+          <path d="M0-31V-44M0 31V44M-31 0H-44M31 0H44M21.9-21.9 31.1-31.1M-21.9-21.9-31.1-31.1M21.9 21.9 31.1 31.1M-21.9 21.9-31.1 31.1"/>
+        </g>
+      </g>
+      <g fill="currentColor">
+        <circle cy="-46" r="4.2"/><circle cy="46" r="4.2"/><circle cx="-46" r="4.2"/><circle cx="46" r="4.2"/>
+        <circle cx="32.5" cy="-32.5" r="4.2"/><circle cx="-32.5" cy="-32.5" r="4.2"/><circle cx="32.5" cy="32.5" r="4.2"/><circle cx="-32.5" cy="32.5" r="4.2"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="mh-hero" id="hero">
+    <div class="mh-hero-txt">
+      <div class="mh-tag"><span>№21</span>16.05.2026<i></i>босс · шикигами</div>
+      <h1 class="mh-logo"><span class="mh-jp" aria-hidden="true">魔虚羅</span><span class="mh-l1">Махорага</span></h1>
+      <p class="mh-epi" aria-hidden="true">八握剣異戒神将</p>
+      <p class="mh-sub">Пятьсот здоровья, колесо над головой и одно правило: каждым видом урона его можно ранить всерьёз только один раз. Потом колесо поворачивается, и этот урон перестаёт на него действовать. Приходит на твой зов, дерётся за тебя, но и тебя может перемолоть.</p>
+      <div class="mh-cta"><a class="k-btn" href="#adapt">Сломать адаптацию</a><a class="k-btn2" href="#ritual">Ритуал</a><a class="k-btn2" href="#outpost">Где свиток</a></div>
+      <div class="mh-stats">
+        <a href="#adapt"><b>500</b><span>здоровья</span></a>
+        <a href="#adapt"><b>10</b><span>поворотов колеса</span></a>
+        <a href="#ritual"><b>23 с</b><span>ритуала</span></a>
+        <a href="#adv"><b id="stGot">0/4</b><span>ачивки</span></a>
+      </div>
+    </div>
+    <figure class="mh-stage" id="heroStage">
+      <div class="mh-halo" aria-hidden="true"><svg viewBox="-50 -50 100 100" id="heroWheel"><use href="#wheelSym" x="-50" y="-50" width="100" height="100"/></svg></div>
+      <canvas class="mh-model" id="hero3d" aria-label="3D-модель Махораги"></canvas>
+      <div class="mh-floor" aria-hidden="true"></div>
+      <div class="mh-bar" id="heroBar"><span>Махорага</span><div><i></i></div></div>
+      <figcaption>тяни — повернуть · клик — удар</figcaption>
+    </figure>
+  </section>
+
+  <div class="mh-strip" aria-hidden="true"><div id="strip"></div></div>
+
+  <!-- ============ 01 АВАНПОСТ ============ -->
+  <section class="sec" id="outpost">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">structure · mahoraga_outpost</span><h2>Аванпост</h2></div><span class="sec-q">один на весь мир</span></header>
+    <p class="mh-lead reveal">Свиток призыва не крафтится. Он висит в рамке внутри заброшенного аванпоста, а аванпост в мире всего один: он появляется при первом запуске мира, ровно на полпути от точки спавна к ближайшей крепости Края.</p>
+    <div class="mh-op reveal">
+      <div class="mh-op-view" id="opView">
+        <canvas id="op3d" aria-label="3D-модель аванпоста"></canvas>
+        <div class="mh-op-hud"><span id="opHud">тяни — вращать · колесо — ближе</span></div>
+        <button class="mh-op-btn" id="opFrame" type="button">Показать рамку со свитком</button>
+      </div>
+      <div class="mh-op-side">
+        <div class="mh-map" id="map">
+          <canvas id="mapCv" aria-label="Карта: спавн, крепость, аванпост"></canvas>
+          <div class="mh-map-ui">
+            <button class="k-btn2" id="mapNew" type="button">Новый мир</button>
+            <button class="k-btn2" id="mapGo" type="button">Идти по оку Края</button>
+          </div>
+          <div class="mh-map-read" id="mapRead"></div>
+        </div>
+        <dl class="mh-dl" id="opDl"></dl>
+      </div>
+    </div>
+    <div class="mh-cards reveal" id="opFacts"></div>
+  </section>
+
+  <!-- ============ 02 СВИТОК ============ -->
+  <section class="sec" id="scroll">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">item · mahoraga_scroll</span><h2>Свиток</h2></div><span class="sec-q">одна кнопка, три смысла</span></header>
+    <div class="mh-sc reveal">
+      <div class="mh-sc-art">
+        <div class="mh-sc-img" id="scImg"><img src="../../assets/textures/p21/scroll_big.png" alt="Свиток призыва Махораги"></div>
+        <div class="mc-tipbox" id="scTip"></div>
+      </div>
+      <div class="mh-sc-sim">
+        <div class="mh-sc-state" id="scState"></div>
+        <div class="mh-sc-btns">
+          <button class="k-btn" id="scRmb" type="button">ПКМ свитком</button>
+          <button class="k-btn2" id="scStranger" type="button">ПКМ чужим игроком</button>
+          <button class="k-btn2" id="scFast" type="button">⏩ +1 минута</button>
+          <button class="k-btn2" id="scCmd" type="button">/mahoragaresetcd</button>
+        </div>
+        <div class="mh-chat" id="scChat" aria-live="polite"></div>
+        <div class="mh-rules" id="scRules"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 РИТУАЛ ============ -->
+  <section class="sec" id="ritual">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">summon · 460 тиков</span><h2>Ритуал</h2></div><span class="sec-q">布瑠部 由良由良</span></header>
+    <div class="mh-rt reveal">
+      <div class="mh-rt-view" id="rtView">
+        <canvas id="rt3d" aria-label="Синематик ритуала призыва"></canvas>
+        <div class="mh-rt-cap" id="rtCap"></div>
+        <button class="mh-rt-play" id="rtPlay" type="button" aria-label="Начать ритуал"><svg viewBox="-50 -50 100 100"><use href="#wheelSym" x="-50" y="-50" width="100" height="100"/></svg><span>Начать ритуал</span></button>
+      </div>
+      <div class="mh-rt-bar">
+        <button class="mh-rt-pp" id="rtPP" type="button" aria-label="Пауза">❚❚</button>
+        <div class="mh-rt-track" id="rtTrack"><i id="rtFill"></i><div id="rtMarks"></div></div>
+        <span class="mh-rt-t" id="rtT">0.0 / 23.0 с</span>
+        <div class="mh-rt-cams" id="rtCams"></div>
+      </div>
+    </div>
+    <div class="mh-land reveal">
+      <div class="mh-land-view">
+        <canvas id="landCv" aria-label="Место приземления сверху"></canvas>
+      </div>
+      <div class="mh-land-txt">
+        <h3>Приземление</h3>
+        <p>На 21-й секунде ритуала Махорага падает с высоты 67 блоков над точкой призыва. Удар выбивает кратер 3×3 глубиной в три блока, а вокруг расползается порча: кольцо случайного радиуса от 4 до 7. Каждый верхний блок в кольце с шансом от 90% у края кратера до 35% на границе меняется на что-то из четырнадцати мрачных блоков.</p>
+        <div class="mh-land-ui"><button class="k-btn" id="landGo" type="button">Приземлить ещё раз</button><span id="landRead"></span></div>
+        <div class="mh-pool" id="landPool"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 АДАПТАЦИЯ ============ -->
+  <section class="sec" id="adapt">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">adaptation · 10 × 50 hp</span><h2>Адаптация</h2></div><span class="sec-q">16 видов урона</span></header>
+    <p class="mh-lead reveal">Пятьсот здоровья поделены на десять сегментов по 50. Удар не может снести больше, чем осталось до конца текущего сегмента, даже взрыв на тысячу урона. Вид урона, который добил сегмент, становится для Махораги пустым местом. Десятый сегмент открывает вторую фазу.</p>
+    <div class="mh-ad reveal" id="ad">
+      <div class="mh-ad-left">
+        <div class="mh-ad-wheel" id="adWheelBox">
+          <svg viewBox="-50 -50 100 100" id="adWheel"><use href="#wheelSym" x="-50" y="-50" width="100" height="100"/></svg>
+          <div class="mh-ad-ring" id="adRing"></div>
+          <div class="mh-ad-num" id="adNum"><b>0</b><span>/10</span></div>
+          <div class="mh-ad-pops" id="adPops"></div>
+        </div>
+        <div class="mh-hp" id="adHp"><div class="mh-hp-seg" id="adSegs"></div><div class="mh-hp-txt"><span id="adHpT">500 / 500</span><span id="adPhase">фаза 1</span></div></div>
+        <div class="mh-immune" id="adImm"><span class="dim">Иммунитетов пока нет</span></div>
+      </div>
+      <div class="mh-ad-right">
+        <div class="mh-ad-head"><b>Чем бить</b><span>клик — удар типичной силы</span></div>
+        <div class="mh-src" id="adSrc"></div>
+        <div class="mh-ad-tools">
+          <label class="mh-dmg">урон удара <input type="range" id="adDmg" min="0" max="3" step="1" value="0"><output id="adDmgO">как в игре</output></label>
+          <button class="k-btn2" id="adReset" type="button">↺ Новый Махорага</button>
+        </div>
+        <div class="mh-chat mh-chat-tall" id="adChat" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="mh-tips reveal" id="adTips"></div>
+    <div class="mh-cls reveal">
+      <h3>Как урон попадает в категорию</h3>
+      <p>Проверка идёт сверху вниз, первое совпадение и есть категория. Поэтому горящий меч с заговором огня может сломать сегмент огнём, а не ближним боем: всё решает, какой тик урона добил полоску.</p>
+      <ol class="mh-cls-list" id="adCls"></ol>
+    </div>
+  </section>
+
+  <!-- ============ 05 АРСЕНАЛ ============ -->
+  <section class="sec" id="skills">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">skills · ai</span><h2>Арсенал</h2></div><span class="sec-q">4 навыка + кулаки</span></header>
+    <div class="mh-ar reveal">
+      <div class="mh-ar-model">
+        <canvas id="ar3d" aria-label="Махорага показывает навык"></canvas>
+        <div class="mh-ar-name" id="arName"></div>
+      </div>
+      <div class="mh-ar-list" id="arList"></div>
+    </div>
+    <div class="mh-ai reveal">
+      <div class="mh-ai-head">
+        <h3>Что он сделает прямо сейчас</h3>
+        <p>Перетаскивай цель. Навыки проверяются по старшинству: крик, лазер, прыжок, рывок, и только потом кулаки. Первый подходящий и не на перезарядке срабатывает.</p>
+      </div>
+      <div class="mh-ai-box">
+        <canvas id="aiCv" aria-label="Схема: Махорага и цель, вид сбоку"></canvas>
+        <div class="mh-ai-ctl">
+          <div class="mh-seg" id="aiPhase"><button type="button" data-v="1" class="on">Фаза 1</button><button type="button" data-v="2">Фаза 2</button></div>
+          <label>врагов рядом <input type="range" id="aiEn" min="1" max="10" value="1"><output id="aiEnO">1</output></label>
+          <div class="mh-ai-cd" id="aiCd"></div>
+        </div>
+        <div class="mh-ai-out" id="aiOut"></div>
+      </div>
+    </div>
+    <div class="mh-cards reveal" id="arFacts"></div>
+  </section>
+
+  <!-- ============ 06 ХОЗЯИН ============ -->
+  <section class="sec" id="owner">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">owner · priority</span><h2>Хозяин</h2></div><span class="sec-q">бей кулаком — он поймёт</span></header>
+    <div class="mh-ow reveal">
+      <div class="mh-ow-txt">
+        <p>Махорага не выбирает врагов сам. Цель ему назначает хозяин: <b>удар пустой рукой</b> по мобу или игроку ставит на него метку. Каждый следующий удар добавляет приоритет, и Махорага идёт за тем, у кого меток больше. При равенстве побеждает тот, кого отметили раньше.</p>
+        <p>Пока целей нет, он держится в 1,7 блока за спиной хозяина и смотрит туда же, куда смотришь ты. Хозяина он не атакует никогда, даже если ты сам бьёшь его.</p>
+      </div>
+      <div class="mh-ow-sim">
+        <div class="mh-ow-field" id="owField"></div>
+        <div class="mh-ow-ui">
+          <div class="mh-seg" id="owHand"><button type="button" data-v="0" class="on">Пустая рука</button><button type="button" data-v="1">Меч в руке</button></div>
+          <button class="k-btn2" id="owReset" type="button">↺ Сбросить метки</button>
+        </div>
+        <ol class="mh-ow-q" id="owQ"></ol>
+      </div>
+    </div>
+    <div class="mh-laser reveal">
+      <div class="mh-laser-view"><canvas id="lzCv" aria-label="Лазер Махораги"></canvas></div>
+      <div class="mh-laser-txt">
+        <h3>Лазер не разбирает своих</h3>
+        <p>Кулаки, прыжок и крик бьют только отмеченные цели. Лазер другое дело: луч длиной 20 блоков прожигает тоннель 3×3 и ранит <b>всех</b> живых на пути, кроме самого Махораги. Хозяин тоже живой.</p>
+        <div class="mh-seg" id="lzPhase"><button type="button" data-v="1" class="on">Фаза 1 · 18 урона</button><button type="button" data-v="2">Фаза 2 · 28 урона</button></div>
+        <div class="mh-laser-ui"><button class="k-btn" id="lzFire" type="button">Встать на линию</button><span id="lzHp"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 ТРОФЕИ ============ -->
+  <section class="sec" id="loot">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">loot · 500 xp</span><h2>Трофеи</h2></div><span class="sec-q" id="lootQ"></span></header>
+    <div class="mh-lt reveal">
+      <div class="mh-lt-inv">
+        <div class="mh-lt-title"><span>Выпало с Махораги</span><b id="lootN"></b></div>
+        <div class="mh-lt-grid" id="lootGrid"></div>
+        <div class="mh-lt-ui"><button class="k-btn" id="lootRoll" type="button">Убить ещё раз</button><span id="lootRolls"></span></div>
+      </div>
+      <div class="mh-lt-table" id="lootTable"></div>
+    </div>
+  </section>
+
+  <!-- ============ 08 МЕЛОЧИ ============ -->
+  <section class="sec" id="facts">
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">fine print</span><h2>Мелочи</h2></div></header>
+    <div class="mh-facts reveal" id="factsBox"></div>
+  </section>
+
+  <!-- ============ 09 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 10 ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">10</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <div class="mh-fin-wheel" aria-hidden="true"><svg viewBox="-50 -50 100 100"><use href="#wheelSym" x="-50" y="-50" width="100" height="100"/></svg></div>
+    <p class="fin-q">Колесо повернулось десять раз.<br><em>Одиннадцатого не будет</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+<div class="mh-log" id="log" aria-live="polite"></div>
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../shared/geo3d.js"></script>
+<script src="../../shared/voxel.js"></script>
+<script src="../../data/p21_geo.js"></script>
+<script src="../../data/p21_tex.js"></script>
+<script src="../../data/p21_outpost.js"></script>
+<script src="../../data/p21_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
