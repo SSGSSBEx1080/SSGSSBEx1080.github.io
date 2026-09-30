@@ -480,3 +480,10 @@ body.night .mh-kana,body.night .mh-sub .jp,body.night .mh-quote blockquote{color
 body.night .mh-eyebrow,body.night .mh-sub em,body.night .sec-k,body.night .mh-quote figcaption{color:#bcd6ff;text-shadow:0 2px 12px rgba(5,10,30,.9)}
 body.night .mh-lead,body.night .sec-p,body.night .mh-hint{color:#eef2ff;text-shadow:0 1px 12px rgba(5,10,30,.95)}
 body.night .sec-p b{color:#f5d98a}
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  main .dr-w i,
+  #stGrades span,
+  main .ru-spd small{font-size:11.5px!important;line-height:1.35}
+}

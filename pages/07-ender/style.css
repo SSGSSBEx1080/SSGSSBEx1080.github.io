@@ -566,3 +566,10 @@ code{font-family:var(--f-mono);font-size:.9em;padding:1px 6px;border-radius:6px;
   .cost-n>button{width:36px;height:36px}
   details.bl-own>summary{padding:10px 0}
 }
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  main .bk-slot span,
+  main .ac-tag,
+  main .bw .tn{font-size:11.5px!important;line-height:1.35}
+}

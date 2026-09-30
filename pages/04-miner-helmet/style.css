@@ -402,3 +402,19 @@ button.cg-out.took img{animation:took .5s var(--ease-out)}
   .pv-facts>span>small,.ol-y small{font-size:10.5px}
 }
 @media (max-width:640px){.hero-down{position:relative;left:auto;bottom:auto;transform:none;margin:22px auto 8px;width:max-content}}
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  #dpLayer,
+  main .hero-down small,
+  main .pl-id,
+  main .pl-slot,
+  main .pl-grid dt,
+  main .pl-grid small,
+  #batRead small,
+  main .bat-grp span,
+  #batFix small,
+  main .lt-head span,
+  main .lt-n small,
+  main .ol-n small{font-size:11.5px!important;line-height:1.35}
+}

@@ -333,3 +333,8 @@ body.shake main{animation:shake .45s}
   .scr-panel{top:100px}
   .hudc{bottom:calc(30px*var(--gs))}
 }
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  main .nn span{font-size:11.5px!important;line-height:1.35}
+}

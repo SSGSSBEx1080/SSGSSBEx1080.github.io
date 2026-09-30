@@ -161,3 +161,8 @@ body.wiped main>section:not(.finale){filter:blur(14px) grayscale(1);opacity:.25;
 .hb-fine p{margin:0;font-size:13px;line-height:1.55;color:var(--dim);position:relative}
 @media (max-width:980px){.hb-coll{grid-template-columns:minmax(0,1fr)}.hb-fine{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.hb-fine{grid-template-columns:minmax(0,1fr)}.hb-server{grid-template-columns:minmax(0,1fr)}.hb-cnt>div{grid-template-columns:90px auto minmax(0,1fr)}.hb-memes{grid-template-columns:repeat(7,minmax(0,1fr))}}
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  main button > i{font-size:11.5px!important;line-height:1.35}
+}

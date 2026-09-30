@@ -204,3 +204,5 @@ input[type=range]{width:100%;accent-color:var(--ac)}
   .aq-row>span:nth-child(5) b{min-width:38px;font-size:12px}
   .aq-fine{grid-template-columns:minmax(0,1fr)}
 }
+
+@media (max-width:600px){ .aq-gauge span{font-size:10px!important} }

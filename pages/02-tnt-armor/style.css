@@ -763,3 +763,11 @@ b{color:#fff}
   .mer-tabs .mt-n{font-size:10.5px}
   #sndTest.link{padding:8px 4px;margin:-6px 0}
 }
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  main .xp-call div,
+  main .xp-total,
+  main .tl-i .v{font-size:11.5px!important;line-height:1.35}
+}
+@media (max-width:600px){ .mer-tabs .mt-n{font-size:9.5px;letter-spacing:-.02em;text-overflow:clip} }

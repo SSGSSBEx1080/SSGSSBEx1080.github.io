@@ -409,3 +409,17 @@ img[src$="bullet_item.png"]{object-fit:contain}
   .dp-line .tk{font-size:10.5px}
   #rgReset.link,#ultNew.link{min-height:36px}
 }
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  main .op-btn small,
+  main .ars-badge small,
+  main .ars-hint,
+  main .tp small,
+  main .enc-id,
+  main .enc-tags span,
+  main .enc-cost,
+  main .us.w span,
+  #ultFire small,
+  main .ct-n small{font-size:11.5px!important;line-height:1.35}
+}

@@ -583,3 +583,16 @@ html.gui-lock,html.gui-lock body{overflow:hidden!important}
 
 .mp-run{flex:none;margin-right:-8px;width:34px;align-self:stretch;border-left:1px solid var(--ln);color:var(--cy2);font:700 15px var(--f-mono);cursor:pointer}
 .mp-run:hover{background:rgba(0,162,232,.18);color:#fff}
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  main .bt-stats span,
+  #palCur em,
+  main .mp-two small,
+  main .en-st span,
+  main .mk-tag,
+  main .mk-dim{font-size:11.5px!important;line-height:1.35}
+}
+
+@media (max-width:600px){ main .nt{font-size:10.5px!important} }
+@media (max-width:600px){ .mk-a .mk-go{font-size:12px;padding-left:6px;padding-right:6px;white-space:nowrap;text-overflow:clip} }

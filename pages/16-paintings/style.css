@@ -248,3 +248,5 @@ a{color:var(--ac2)}
 .pg-fine p{margin:0;font-size:13px;line-height:1.55;color:var(--dim)}
 @media (max-width:1000px){.pg-cmd{grid-template-columns:minmax(0,1fr)}.pg-fine{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.pg-fine{grid-template-columns:minmax(0,1fr)}.pg-cmd-pick{grid-template-columns:repeat(4,minmax(0,1fr))}.pg-cmd-pick button{height:80px}}
+
+@media (max-width:600px){ .pg-lbl,.pg-lbl b{font-size:10.5px!important} }

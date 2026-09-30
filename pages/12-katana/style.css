@@ -374,3 +374,8 @@ body{background:var(--bg);color:var(--bone)}
   .ru12 p,.tl12 p,.en12 p{font-size:14.5px;color:#d9d2e8}
 }
 .kt-title{filter:drop-shadow(0 2px 3px rgba(0,0,0,.8)) drop-shadow(0 0 16px rgba(7,6,12,.7))}
+
+/* mobile readability (round 57) */
+@media (max-width:600px){
+  main .kt-taphint{font-size:11.5px!important;line-height:1.35}
+}
