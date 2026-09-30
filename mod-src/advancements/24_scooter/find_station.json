@@ -1,0 +1,23 @@
+{
+  "parent": "zitraksmode:24_scooter/scooter_craft",
+  "display": {
+    "icon": { "item": "minecraft:redstone" },
+    "title": "§eБензина нет",
+    "description": "§eБля",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "has_port": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "zitraksmode:charging_port" ] }
+        ]
+      }
+    }
+  },
+  "rewards": { "experience": 20 }
+}

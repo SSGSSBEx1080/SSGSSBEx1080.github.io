@@ -1,0 +1,22 @@
+{
+  "parent": "zitraksmode:24_scooter/find_station",
+  "display": {
+    "icon": {
+      "item": "minecraft:barrier"
+    },
+    "title": "§5320 км/ч peek",
+    "description": "§5Летит на самокате долбаёб, крутит головой и дрочи́т свой хуй",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "speed_100": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100
+  }
+}
