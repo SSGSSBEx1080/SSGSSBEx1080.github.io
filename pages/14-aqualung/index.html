@@ -115,9 +115,40 @@
     </div>
   </section>
 
-  <!-- ============ 05 ЧАРЫ ============ -->
+  <!-- ============ 05 БРОНЯ ============ -->
+  <section class="sec" id="armor">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · armor</span><h2>Крепче незерита</h2></div><span class="sec-q">10 брони · 4 твёрдости</span></header>
+    <p class="sec-p reveal">Про воздух все помнят, а про броню забывают. У акваланга <b>10 единиц защиты</b> и <b>4 твёрдости</b>: это больше, чем у незеритового нагрудника (8 и 3). Сверху ещё 10% сопротивления отбрасыванию, как у незерита. Выбери силу удара и остальную броню, а таблица посчитает урон по формуле 1.19.2.</p>
+    <div class="aq-arm reveal">
+      <div class="aq-arm-in pnl">
+        <label class="aq-lbl">Удар <b id="aDmg">10</b> <small id="aDmgH"></small><input type="range" id="aR" min="1" max="40" value="10" aria-label="Урон удара"></label>
+        <div class="aq-lbl">Шлем, поножи, ботинки</div>
+        <div class="aq-seg" id="aSet" role="radiogroup" aria-label="Остальная броня"></div>
+        <div class="aq-presets" id="aPre"></div>
+        <p class="aq-note" id="aNote"></p>
+      </div>
+      <div class="aq-arm-t pnl" id="aTbl"></div>
+    </div>
+  </section>
+
+  <!-- ============ 06 РАБОТА ПОД ВОДОЙ ============ -->
+  <section class="sec" id="work">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · fine print</span><h2>Мелкий шрифт</h2></div><span class="sec-q">то, что видно только в коде</span></header>
+    <div class="aq-work reveal">
+      <div class="aq-dig pnl">
+        <h3>Копать под водой</h3>
+        <p>Спешка I прибавляет 20% к скорости копания, но под водой игра и так режет её в 5 раз, а если ты не стоишь на дне, то ещё в 5. Спешка это не отменяет. Без Подводника на шлеме камень всё равно ломается медленно.</p>
+        <div class="aq-seg" id="dTool" role="radiogroup" aria-label="Кирка"></div>
+        <div class="aq-seg" id="dMode" role="radiogroup" aria-label="Условия"></div>
+        <div class="aq-dig-r" id="dRes"></div>
+      </div>
+      <div class="aq-fine" id="fine"></div>
+    </div>
+  </section>
+
+  <!-- ============ 07 ЧАРЫ ============ -->
   <section class="sec" id="ench">
-    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · enchantments</span><h2>Две книги только для него</h2></div><span class="sec-q">Энчант-апдейт</span></header>
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">VII · enchantments</span><h2>Две книги только для него</h2></div><span class="sec-q">Энчант-апдейт</span></header>
     <div class="aq-ench reveal">
       <article class="aq-book pnl" style="--c:#55ffff">
         <div class="aq-book-fx vod" aria-hidden="true"><img src="../../assets/textures/p14/aqualung.png" alt=""><i></i><i></i><i></i><i></i></div>
@@ -136,7 +167,7 @@
 
   <!-- ============ 06 АЧИВКИ ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">VIII · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
       <div class="adv-detail" id="advDetail"></div>
@@ -147,7 +178,7 @@
 
   <!-- ============ 07 ИСТОРИЯ ============ -->
   <section class="sec" id="hist">
-    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">VII · changelog</span><h2>Версии</h2></div></header>
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">IX · changelog</span><h2>Версии</h2></div></header>
     <div class="k-tl reveal" id="tl"></div>
   </section>
 

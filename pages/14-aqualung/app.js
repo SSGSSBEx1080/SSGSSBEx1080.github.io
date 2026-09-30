@@ -307,7 +307,81 @@
     + `<small>С Водохлёбусом баллоны сами добирают воздух на берегу — бесконечно, если не жадничать.</small>`;
   new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { $("#cmp").querySelectorAll("em").forEach((e) => (e.style.width = e.dataset.w + "%")); o.disconnect(); } }, { threshold: 0.3 }).observe($("#cmp"));
 
-  /* ================= 06 ачивки / 07 история / финал ================= */
+  /* ================= 05 броня: формула урона 1.19.2 ================= */
+  (function armor() {
+    const CH = [
+      { k: "none", t: "Без нагрудника", d: 0, g: 0, kb: 0 },
+      { k: "leather_chestplate", t: "Кожаный", d: 3, g: 0, kb: 0, cls: "lth" },
+      { k: "golden_chestplate", t: "Золотой", d: 5, g: 0, kb: 0 },
+      { k: "chainmail_chestplate", t: "Кольчужный", d: 5, g: 0, kb: 0 },
+      { k: "iron_chestplate", t: "Железный", d: 6, g: 0, kb: 0 },
+      { k: "diamond_chestplate", t: "Алмазный", d: 8, g: 2, kb: 0 },
+      { k: "netherite_chestplate", t: "Незеритовый", d: 8, g: 3, kb: 0.1 },
+      { k: "aqualung", t: "Акваланг", d: 10, g: 4, kb: 0.1, me: 1 },
+    ];
+    const SETS = [["none", "ничего", 0, 0, 0], ["iron", "железо", 9, 0, 0], ["diamond", "алмаз", 12, 6, 0], ["netherite", "незерит", 12, 9, 0.3]];
+    const PRE = [[4, "Зомби"], [7, "Утопленник с трезубцем"], [9, "Страж (шипы не в счёт)"], [22, "Разрушитель"], [30, "Варден, ближний бой"]];
+    let set = 0;
+    $("#aSet").innerHTML = SETS.map((x, i) => `<button type="button" class="${i ? "" : "on"}" data-i="${i}">${x[1]}</button>`).join("");
+    $("#aPre").innerHTML = PRE.map(([d, t]) => `<button type="button" data-d="${d}">${esc(t)} · ${d}</button>`).join("");
+    const red = (dmg, def, tg) => { const f = 2 + tg / 4, a = Math.min(20, Math.max(def / 5, def - dmg / f)); return dmg * (1 - a / 25); };
+    const icon = (c) => c.k === "none" ? `<span class="aq-none">—</span>` : `<img class="${c.cls || ""}" src="${c.k === "aqualung" ? T("aqualung") : T("i/" + c.k)}" alt="">`;
+    function upd() {
+      const dmg = +$("#aR").value, S = SETS[set];
+      $("#aDmg").textContent = dmg; $("#aDmgH").textContent = `= ${dmg / 2} ♥`;
+      const rows = CH.map((c) => ({ c, def: c.d + S[2], tg: c.g + S[3], kb: c.kb + S[4] })).map((r) => Object.assign(r, { got: red(dmg, r.def, r.tg) }));
+      const worst = rows[0].got;
+      $("#aTbl").innerHTML = `<div class="aq-row h"><span></span><span>нагрудник</span><span>броня</span><span>твёрд.</span><span>получишь</span><span>срезано</span></div>` + rows.map((r) => {
+        const cut = worst ? (1 - r.got / worst) : 0;
+        return `<div class="aq-row ${r.c.me ? "me" : ""}"><span>${icon(r.c)}</span><span>${esc(r.c.t)}</span><span>${r.def}</span><span>${r.tg}</span><span><b>${r.got.toFixed(2)}</b><i style="width:${(r.got / dmg) * 100}%"></i></span><span>${Math.round((1 - r.got / dmg) * 100)}%</span></div>`;
+      }).join("");
+      const a = rows[7].got, n = rows[6].got;
+      $("#aNote").innerHTML = `Против незеритового нагрудника акваланг снимает ещё <b>${(n - a).toFixed(2)}</b> урона с каждого такого удара. Отбрасывание в сумме режется на ${Math.round(rows[7].kb * 100)}%.`;
+    }
+    $("#aR").addEventListener("input", upd);
+    $("#aSet").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; set = +b.dataset.i; $$("#aSet button").forEach((x) => x.classList.toggle("on", x === b)); ZM.sfx("click", 0.4); upd(); });
+    $("#aPre").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; $("#aR").value = b.dataset.d; ZM.sfx("hit", 0.4); upd(); });
+    upd();
+  })();
+
+  /* ================= 06 мелкий шрифт: копание под водой и детали ================= */
+  (function fine() {
+    const TOOLS = [["hand", "рука", 1, false], ["iron_pickaxe", "железная", 6, true], ["diamond_pickaxe", "алмазная", 8, true]];
+    const MODES = [["land", "на суше"], ["floor", "под водой, на дне"], ["swim", "под водой, вплавь"]];
+    let tool = 1, mode = 1;
+    $("#dTool").innerHTML = TOOLS.map((x, i) => `<button type="button" class="${i === tool ? "on" : ""}" data-i="${i}">${x[0] === "hand" ? "" : `<img src="${T("i/" + x[0])}" alt="">`}${x[1]}</button>`).join("");
+    $("#dMode").innerHTML = MODES.map((x, i) => `<button type="button" class="${i === mode ? "on" : ""}" data-i="${i}">${x[1]}</button>`).join("");
+    // время разрушения камня (прочность 1.5): скорость / прочность / 30 (или /100, если инструмент не подходит) за тик
+    const ticks = (sp, ok) => { const per = sp / 1.5 / (ok ? 30 : 100); return per >= 1 ? 0 : Math.ceil(1 / per); };
+    function upd() {
+      const [, , base, ok] = TOOLS[tool], m = MODES[mode][0];
+      const pen = m === "land" ? 1 : m === "floor" ? 0.2 : 0.04;
+      const V = [
+        ["Без акваланга", base * pen],
+        ["С аквалангом (Спешка I)", base * pen * (m === "land" ? 1 : 1.2)],
+        ["Акваланг + Подводник", base * (m === "swim" ? 0.2 : 1) * (m === "land" ? 1 : 1.2)],
+      ].map(([t, sp]) => [t, ticks(sp, ok)]);
+      const mx = Math.max(...V.map((v) => v[1]));
+      $("#dRes").innerHTML = V.map(([t, k]) => `<div><span>${t}</span><i><em style="width:${(k / mx) * 100}%"></em></i><b>${(k / 20).toFixed(2)} с</b></div>`).join("")
+        + `<small>${m === "land" ? "На суше Спешки нет: эффект даётся только под водой, пока в баллонах есть воздух." : "Каменный блок, прочность 1.5. Спешка работает только пока баллоны не пусты."}</small>`;
+    }
+    $("#dTool").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; tool = +b.dataset.i; $$("#dTool button").forEach((x) => x.classList.toggle("on", x === b)); ZM.sfx("stone", 0.4); upd(); });
+    $("#dMode").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; mode = +b.dataset.i; $$("#dMode button").forEach((x) => x.classList.toggle("on", x === b)); ZM.sfx("click", 0.4); upd(); });
+    upd();
+    const F = [
+      ["i/trident", "Удары пьют воздух", "Воздух хранится в прочности, а броня тратит прочность при каждом ударе: минимум 1 тик, а с сильных ударов по тику за каждые 4 урона. Разрушитель за удар срежет пять тиков воздуха. Мелочь, но баллоны от драки пустеют."],
+      ["v/breath", "Свои пузыри ждут", "Пока в баллонах есть воздух, игра каждый тик доливает тебе полные пузыри. Твои собственные 15 секунд пойдут в дело, только когда баллоны опустеют."],
+      ["i/iron_chestplate", "Пустой душит на суше", "Если воздух кончился, на берегу акваланг бьёт на 1 сердце в секунду, пока его не снимешь. Урон засчитывается как утопление, поэтому ачивку «утонуть» можно получить, не заходя в воду."],
+      ["i/potion", "Эффекты гаснут за полсекунды", "Ночное зрение и Спешку акваланг выдаёт на 10 тиков и продлевает каждый тик. Вынырнул — Спешка снимается сразу, ночное зрение догорает ещё полсекунды."],
+      ["i/kelp", "67 секунд без передышки", "Счётчик ачивки идёт только непрерывно: 1340 тиков под водой подряд. Хватит одного вдоха над поверхностью, и отсчёт начнётся с нуля."],
+      ["i/copper_ingot", "Медь — самая дешёвая заправка", "На наковальне любой из трёх материалов (железо, медь, ракушка) возвращает четверть баллона: 1835 тиков, то есть 91 секунду. Четыре медных слитка заправят баллоны досуха."],
+      ["i/anvil", "Два в один", "Два акваланга в сетке крафта склеятся в один с суммой воздуха и бонусом 5%, но все чары пропадут. На наковальне бонус 12%, а чары сохранятся."],
+      ["i/enchanted_book", "Любит чары", "Зачаровываемость 18: выше, чем у незерита (15) и алмаза (10). Столу зачарований он нравится почти как золото, так что хорошие чары выпадают чаще."],
+    ];
+    $("#fine").innerHTML = F.map(([i, t, d]) => `<article class="aq-fc pnl"><img src="${T(i)}" alt=""><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join("");
+  })();
+
+  /* ================= 08 ачивки / 09 история / финал ================= */
   adv = K.adv({ list: ZM.P14.advancements, store: "p14.adv", icon: (a) => T("i/" + a.icon), chatSel: "#simLog", intro: "Три штуки: скрафтить, выдержать 67 секунд под водой и позорно утонуть." });
   K.timeline($("#tl"), [
     { date: "22.04.2026", t: "Акваланг", d: "Баллоны на спину, воздух под водой, свой HUD и три ачивки.", c: "#ffc90e" },
