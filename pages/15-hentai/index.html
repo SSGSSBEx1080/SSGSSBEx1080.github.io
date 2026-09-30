@@ -65,9 +65,28 @@
     </div>
   </section>
 
-  <!-- ============ 02 КРАФТ ============ -->
+  <!-- ============ 02 КОЛЛЕКЦИЯ ============ -->
+  <section class="sec" id="coll">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">II · statistics</span><h2>Собрать всё</h2></div><span class="sec-q">каждая установка идёт в счёт</span></header>
+    <p class="sec-p reveal">Каждая грань, которая выпала выше, записывается сюда. Хочешь быстрее — жми автоустановщик: он ставит блок заново десятки и сотни раз по тем же правилам. График внизу сравнивает, сколько мемов выпадало на блок, с тем, что даёт теория.</p>
+    <div class="hb-coll reveal">
+      <div class="hb-coll-a pnl">
+        <div class="hb-cnt" id="cnt"></div>
+        <div class="hb-row"><button type="button" class="k-btn2 sm" data-auto="10">×10</button><button type="button" class="k-btn2 sm" data-auto="100">×100</button><button type="button" class="k-btn2 sm" data-auto="1000">×1000</button><button type="button" class="btn-ghost" id="collReset">↺ обнулить</button></div>
+        <div class="hb-hist" id="hist"></div>
+        <p class="hb-small" id="histT"></p>
+      </div>
+      <div class="hb-coll-b pnl">
+        <b class="hb-mh">Мемы, которые ты уже видел</b>
+        <div class="hb-memes" id="memes"></div>
+        <div class="hb-exp" id="exp"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 КРАФТ ============ -->
   <section class="sec" id="craft">
-    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">II · crafting</span><h2>Рецепт</h2></div><span class="sec-q">RGB + молоко + картина</span></header>
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">III · crafting</span><h2>Рецепт</h2></div><span class="sec-q">RGB + молоко + картина</span></header>
     <p class="sec-p reveal">Три красителя — это RGB монитора, кварц — экран, картина — ну, картина. Вместо ведра молока подходит <b>Ведро спермы</b> из №9. Чёрная и оранжевая шерсть — сами догадаетесь.</p>
     <div class="hb-craft reveal">
       <div id="craftBox"></div>
@@ -75,9 +94,22 @@
     </div>
   </section>
 
-  <!-- ============ 03 АЧИВКИ ============ -->
+    <!-- ============ 04 МЕЛКИЙ ШРИФТ ============ -->
+  <section class="sec" id="fine">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · fine print</span><h2>Мелкий шрифт</h2></div><span class="sec-q">то, что видно только в коде</span></header>
+    <div class="hb-server reveal pnl">
+      <div class="hb-srv-cubes" id="srvCubes"></div>
+      <div>
+        <b>На сервере блок скучнее</b>
+        <p>Списки картинок собираются из ресурсов игры, а их читает только клиент. В одиночной игре всё работает. На выделенном сервере списки пустые, и каждая грань выпадает запасной: <b>порно №1</b> или <b>хентай №1</b>, по три штуки. Мемов там нет совсем, так что «Смехуятинку» на сервере не получить.</p>
+      </div>
+    </div>
+    <div class="hb-fine reveal" id="fineBox"></div>
+  </section>
+
+<!-- ============ 03 АЧИВКИ ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">III · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
       <div class="adv-detail" id="advDetail"></div>
@@ -88,7 +120,7 @@
 
   <!-- ============ 04 ИСТОРИЯ ============ -->
   <section class="sec" id="hist">
-    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · changelog</span><h2>Версии</h2></div></header>
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · changelog</span><h2>Версии</h2></div></header>
     <div class="k-tl reveal" id="tl"></div>
   </section>
 

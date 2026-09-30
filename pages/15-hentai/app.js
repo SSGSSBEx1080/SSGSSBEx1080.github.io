@@ -1,6 +1,6 @@
 /* №15 · Хентай-блок. Логика граней — как в HentaiBlockEntity.randomizeTextures. */
 (function () {
-  const { $, esc } = ZM, K = ZM.kit, U = ZM.url;
+  const { $, $$, esc } = ZM, K = ZM.kit, U = ZM.url;
   ZM.topbar({ crumb: "№15 · Хентай-блок", ...ZM.pointNav(15) });
   const T = (p, ext = "png") => U(`assets/textures/p15/${p}.${ext}`);
   const snd = K.sounds("p15");
@@ -45,8 +45,9 @@
     for (let i = un.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [un[i], un[j]] = [un[j], un[i]]; }
     const nP = Math.floor(un.length / 2), P = pool("pron"), H = pool("hentai"), M = pool("meme");
     un.forEach((f, i) => { const cat = i < nP ? "pron" : "hentai"; B.tex[f] = Math.random() < MEME_CHANCE ? "meme/" + M.pick() : cat + "/" + (cat === "pron" ? P : H).pick(); });
-    const memes = FACES.filter((f) => B.tex[f].startsWith("meme/")).length;
+    const memes = FACES.filter((f) => B.tex[f].startsWith("meme/")).length;   // считаются все шесть граней, закреплённые тоже
     if (memes >= 2) adv.grant("meme_faces");
+    collect(FACES.map((f) => B.tex[f]), memes);
   }
 
   /* ================= куб ================= */
@@ -116,11 +117,63 @@
   let sceneVis = false; new IntersectionObserver((es) => (sceneVis = es[0].intersectionRatio > 0.8), { threshold: [0, 0.8, 1] }).observe($(".hb-view"));
   setInterval(() => {
     const looking = B.placed && sceneVis && (touch ? performance.now() - lastScroll > 400 : hovering);
-    stare = looking ? stare + 1 : 0;
+    stare = looking ? stare + 2 : 0;   // PlayerTickEvent без проверки фазы приходит дважды за тик
     ring.style.strokeDashoffset = 106.8 * (1 - Math.min(1, stare / 600));
-    stT.textContent = stare ? `взгляд ${(stare / 20).toFixed(0)} / 30 с` : B.placed ? "не отводи взгляд" : "";
+    stT.textContent = stare ? `счётчик ${stare} / 600 · прошло ${(stare / 40).toFixed(0)} с` : B.placed ? "не отводи взгляд" : "";
     if (stare >= 600) { adv.grant("stare_hentai"); stare = 0; }
   }, 50);
+
+
+  /* ================= коллекция и статистика ================= */
+  const SEEN = Object.assign({ pron: [], hentai: [], meme: [], n: 0, hist: [0, 0, 0, 0, 0, 0, 0] }, ZM.store.get("p15.seen", {}));
+  const sets = { pron: new Set(SEEN.pron), hentai: new Set(SEEN.hentai), meme: new Set(SEEN.meme) };
+  let collDirty = false;
+  function collect(keys, memes) {
+    for (const k of keys) { const [c, r] = k.split("/"); sets[c] && sets[c].add(r); }
+    SEEN.n++; SEEN.hist[memes]++; collDirty = true;
+  }
+  function saveSeen() { SEEN.pron = [...sets.pron]; SEEN.hentai = [...sets.hentai]; SEEN.meme = [...sets.meme]; ZM.store.set("p15.seen", SEEN); }
+  const binom = (k, n = 6, p = MEME_CHANCE) => { let c = 1; for (let i = 0; i < k; i++) c = (c * (n - i)) / (i + 1); return c * p ** k * (1 - p) ** (n - k); };
+  const H = (n) => { let s = 0; for (let i = 1; i <= n; i++) s += 1 / i; return s; };
+  function renderColl() {
+    const row = (c, name, tot) => { const n = sets[c].size; return `<div class="c-${c}"><span>${name}</span><b>${n}<small> / ${tot}</small></b><i><em style="width:${(n / tot) * 100}%"></em></i></div>`; };
+    $("#cnt").innerHTML = `<div class="hb-n"><span>установок</span><b>${SEEN.n.toLocaleString("ru")}</b></div>` + row("pron", "порно", POOL.pron) + row("hentai", "хентай", POOL.hentai) + row("meme", "мемы на сайте", L.memes.length);
+    const tot = SEEN.n || 1, mx = Math.max(0.0001, ...SEEN.hist.map((v) => v / tot), binom(0));
+    $("#hist").innerHTML = SEEN.hist.map((v, k) => `<div><i style="height:${Math.max(v ? 2 : 0, (v / tot / mx) * 100)}%"></i><u style="bottom:${(binom(k) / mx) * 100}%"></u><span>${k}</span></div>`).join("");
+    const got2 = SEEN.hist.slice(2).reduce((a, b) => a + b, 0);
+    $("#histT").innerHTML = `Столбцы — сколько раз на блоке было столько мемов, чёрточки — теория. Два и больше: у тебя <b>${SEEN.n ? ((got2 / SEEN.n) * 100).toFixed(1) : "0"}%</b>, по формуле <b>${((1 - binom(0) - binom(1)) * 100).toFixed(1)}%</b>.`;
+    $("#memes").innerHTML = L.memes.map((m) => sets.meme.has(m) ? `<img src="${T("meme/" + m, "webp")}" alt="" title="Мем грань №${m}">` : `<span>?</span>`).join("");
+    // купонный коллекционер: n·H(n) граней нужной категории
+    const perP = 3 * (1 - MEME_CHANCE), perM = 6 * MEME_CHANCE;
+    const e = [["все 165 порно", (POOL.pron * H(POOL.pron)) / perP], ["все 167 хентай", (POOL.hentai * H(POOL.hentai)) / perP], ["все 121 мем из мода", (POOL.meme * H(POOL.meme)) / perM]];
+    $("#exp").innerHTML = `<b>Сколько раз ставить, чтобы увидеть</b>` + e.map(([t, v]) => `<div><span>${t}</span><b>≈ ${Math.round(v).toLocaleString("ru")}</b></div>`).join("") + `<small>В среднем, если ничего не закреплять. На сайте 27 мемов из 121, остальные ждут в самой игре.</small>`;
+  }
+  $$("[data-auto]").forEach((b) => b.addEventListener("click", () => {
+    const n = +b.dataset.auto;
+    for (let i = 0; i < n; i++) randomize();
+    B.placed = true; render(); snd("place", 0.5); saveSeen(); renderColl(); collDirty = false;
+    K.say(`Поставлено ${n} раз. Мемов в коллекции: ${sets.meme.size} / ${L.memes.length}`);
+  }));
+  $("#collReset").addEventListener("click", () => { Object.values(sets).forEach((x) => x.clear()); SEEN.n = 0; SEEN.hist = [0, 0, 0, 0, 0, 0, 0]; saveSeen(); renderColl(); ZM.sfx("click", 0.4); });
+  renderColl();
+  setInterval(() => { if (collDirty) { collDirty = false; saveSeen(); renderColl(); } }, 400);
+
+  /* ================= мелкий шрифт ================= */
+  (function fine() {
+    $("#srvCubes").innerHTML = [0, 1].map(() => `<div class="hb-srv">${FACES.slice(0, 3).map((f, i) => `<i class="s${i}">${faceHtml(i === 1 ? "hentai/1" : "pron/1", false).replace(/<span class="lb[^]*?<\/span>/, "")}</i>`).join("")}</div>`).join("");
+    const F = [
+      ["15 секунд вместо 30", "В коде ачивке за взгляд нужно 600 отсчётов, и это похоже на 30 секунд. Но обработчик срабатывает дважды за тик, в начале и в конце, поэтому на деле хватает 15. Счётчик выше считает так же."],
+      ["Смотреть можно издалека", "Взгляд ловится на расстоянии до 5 блоков, на любую грань. Отвёл прицел хоть на тик — счёт с нуля. Игроки в режиме наблюдателя не считаются."],
+      ["Закреплённый мем тоже в счёт", "«Смехуятинка» считает мемы на всех шести гранях, и закреплённые тоже. Выпал мем — закрепи и переставляй: шанс поймать второй поднимается с 3,3% до 22,6% за установку."],
+      ["Ачивку получит ближайший", "Два мема засчитываются не тому, кто поставил, а ближайшему игроку в радиусе 8 блоков. Друг стоит ближе — ачивка уходит ему."],
+      ["Пять граней делятся нечестно", "Если одна грань закреплена, пять оставшихся делятся на 2 порно и 3 хентая: лишняя грань всегда достаётся хентаю."],
+      ["Всё закрепил — ничего не меняется", "Если закреплены все шесть граней, постановка ничего не перебрасывает. Блок можно носить в инвентаре как готовую композицию."],
+      ["Колёсико копирует композицию", "В творческом режиме средняя кнопка мыши по блоку даёт копию вместе с закреплёнными гранями. Незакреплённые в предмет не пишутся и выпадут заново."],
+      ["Свои картинки через ресурспак", "Списки собираются по папкам pron, hentai и meme в textures/block из всех включённых ресурспаков. Положи свои PNG, и они попадут в пул. Читаются списки один раз при запуске игры, так что после смены пака нужен перезапуск."],
+      ["Ачивки без верстака", "«Хроники AD-блока» и «Адский дрочила» проверяют инвентарь, а не крафт. Достаточно получить блок любым способом, хоть из сундука. Для второй нужен полный стак в одной ячейке."],
+    ];
+    $("#fineBox").innerHTML = F.map(([t, d], i) => `<article class="pnl"><span>${String(i + 1).padStart(2, "0")}</span><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join("");
+  })();
 
   /* ================= поп-апы в hero (Хроники AD-блока) ================= */
   const POPS = [
