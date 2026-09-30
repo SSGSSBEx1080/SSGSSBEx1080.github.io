@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№18 · Стальной шар Джайро — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №18 мода ZitraksMode: стальной шар Джайро Цеппели. Заряд, отскоки, сверление, возврат в руку, зачарование Ball Breaker и симулятор броска на настоящей физике из мода.">
+<meta name="theme-color" content="#16120a">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="sb-hero" id="hero">
+    <svg class="sb-spiral" id="spiral" viewBox="0 0 1000 618" aria-hidden="true"></svg>
+    <div class="sb-gogo" aria-hidden="true"><span>ゴ</span><span>ゴ</span><span>ゴ</span><span>ゴ</span></div>
+    <div class="sb-hero-txt">
+      <div class="sb-tag"><span>№18</span>02.05.2026<i></i>оружие · метательное</div>
+      <h1 class="sb-logo"><small>Steel Ball Run</small>Стальной<br>шар</h1>
+      <p class="sb-sub">Шар Джайро Цеппели. Держишь ПКМ — раскручиваешь, отпускаешь — летит. Заряженный вгрызается в моба и сверлит его, отскакивает от стен, а потом <b>сам возвращается в руку</b>. Незаряженный придётся подбирать, иначе через 10 секунд он рассыплется.</p>
+      <div class="sb-cta"><a class="k-btn" href="#sim">Бросить</a><a class="k-btn2" href="#bb">Ball Breaker</a></div>
+      <div class="sb-stats">
+        <a href="#sim"><b>1 с</b><span>до заряда</span></a>
+        <a href="#nums"><b>2,55</b><span>блока за тик</span></a>
+        <a href="#bb"><b>32,5</b><span>удар с Ball Breaker</span></a>
+        <a href="#adv"><b id="stGot">0/3</b><span>ачивки</span></a>
+      </div>
+    </div>
+    <figure class="sb-stage">
+      <div class="sb-ring" aria-hidden="true"></div>
+      <div class="sb-3d" id="ball3d" aria-label="3D-модель шара: крути мышью или пальцем, клик раскручивает"></div>
+      <figcaption>513 кубов · клик раскручивает</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ 01 КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">lesson 1 · crafting</span><h2>Крафт</h2></div><span class="sec-q">вкладка «Бой» · стак 1</span></header>
+    <div class="sb-craft reveal">
+      <div id="craftBox"></div>
+      <div class="sb-craft-t">
+        <p>Восемь изумрудов вокруг железного блока. Шар лежит во вкладке «Бой», в стак не складывается: один шар — одна ячейка.</p>
+        <p>Зачаровывается как алмазный инструмент (сила 10), но из всех зачарований на него встаёт только своё — <a href="#bb">Ball Breaker</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 СИМУЛЯТОР ============ -->
+  <section class="sec" id="sim">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">lesson 2 · throw</span><h2>Бросок</h2></div><span class="sec-q">20 тиков в секунду</span></header>
+    <p class="sec-p reveal">Физика взята из кода шара один в один: гравитация 0,075, сопротивление воздуха, отскоки от пола и стен, трение о землю, сверление и возврат. Зажми на поле (или кнопку), целься курсором, отпусти.</p>
+    <div class="sb-sim reveal">
+      <div class="sb-field" id="field">
+        <canvas id="cv"></canvas>
+        <div class="sb-hud">
+          <div class="sb-charge"><i id="chBar"></i><b class="m15" title="меньше — шар не полетит"></b><b class="m20" title="1 секунда — заряжен"></b></div>
+          <span id="chTxt">держи ПКМ</span>
+        </div>
+        <div class="sb-log" id="log"></div>
+      </div>
+      <div class="sb-ctrl">
+        <button type="button" class="sb-throw" id="throwBtn">Держи и отпусти</button>
+        <label class="sb-ang">угол <input type="range" id="ang" min="-15" max="60" value="2"><b id="angV">2°</b></label>
+        <label class="sb-tg"><input type="checkbox" id="bbT"><span>Ball Breaker</span></label>
+        <button type="button" class="sb-b" id="zBtn">Новый зомби</button>
+      </div>
+      <div class="sb-read" id="readout"></div>
+    </div>
+  </section>
+
+  <!-- ============ 03 ЦИФРЫ ============ -->
+  <section class="sec" id="nums">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">lesson 3 · numbers</span><h2>Сколько держать</h2></div><span class="sec-q">SteelBallItem.releaseUsing</span></header>
+    <p class="sec-p reveal">Заряд растёт как у лука: за первую секунду кривая быстро набирает, дальше держать бесполезно. Ровно на 20-м тике шар становится заряженным: скорость подскакивает, разброс почти пропадает.</p>
+    <div class="sb-curve reveal"><canvas id="curve"></canvas><div class="sb-curve-k"><span class="c1">заряд, 0–100%</span><span class="c2">скорость, блоков/тик (шкала слева)</span><span class="c3">разброс</span></div></div>
+    <div class="sb-tbl reveal" id="tbl"></div>
+  </section>
+
+  <!-- ============ 04 BALL BREAKER ============ -->
+  <section class="sec" id="bb">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">lesson 5 · ball breaker</span><h2>Ball Breaker</h2></div><span class="sec-q">Редкое · I</span></header>
+    <div class="sb-bb reveal">
+      <div class="sb-bb-card">
+        <img src="../../assets/textures/p18/i/enchanted_book.png" alt="">
+        <b>Ball Breaker</b>
+        <span>Стальной шар · макс. уровень I</span>
+        <dl class="sb-dl" id="bbDl"></dl>
+      </div>
+      <ul class="sb-bb-l">
+        <li><b>Сразу полный заряд.</b> Даже тап ПКМ — это бросок на максимуме, без разброса, и ещё +0,35 к скорости.</li>
+        <li><b>Сверлит вдвое дольше.</b> 60 тиков вместо 30, по 4,5 урона каждые 4 тика. На бумаге это 15 ударов, но после попадания у моба полсекунды неуязвимости, так что проходит примерно каждый третий.</li>
+        <li><b>Не бьётся.</b> Там, где обычный шар через 10 секунд рассыпается, этот просто летит домой.</li>
+        <li><b>Возвращается сквозь стены</b> и сам ложится в пустую руку, основную или вторую.</li>
+        <li><b>Закручивается сильнее.</b> Боковая сила Магнуса ×1,8: шар заметно уводит в сторону вращения.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 05 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 06 ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <p class="fin-q">Вращение — это всё.<br><em>Урок пятый усвоен.</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="../../data/p18_models.js"></script>
+<script src="../../data/p18_tex.js"></script>
+<script src="../../data/p18_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

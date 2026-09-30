@@ -23,7 +23,7 @@ ZM.POINTS = [
   { n: 15, title: "Хентай-блок",           date: "30.04.2026", confirmed: true,  page: "pages/15-hentai/index.html", tone: "#ff9000", icon: "assets/textures/p15/hentai_block.png" },
   { n: 16, title: "Картины",               date: "30.04.2026", confirmed: true,  page: "pages/16-paintings/index.html", tone: "#d9a55b", icon: "assets/textures/p16/icon.png" },
   { n: 17, title: "Коран",                 date: "30.04.2026", confirmed: true, page: "pages/17-koran/index.html", tone: "#d8b25a", icon: "assets/textures/p17/i/koran.png" },
-  { n: 18, title: "Стальной шар Джайро",   date: "02.05.2026", confirmed: true, page: null, tone: "#c9a227" },
+  { n: 18, title: "Стальной шар Джайро",   date: "02.05.2026", confirmed: true, page: "pages/18-steel-ball/index.html", tone: "#9ae66e", icon: "assets/textures/p18/i/steel_ball.png" },
   { n: 19, title: "Тетрадь смерти",        date: "05.05.2026", confirmed: true, page: null, tone: "#b00020" },
   { n: 20, title: "Газан 67",              date: "07.05.2026", confirmed: true, page: null, tone: "#ffd700" },
   { n: 21, title: "Махорага",              date: "16.05.2026", confirmed: true, page: null, tone: "#e8e2cf" },
