@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№20 · Газан — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №20 мода ZitraksMode: Газан — житель-исполнитель. Яйцо из блоков 6 и 7, десять фраз по кругу, торговля пластинками и дилдо из незерита после смерти.">
+<meta name="theme-color" content="#0b0703">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="gz-bg" id="bg" aria-hidden="true"></canvas>
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="gz-hero" id="hero">
+    <div class="gz-hero-txt">
+      <div class="gz-tag"><span>№20</span>07.05.2026<i></i>моб · житель</div>
+      <h1 class="gz-logo"><span class="gz-l1">Газан</span><span class="gz-67" aria-label="67"><b>6</b><b>7</b></span></h1>
+      <p class="gz-sub">Житель без профессии, зато с именем над головой, золотой цепью и десятью фразами, которые он повторяет по кругу. Продаёт блоки 6 и 7, скупает пластинки и каждый раз, когда ты перезаходишь в мир, переписывает ценник.</p>
+      <div class="gz-cta"><a class="k-btn" href="#arena">Призвать</a><a class="k-btn2" href="#trade">Торговать</a><a class="k-btn2" href="#speech">Слушать</a></div>
+      <div class="gz-stats">
+        <a href="#arena"><b>20</b><span>здоровья</span></a>
+        <a href="#speech"><b>10</b><span>фраз по кругу</span></a>
+        <a href="#trade"><b>14</b><span>пластинок в скупке</span></a>
+        <a href="#adv"><b id="stGot">0/5</b><span>ачивки</span></a>
+      </div>
+    </div>
+    <figure class="gz-stage">
+      <div class="gz-spot" aria-hidden="true"></div>
+      <div class="gz-tagname" id="heroName">Газан</div>
+      <div class="gz-model" id="heroModel" role="img" aria-label="3D-модель Газана"></div>
+      <div class="gz-floor" aria-hidden="true"></div>
+      <div class="gz-now" id="heroNow" aria-live="polite"><i></i><span>клик — следующая фраза</span></div>
+      <figcaption>тяни — повернуть · клик — он заговорит</figcaption>
+    </figure>
+  </section>
+
+  <div class="gz-tick" aria-hidden="true"><div id="tick"></div></div>
+
+  <!-- ============ 01 ПРИЗЫВ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">spawn egg</span><h2>Яйцо</h2></div><span class="sec-q">бесформенный рецепт · 6 + 7</span></header>
+    <div class="gz-craft reveal">
+      <div class="gz-c-a">
+        <h3>Сначала цифры</h3>
+        <p class="gz-p">Нужны два цифроблока из <a href="../01-number-blocks/index.html">№1</a>: <b>Блок Шесть</b> и <b>Блок Семь</b>, оба крафтятся из угля и кварца. Как только оба окажутся в инвентаре, выпадет ачивка «Числа судьбы» и откроется рецепт яйца. Ещё их продаёт сам Газан, по 16 изумрудов за штуку.</p>
+        <div class="gz-pick" id="pick">
+          <button type="button" data-b="six"><img src="../../assets/textures/p20/i/six_iso.png" alt=""><b>Блок Шесть</b><span>подобрать</span></button>
+          <button type="button" data-b="seven"><img src="../../assets/textures/p20/i/seven_iso.png" alt=""><b>Блок Семь</b><span>подобрать</span></button>
+        </div>
+        <div class="gz-craft-row">
+          <div id="craftBox"></div>
+          <div class="gz-craft-side">
+            <button type="button" class="gz-b" id="shuffle">Переложить по-другому</button>
+            <p class="gz-note" id="craftNote">Рецепт бесформенный: шестёрку и семёрку можно класть в любые две клетки.</p>
+          </div>
+        </div>
+      </div>
+      <div class="gz-c-b">
+        <div class="gz-egg" id="egg3d" role="img" aria-label="3D-модель яйца призыва Газана"></div>
+        <div class="gz-egg-t">
+          <b>Яйцо призыва Газана</b>
+          <span>zitraksmode:gazan_spawn_egg</span>
+        </div>
+        <dl class="gz-dl" id="eggDl"></dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 АРЕНА ============ -->
+  <section class="sec" id="arena">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">live on stage</span><h2>Сцена</h2></div><span class="sec-q">ПКМ — поговорить · ЛКМ — ударить</span></header>
+    <div class="gz-arena reveal">
+      <div class="gz-view" id="view">
+        <canvas id="cv"></canvas>
+        <div class="gz-hp" id="hp" aria-label="Здоровье Газана"></div>
+        <div class="gz-log" id="log" aria-live="polite"></div>
+        <div class="gz-empty" id="empty"><b>На сцене пусто</b><span id="emptyWhy">Возьми яйцо и кликни по земле.</span></div>
+      </div>
+      <div class="gz-ctrl">
+        <div class="gz-hand" role="radiogroup" aria-label="Что в руке">
+          <button type="button" class="on" data-h="egg"><img src="../../assets/textures/p20/i/gazan_spawn_egg.png" alt=""><span>Яйцо <em id="eggN">0</em></span></button>
+          <button type="button" data-h="fist"><img src="../../assets/textures/p20/v/heart.png" alt="" class="px"><span>Кулак · 1</span></button>
+          <button type="button" data-h="sword"><img src="../../assets/textures/p20/i/iron_sword.png" alt="" class="px"><span>Меч · 6</span></button>
+          <button type="button" data-h="carrot"><img src="../../assets/textures/p20/i/golden_carrot.png" alt="" class="px"><span>Морковь</span></button>
+        </div>
+        <div class="gz-btns">
+          <button type="button" class="gz-b" id="talk">ПКМ по Газану</button>
+          <button type="button" class="gz-b" id="hit">ЛКМ по Газану</button>
+        </div>
+        <dl class="gz-dl" id="mobDl"></dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 ТОРГОВЛЯ ============ -->
+  <section class="sec" id="trade">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">trading</span><h2>Сделки</h2></div><span class="sec-q">16 предложений · по 9999 раз</span></header>
+    <div class="gz-shop reveal">
+      <div class="gui-wrap" id="guiWrap"><div class="gui" id="gui"></div></div>
+      <aside class="gz-ledger" id="ledger"></aside>
+    </div>
+  </section>
+
+  <!-- ============ 04 ЭФИР ============ -->
+  <section class="sec" id="speech">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">tracklist</span><h2>Эфир</h2></div><span class="sec-q">строго по порядку · без повторов подряд</span></header>
+    <p class="gz-lead reveal">Вместо ванильного «хм» у Газана десять записей. Идут они всегда в одном порядке, с первой по десятую и снова с первой. Между началами двух фраз проходит минимум <b>20 секунд</b>, а перед шестой — <b>40</b>, потому что пятая длится больше полуминуты. Номер фразы в сохранение не пишется: после перезахода круг начнётся заново.</p>
+    <div class="gz-radio reveal">
+      <ol class="gz-tracks" id="tracks"></ol>
+      <div class="gz-cycle">
+        <div class="gz-cyc-h"><b>Полный круг</b><span id="cycT"></span></div>
+        <div class="gz-cyc" id="cyc"></div>
+        <div class="gz-cyc-ax" id="cycAx"></div>
+        <div class="gz-live">
+          <button type="button" class="gz-b" id="live">▶ Круг в реальном времени</button>
+          <span id="liveT">Газан говорит сам, как в игре: фраза, пауза до конца кулдауна, следующая.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 ДОСЬЕ ============ -->
+  <section class="sec" id="facts">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">press kit</span><h2>Досье</h2></div><span class="sec-q">чем он не похож на жителя</span></header>
+    <div class="gz-facts reveal" id="factsBox"></div>
+  </section>
+
+  <!-- ============ 06 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 07 ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <p class="fin-q">Шесть. Семь.<br><em>Дальше считать не нужно</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="../../data/p20_models.js"></script>
+<script src="../../data/p20_tex.js"></script>
+<script src="../../data/p20_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

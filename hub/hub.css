@@ -208,6 +208,8 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc-18 .pc-bg::before{content:"";position:absolute;right:12%;top:14%;width:58px;height:58px;border-radius:50%;border:2px dashed rgba(255,214,90,.7);animation:sbSpin 3s linear infinite}
 .pc-19 .pc-bg{background:repeating-linear-gradient(transparent 0 17px,rgba(255,255,255,.05) 17px 18px),radial-gradient(circle at 76% 30%,rgba(176,0,32,.35),transparent 50%),linear-gradient(160deg,#141414,#050505)}
 .pc-19 .pc-bg::before{content:"Death Note";position:absolute;right:10%;top:16%;font:700 30px/1 'LG Amatic',cursive;color:rgba(255,255,255,.75);transform:rotate(-6deg);letter-spacing:.04em}
+.pc-20 .pc-bg{background:radial-gradient(ellipse at 50% -20%,rgba(255,215,0,.45),transparent 55%),conic-gradient(from 170deg at 50% -10%,transparent 0deg,rgba(255,230,140,.18) 10deg,transparent 20deg),linear-gradient(160deg,#2a1806,#0b0703)}
+.pc-20 .pc-bg::before{content:"67";position:absolute;right:9%;top:52%;font:400 40px/1 'LG Dela',sans-serif;color:#ffd700;letter-spacing:-.02em;transform:rotate(-5deg);text-shadow:0 3px 0 #8b4513}
 @keyframes sbSpin{to{transform:rotate(360deg)}}
 @keyframes aqRise{from{transform:translateY(0)}to{transform:translateY(-220px)}}
 @keyframes prNoz{0%{transform:translate(-40px,0)}50%{transform:translate(30px,6px)}100%{transform:translate(-20px,12px)}}
@@ -429,6 +431,8 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 @font-face{font-family:'LG Amatic';font-weight:700;font-display:swap;src:url(../assets/fonts/AmaticSC-700-latin.woff2) format('woff2')}
 /* 19 Тетрадь смерти: рукописная капитель, белое на чёрном, красная черта */
 .lg-c[data-s="19"]{font-family:'LG Amatic';font-weight:700;color:#f2f0e9;--d:#b00020;font-size:1.25em;text-shadow:0 3px 0 #b00020}
+@font-face{font-family:'LG Dela';font-display:swap;src:url(../assets/fonts/DelaGothic-400-latin.woff2) format('woff2')}
+.lg-c[data-s="20"]{font-family:'LG Dela';font-weight:400;background:linear-gradient(180deg,#fffbe6,#ffd700 50%,#a86f12);-webkit-background-clip:text;background-clip:text;color:transparent;--d:#8b4513;text-shadow:none;filter:drop-shadow(0 3px 0 #5a2d0c)}
 @keyframes lgScan{from{background-position:0 100%}to{background-position:0 -100%}}
 .lg-tip{height:22px;margin-top:6px;font:400 14px var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-4px);transition:.2s}
 .lg-tip.on{opacity:1;transform:none}
