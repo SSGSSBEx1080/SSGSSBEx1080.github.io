@@ -378,8 +378,4 @@ h3{font:700 30px/1.1 var(--f-big);color:var(--bone);margin:0 0 10px}
   .mh-log{left:10px;bottom:10px;font-size:12px}
   .mh-dl>div{grid-template-columns:1fr;gap:2px}
 }
-/* hero: цифры урона и иммунитет */
-.mh-pop{position:absolute;top:16%;z-index:3;pointer-events:none;font:700 24px var(--f-c);color:#ff5555;text-shadow:0 2px 0 #000,0 0 10px #000,0 0 18px #000;animation:mh-pop 1.1s ease-out forwards;white-space:nowrap}
-.mh-pop.imm{color:var(--gold);font-size:20px;letter-spacing:.08em;text-transform:uppercase}
-.mh-stage figcaption a{color:var(--gold);text-decoration:underline;text-underline-offset:3px;pointer-events:auto}
-.mh-stage.imm .mh-halo{opacity:.4}
+.mh-stage figcaption a{pointer-events:auto;color:var(--gold)}
