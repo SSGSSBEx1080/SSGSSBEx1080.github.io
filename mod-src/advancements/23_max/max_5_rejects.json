@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:23_max/max_5_trades",
+  "display": {
+    "icon": { "item": "minecraft:ender_chest" },
+    "title": "§5Авито Скам",
+    "description": "§5Ебал перекупов в жопу, легит чек не пройден",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": { 
+    "rejected_5": { "trigger": "zitraksmode:max_rejects" } 
+  },
+  "rewards": { "experience": 100 }
+}

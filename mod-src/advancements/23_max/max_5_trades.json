@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:23_max/max_100_messages",
+  "display": {
+    "icon": { "item": "minecraft:crafting_table" },
+    "title": "§bСвети стеклом",
+    "description": "§bСделка завершена успешно с чистотой 99.8%, кто знает что происходит в эти 0.02%...",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": { 
+    "traded_5": { "trigger": "zitraksmode:max_trades" } 
+  },
+  "rewards": { "experience": 50 }
+}

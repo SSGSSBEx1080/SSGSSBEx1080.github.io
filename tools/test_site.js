@@ -38,6 +38,8 @@ for (const p of live) {
 }
 assert.equal(POINTS.find(p => p.n === 22).page, 'pages/22-milk/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 22).adv.length, 6);
+assert.equal(POINTS.find(p => p.n === 23).page, 'pages/23-max/index.html');
+assert.equal(HUB_ADV.find(p => p.n === 23).adv.length, 4);
 for (const name of ['head', 'hat']) {
   const faces = P20M.gazan.elements.find(e => e.name === name).faces;
   assert.ok(faces.east.uv[0] > faces.east.uv[2], `East face of ${name} must be mirrored`);

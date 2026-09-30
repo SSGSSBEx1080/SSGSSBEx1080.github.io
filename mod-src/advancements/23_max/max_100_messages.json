@@ -1,0 +1,16 @@
+{
+  "parent": "zitraksmode:23_max/max_obtained",
+  "display": {
+    "icon": { "item": "minecraft:writable_book" },
+    "title": "§bПавел Дуров",
+    "description": "§b100 сообщений в новой соц сети, ура. Защищено сквозным шифрованием ХАЛЯЛЬ УСАМА БЕН-ЛАДАН09/11",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": { 
+    "sent_100": { "trigger": "zitraksmode:max_messages" } 
+  },
+  "rewards": { "experience": 50 }
+}

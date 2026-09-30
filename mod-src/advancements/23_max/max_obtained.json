@@ -1,0 +1,23 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:max_messenger" },
+    "title": "§7Теперь мы в MAX!",
+    "description": "§7Добро пожаловать в самый не заблокированный мессенджер Майнкрафта, правила ограничиваются только фантазией пользователя.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "zitraksmode:max_messenger" ] }
+        ]
+      }
+    }
+  },
+  "rewards": { "experience": 10 }
+}
