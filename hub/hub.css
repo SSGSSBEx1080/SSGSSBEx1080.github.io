@@ -196,6 +196,13 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc-12 .pc-bg::before{content:"";position:absolute;left:-10%;right:-10%;top:48%;height:2px;background:linear-gradient(90deg,transparent,#fff 40%,#e0314b 70%,transparent);transform:rotate(-8deg);box-shadow:0 0 12px #e0314b;animation:ktCut 3.2s cubic-bezier(.2,.8,.2,1) infinite}
 .pc-13 .pc-bg{background:repeating-linear-gradient(0deg,transparent 0 11px,rgba(92,200,255,.14) 11px 12px),repeating-linear-gradient(90deg,transparent 0 11px,rgba(92,200,255,.14) 11px 12px),radial-gradient(circle at 70% 40%,rgba(53,208,255,.35),transparent 60%),linear-gradient(160deg,#0b2a45,#04101c)}
 .pc-13 .pc-bg::before{content:"";position:absolute;left:62%;top:22%;width:26px;height:18px;background:linear-gradient(#ffcf5a,#ff9d1a);box-shadow:0 0 14px rgba(255,176,0,.7);animation:prNoz 2.4s ease-in-out infinite alternate}
+.pc-14 .pc-bg{background:radial-gradient(circle at 72% 40%,rgba(255,201,14,.3),transparent 40%),linear-gradient(180deg,#0e6ea0,#03243a 60%,#010a14)}
+.pc-14 .pc-bg::before{content:"";position:absolute;left:68%;bottom:-10px;width:10px;height:10px;border:2px solid rgba(220,250,255,.8);border-radius:50%;box-shadow:18px 30px 0 -2px rgba(220,250,255,.6),-14px 60px 0 -1px rgba(220,250,255,.7);animation:aqRise 3s linear infinite}
+.pc-15 .pc-bg{background:repeating-linear-gradient(45deg,rgba(255,144,0,.07) 0 10px,transparent 10px 20px),radial-gradient(circle at 72% 38%,rgba(255,144,0,.35),transparent 50%),#050505}
+.pc-15 .pc-bg::before{content:"18+";position:absolute;right:12%;top:18%;padding:2px 7px;font:900 22px/1 Arial,sans-serif;color:#000;background:#ff9000;border-radius:4px;transform:rotate(8deg);box-shadow:0 0 18px rgba(255,144,0,.55)}
+.pc-16 .pc-bg{background:radial-gradient(ellipse 40% 60% at 70% 20%,rgba(255,228,170,.22),transparent 70%),radial-gradient(circle at 25% 25%,rgba(255,255,255,.035) 0 2px,transparent 3px) 0 0/16px 16px,linear-gradient(180deg,#4a1a1f,#240b0e)}
+.pc-16 .pc-bg::before{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(180deg,#8a6128 0 2px,rgba(20,10,6,.85) 2px);opacity:.8}
+@keyframes aqRise{from{transform:translateY(0)}to{transform:translateY(-220px)}}
 @keyframes prNoz{0%{transform:translate(-40px,0)}50%{transform:translate(30px,6px)}100%{transform:translate(-20px,12px)}}
 @keyframes ktCut{0%{clip-path:inset(0 100% 0 0)}35%,70%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 100%)}}
 @keyframes jblRing{from{transform:scale(.6);opacity:1}to{transform:scale(4.5);opacity:0}}
@@ -401,6 +408,12 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 /* 13 3D-принтер: голубой чертёж */
 .lg-c[data-s="13"]{font-family:var(--f-mono);font-weight:700;color:transparent;-webkit-text-stroke:2px #35d0ff;font-size:.9em;text-shadow:0 0 12px rgba(53,208,255,.6)}
 .lg-c[data-s="13"]::after{inset:0;opacity:.6;background:linear-gradient(transparent 45%,rgba(53,208,255,.35) 50%,transparent 55%) 0 0/100% 200%;animation:lgScan 1.4s linear infinite}
+@font-face{font-family:'LG Wet';font-display:swap;src:url(../assets/fonts/RubikWetPaint-400-latin.woff2) format('woff2')}
+.lg-c[data-s="14"]{font-family:'LG Wet';color:transparent;background:linear-gradient(180deg,#fff2b3,#ffc90e 50%,#5fd8ff 51%,#0a6fa8);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 4px 0 rgba(0,20,40,.6))}
+/* 15 Хентай-блок: чёрно-оранжевый бейдж */
+.lg-c[data-s="15"]{font-family:Arial,Helvetica,sans-serif;font-weight:900;color:#000;text-shadow:0 2px 0 rgba(0,0,0,.25);background:#ff9000;border-radius:.12em;padding:0 .06em;font-size:.86em;line-height:1.05;box-shadow:0 0 18px rgba(255,144,0,.45)}
+/* 16 Картины: золото в раме */
+.lg-c[data-s="16"]{font-family:'LG Cormorant';font-weight:700;font-size:1.08em;color:transparent;background:linear-gradient(180deg,#f6dd9a 10%,#d9a55b 45%,#6e4618 95%);-webkit-background-clip:text;background-clip:text;text-shadow:none;filter:drop-shadow(0 3px 0 #2a0f13) drop-shadow(0 0 10px rgba(217,165,91,.45))}
 @keyframes lgScan{from{background-position:0 100%}to{background-position:0 -100%}}
 .lg-tip{height:22px;margin-top:6px;font:400 14px var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-4px);transition:.2s}
 .lg-tip.on{opacity:1;transform:none}

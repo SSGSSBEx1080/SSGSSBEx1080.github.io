@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№14 · Акваланг — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №14 мода ZitraksMode: акваланг. 367 секунд воздуха, двойная скорость плавания, ночное зрение, свой HUD, чары Водохлёбус и Жирный пидор, симулятор погружения.">
+<meta name="theme-color" content="#03263d">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- фон кодом: толща воды, лучи, пузыри; глубина = прокрутка -->
+<canvas class="k-bg" id="bg" aria-hidden="true"></canvas>
+<div class="aq-depth" id="depth" aria-hidden="true"><i id="depthMark"></i><b id="depthTxt">0 м</b></div>
+<div class="aq-hud" id="pageHud" aria-hidden="true"><i><em id="pageHudBar"></em></i><span id="pageHudTxt">100%</span></div>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="aq-hero" id="hero">
+    <div class="aq-hero-txt">
+      <div class="aq-tag"><span>№14</span><i></i>22.04.2026<i></i><span class="k">нагрудник · редкий · 7340 тиков воздуха</span></div>
+      <h1 class="aq-title" aria-label="Акваланг"><span data-t="АКВАЛАНГ">АКВАЛАНГ</span></h1>
+      <p class="aq-sub">Два железных баллона на спину, шланги к маске. Пока в баллонах есть воздух, под водой ты не тратишь ни одного пузыря, видишь в темноте, копаешь быстрее и плывёшь <b>в два раза быстрее</b>. Кончился воздух — снимай, иначе задохнёшься прямо на берегу.</p>
+      <div class="aq-cta">
+        <a class="k-btn" href="#dive"><span>↓</span>Нырнуть</a>
+        <a class="k-btn2" href="#craft">Крафт</a>
+      </div>
+      <div class="aq-stats">
+        <a href="#item"><b>367</b><span>секунд воздуха</span></a>
+        <a href="#dive"><b>×2</b><span>скорость плавания</span></a>
+        <a href="#ench"><b>2</b><span>своих чары</span></a>
+        <a href="#adv"><b id="stGot">0/3</b><span>ачивки</span></a>
+      </div>
+    </div>
+    <div class="aq-stage" id="heroStage">
+      <div class="aq-porthole"><canvas id="hero3d" aria-label="Модель акваланга: тяни, чтобы крутить"></canvas></div>
+      <div class="aq-gauge" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><g id="gTicks"></g><line id="gNeedle" x1="50" y1="50" x2="50" y2="14"/><circle cx="50" cy="50" r="4" class="hub"/></svg><span>BAR</span></div>
+      <p class="aq-hint">тяни — крутится · клик — продуть баллоны</p>
+    </div>
+  </section>
+
+  <!-- ============ 01 ПРЕДМЕТ ============ -->
+  <section class="sec" id="item">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">I · item</span><h2>Что это за железка</h2></div><span class="sec-q">zitraksmode:aqualung</span></header>
+    <p class="sec-p reveal">Воздух хранится прямо в прочности предмета: <b>1 тик под водой = 1 единица</b>. Полоска прочности спрятана — вместо неё своя шкала на экране и строчка в подсказке.</p>
+    <div class="aq-item reveal">
+      <div class="aq-item-l pnl">
+        <div class="aq-bigicon"><img src="../../assets/textures/p14/aqualung.png" alt="Акваланг"></div>
+        <div class="mc-tt aq-tt" id="itemTip"></div>
+        <div class="aq-armorbar" id="armorBar" aria-label="10 очков брони"></div>
+      </div>
+      <dl class="k-dl" id="itemDl"></dl>
+    </div>
+  </section>
+
+  <!-- ============ 02 КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">II · crafting</span><h2>Сборка из старого железа</h2></div><span class="sec-q">верстак 3×3</span></header>
+    <p class="sec-p reveal">Шлем идёт на маску, нагрудник — на ремни, стекло — на иллюминатор. Нагрудник можно брать <b>поношенный</b>: сколько у него было прочности в процентах, столько воздуха и окажется в баллонах.</p>
+    <div class="aq-craft reveal">
+      <div id="craftBox"></div>
+      <div class="aq-wear pnl">
+        <div class="aq-wear-h"><span class="k-slot"><img src="../../assets/textures/p14/i/iron_chestplate.png" alt=""><i class="aq-dur"><em id="wearDur"></em></i></span><div><b>Железный нагрудник</b><span id="wearTxt">240 / 240</span></div></div>
+        <input type="range" id="wearR" min="1" max="240" value="240" aria-label="Прочность нагрудника">
+        <div class="aq-arrow">↓ в верстак ↓</div>
+        <div class="aq-wear-h"><span class="k-slot"><img src="../../assets/textures/p14/aqualung.png" alt=""></span><div><b class="aqua">Акваланг</b><span id="wearOut">7340 тиков · 367 сек</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 ПОГРУЖЕНИЕ ============ -->
+  <section class="sec" id="dive">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">III · dive simulator</span><h2>Погружение</h2></div><span class="sec-q">20 тиков/с, как в игре</span></header>
+    <p class="sec-p reveal">Та же логика, что в моде, тик в тик. Плавай <b>WASD / стрелками</b> или кнопками. Попробуй досидеть под водой до ачивки, а потом выжать баллоны досуха.</p>
+    <div class="aq-sim reveal">
+      <div class="aq-sim-view">
+        <canvas id="sim" aria-label="Симулятор погружения"></canvas>
+        <div class="aq-pad" id="pad" aria-label="Управление">
+          <button type="button" data-d="u" aria-label="Вверх">▲</button><button type="button" data-d="l" aria-label="Влево">◀</button><button type="button" data-d="d" aria-label="Вниз">▼</button><button type="button" data-d="r" aria-label="Вправо">▶</button>
+        </div>
+        <div class="aq-dead" id="dead" hidden><h3>Вы умерли!</h3><p id="deadWhy"></p><button type="button" class="aq-mcbtn" id="respawn">Возродиться</button></div>
+      </div>
+      <div class="aq-sim-side">
+        <div class="aq-row">
+          <button type="button" class="k-chip on" id="tWear">Акваланг надет</button>
+          <button type="button" class="k-chip" id="tVod">Водохлёбус</button>
+          <button type="button" class="k-chip" id="tZhp">Жирный пидор</button>
+        </div>
+        <div class="aq-row"><span class="aq-lbl">время</span><button type="button" class="k-chip on" data-sp="1">×1</button><button type="button" class="k-chip" data-sp="5">×5</button><button type="button" class="k-chip" data-sp="20">×20</button></div>
+        <dl class="k-dl aq-read" id="simDl"></dl>
+        <div class="aq-row"><span class="aq-lbl">наковальня</span>
+          <button type="button" class="aq-rep" data-rep="iron_ingot" aria-label="Починить железом"><img src="../../assets/textures/p14/i/iron_ingot.png" alt=""></button>
+          <button type="button" class="aq-rep" data-rep="copper_ingot" aria-label="Починить медью"><img src="../../assets/textures/p14/i/copper_ingot.png" alt=""></button>
+          <button type="button" class="aq-rep" data-rep="nautilus_shell" aria-label="Починить ракушкой"><img src="../../assets/textures/p14/i/nautilus_shell.png" alt=""></button>
+          <button type="button" class="btn-ghost" id="drain">слить воздух</button>
+        </div>
+        <div class="k-log" id="simLog"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 ВОЗДУХ ============ -->
+  <section class="sec" id="air">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · air supply</span><h2>Сколько можно не дышать</h2></div><span class="sec-q">6:07 на одном баллоне</span></header>
+    <p class="sec-p reveal">Двигай ползунок — так меняются полоска на экране и строчка в подсказке. Цвета те же, что в моде: голубой, жёлтый после половины, красный на последней четверти.</p>
+    <div class="aq-air reveal">
+      <div class="aq-meter pnl">
+        <div class="aq-screen"><div class="aq-modhud"><i><em id="mBar"></em></i><span id="mPct">100%</span></div><div class="mc-tt" id="mTip"></div></div>
+        <input type="range" id="mR" min="0" max="7340" value="7340" aria-label="Воздух в тиках">
+        <div class="aq-marks"><span>0</span><span>25%</span><span>50%</span><span>100%</span></div>
+      </div>
+      <div class="aq-cmp pnl" id="cmp"></div>
+    </div>
+  </section>
+
+  <!-- ============ 05 ЧАРЫ ============ -->
+  <section class="sec" id="ench">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · enchantments</span><h2>Две книги только для него</h2></div><span class="sec-q">Энчант-апдейт</span></header>
+    <div class="aq-ench reveal">
+      <article class="aq-book pnl" style="--c:#55ffff">
+        <div class="aq-book-fx vod" aria-hidden="true"><img src="../../assets/textures/p14/aqualung.png" alt=""><i></i><i></i><i></i><i></i></div>
+        <div class="mc-tt"><span style="color:#ffff55">Зачарованная книга</span><br><span style="color:#aaa">Водохлёбус</span></div>
+        <p>На суше баллоны сами понемногу набирают воздух: <b>+1 секунда каждые 2 секунды</b>. Полный баллон с нуля — примерно за 12 минут на берегу. Нырнул — таймер сбрасывается.</p>
+        <dl class="k-dl"><div><dt>редкость</dt><dd>необычное</dd></div><div><dt>уровень</dt><dd>I</dd></div><div><dt>цена стола</dt><dd>от 12</dd></div></dl>
+      </article>
+      <article class="aq-book pnl curse" style="--c:#ff5555">
+        <div class="aq-book-fx zhp" aria-hidden="true"><img src="../../assets/textures/p14/aqualung.png" alt=""><b>∞ кг</b></div>
+        <div class="mc-tt"><span style="color:#ffff55">Зачарованная книга</span><br><span style="color:#ff5555">Жирный пидор</span></div>
+        <p>Проклятие. Пока ты в воде, тянет вниз: <b>−0,08 к скорости каждый тик</b>, до −0,35 блока за тик. Всплыть почти нереально — только держать «вверх» и молиться. Снять с предмета нельзя.</p>
+        <dl class="k-dl"><div><dt>редкость</dt><dd>очень редкое</dd></div><div><dt>уровень</dt><dd>I · проклятие</dd></div><div><dt>где</dt><dd>только акваланг</dd></div></dl>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ 06 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 07 ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">VII · changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="finale" id="finale">
+    <button type="button" class="aq-surf" id="surf" data-nosfx>ВСПЛЫТЬ</button>
+    <p class="fin-p" id="finP">Жми — выплывем наверх.</p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../shared/geo3d.js"></script>
+<script src="../../data/p14_geo.js"></script>
+<script src="../../data/p14_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

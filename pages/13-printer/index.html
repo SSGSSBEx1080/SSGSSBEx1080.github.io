@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>№13 · 3D-принтер — ZitraksMode Wiki</title>
-<meta name="description" content="Пункт №13 мода ZitraksMode: 3D-принтер. Один блок, который сканирует постройки в чертежи .zlp и печатает их обратно слой за слоем. Студия чертежей и барахолка прямо на сайте.">
-<meta name="theme-color" content="#04101c">
+<meta name="description" content="Пункт №13 мода ZitraksMode: 3D-принтер. Интерфейс как в игре, три встроенных чертежа, сканер построек, настоящие файлы .zlp, чары Заебись, Нахуя? и Барыга.">
+<meta name="theme-color" content="#050607">
 <link rel="stylesheet" href="../../shared/core.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!-- фон кодом: чертёжная сетка и плоттер, который сам рисует детали -->
+<!-- фон кодом: сетка и плоттер -->
 <canvas class="pr-bg" id="bg" aria-hidden="true"></canvas>
 <div class="pr-cross" id="cross" aria-hidden="true"><i class="h"></i><i class="v"></i><span id="crossTxt"></span></div>
 
@@ -18,53 +18,109 @@
   <!-- ============ HERO ============ -->
   <section class="p3-hero" id="hero">
     <div class="p3-hero-txt">
-      <div class="p3-tag"><span>№13</span><i></i>26.04.2026<i></i><span class="k">1 блок · бесконечно построек</span></div>
+      <div class="p3-tag"><span>№13</span><i></i>26.04.2026<i></i><span class="k">1 блок · 540 слотов · 20 блоков/с</span></div>
       <h1 class="p3-title" aria-label="3D-принтер"><span class="pt" data-t="3D-ПРИНТЕР">3D-ПРИНТЕР</span><i class="pt-noz" aria-hidden="true"></i></h1>
-      <p class="p3-sub">Отсканируй постройку — получишь чертёж <b>.zlp</b>. Отдай чертёж другу — он напечатает её у себя, слой за слоем, из своих блоков. Один блок, а механики тут больше, чем в половине мода.</p>
+      <p class="p3-sub">Кидаешь внутрь блоки, выбираешь чертёж, жмёшь <b>▶ Печать</b> — и постройка вырастает рядом снизу вверх, по блоку за тик. Свою постройку можно отсканировать, сохранить в файл <b>.zlp</b> и отдать другу.</p>
       <div class="p3-cta">
-        <a class="p3-btn" href="#studio"><span>▶</span>Открыть студию</a>
-        <a class="p3-btn2" href="#market">Барахолка чертежей</a>
+        <a class="p3-btn" href="#gui"><span>▶</span>Открыть принтер</a>
+        <a class="p3-btn2" href="#scan">Сканер построек</a>
       </div>
       <div class="p3-stats">
-        <a href="#cycle"><b>3</b><span>шага цикла</span></a>
-        <a href="#studio"><b id="stBlocks">88</b><span>блоков в студии</span></a>
+        <a href="#built"><b>3</b><span>встроенных чертежа</span></a>
+        <a href="#ench"><b>3</b><span>своих чары</span></a>
         <a href="#adv"><b id="stGot">0/4</b><span>ачивки</span></a>
       </div>
     </div>
     <div class="p3-stage">
-      <div class="p3-dims" aria-hidden="true"><span class="dx">X 9</span><span class="dy">Y 9</span><span class="dz">Z 9</span></div>
-      <canvas class="p3-3d" id="hero3d" aria-label="Принтер печатает постройку: тяни, чтобы крутить"></canvas>
+      <div class="p3-dims" aria-hidden="true"><span class="dx">X 0</span><span class="dy">Y 0</span><span class="dz">Z 0</span></div>
+      <canvas class="p3-3d" id="hero3d" aria-label="Принтер печатает встроенные чертежи: тяни, чтобы крутить"></canvas>
       <div class="p3-hud" id="heroHud"><b>ПЕЧАТЬ</b><span id="heroName">—</span><i><em id="heroBar"></em></i><small id="heroTxt"></small></div>
     </div>
   </section>
 
   <!-- ============ I. БЛОК ============ -->
   <section class="sec" id="block">
-    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">I · block</span><h2>Один блок</h2></div><span class="sec-q">весь пункт — в нём</span></header>
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">I · block</span><h2>Сам принтер</h2></div><span class="sec-q">zitraksmode:printer_3d</span></header>
     <div class="blk reveal">
       <div class="blk-view">
         <div class="blk-scene" id="blkScene"><div class="blk-cube" id="blkCube"></div><div class="blk-shadow"></div></div>
-        <div class="blk-faces" id="blkFaces"></div>
+        <div class="blk-tex"><img class="pixel" id="blkTex" alt="Текстура 3D-принтера 16×16"><span>одна текстура 16×16 на все шесть граней</span></div>
       </div>
       <div class="blk-info">
-        <h3>3D-принтер</h3>
+        <h3>3D Принтер</h3>
         <p id="blkLead"></p>
         <dl class="blk-dl" id="blkDl"></dl>
-        <div class="blk-inv"><span>Креатив:</span><span class="inv13" id="inv13"></span><button type="button" class="btn-ghost" id="creativeTake">взять из креатива</button></div>
+      </div>
+      <div class="blk-craft">
+        <div class="cr-win" id="craft">
+          <div class="cr-t">Крафт</div>
+          <div class="cr-body">
+            <div class="cr-grid" id="crGrid"></div>
+            <div class="cr-arrow" aria-hidden="true"></div>
+            <button type="button" class="cr-res" id="crRes" data-tip="3D Принтер" data-tip-sub="zitraksmode:printer_3d" aria-label="Забрать 3D-принтер"><img alt=""></button>
+          </div>
+          <div class="cr-inv"><span>Хотбар</span><span class="inv13" id="inv13"></span></div>
+        </div>
+        <div class="cr-act">
+          <button type="button" class="btn-ghost" id="crCopy">⧉ скопировать рецепт</button>
+          <button type="button" class="btn-ghost" id="creativeTake">взять из креатива</button>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ II. ЦИКЛ ============ -->
-  <section class="sec" id="cycle">
-    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">II · pipeline</span><h2>Скан → чертёж → печать</h2></div></header>
-    <div class="cyc reveal" id="cyc"></div>
+  <!-- ============ II. ИНТЕРФЕЙС ============ -->
+  <section class="sec" id="gui">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">II · interface</span><h2>Интерфейс как в игре</h2></div><span class="sec-q">420 × 256 · ПКМ по принтеру</span></header>
+    <p class="sec-p reveal">Это окно принтера пиксель в пиксель: те же панели, кнопки, цвета и шрифт. Всё работает. Выбери чертёж, закинь материалы кнопкой <b>Авто</b> и жми <b>▶ Печать</b>. Колесо мыши листает склад и списки, клик по стаку перекидывает его между инвентарём и принтером.</p>
+    <div class="gui-top reveal">
+      <div class="gui-mode" role="group" aria-label="Режим игры">
+        <button type="button" data-mode="survival" class="on">Выживание</button><button type="button" data-mode="creative">Креатив</button>
+      </div>
+      <button type="button" class="btn-ghost" id="giveBtn" title="Насыпать в инвентарь всё, что нужно для выбранного чертежа">/give материалы</button>
+      <div class="gui-ench" id="guiEnch" aria-label="Чары на принтере"></div>
+    </div>
+    <div class="gui-wrap reveal" id="guiWrap">
+      <div class="gui-box" id="guiBox">
+        <canvas id="guiCv" width="420" height="256" aria-label="Окно 3D-принтера"></canvas>
+        <input type="text" class="gui-input" id="guiInput" maxlength="48" autocomplete="off" spellcheck="false" hidden>
+      </div>
+      <button type="button" class="gui-x" id="guiX" aria-label="Свернуть окно">✕</button>
+    </div>
+    <button type="button" class="gui-full" id="guiFull">⤢ Развернуть окно на весь экран</button>
+    <div class="gui-log" id="guiLog" aria-live="polite"></div>
+    <input type="file" id="zlpFile" accept=".zlp" hidden>
+
+    <!-- рабочая зона: печать -->
+    <div class="wz reveal" id="wz">
+      <div class="wz-view" id="wzView">
+        <canvas id="wz3d" aria-label="Рабочая зона принтера: тяни — крутить, колесо — зум"></canvas>
+        <div class="wz-hint" id="wzHint">голограмма: так встанет постройка</div>
+        <div class="wz-hud" id="wzHud" hidden><b id="wzPct">Печать: 0%</b><span id="wzTxt"></span><i><em id="wzBar"></em></i></div>
+      </div>
+      <aside class="wz-side">
+        <div class="wz-h">Скорость показа</div>
+        <div class="wz-speed" id="wzSpeed" role="group" aria-label="Скорость">
+          <button type="button" data-s="1" class="on">×1 как в игре</button><button type="button" data-s="4">×4</button><button type="button" data-s="15">×15</button>
+        </div>
+        <div class="wz-rate" id="wzRate"></div>
+        <div class="wz-h">Сейчас ставится</div>
+        <ol class="wz-ord" id="wzOrd"></ol>
+      </aside>
+    </div>
   </section>
 
-  <!-- ============ III. СТУДИЯ ============ -->
-  <section class="sec" id="studio">
-    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">III · studio</span><h2>Студия чертежей</h2></div><span class="sec-q" id="stuQ">12×12×12</span></header>
-    <p class="sec-p reveal">Строй прямо здесь, сохраняй в <b>.zlp</b>, кидай ссылку. Или открой чужой чертёж и смотри, как принтер его печатает.</p>
+  <!-- ============ III. ВСТРОЕННЫЕ ЧЕРТЕЖИ ============ -->
+  <section class="sec" id="built">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">III · built-in</span><h2>Три чертежа из коробки</h2></div><span class="sec-q">PrinterRecipe</span></header>
+    <p class="sec-p reveal">Эти три есть в каждом принтере сразу. Ставятся на блок правее и на блок дальше принтера. Цена списывается вся разом при старте: не хватает хоть одного блока — печать не начнётся.</p>
+    <div class="bt-grid" id="btGrid"></div>
+  </section>
+
+  <!-- ============ IV. СКАНЕР ============ -->
+  <section class="sec" id="scan">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · scanner</span><h2>Сканер построек</h2></div><span class="sec-q" id="stuQ">12×12×12</span></header>
+    <p class="sec-p reveal">Строй в рабочей зоне рядом с принтером, потом задай размеры и жми <b>Сканировать</b>. Отсчёт идёт от принтера: 1,1,1 — первый блок слева-спереди от него. Воздух не сохраняется, повороты блоков приводятся к принтеру, смотрящему на север, поэтому чертёж потом печатается правильно в любую сторону.</p>
     <div class="stu reveal" id="stu">
       <div class="stu-tools" role="toolbar" aria-label="Инструменты">
         <button type="button" class="tl on" data-tool="place" title="Ставить (ЛКМ)"><b>■</b>ставить</button>
@@ -75,17 +131,12 @@
         <button type="button" class="tl" id="redo" title="Вернуть (Ctrl+Y)"><b>↷</b></button>
         <button type="button" class="tl" id="clear" title="Очистить"><b>⌫</b></button>
         <span class="tl-sep"></span>
-        <label class="tl-size">объём <select id="size"><option value="8">8³</option><option value="12" selected>12³</option><option value="16">16³</option></select></label>
+        <label class="tl-size">зона <select id="size"><option value="8">8³</option><option value="12" selected>12³</option><option value="16">16³</option></select></label>
       </div>
       <div class="stu-main">
         <div class="stu-view" id="stuView">
-          <canvas id="stu3d" aria-label="Студия: ЛКМ — ставить, ПКМ — ломать, тянуть — крутить, колесо — зум"></canvas>
+          <canvas id="stu3d" aria-label="Рабочая зона: ЛКМ — ставить, ПКМ — ломать, тянуть — крутить, колесо — зум"></canvas>
           <div class="stu-hint" id="stuHint">ЛКМ — ставить · ПКМ — ломать · тяни — крутить · колесо — зум</div>
-          <div class="stu-print" id="stuPrint" hidden>
-            <b>ПЕЧАТЬ</b><span id="prTxt">слой 0/0</span><i><em id="prBar"></em></i>
-            <label>скорость <input type="range" id="prSpeed" min="1" max="60" value="14"></label>
-            <button type="button" id="prStop">стоп</button>
-          </div>
           <div class="stu-drop" id="stuDrop">Отпусти .zlp — открою чертёж</div>
         </div>
         <aside class="stu-side">
@@ -95,45 +146,79 @@
           <div class="stu-slice"><span>срез Y</span><input type="range" id="slice" min="1" max="12" value="12"><b id="sliceV">все</b></div>
         </aside>
       </div>
-      <div class="stu-bottom">
-        <div class="stu-presets" id="presets"></div>
-        <div class="stu-act">
-          <button type="button" class="p3-btn sm" id="bPrint"><span>▶</span>Печать</button>
-          <button type="button" class="p3-btn2 sm" id="bSave">Сохранить .zlp</button>
-          <label class="p3-btn2 sm file">Открыть .zlp<input type="file" id="bOpen" accept=".zlp,text/plain"></label>
-          <button type="button" class="p3-btn2 sm" id="bLink">Ссылка</button>
-          <button type="button" class="p3-btn2 sm" id="bPub">На барахолку</button>
+      <div class="sc-panel">
+        <div class="sc-box" id="scBox">
+          <div class="sc-t">Сканер области</div>
+          <label class="sc-name"><span>Имя:</span><input id="scName" maxlength="48" placeholder="Название" autocomplete="off" spellcheck="false"></label>
+          <div class="sc-sub">Размеры от принтера</div>
+          <div class="sc-xyz">
+            <label><b>X</b><input id="scX" inputmode="numeric" maxlength="4" value="12"></label>
+            <label><b>Y</b><input id="scY" inputmode="numeric" maxlength="4" value="12"></label>
+            <label><b>Z</b><input id="scZ" inputmode="numeric" maxlength="4" value="12"></label>
+          </div>
+          <div class="sc-hint">1,1,1 = первый блок рабочей зоны<br>слева-спереди от принтера</div>
+          <button type="button" class="sc-go" id="scGo">Сканировать</button>
+        </div>
+        <div class="sc-side">
+          <div class="stu-presets" id="presets"></div>
+          <div class="sc-lim" id="scLim"></div>
         </div>
       </div>
       <div class="stu-bom" id="bom"></div>
     </div>
   </section>
 
-  <!-- ============ IV. АНАТОМИЯ .ZLP ============ -->
+  <!-- ============ V. .ZLP ============ -->
   <section class="sec" id="zlp">
-    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · file format</span><h2>Анатомия .zlp</h2></div><span class="sec-q" id="zlpQ">0 байт</span></header>
-    <p class="sec-p reveal">Чертёж — это обычный текстовый файл. Его можно скинуть в личку, залить в облако, вставить в чат. Ниже живой файл того, что сейчас стоит в студии. Наведи на кусок, чтобы понять, что он значит.</p>
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · file format</span><h2>Файл .zlp</h2></div><span class="sec-q" id="zlpQ">0 байт</span></header>
+    <p class="sec-p reveal">Кнопка <b>⇩</b> в принтере кладёт чертёж в папку игры, <b>+</b> в списке «Мои» забирает оттуда. Внутри — сжатый gzip NBT, как у ванильных структур. Файлы с этой страницы открываются в игре, а файлы из игры открываются здесь: скачай, закинь в папку, выбери через «+».</p>
     <div class="zl reveal">
-      <pre class="zl-file" id="zlFile"></pre>
-      <div class="zl-legend" id="zlLeg"></div>
+      <div class="zl-l">
+        <div class="zl-path" id="zlPath"></div>
+        <div class="zl-tree" id="zlTree"></div>
+      </div>
+      <div class="zl-r">
+        <div class="zl-cur" id="zlCur"></div>
+        <div class="zl-act">
+          <button type="button" class="p3-btn sm" id="zlDl"><span>⇩</span>Скачать .zlp</button>
+          <button type="button" class="p3-btn2 sm" id="zlOpen">Открыть .zlp</button>
+          <button type="button" class="p3-btn2 sm" id="zlLink">Ссылка</button>
+        </div>
+        <div class="zl-steps" id="zlSteps"></div>
+      </div>
     </div>
   </section>
 
-  <!-- ============ V. БАРАХОЛКА ============ -->
+  <!-- ============ VI. МУЛЬТИПЛЕЕР ============ -->
+  <section class="sec" id="mp">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · multiplayer</span><h2>На сервере</h2></div></header>
+    <div class="mp reveal" id="mp13"></div>
+  </section>
+
+  <!-- ============ VII. ЧАРЫ ============ -->
+  <section class="sec" id="ench">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">VII · enchantments</span><h2>Чары принтера</h2></div><span class="sec-q">только книги и принтер</span></header>
+    <p class="sec-p reveal">Три зачарования, которые встают только на 3D-принтер (и на книги для наковальни). Заебись и Нахуя? между собой не спорят: можно повесить оба.</p>
+    <div class="en-grid" id="enGrid"></div>
+    <div class="en-calc reveal" id="enCalc"></div>
+  </section>
+
+  <!-- ============ VIII. БАРАХОЛКА ============ -->
   <section class="sec" id="market">
-    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · market</span><h2>Барахолка чертежей</h2></div><span class="sec-q" id="mkQ"></span></header>
-    <p class="sec-p reveal">Здесь лежат чертежи: готовые от ZitraksMode и твои. Любой можно открыть в студии, скачать файлом или отправить ссылкой — ссылка открывает чертёж у кого угодно.</p>
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">VIII · market</span><h2>Барахолка чертежей</h2></div><span class="sec-q" id="mkQ"></span></header>
+    <p class="sec-p reveal">Место, где чертежи ходят по рукам. Каждый можно открыть в сканере, скачать настоящим .zlp для игры или кинуть ссылкой. Свои выкладываются из сканера кнопкой «На барахолку».</p>
     <div class="mk-bar reveal">
       <div class="mk-tabs" role="tablist"><button role="tab" class="on" data-f="all" type="button">Все</button><button role="tab" data-f="mine" type="button">Мои</button><button role="tab" data-f="fav" type="button">Избранное</button></div>
       <input id="mkQ2" placeholder="поиск по чертежам" autocomplete="off" spellcheck="false">
       <select id="mkSort"><option value="new">сначала новые</option><option value="top">популярные</option><option value="big">крупные</option></select>
+      <button type="button" class="p3-btn2 sm" id="bPub">↑ Выложить из сканера</button>
     </div>
     <div class="mk-grid" id="mk"></div>
   </section>
 
-  <!-- ============ VI. ДОСТИЖЕНИЯ ============ -->
+  <!-- ============ IX. ДОСТИЖЕНИЯ ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">IX · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
       <div class="adv-detail" id="advDetail"></div>
@@ -146,16 +231,16 @@
     <div class="adv-list reveal" id="advList"></div>
   </section>
 
-  <!-- ============ VII. ИСТОРИЯ ============ -->
+  <!-- ============ X. ИСТОРИЯ ============ -->
   <section class="sec" id="history">
-    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">VII · changelog</span><h2>Версии принтера</h2></div></header>
+    <header class="sec-head reveal"><span class="sec-n">10</span><div class="sec-t"><span class="sec-k">X · changelog</span><h2>Версии принтера</h2></div></header>
     <div class="tl13 reveal" id="timeline"></div>
   </section>
 
   <!-- ============ ФИНАЛ ============ -->
   <section class="finale" id="finale">
     <button type="button" class="fin-print" id="finPrint" data-nosfx aria-label="Напечатать">
-      <span class="fp-txt" id="finTxt">Печать завершена</span><i class="fp-noz" aria-hidden="true"></i>
+      <span class="fp-txt" id="finTxt" data-x="Печать: 100%">Печать: 100%</span><i class="fp-noz" aria-hidden="true"></i>
     </button>
     <p class="fin-p" id="finP">Жми — допечатаю.</p>
     <nav class="fin-nav" id="finNav"></nav>
@@ -163,11 +248,12 @@
 </main>
 
 <div class="p3-toast" id="p3toast" role="status"></div>
-<canvas id="thumb3d" class="thumb3d" width="192" height="192" aria-hidden="true"></canvas>
+<canvas id="thumb3d" class="thumb3d" width="448" height="448" aria-hidden="true"></canvas>
 
 <script src="../../shared/core.js"></script>
 <script src="../../shared/points.js"></script>
-<script src="../../data/voxel_atlas.js"></script>
+<script src="../../data/p13_vox.js"></script>
+<script src="../../data/p13_font.js"></script>
 <script src="../../shared/voxel.js"></script>
 <script src="../../data/p13_printer.js"></script>
 <script src="app.js"></script>

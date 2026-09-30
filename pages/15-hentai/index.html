@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№15 · Хентай-блок — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №15 мода ZitraksMode: Блок Порнухи/Хентая: грани случайные, их можно закреплять. Всё откровенное на сайте зацензурено.">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="hb-gate" id="gate" hidden>
+  <div class="hb-gate-box">
+    <div class="hb-logo sm"><span>Zitraks</span><b>mode</b></div>
+    <h2>Тебе есть 18?</h2>
+    <p>Дальше блок, у которого на гранях порно и хентай. Сами картинки тут зацензурены, но шутки — нет.</p>
+    <div class="hb-gate-b"><button type="button" class="k-btn" id="gateYes">Мне 18+, показывай</button><button type="button" class="k-btn2" id="gateNo">Мне 12, я к картинам</button></div>
+  </div>
+</div>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hb-hero" id="hero">
+    <div class="hb-hero-txt">
+      <div class="hb-tag"><span>№15</span>30.04.2026<i></i>6 граней · 453 картинки</div>
+      <h1 class="hb-logo" aria-label="Хентай-блок"><span>Хентай</span><b>блок</b></h1>
+      <p class="hb-sub">Официально — <b>«Блок Порнухи/Хентая»</b>. Шесть граней, и каждая при установке выпадает случайной: половина из 165 порно-картинок, половина из 167 хентайных, и с шансом 5% — мем из 121. Понравилась грань — жми по ней ПКМ, и она закрепится навсегда.</p>
+      <div class="hb-cta"><a class="k-btn" href="#cube">Крутить грани</a><a class="k-btn2" href="#craft">Рецепт</a></div>
+      <div class="hb-stats">
+        <a href="#cube"><b>453</b><span>картинки в пулах</span></a>
+        <a href="#cube"><b>5%</b><span>шанс мема на грань</span></a>
+        <a href="#cube"><b>×0,3</b><span>вес повтора</span></a>
+        <a href="#adv"><b id="stGot">0/5</b><span>ачивок</span></a>
+      </div>
+    </div>
+    <div class="hb-hero-cube" aria-hidden="true"><div class="hb-mini" id="heroCube"></div></div>
+    <div class="hb-pops" id="pops" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============ 01 БЛОК ============ -->
+  <section class="sec" id="cube">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">I · block entity</span><h2>Шесть случайных граней</h2></div><span class="sec-q">zitraksmode:hentai_block</span></header>
+    <p class="sec-p reveal">Тяни — крутится. <b>Клик по грани</b> — закрепить или открепить её (это ПКМ в игре). «Поставить заново» перебрасывает только незакреплённые. Картинки граней на сайте заменены цензурой, мемы — настоящие.</p>
+    <div class="hb-lab reveal">
+      <div class="hb-view">
+        <div class="hb-scene" id="scene"><div class="hb-cube" id="bigCube"></div></div>
+        <div class="hb-bar" id="actionBar"></div>
+        <svg class="hb-stare" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17"/><circle cx="20" cy="20" r="17" id="stareRing"/></svg>
+        <span class="hb-stare-t" id="stareT"></span>
+      </div>
+      <div class="hb-side">
+        <div class="hb-row"><button type="button" class="k-btn sm" id="place">Поставить</button><button type="button" class="k-btn2 sm" id="break">Сломать</button><button type="button" class="k-btn2 sm" id="unlock">Открепить всё</button></div>
+        <div class="hb-faces" id="faceList"></div>
+        <div class="hb-odds pnl"><b>Шанс на 2+ мема при следующей постановке</b><div class="hb-odds-v" id="odds">3,3%</div><small id="oddsHint"></small></div>
+        <div class="hb-drop pnl" id="drop" hidden></div>
+      </div>
+    </div>
+    <div class="hb-rules reveal">
+      <div class="pnl"><b>50 / 50</b><p>Незакреплённые грани перемешиваются: половина (с округлением вниз) — порно, остальные — хентай.</p></div>
+      <div class="pnl"><b>5% мем</b><p>Каждая грань отдельно бросает кубик: с шансом 5% вместо своей категории выпадает мем.</p></div>
+      <div class="pnl"><b>×0,3</b><p>Выпавшая картинка тут же теряет 70% веса — повторы на одном блоке почти не встречаются.</p></div>
+      <div class="pnl"><b>NBT</b><p>Сломал блок с закреплёнными гранями — они остаются в предмете и возвращаются при установке.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 02 КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">II · crafting</span><h2>Рецепт</h2></div><span class="sec-q">RGB + молоко + картина</span></header>
+    <p class="sec-p reveal">Три красителя — это RGB монитора, кварц — экран, картина — ну, картина. Вместо ведра молока подходит <b>Ведро спермы</b> из №9. Чёрная и оранжевая шерсть — сами догадаетесь.</p>
+    <div class="hb-craft reveal">
+      <div id="craftBox"></div>
+      <div class="hb-inv pnl"><span class="k-slot"><img src="../../assets/textures/p15/hentai_block.png" alt=""><b id="invN">0</b></span><div><b>В инвентаре: <span id="invT">0</span> / 64</b><small>клик по результату — 1 шт., кнопка — сразу стак</small></div><button type="button" class="k-btn2 sm" id="craft64">Shift + клик</button></div>
+    </div>
+  </section>
+
+  <!-- ============ 03 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">III · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 04 ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <button type="button" class="hb-clear" id="clear" data-nosfx>Очистить историю</button>
+    <p class="fin-p" id="finP">На всякий случай.</p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../data/p15_list.js"></script>
+<script src="../../data/p15_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

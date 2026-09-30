@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№16 · Картины — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №16 мода ZitraksMode: 19 своих картин, от 1×1 до 16×16. Как игра выбирает картину для стены, шансы, симулятор стены и ачивка BOOBSLANDER.">
+<meta name="theme-color" content="#140d0b">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="pg-hero" id="hero">
+    <div class="pg-hero-txt">
+      <div class="pg-tag"><span>№16</span>30.04.2026<i></i>постоянная экспозиция</div>
+      <h1 class="pg-logo"><small>Зал шестнадцатый</small>Картины</h1>
+      <p class="pg-sub">Девятнадцать полотен в ванильном предмете «Картина»: от котика 1×1 до эпика 16×16. Своего предмета у них нет. Вешаешь обычную картину, а игра сама выбирает, какая из <b>45</b> влезет на стену, и мод подмешивает свои к ванильным.</p>
+      <div class="pg-cta"><a class="k-btn" href="#hall">Войти в зал</a><a class="k-btn2" href="#wall">Повесить самому</a></div>
+      <div class="pg-stats">
+        <a href="#hall"><b>19</b><span>полотен мода</span></a>
+        <a href="#odds"><b>45</b><span>в общем пуле</span></a>
+        <a href="#epic"><b>16×16</b><span>самая большая</span></a>
+        <a href="#adv"><b id="stGot">0/1</b><span>ачивка</span></a>
+      </div>
+    </div>
+    <figure class="pg-spot" id="spot">
+      <div class="pg-beam" aria-hidden="true"></div>
+      <button type="button" class="pg-frame gold" id="spotFrame" aria-label="Открыть картину"><img id="spotImg" alt=""></button>
+      <figcaption class="pg-plaque" id="spotCap"></figcaption>
+    </figure>
+    <div class="pg-wains" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============ 01 ЗАЛ ============ -->
+  <section class="sec" id="hall">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">I · exhibition</span><h2>Экспозиция</h2></div><span class="sec-q">1 клетка = 1 блок</span></header>
+    <p class="sec-p reveal">Все девятнадцать, в настоящих пропорциях: клетка сетки — один блок стены. Эпик сюда не влез, у него <a href="#epic">свой зал</a>. Жми на любую: там размеры, шанс и кнопка «найти на стене».</p>
+    <div class="pg-chips reveal" id="chips" role="group" aria-label="Фильтр по размеру"></div>
+    <div class="pg-salon reveal" id="salon"></div>
+  </section>
+
+  <!-- ============ 02 СТЕНА ============ -->
+  <section class="sec" id="wall">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">II · placement</span><h2>Какая выпадет</h2></div><span class="sec-q">Painting.create, 1.19.2</span></header>
+    <p class="sec-p reveal">Правило одно: из всех картин, которые <b>влезают</b> в это место, остаются только <b>самые большие по площади</b>, и уже из них берётся случайная. Поэтому на голой стене мелочь не выпадет никогда. Хочешь котика — строй нишу 1×1. Клик по стене вешает, клик по картине снимает. Киркой можно выбить блоки и сделать нишу.</p>
+    <div class="pg-lab reveal">
+      <div class="pg-wallbox">
+        <div class="pg-tools">
+          <div class="pg-seg" role="group" aria-label="Инструмент"><button type="button" class="on" data-tool="hang"><img src="../../assets/textures/p16/i/painting.png" alt="">Картина</button><button type="button" data-tool="pick"><img src="../../assets/textures/p16/i/iron_pickaxe.png" alt="">Кирка</button></div>
+          <select id="preset" aria-label="Стена"><option value="bare">Голая стена 20×16</option><option value="rooms">Ниши всех размеров</option><option value="n43">Ниша 4×3 (ради BOOBSLANDER)</option><option value="n11">Ниша 1×1</option><option value="swiss">Стена в дырках</option></select>
+          <button type="button" class="pg-b" id="clearP">Снять все</button>
+        </div>
+        <div class="pg-wall" id="wallGrid" aria-label="Стена 20 на 16 блоков"><div class="pg-cells" id="cells"></div><div class="pg-hung" id="hung"></div><div class="pg-ghosts" id="ghosts"></div></div>
+        <div class="pg-hot" id="hot"></div>
+      </div>
+      <aside class="pg-side">
+        <div class="pg-card" id="cand"><h3>Сюда влезет</h3><p class="pg-dim">Наведи на стену (на телефоне просто тыкай): тут будет список кандидатов и шансы.</p></div>
+        <div class="pg-card pg-coll"><h3>Коллекция</h3><div class="pg-coll-bar"><i id="collBar"></i></div><p><b id="collN">0</b> из 19 картин мода уже висели у тебя на стене</p><div class="pg-coll-g" id="collG"></div><button type="button" class="pg-b sm" id="collReset">сбросить</button></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 03 ЭПИК ============ -->
+  <section class="sec" id="epic">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">III · the big one</span><h2>Эпик 16×16</h2></div><span class="sec-q">zitraksmode:epic</span></header>
+    <div class="pg-epic reveal">
+      <div class="pg-epic-img"><div class="pg-frame gold big"><img src="../../assets/textures/p16/paint/epic.webp" alt="epic"></div><div class="pg-steve" title="Стив, 1,8 блока"><img src="../../assets/textures/p13/heads/steve.png" alt=""><i></i><b></b></div></div>
+      <div class="pg-epic-t">
+        <p class="pg-big">256 блоков стены</p>
+        <p>Самая большая картина в игре: в четыре раза шире любой ванильной (у тех максимум 4×4) и по площади больше в шестнадцать. Человечек внизу слева — Стив, в том же масштабе.</p>
+        <p>Раз побеждает самая большая, эпик выпадает <b>всегда</b>, когда на стене свободен квадрат 16×16 вокруг точки, куда кликнул. Соперников его размера просто нет.</p>
+        <button type="button" class="k-btn sm" id="epicTry">Проверить на стене</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 ШАНСЫ ============ -->
+  <section class="sec" id="odds">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · odds</span><h2>Шансы по размерам</h2></div><span class="sec-q">тег minecraft:placeable</span></header>
+    <p class="sec-p reveal">Все 19 картин мод дописал в ванильный тег <b>placeable</b>, так что в игре они лежат в одной куче с ванильными 26. Шанс ниже — для ниши ровно этого размера, когда больше ничего не влезает.</p>
+    <div class="pg-odds reveal" id="oddsT"></div>
+  </section>
+
+  <!-- ============ 05 АЧИВКА ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · advancements</span><h2>Достижение</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+    <div class="pg-facts reveal">
+      <div class="pg-card"><b>Кому дают</b><p>Ачивку получает ближайший игрок в радиусе 8 блоков от картины. Не обязательно тот, кто вешал: стоишь рядом с другом — может прилететь тебе.</p></div>
+      <div class="pg-card"><b>Когда</b><p>Проверка срабатывает, когда картина появляется в мире. А это ещё и каждая загрузка чанка: вернулся к старой boobs, и ачивка прилетит тому, кто рядом.</p></div>
+      <div class="pg-card"><b>Как выбить</b><p>Ниша ровно 4×3, чтобы 4×4 не влезла. Кандидатов пять: boobs, 20th_century_boys, frog и ванильные skeleton с donkey_kong. Шанс 20% за попытку.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 06 ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <p class="fin-q">Руками не трогать.<br><em>Шутка, трогай.</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<div class="pg-modal" id="modal" hidden>
+  <div class="pg-modal-box" role="dialog" aria-modal="true" aria-labelledby="mName">
+    <button type="button" class="pg-x" id="mClose" aria-label="Закрыть">×</button>
+    <div class="pg-modal-img"><div class="pg-frame gold" id="mFrame"><img id="mImg" alt=""></div></div>
+    <div class="pg-modal-t">
+      <span class="pg-dim" id="mId"></span>
+      <h3 id="mName"></h3>
+      <dl class="pg-dl" id="mDl"></dl>
+      <button type="button" class="k-btn sm" id="mFind">Найти на стене</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../data/p16_list.js"></script>
+<script src="../../data/p16_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

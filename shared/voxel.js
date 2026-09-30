@@ -47,9 +47,9 @@
 
   const VS = `attribute vec3 p;attribute vec2 uv;attribute vec2 l;uniform mat4 M;uniform vec3 C;varying vec2 vU;varying vec2 vL;varying float vD;
 void main(){vU=uv;vL=l;vD=distance(p,C);gl_Position=M*vec4(p,1.);}`;
-  const FS = `precision mediump float;uniform sampler2D T;uniform vec3 K;uniform vec3 F;uniform vec2 G;uniform float A;uniform float W;varying vec2 vU;varying vec2 vL;varying float vD;
+  const FS = `precision mediump float;uniform sampler2D T;uniform vec3 K;uniform vec3 F;uniform vec2 G;uniform float A;uniform float W;uniform float H;varying vec2 vU;varying vec2 vL;varying float vD;
 void main(){vec4 c=texture2D(T,vU);if(c.a<.5&&W<.5)discard;vec3 lit=mix(K*vL.x,vec3(max(vL.x,.92)),vL.y);vec3 col=c.rgb*lit;
-float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col:mix(col,F,f);gl_FragColor=vec4(col*a,a);}`;
+float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col:mix(col,F,f);a*=H;gl_FragColor=vec4(col*a,a);}`;
   const VS2 = `attribute vec3 p;attribute vec4 c;uniform mat4 M;varying vec4 vC;void main(){vC=c;gl_Position=M*vec4(p,1.);}`;
   const FS2 = `precision mediump float;varying vec4 vC;void main(){gl_FragColor=vec4(vC.rgb*vC.a,vC.a);}`;
 
@@ -101,14 +101,15 @@ float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col
       gl, canvas, world: null, dirty: true,
       cam: { target: [0, 0, 0], yaw: 0.6, pitch: 0.5, dist: 20, fov: 60, eye: null },
       env: { tint: [1, 1, 1], fog: [60, 110], fade: true, fogColor: [0.6, 0.75, 1] },
-      scale: opt.scale || 1, clear: [0, 0, 0, 0],
+      scale: opt.scale || 1, clear: [0, 0, 0, 0], ghost: 1, // ghost<1: голограмма (прозрачная постройка, как превью в №13)
       order: [], blockEnd: [], drawBlocks: Infinity, // для печати: сколько блоков по порядку показать
       proj: null, view: null, eyePos: [0, 0, 0],
-      solid(id) { const b = id && B[id]; return !!b && !b.cut && !b.water; },
+      solid(id) { const b = id && B[id]; return !!b && !b.cut && !b.water && !b.bx; },
       setWorld(w) { this.world = w; this.rebuild(); },
       get(x, y, z) { const w = this.world; if (!w || x < 0 || y < 0 || z < 0 || x >= w.sx || y >= w.sy || z >= w.sz) return 0; return w.data[x + z * w.sx + y * w.sx * w.sz]; },
       /* сборка сетки. layered: грани «верха» не прячутся (нужно для послойной печати), блоки идут змейкой по слоям */
-      rebuild(layered) {
+      /* seq: свой порядок печати [[x,y,z],...] (№13: как в моде — приоритет, Y, X, Z) */
+      rebuild(layered, seq) {
         const w = this.world; if (!w) return;
         const O = [], Wt = [], order = [], ends = [];
         const get = (x, y, z) => this.get(x, y, z), solid = (x, y, z) => this.solid(get(x, y, z));
@@ -133,25 +134,46 @@ float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col
           const idx = flip ? [1, 2, 3, 1, 3, 0] : [0, 1, 2, 0, 2, 3];
           for (const i of idx) { const c = cs[i]; arr.push(c[0], c[1], c[2], c[3], c[4], c[5], c[6]); }
         };
+        /* блок с формой: коробки в 1/16 [x0,y0,z0,x1,y1,z1, тайлы верх,низ,С,Ю,З,В, full-uv] */
+        const emitBox = (x, y, z, bx, glow) => {
+          const lo = [bx[0] / 16, bx[1] / 16, bx[2] / 16], hi = [bx[3] / 16, bx[4] / 16, bx[5] / 16], fullUV = bx[12];
+          for (let fi = 0; fi < 6; fi++) {
+            const t = bx[6 + fi]; if (t < 0) continue;
+            const f = FACES[fi], na = f.n[0] ? 0 : f.n[1] ? 1 : 2, edge = f.n[na] > 0 ? hi[na] : lo[na];
+            if (!layered && (edge === 0 || edge === 1)) { const nb = get(x + f.n[0], y + f.n[1], z + f.n[2]); if (this.solid(nb)) continue; }
+            const tu = (t % cols) * AT.tile / AT.size, tv = ((t / cols) | 0) * AT.tile / AT.size, ts = AT.tile / AT.size;
+            const ua = f.u[0] ? 0 : f.u[1] ? 1 : 2, va = f.v[0] ? 0 : f.v[1] ? 1 : 2, cs = [];
+            for (const [a, b] of [[0, 0], [1, 0], [1, 1], [0, 1]]) {
+              const q = [0, 1, 2].map((i) => lo[i] + (f.o[i] + a * f.u[i] + b * f.v[i]) * (hi[i] - lo[i]));
+              let su = fullUV ? a : f.u[ua] > 0 ? q[ua] : 1 - q[ua], sv = fullUV ? b : f.v[va] > 0 ? q[va] : 1 - q[va];
+              su = Math.min(1, Math.max(0, su)); sv = Math.min(1, Math.max(0, sv));
+              cs.push([x + q[0], y + q[1], z + q[2], tu + eps + su * (ts - 2 * eps), tv + eps + sv * (ts - 2 * eps), f.s, glow]);
+            }
+            for (const i of [0, 1, 2, 0, 2, 3]) { const c = cs[i]; O.push(c[0], c[1], c[2], c[3], c[4], c[5], c[6]); }
+          }
+        };
         const doBlock = (x, y, z) => {
           const id = get(x, y, z); if (!id) return false; const b = B[id]; if (!b) return false;
+          if (b.bx) { for (const bx of b.bx) emitBox(x, y, z, bx, b.glow ? 1 : 0); return true; }
           const water = !!b.water, cut = !!b.cut, glow = b.glow ? 1 : 0;
           for (let fi = 0; fi < 6; fi++) {
             const f = FACES[fi], nb = get(x + f.n[0], y + f.n[1], z + f.n[2]), nbB = nb && B[nb];
             let show;
             if (water) show = !nb || (nbB && (nbB.cut) && nb !== id) || (fi === 0 && nb !== id);
             else if (!nb) show = true;
-            else if (nbB.water) show = true;
+            else if (nbB.water || nbB.bx) show = true;
             else if (nbB.cut) show = !(cut && nb === id && b.key === "glass");
             else show = false;
             if (layered && fi === 0 && !water) show = true;
             if (!show) continue;
             if (water && fi !== 0 && nb === id) continue;
-            emit(water ? Wt : O, x, y, z, f, b.t[f.t], f.s, glow, water, water && B[get(x, y + 1, z)] !== b);
+            emit(water ? Wt : O, x, y, z, f, b.t6 ? b.t6[fi] : b.t[f.t], f.s, glow, water, water && B[get(x, y + 1, z)] !== b);
           }
           return true;
         };
-        if (layered) {
+        if (layered && seq) {
+          for (const [x, y, z] of seq) if (doBlock(x, y, z)) { order.push([x, y, z]); ends.push(O.length / 7); }
+        } else if (layered) {
           for (let y = 0; y < w.sy; y++) for (let zi = 0; zi < w.sz; zi++) {
             const z = y % 2 ? w.sz - 1 - zi : zi;
             for (let xi = 0; xi < w.sx; xi++) { const x = (zi + y) % 2 ? w.sx - 1 - xi : xi; if (doBlock(x, y, z)) { order.push([x, y, z]); ends.push(O.length / 7); } }
@@ -200,7 +222,7 @@ float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col
         if (tex) {
           gl.useProgram(P.p); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
           gl.uniformMatrix4fv(P.u.M, false, this.mvp); gl.uniform3fv(P.u.C, this.eyePos); gl.uniform1i(P.u.T, 0);
-          gl.uniform3fv(P.u.K, e.tint); gl.uniform3fv(P.u.F, e.fogColor); gl.uniform2fv(P.u.G, e.fog); gl.uniform1f(P.u.A, e.fade ? 1 : 0);
+          gl.uniform3fv(P.u.K, e.tint); gl.uniform3fv(P.u.F, e.fogColor); gl.uniform2fv(P.u.G, e.fog); gl.uniform1f(P.u.A, e.fade ? 1 : 0); gl.uniform1f(P.u.H, this.ghost);
           const bind = (buf) => { gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.enableVertexAttribArray(P.a.p); gl.vertexAttribPointer(P.a.p, 3, gl.FLOAT, false, 28, 0); gl.enableVertexAttribArray(P.a.uv); gl.vertexAttribPointer(P.a.uv, 2, gl.FLOAT, false, 28, 12); gl.enableVertexAttribArray(P.a.l); gl.vertexAttribPointer(P.a.l, 2, gl.FLOAT, false, 28, 20); };
           let cnt = nO;
           if (this.layered && this.drawBlocks < this.blockEnd.length) cnt = this.drawBlocks <= 0 ? 0 : this.blockEnd[Math.floor(this.drawBlocks) - 1] || 0;
