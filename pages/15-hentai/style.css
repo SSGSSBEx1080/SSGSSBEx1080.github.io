@@ -141,7 +141,7 @@ body.wiped main>section:not(.finale){filter:blur(14px) grayscale(1);opacity:.25;
 .hb-exp>div{display:flex;justify-content:space-between;border-bottom:1px solid #222;padding:4px 0}
 .hb-exp>div b{color:var(--ac);font-family:var(--f-mono)}
 .hb-exp small{color:var(--dim);font-size:12px}
-/* тонкости */
+/* мелкий шрифт */
 .hb-server{display:grid;grid-template-columns:220px minmax(0,1fr);gap:22px;align-items:center;padding:18px;border-radius:10px;margin-bottom:12px;border:1px solid rgba(255,144,0,.35)}
 .hb-server b{font:900 22px var(--f-t);color:var(--ac)}
 .hb-server p{margin:6px 0 0;font-size:14px;line-height:1.6;color:#cfcfcf}

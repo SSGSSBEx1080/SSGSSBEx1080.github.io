@@ -240,7 +240,7 @@ a{color:var(--ac2)}
 .pg-cmd-out code{display:block;padding:12px;background:#0c0806;border:1px solid var(--ln);border-radius:6px;font:400 13px/1.5 var(--f-mono);color:#e8c37e;word-break:break-all}
 .pg-cmd-out .k-btn{justify-self:start}
 .pg-cmd-out small{color:var(--dim);font-size:12px;line-height:1.5}
-/* тонкости */
+/* мелкий шрифт */
 .pg-fine{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .pg-fine article{position:relative;padding:18px 16px;border-radius:10px;overflow:hidden}
 .pg-fine span{display:block;font:600 30px var(--f-t);color:var(--ac);opacity:.55;line-height:1}
