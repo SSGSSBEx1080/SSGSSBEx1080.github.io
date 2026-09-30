@@ -22,7 +22,13 @@ for (const p of live) {
   const html = fs.readFileSync(path.join(root, p.page), 'utf8');
   assert.match(html, /data\/hub_adv\.js/, `Page #${p.n} must load the shared branch`);
   assert.match(html, /shared\/core\.js/, `Page #${p.n} must load progress sync`);
-  assert.ok(html.includes(p.n === 1 ? 'id="tree"' : 'id="adv"'), `Missing achievement anchor on #${p.n}`);
+  const anchor = p.n === 1 ? 'id="tree"' : 'id="adv"';
+  const treeAt = html.indexOf(`<section class="${p.n === 1 ? 'block-sec' : (p.n === 6 ? 'lb-sec' : 'sec')}" ${anchor}`);
+  assert.ok(treeAt >= 0, `Missing achievement section on #${p.n}`);
+  const endAt = html.indexOf(p.n === 1 ? '<footer class="page-foot"' : 'id="finale"', treeAt);
+  assert.ok(endAt > treeAt, `Achievements must be at the bottom on #${p.n}`);
+  assert.ok(!/<section\b[^>]*id="(?!finale)[^"]+"/.test(html.slice(treeAt + 12, endAt)), `Another section follows achievements on #${p.n}`);
+  assert.equal((html.match(/id="advChain"/g) || []).length, 1, `Exactly one interactive achievement board on #${p.n}`);
   const keys = new Set(branch.adv.map(a => a.key));
   assert.equal(keys.size, branch.adv.length, `Duplicate advancement in #${p.n}`);
   for (const a of branch.adv) {

@@ -90,19 +90,29 @@
       bones[b.name] = { name: b.name, parent: b.parent, piv, rot: b.rotation || [0, 0, 0], n: idx.length, bp: buf(pos), bu: buf(uvs), bs: buf(shd), bi: buf(idx, "i"), local: pos };
     }
 
-    const tex = gl.createTexture(); let ready = false;
-    const img = new Image();
-    img.onload = () => { gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      // mip: большие рисованные текстуры (2048) — мипмапы + анизотропия, чтобы вдали не рябило и вблизи не мылилось
-      const pot = (n) => (n & (n - 1)) === 0;
-      if (opt.mip && pot(img.width) && pot(img.height)) {
-        gl.generateMipmap(gl.TEXTURE_2D); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        const an = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
-        if (an) gl.texParameterf(gl.TEXTURE_2D, an.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
-      }
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); ready = true; api.render(); };
-    img.src = opt.tex;
+    const tex = gl.createTexture(); let ready = false, texLoadID = 0;
+    function setTexture(src) {
+      const id = ++texLoadID, img = new Image();
+      img.onload = () => {
+        if (id !== texLoadID) return; // быстрый выбор скина не должен возвращать старую текстуру
+        gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        // 16px/пиксельные текстуры — nearest; большие арт-текстуры Махораги — mip.
+        const sampling = opt.mip ? gl.LINEAR : gl.NEAREST;
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, sampling); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, sampling);
+        const pot = (n) => (n & (n - 1)) === 0;
+        if (opt.mip && pot(img.width) && pot(img.height)) {
+          gl.generateMipmap(gl.TEXTURE_2D); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+          const an = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
+          if (an) gl.texParameterf(gl.TEXTURE_2D, an.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
+        }
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        ready = true; api.render();
+      };
+      img.src = src;
+    }
+    setTexture(opt.tex);
 
     // --- анимации: idle крутится всегда, действие поверх (как два контроллера GeckoLib) ---
     const AN = opt.anim || {};
@@ -144,6 +154,11 @@
       bones, cam, st, over: {},
       resize() { const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d)); if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; } },
       setExtra(m) { extra = m; },
+      setTex(src) { setTexture(src); },
+      setBoneRot(name, rot) {
+        const b = bones[name]; if (!b) return;
+        api.over[name] = { rx: b.rot[0] + rot[0], ry: b.rot[1] + rot[1], rz: b.rot[2] + rot[2] };
+      },
       M,
       play(name, onEnd) { st.act = name; st.actT = 0; st.onEnd = onEnd || null; },
       stop() { st.act = null; },
