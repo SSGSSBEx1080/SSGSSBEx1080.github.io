@@ -27,7 +27,7 @@ ZM.POINTS = [
   { n: 19, title: "Тетрадь смерти",        date: "05.05.2026", confirmed: true, page: "pages/19-death-note/index.html", tone: "#b00020", icon: "assets/textures/p19/i/death_note.png" },
   { n: 20, title: "Газан 67",              date: "07.05.2026", confirmed: true, page: "pages/20-gazan/index.html", icon: "assets/textures/p20/i/gazan_spawn_egg.png", tone: "#ffd700" },
   { n: 21, title: "Махорага",              date: "16.05.2026", confirmed: true, page: "pages/21-mahoraga/index.html", tone: "#e8e2cf", icon: "assets/textures/p21/i/mahoraga_scroll.png" },
-  { n: 22, title: "Дойка быка и разорителя", date: "18.05.2026", confirmed: true, page: "pages/22-milk/index.html", tone: "#f2f2f2", icon: "assets/textures/p22/i/sperm_bucket.png" },
+  { n: 22, title: "Дойка быка и разорителя", date: "18.05.2026", confirmed: true, page: null, tone: "#f2f2f2" },
   { n: 23, title: "Мессенджер MAX",        date: "18.07.2026", confirmed: true, page: null, tone: "#6c5cff" },
   { n: 24, title: "Электросамокат",        date: "28.07.2026", confirmed: true, page: null, tone: "#00e0a0" },
   { n: 25, title: "Плащи Логии",           date: "04.08.2026", confirmed: true, page: null, tone: "#ff8800" },
