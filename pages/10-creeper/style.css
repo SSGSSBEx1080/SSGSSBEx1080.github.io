@@ -483,3 +483,9 @@ body.nausea::after{content:"";position:fixed;inset:0;z-index:130;pointer-events:
   .me10 input{width:100px}
 }
 .aura3d{filter:drop-shadow(0 0 5px rgba(90,160,255,.75)) brightness(1.15);mix-blend-mode:screen}
+/* mobile: хотбар не просвечивает текстом, низ страницы не перекрыт */
+@media (max-width:600px){
+  .hotbar10{background:rgba(8,14,8,.94);bottom:8px}
+  .hb{background:rgba(70,70,70,.55)}
+  body{padding-bottom:64px}
+}
