@@ -160,37 +160,7 @@
 
   /* ================= тонкости ================= */
   (function fine() {
-    let mode = "client";
-    const preview = () => {
-      let memes = 0;
-      $("#srvCubes").innerHTML = [0, 1].map(() => {
-        const P = pool("pron"), H = pool("hentai"), M = pool("meme");
-        const six = ["pron", "pron", "pron", "hentai", "hentai", "hentai"];
-        if (mode === "client") for (let i = six.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1)); [six[i], six[j]] = [six[j], six[i]];
-        }
-        const faces = six.map((cat) => {
-          if (mode === "server") return `${cat}/1`;
-          const meme = Math.random() < MEME_CHANCE;
-          if (meme) memes++;
-          return meme ? `meme/${M.pick()}` : `${cat}/${(cat === "pron" ? P : H).pick()}`;
-        });
-        return `<div class="hb-srv" aria-hidden="true">${faces.slice(0, 3).map((key, i) => `<i class="s${i}">${faceHtml(key, false).replace(/<span class="lb[^]*?<\/span>/, "")}</i>`).join("")}</div>`;
-      }).join("");
-      $("#srvRead").textContent = mode === "server"
-        ? "На каждой установке — те же 3 + 3 запасные грани. Шанс мема 0%: ресурсы картинок сервер не прочитал."
-        : `Две установки: ${memes} мемов из 12 граней. Здесь это только демонстрация: основную коллекцию и ачивки меняет блок выше.`;
-    };
-    $("#srvMode").addEventListener("click", (e) => {
-      const button = e.target.closest("[data-mode]"); if (!button) return;
-      if (button.dataset.mode !== "reroll") mode = button.dataset.mode;
-      $$("#srvMode button[data-mode]").forEach((b) => {
-        const on = b.dataset.mode === mode;
-        b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
-      });
-      preview(); ZM.sfx("click", 0.3);
-    });
-    preview();
+    $("#srvCubes").innerHTML = [0, 1].map(() => `<div class="hb-srv">${FACES.slice(0, 3).map((f, i) => `<i class="s${i}">${faceHtml(i === 1 ? "hentai/1" : "pron/1", false).replace(/<span class="lb[^]*?<\/span>/, "")}</i>`).join("")}</div>`).join("");
     const F = [
       ["15 секунд вместо 30", "В коде ачивке за взгляд нужно 600 отсчётов, и это похоже на 30 секунд. Но обработчик срабатывает дважды за тик, в начале и в конце, поэтому на деле хватает 15. Счётчик выше считает так же."],
       ["Смотреть можно издалека", "Взгляд ловится на расстоянии до 5 блоков, на любую грань. Отвёл прицел хоть на тик — счёт с нуля. Игроки в режиме наблюдателя не считаются."],

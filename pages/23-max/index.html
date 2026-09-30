@@ -1,28 +1,201 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru" data-root="../../">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>№23 · Мессенджер MAX — ZitraksMode Wiki</title>
-<meta name="description" content="Мессенджер MAX в ZitraksMode: сообщения, антицензор, вложения, подарки и достижения. Интерактивный прототип по исходникам мода.">
-<meta name="theme-color" content="#19134f">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="style.css"></head>
+<meta name="description" content="Пункт №23 мода ZitraksMode: мессенджер MAX прямо в Майнкрафте. Личка между игроками, файлы с компьютера, подарки из инвентаря и антицензура, которая делает только хуже.">
+<meta name="theme-color" content="#0c1015">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
+<canvas class="mx-bg" id="bg" aria-hidden="true"></canvas>
 <main>
-<section class="mx-hero" id="hero"><div class="mx-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
-<div class="mx-hero-copy"><span class="mx-eyebrow">ZITRAKSMODE / ПУНКТ 23 / 18.07.2026</span><h1>НЕ ПРОСТО<br><em>НАПИСАТЬ</em><br>«ПРИВЕТ».</h1><p>MAX — мессенджер внутри Minecraft. Пиши игрокам, отправляй файлы, обменивайся предметами. Но прежде чем сообщение дойдёт до адресата, код может переписать его за тебя.</p><div class="mx-hero-actions"><a href="#desk" class="k-btn">Открыть прототип ↗</a><a href="#protocol" class="k-btn2">Как устроен обмен</a></div><div class="mx-metrics"><span><b>100</b> сообщений</span><span><b>500 МБ</b> хранилище</span><span><b id="stGot">0/4</b> достижения</span></div></div>
-<div class="mx-hero-art" aria-hidden="true"><div class="mx-bigicon"><img src="../../assets/textures/p23/max.svg" alt=""></div><span class="mx-chip ch1">✦ онлайн</span><span class="mx-chip ch2">⇄ escrow</span><span class="mx-chip ch3">#23 / MAX</span></div></section>
-<section class="sec" id="desk"><header class="sec-head"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">interactive / demo</span><h2>Линия связи</h2></div><span class="sec-q">демонстрация, не настоящий чат</span></header>
-<p class="sec-p">Сообщения здесь остаются только на этой странице; они <b>не отправляются на сервер</b> и не изменяют игровой мир. Прототип повторяет ключевые правила исходников. Начни с «Открыть MAX», затем отправь фразу или протестируй подарок.</p>
-<div class="mx-app" id="mxApp"><aside class="mx-side"><div class="mx-side-head"><img src="../../assets/textures/p23/max.svg" alt=""><span>MAX <small>локальный прототип</small></span></div><div class="mx-search">⌕ &nbsp; Найти контакт</div><button type="button" class="mx-contact active" id="contact"><span class="mx-avatar">И</span><span><b>Игрок Икс</b><small>Доступен для обмена</small></span><i></i></button><div class="mx-side-stats"><span>ОТПРАВЛЕНО <b id="sentStat">0 / 100</b></span><span>СДЕЛКИ <b id="tradeStat">0 / 5</b></span><span>ОТКАЗЫ <b id="rejectStat">0 / 5</b></span></div></aside>
-<div class="mx-chat"><div class="mx-chat-head"><span class="mx-avatar">И</span><div><b>Игрок Икс</b><small>Подарки хранятся в escrow до ответа</small></div><span class="mx-signal">● LIVE</span></div>
-<div class="mx-thread" id="thread" role="log" aria-label="Прототип переписки" aria-live="polite"><p class="mx-empty">Тут появится переписка.<br>Открой MAX, чтобы начать.</p></div>
-<div class="mx-gift" id="giftPanel" hidden><b>✦ Подарок: алмаз</b><span>Вещь списана у отправителя и ждёт решения получателя.</span><div><button type="button" id="acceptGift">Принять</button><button type="button" id="rejectGift">Отклонить</button></div></div>
-<form id="chatForm" class="mx-compose"><label for="message" class="sr-only">Текст сообщения</label><input id="message" type="text" maxlength="240" placeholder="Сообщение…" autocomplete="off" disabled><button type="submit" id="send" disabled aria-label="Отправить сообщение">➤</button></form></div></div>
-<div class="mx-actions"><button type="button" id="openMax" class="k-btn">Открыть MAX</button><button type="button" id="sendGift" class="k-btn2" disabled>🎁 Отправить подарок</button><button type="button" id="fastMessages" class="k-btn2" disabled>Демо: до 99 сообщений</button></div><p class="mx-note" id="deskStatus" role="status">Открой MAX. Ачивки в демо сохраняются в профиле сайта, не в Minecraft.</p></section>
-<section class="sec" id="filter"><header class="sec-head"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">MaxAntiCensor.process</span><h2>Фраза на выходе</h2></div></header><p class="sec-p">На сервере текст сначала проходит через словарь фраз, а затем через словарь отдельных слов. Замены сохраняют регистр. Здесь показана <b>неполная, явно обозначенная выдержка</b> из словаря, без отправки на сервер; остальные фразы прототип оставляет как есть.</p><div class="mx-filter"><div><label for="before">До фильтра</label><textarea id="before" rows="3">Привет, подойди сюда!</textarea></div><div class="mx-arrow" aria-hidden="true">→</div><div><label for="after">После фильтра · выбранные правила</label><output id="after" for="before"></output></div></div><p class="mx-tip">Фильтр затрагивает не только обычный текст: сервер вызывает его и при подписи к вложению или подарку. В демо это видно в переписке.</p></section>
-<section class="sec" id="protocol"><header class="sec-head"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">server / storage / exchange</span><h2>Что происходит за экраном</h2></div></header><div class="mx-protocol"><div><span>01 / SAVE</span><h3>Не чат в браузере</h3><p>Профили, сообщения, файлы и предложения сохраняются в данных мира Minecraft. Пересланное сообщение ссылается на исходное вложение.</p></div><div><span>02 / FILE</span><h3>Файлы отдельно</h3><p>Метаданные живут в сохранении мода; байты вложений — в отдельных файлах. Хранилище ограничено 500 МБ, переносы показывают прогресс.</p></div><div><span>03 / ESCROW</span><h3>Предмет в ожидании</h3><p>При отправке подарка предмет забирается из инвентаря. Получатель принимает его или отказывается: в последнем случае вещь возвращается отправителю, в том числе после входа в игру.</p></div></div></section>
-<section class="sec" id="history"><header class="sec-head"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">point / 23</span><h2>Паспорт пункта</h2></div></header><div class="mx-passport"><span>18.07.2026</span><b>MAX выходит на связь</b><p>По структуре исходников: профиль, сообщения, вложения, трансферы, подарки и отдельный антицензор. Четыре достижения образуют последовательную ветку.</p></div></section>
-<section class="sec" id="adv"><header class="sec-head"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">advancements / 23_max</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header><p class="sec-p">Та же ветка, что в общем дереве. Прогресс сайта отражает действия только в прототипе; сложные условия можно посмотреть, открыв полученную ачивку.</p><div class="adv-board"><div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div><div class="adv-detail" id="advDetail"></div><div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 4</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить достижения</button></div></div><div class="adv-list" id="advList"></div></section>
-<section class="finale" id="finale"><p class="fin-q">Доставлено.<br><em>Прочитано. Переписано.</em></p><nav class="fin-nav" id="finNav"></nav></section>
+  <!-- ============ HERO ============ -->
+  <section class="mx-hero" id="hero">
+    <div class="mx-hero-txt">
+      <div class="mx-tag"><span>№23</span>18.07.2026<i></i>версия 1.1.1<i></i>предмет · интерфейс</div>
+      <h1 class="mx-logo"><span class="mx-l1">MAX</span><span class="mx-l2">мессенджер, который не заблокируют</span></h1>
+      <p class="mx-sub">Правый клик — и поверх мира открывается полноценный мессенджер: личка с любым игроком сервера, «Избранное» для заметок, файлы прямо с компьютера, подарки из инвентаря с возвратом и антицензура, которая переписывает каждое сообщение. Причём исключительно в худшую сторону.</p>
+      <div class="mx-cta"><a class="k-btn" href="#app">Открыть MAX</a><a class="k-btn2" href="#censor">Антицензура</a><a class="k-btn2" href="#gifts">Подарки</a></div>
+      <div class="mx-stats">
+        <a href="#app"><b>4000</b><span>символов в сообщении</span></a>
+        <a href="#gifts"><b>4</b><span>слота в подарке</span></a>
+        <a href="#files"><b>500 МБ</b><span>на вложения сервера</span></a>
+        <a href="#adv"><b id="stGot">0/4</b><span>ачивки</span></a>
+      </div>
+    </div>
+    <div class="mx-hero-art">
+      <div class="mx-icon-wrap" id="iconWrap">
+        <img src="../../assets/textures/p23/i/max_messenger.png" alt="Иконка MAX" class="mx-icon" id="heroIcon">
+        <div class="mx-notif" id="heroNotif" aria-live="polite"></div>
+      </div>
+      <div class="mx-hero-cap">MAX · <code>zitraksmode:max_messenger</code> · стак 1</div>
+    </div>
+  </section>
+
+  <div class="mx-ticker" aria-hidden="true"><div id="ticker"></div></div>
+
+  <!-- ============ 01 КАК ПОЯВЛЯЕТСЯ ============ -->
+  <section class="sec" id="get">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">first join</span><h2>Как появляется</h2></div><span class="sec-q">один раз за жизнь персонажа</span></header>
+    <p class="sec-p reveal">Крафта нет. MAX выдаётся сам при <b>входе в мир</b> и кладётся в <b>девятый слот</b> хотбара. Если он занят — в любое свободное место, если занято всё — падает под ноги. После этого персонажу ставится метка, и второй раз мод предмет не выдаст никогда: ни после смерти, ни после перезахода.</p>
+    <div class="mx-get reveal">
+      <div class="mx-get-sim">
+        <div class="mx-world" id="world">
+          <div class="mx-world-msg" id="worldMsg">Мир не загружен</div>
+          <div class="mx-drop" id="dropItem" hidden><img src="../../assets/textures/p23/i/max_messenger.png" alt=""></div>
+        </div>
+        <div class="mx-inv" id="inv" aria-label="Инвентарь"></div>
+        <div class="mx-hotbar" id="hotbar" aria-label="Хотбар"></div>
+        <div class="mx-get-btns">
+          <button type="button" class="k-btn" id="gJoin">Войти в мир</button>
+          <button type="button" class="k-btn2" id="gDie">Умереть</button>
+          <button type="button" class="k-btn2" id="gFill9">Занять 9-й слот</button>
+          <button type="button" class="k-btn2" id="gFill">Забить инвентарь</button>
+          <button type="button" class="k-btn2" id="gNew">Новый персонаж</button>
+        </div>
+        <div class="mx-flag" id="gFlag"></div>
+      </div>
+      <dl class="k-dl mx-dl" id="getDl"></dl>
+    </div>
+  </section>
+
+  <!-- ============ 02 СИМУЛЯТОР ============ -->
+  <section class="sec mx-app-sec" id="app">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">max_messenger_screen</span><h2>MAX изнутри</h2></div><span class="sec-q">всё кликается, как в игре</span></header>
+    <p class="sec-p reveal">Это экран мода один в один: те же цвета, те же подписи, та же логика. Зарегистрируйся, напиши кому-нибудь, пошли подарок, перетащи файл, нажми на сообщение <b>правой кнопкой</b> (на телефоне — долгим тапом). Enter отправляет, Shift+Enter — новая строка. Всё, что уходит на «сервер», сначала проходит через антицензуру.</p>
+    <div class="mx-app-wrap reveal">
+      <div class="mx-screen" id="mx" tabindex="-1"></div>
+      <aside class="mx-app-side">
+        <div class="mx-counter"><b id="cntMsg">0</b><span>/ 100 сообщений</span><i><em id="cntBar"></em></i></div>
+        <div class="mx-counter mx-counter-s"><b id="cntTr">0</b><span>/ 5 сделок</span></div>
+        <div class="mx-counter mx-counter-s"><b id="cntRj">0</b><span>/ 5 отказов</span></div>
+        <button type="button" class="btn-ghost" id="botGift">🎁 бот шлёт подарок</button>
+        <button type="button" class="btn-ghost" id="spam">+10 сообщений (для ачивки)</button>
+        <button type="button" class="btn-ghost" id="mxReset">↺ стереть данные MAX</button>
+        <p class="mx-small">Сохраняется в браузере, как SavedData <code>zitraksmode_max_messenger</code> в мире.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 03 АНТИЦЕНЗУРА ============ -->
+  <section class="sec" id="censor">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">max_anti_censor</span><h2>Антицензура</h2></div><span class="sec-q" id="dictQ">словарь на сервере</span></header>
+    <p class="sec-p reveal">Фильтр сидит на сервере, поэтому выключить его нельзя. Он срабатывает на каждом тексте, который туда приходит: сообщения, правки, подписи к файлам и подаркам. «Привет» превращается в «салам», «люблю» в «ненавижу», «хорошо» в «плохо», а «иди сюда» — сам понимаешь. Регистр сохраняется: КАПС остаётся капсом, заглавная буква — заглавной.</p>
+    <div class="mx-cz reveal">
+      <div class="mx-cz-io">
+        <label class="mx-cz-lbl" for="czIn">Ты пишешь</label>
+        <textarea id="czIn" rows="3" maxlength="4000" spellcheck="false">Привет, брат! Как дела? Я думаю, это круто. Подожди, мне кажется, тут хорошо. Пока!</textarea>
+        <div class="mx-cz-chips" id="czChips"></div>
+        <div class="mx-cz-lbl">Получатель видит</div>
+        <div class="mx-cz-out" id="czOut" aria-live="polite"></div>
+        <div class="mx-cz-steps" id="czSteps"></div>
+      </div>
+      <div class="mx-cz-dict">
+        <div class="mx-cz-tabs" id="czTabs" role="tablist"></div>
+        <input type="search" id="czFind" placeholder="Поиск по словарю..." aria-label="Поиск по словарю">
+        <div class="mx-cz-list" id="czList"></div>
+        <p class="mx-small" id="czNote"></p>
+      </div>
+    </div>
+    <div class="mx-pipe reveal" id="czPipe"></div>
+  </section>
+
+  <!-- ============ 04 ПОДАРКИ ============ -->
+  <section class="sec" id="gifts">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">max_gift_offer</span><h2>Подарки</h2></div><span class="sec-q">эскроу, как на бирже</span></header>
+    <p class="sec-p reveal">«+» → «Подарок»: до <b>четырёх</b> стаков из инвентаря и подпись. Вещи списываются сразу и лежат у сервера, пока получатель не нажмёт <b>✓</b> или <b>✕</b>. Принял — всё падает ему в инвентарь, лишнее выкидывается под ноги. Отклонил — возвращается отправителю, а если тот не в сети, возврат дождётся его следующего входа.</p>
+    <div class="mx-gflow reveal" id="gFlow"></div>
+    <div class="mx-gsim reveal">
+      <div class="mx-gp" id="gpA"></div>
+      <div class="mx-gmid">
+        <div class="mx-escrow" id="escrow"><span>Сервер · эскроу</span><div id="escrowSlots"></div><b id="escrowState">пусто</b></div>
+        <div class="mx-gbtns">
+          <button type="button" class="k-btn" id="gSend">Отправить →</button>
+          <button type="button" class="k-btn2" id="gAcc">✓ принять</button>
+          <button type="button" class="k-btn2" id="gRej">✕ отклонить</button>
+          <button type="button" class="k-btn2" id="gOff">Отправитель: в сети</button>
+          <button type="button" class="k-btn2" id="gDel">Удалить сообщение</button>
+        </div>
+        <p class="mx-small" id="gNote">Кликни по вещам слева, чтобы положить их в подарок (до 4 слотов).</p>
+      </div>
+      <div class="mx-gp" id="gpB"></div>
+    </div>
+  </section>
+
+  <!-- ============ 05 ФАЙЛЫ ============ -->
+  <section class="sec" id="files">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">attachments</span><h2>Файлы с компа</h2></div><span class="sec-q">перетащи в окно игры</span></header>
+    <p class="sec-p reveal">«+» → «Файл», а дальше любой файл просто перетаскивается в окно Майнкрафта. Ограничения по размеру нет: файл режется на куски по <b>30 КБ</b> и уходит на сервер пакетами. Картинки получают превью, остальное — подпись по расширению. Попробуй: брось сюда что угодно, файл никуда не отправится, всё считается в браузере.</p>
+    <div class="mx-files reveal">
+      <label class="mx-dropzone" id="dz" tabindex="0">
+        <input type="file" id="dzIn" hidden>
+        <b>Перетащи файл в окно игры</b><span>или кликни, чтобы выбрать</span>
+      </label>
+      <div class="mx-fx" id="fx">
+        <div class="mx-fx-bubble" id="fxBubble"></div>
+        <div class="mx-fx-bar"><i id="fxBar"></i></div>
+        <div class="mx-fx-t" id="fxT">Жду файл</div>
+        <div class="mx-chunks" id="fxChunks"></div>
+      </div>
+      <div class="mx-store">
+        <h3>Хранилище сервера</h3>
+        <div class="mx-store-bar" id="stBar"></div>
+        <div class="mx-store-t" id="stT"></div>
+        <div class="mx-store-btns"><button type="button" class="btn-ghost" id="stAdd">+ залить 120 МБ</button><button type="button" class="btn-ghost" id="stClr">очистить</button></div>
+      </div>
+      <dl class="k-dl mx-dl" id="fileDl"></dl>
+    </div>
+  </section>
+
+  <!-- ============ 06 ПРОФИЛЬ ============ -->
+  <section class="sec" id="profile">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">max_user_profile</span><h2>Профиль</h2></div><span class="sec-q">ава, ник, витрина</span></header>
+    <p class="sec-p reveal">При первом открытии MAX просит зарегистрироваться: выбрать аватарку, подписать ник и описание, поставить в витрину трофей. Пять стоковых аватарок мод рисует прямо кодом, прямоугольниками, без единой текстуры. Можно и свою картинку с компьютера: её обрезают квадратом и ужимают, пока строка не влезет в пакет.</p>
+    <div class="mx-prof reveal">
+      <div class="mx-avas" id="avas"></div>
+      <div class="mx-ladder" id="ladder"></div>
+      <dl class="k-dl mx-dl" id="profDl"></dl>
+    </div>
+  </section>
+
+  <!-- ============ 07 ТОНКОСТИ ============ -->
+  <section class="sec" id="notes">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">edge cases</span><h2>Тонкости</h2></div><span class="sec-q">то, что видно только в коде</span></header>
+    <div class="mx-notes reveal" id="notesBox"></div>
+  </section>
+
+  <!-- ============ 08 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 09 ВЕРСИИ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <p class="fin-q">Сообщение прочитано ✓✓<br><em>Ответа не будет. Антицензура уже всё сказала за тебя</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js"></script><script src="../../shared/kit.js"></script><script src="../../data/p23_adv.js"></script><script src="app.js"></script><script src="../../data/hub_adv.js"></script>
-</body></html>
+<div class="mx-log" id="log" aria-live="polite"></div>
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../data/p23_adv.js"></script>
+<script src="../../data/p23_dict.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -64,28 +64,23 @@ float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col
   }
 
   /* мипмапы по тайлам: каждый тайл уменьшается отдельно, поэтому соседние текстуры не протекают */
-  function uploadAtlas(gl, img, tile, smooth = false) {
+  function uploadAtlas(gl, img, tile) {
     const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-    let src = document.createElement("canvas"); src.width = src.height = img.width;
-    const first = src.getContext("2d"); first.imageSmoothingEnabled = smooth; first.drawImage(img, 0, 0);
+    let src = document.createElement("canvas"); src.width = src.height = img.width; src.getContext("2d").drawImage(img, 0, 0);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
     let size = img.width, t = tile, lvl = 0;
     while (size > 1) {
-      const ns = size >> 1, nt = t >> 1, c = document.createElement("canvas"); c.width = c.height = ns;
-      const g = c.getContext("2d"); g.imageSmoothingEnabled = smooth;
-      if (smooth) g.imageSmoothingQuality = "high";
+      const ns = size >> 1, nt = t >> 1, c = document.createElement("canvas"); c.width = c.height = ns; const g = c.getContext("2d"); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
       if (nt >= 1) { const n = size / t; for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) g.drawImage(src, x * t, y * t, t, t, x * nt, y * nt, nt, nt); }
       else g.drawImage(src, 0, 0, ns, ns);
       gl.texImage2D(gl.TEXTURE_2D, ++lvl, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c); src = c; size = ns; t = nt;
     }
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, smooth ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    if (smooth) {
-      const an = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
-      if (an) gl.texParameterf(gl.TEXTURE_2D, an.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(4, gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
-    }
+    const an = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
+    if (an) gl.texParameterf(gl.TEXTURE_2D, an.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(4, gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
     return tex;
   }
 
@@ -98,7 +93,7 @@ float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col
     const P = prog(gl, VS, FS), P2 = prog(gl, VS2, FS2);
     const B = AT.blocks, cols = AT.size / AT.tile, eps = 0.02 / AT.size;
     let tex = null;
-    const img = new Image(); img.onload = () => { tex = uploadAtlas(gl, img, AT.tile, opt.smoothAtlas === true); E.dirty = true; opt.onReady && opt.onReady(E); }; img.src = AT.uri;
+    const img = new Image(); img.onload = () => { tex = uploadAtlas(gl, img, AT.tile); E.dirty = true; opt.onReady && opt.onReady(E); }; img.src = AT.uri;
     const bufO = gl.createBuffer(), bufW = gl.createBuffer(), bufL = gl.createBuffer(), bufX = gl.createBuffer();
     let nO = 0, nW = 0, nL = 0, nX = 0;
 
