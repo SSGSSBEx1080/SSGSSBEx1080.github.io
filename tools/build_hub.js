@@ -4,7 +4,12 @@
 const fs = require("fs"), path = require("path");
 const R = path.join(__dirname, "..");
 global.window = global; global.ZM = {};
-for (const f of fs.readdirSync(path.join(R, "data"))) if (/^p\d\d_[a-z]+\.js$/.test(f) && !/_tex|_models/.test(f)) eval(fs.readFileSync(path.join(R, "data", f), "utf8"));
+// Load advancement definitions, not multi-megabyte model/texture datasets.
+const DATA = { 1: "p01_numbers", 2: "p02_tnt", 3: "p03_snipers", 4: "p04_miner", 5: "p05_adun", 6: "p06_labubu", 7: "p07_ender", 8: "p08_mih", 9: "p09_dildo", 10: "p10_creeper", 11: "p11_jbl", 12: "p12_katana", 13: "p13_printer" };
+for (let n = 1; n <= 22; n++) {
+  const f = DATA[n] || `p${n}_adv`;
+  eval(fs.readFileSync(path.join(R, "data", f + ".js"), "utf8"));
+}
 eval(fs.readFileSync(path.join(R, "shared/points.js"), "utf8"));
 
 const MC = { 0: "#000000", 1: "#0000AA", 2: "#00AA00", 3: "#00AAAA", 4: "#AA0000", 5: "#AA00AA", 6: "#FFAA00", 7: "#AAAAAA", 8: "#555555", 9: "#5555FF", a: "#55FF55", b: "#55FFFF", c: "#FF5555", d: "#FF55FF", e: "#FFFF55", f: "#FFFFFF" };
@@ -34,20 +39,30 @@ const ICON = {
   10: (a) => first(`assets/textures/p10/${a.icon}.png`),
   11: (a) => first(`assets/textures/p11/${a.icon}.png`, `assets/textures/p11/iso/${a.icon}.png`),
   12: (a) => first(`assets/textures/p12/${({ katana: "katana_icon", shield: "shield_item" })[a.icon] || a.icon}.png`, `assets/textures/p12/iso/${a.icon}.png`),
+  13: (a) => first(`assets/textures/p13/${a.icon}.png`, `assets/textures/p13/v/${a.icon}.png`, `assets/textures/p13/i/${a.icon}.png`, `assets/textures/p13/printer_iso.png`),
+  14: (a) => first(`assets/textures/p14/i/${a.icon}.png`, `assets/textures/p14/${a.icon}.png`),
+  15: (a) => first(`assets/textures/p15/i/${a.icon}.png`, `assets/textures/p15/${a.icon}.png`),
+  16: (a) => first(`assets/textures/p16/i/${a.icon}.png`, `assets/textures/p16/${a.icon}.png`),
+  17: (a) => first(`assets/textures/p17/i/${a.icon}.png`),
+  18: (a) => first(`assets/textures/p18/i/${a.icon}.png`),
+  19: (a) => first(`assets/textures/p19/i/${a.icon}.png`),
+  20: (a) => first(`assets/textures/p20/i/${a.icon}.png`),
+  21: (a) => first(`assets/textures/p21/i/${a.icon}.png`),
+  22: (a) => first(`assets/textures/p22/i/${a.icon}.png`),
 };
 const DIRS = { 1: "01_numbers", 2: "02_tnt_armor", 3: "03_sniper", 4: "04_miner", 5: "05_adun", 6: "p06", 7: "p07", 8: "p08", 9: "09_dildo", 10: "10_creeper", 11: "11_jbl", 12: "12_katana" };
 const out = [], warn = [];
-for (let n = 1; n <= 12; n++) {
+for (let n = 1; n <= 22; n++) {
   const P = ZM["P" + String(n).padStart(2, "0")], pt = ZM.POINTS.find((p) => p.n === n);
-  const dir = path.join(R, "mod-src/advancements", DIRS[n]);
+  const dir = DIRS[n] && path.join(R, "mod-src/advancements", DIRS[n]);
   const par = {};
-  for (const f of fs.readdirSync(dir)) { const j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8").replace(/^\uFEFF/, "")); par[f.replace(".json", "")] = (j.parent || "").split("/").pop().replace("zitraksmode:", ""); }
-  const list = P.advancements.filter((a) => par[a.key] !== undefined || n === 4).map((a) => {
+  if (dir) for (const f of fs.readdirSync(dir)) { const j = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8").replace(/^\uFEFF/, "")); par[f.replace(".json", "")] = (j.parent || "").split("/").pop().replace("zitraksmode:", ""); }
+  const list = P.advancements.filter((a) => n > 12 || par[a.key] !== undefined || n === 4).map((a, i) => {
     const t = sect(a.redacted ? { text: "????????", obfuscated: true, color: "5" } : a.title, a.color || "f");
     if (a.color && MC[a.color]) t.color = MC[a.color]; if (a.bold) t.bold = true;
     const d = sect(a.desc ?? a.description ?? (a.redacted ? { text: "Секрет", obfuscated: true } : ""), "7");
     const icon = ICON[n](a); if (!icon) warn.push(n + ":" + a.key + " " + a.icon);
-    return { key: a.key, t: t.text, c: t.color, b: t.bold, d: d.text, icon, frame: a.frame || "task", xp: a.xp || 0, parent: par[a.key] === "root" ? null : par[a.key] || null, hidden: a.hidden !== false };
+    return { key: a.key, t: t.text, c: t.color, b: t.bold, d: d.text, icon, frame: a.frame || "task", xp: a.xp || 0, parent: n > 12 ? (a.parent === undefined ? (i ? P.advancements[i - 1].key : null) : a.parent) : par[a.key] === "root" ? null : par[a.key] || null, hidden: a.hidden !== false };
   });
   // порядок: по цепочке от корня
   const byP = {}; list.forEach((a) => (byP[a.parent || ""] = byP[a.parent || ""] || []).push(a));
