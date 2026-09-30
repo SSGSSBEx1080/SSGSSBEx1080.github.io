@@ -188,6 +188,41 @@
   K.timeline($("#tl"), [
     { date: "30.04.2026", t: "Картины", d: "19 своих картин в теге placeable, от 1×1 до 16×16, и ачивка BOOBSLANDER. В том же апдейте — хентай-блок и Коран.", c: "#d9a55b" },
   ]);
+
+  /* ================= /summon ================= */
+  (function cmd() {
+    const mods = ALL.filter((p) => p.mod);
+    let cur = mods.find((p) => p.n === "boobs") || mods[0], look = "north";
+    // куда смотрит игрок → куда смотрит картина (facing, get2DDataValue: S0 W1 N2 E3)
+    const DIR = { north: ["север", 0, "юг"], south: ["юг", 2, "север"], west: ["запад", 3, "восток"], east: ["восток", 1, "запад"] };
+    $("#cmdPick").innerHTML = mods.map((p) => `<button type="button" data-n="${p.n}" title="${p.n}"><img src="${p.src}" alt="" style="aspect-ratio:${p.w}/${p.h}"><span>${p.w}×${p.h}</span></button>`).join("");
+    $("#cmdDir").innerHTML = `<span>Ты смотришь на</span>` + Object.entries(DIR).map(([k, [ru]]) => `<button type="button" data-d="${k}">${ru}</button>`).join("");
+    function draw() {
+      $$("#cmdPick button").forEach((b) => b.classList.toggle("on", b.dataset.n === cur.n));
+      $$("#cmdDir button").forEach((b) => b.classList.toggle("on", b.dataset.d === look));
+      $("#cmdPrev").innerHTML = `<img src="${cur.src}" alt="" style="aspect-ratio:${cur.w}/${cur.h};${cur.w >= cur.h ? "width:min(100%,260px)" : "height:180px"}"><div><b>${cur.n}</b><small>${cur.w}×${cur.h} блоков · картина смотрит на ${DIR[look][2]}</small></div>`;
+      $("#cmdCode").textContent = `/summon minecraft:painting ~ ~1 ~ {variant:"zitraksmode:${cur.n}",facing:${DIR[look][1]}b}`;
+    }
+    $("#cmdPick").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; cur = mods.find((p) => p.n === b.dataset.n); ZM.sfx("click", 0.4); draw(); });
+    $("#cmdDir").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; look = b.dataset.d; ZM.sfx("click", 0.4); draw(); });
+    $("#cmdCopy").addEventListener("click", () => { ZM.copy($("#cmdCode").textContent); ZM.sfx("orb", 0.5); K.say("Команда скопирована"); });
+    draw();
+  })();
+
+  /* ================= мелкий шрифт ================= */
+  (function fine() {
+    const F = [
+      ["Ачивку дают, даже если не вешал", "BOOBSLANDER засчитывается, когда картина появляется в мире. Для игры это случается и тогда, когда чанк с уже висящей картиной просто подгружается. Подойди к чужой картине, и ачивка твоя."],
+      ["Получает ближайший", "Ачивка уходит ближайшему игроку в радиусе 8 блоков, а не тому, кто кликнул. Творческий режим не мешает, режим наблюдателя — мешает."],
+      ["Командой тоже считается", "Картина boobs, вызванная через /summon, даёт ту же ачивку. Проверяется только то, что она появилась."],
+      ["Выбранная картина не сохраняется", "Сломал картину — выпадает обычная «Картина» без памяти. Повесишь снова — жребий заново, и может выпасть совсем другая."],
+      ["Держится на каждом блоке", "Картина — сущность, а не блок. Её сбивает стрела, взрыв или пропажа любого блока стены позади. Эпик держится на 256 блоках, и чтобы уронить его, хватит выбить один."],
+      ["Эпику нужна площадь", "Точка клика — это не угол картины, а место около её центра. Ровная стена 16×16 должна быть вокруг него, иначе эпик не поместится и выпадет что-то поменьше."],
+      ["Свои картины через ресурспак", "Текстуры лежат в textures/painting. Ресурспаком их можно заменить на свои с теми же именами и пропорциями, а размер на стене останется прежним."],
+      ["Ванильные стали реже", "Мод не заменяет ванильные картины, а добавляет свои к ним. В нише 1×1 раньше было 7 кандидатов, теперь 11: у каждой ванильной шанс упал с 14% до 9%. У ниши 4×3 было 2 кандидата, стало 5."],
+    ];
+    $("#fineBox").innerHTML = F.map(([t, d], i) => `<article class="pnl"><span>${["I", "II", "III", "IV", "V", "VI", "VII", "VIII"][i]}</span><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join("");
+  })();
   K.finNav(16, $("#finNav"));
   ZM.reveal && ZM.reveal();
 })();
