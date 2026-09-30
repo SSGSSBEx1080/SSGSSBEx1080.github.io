@@ -135,3 +135,26 @@ a{color:var(--ac2)}
   .sb-tr{min-width:560px}
   .sb-tr span{padding:8px;font-size:12px}
 }
+
+/* судьба */
+.sb-fate{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;align-items:stretch}
+.sb-fate-pick{padding:16px;border-radius:10px;display:grid;gap:10px;align-content:start}
+.sb-fate-pick>b{font:600 13px var(--f-t);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.sb-seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.sb-seg button{padding:10px 8px;border:1px solid var(--ln);background:#1a150c;color:var(--tx);border-radius:6px;cursor:pointer;text-align:left;display:grid;gap:2px}
+.sb-seg button b{font:600 15px var(--f-t)}.sb-seg button small{font-size:11px;color:var(--dim)}
+.sb-seg button.on{border-color:var(--ac);background:rgba(154,230,110,.1)}
+.sb-fate-out{padding:18px 20px;border-radius:10px;border-left:4px solid var(--ac);transition:border-color .2s}
+.sb-fate-out.st-warn{border-left-color:var(--ac2)}.sb-fate-out.st-lost{border-left-color:#ff5d4d}
+.sb-fate-h{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.sb-fate-h i{font-style:normal;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:var(--ac);color:var(--on-ac);font-size:20px;font-weight:700}
+.st-warn .sb-fate-h i{background:var(--ac2)}.st-lost .sb-fate-h i{background:#ff5d4d;color:#fff}
+.sb-fate-h b{font:600 28px var(--f-t)}
+.sb-fate-out ol{margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px;line-height:1.5;color:#ddd4bf}
+.sb-fine{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.sb-fine article{position:relative;padding:16px;border-radius:10px}
+.sb-fine span{font:700 12px var(--f-mono);color:var(--on-ac);background:var(--ac);border-radius:50%;width:22px;height:22px;display:inline-grid;place-items:center;margin-bottom:8px}
+.sb-fine b{display:block;font:600 18px/1.2 var(--f-t);color:var(--ac2);margin-bottom:6px}
+.sb-fine p{margin:0;font-size:13px;line-height:1.55;color:var(--dim)}
+@media (max-width:1000px){.sb-fate{grid-template-columns:minmax(0,1fr)}.sb-fine{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.sb-fine{grid-template-columns:minmax(0,1fr)}.sb-seg button small{display:none}}
