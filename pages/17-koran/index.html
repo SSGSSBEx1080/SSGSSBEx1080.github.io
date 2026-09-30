@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№17 · Коран — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №17 мода ZitraksMode: книга из двух частей. Крафт, 3D-модель, чтение, огнестойкость, дроп с Махораги и ачивки.">
+<meta name="theme-color" content="#0d1310">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="kr-dust" id="dust" aria-hidden="true"></canvas>
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="kr-hero" id="hero">
+    <div class="kr-hero-txt">
+      <div class="kr-tag"><span>№17</span>30.04.2026<i></i>предмет · книга</div>
+      <h1 class="kr-logo"><small>книга в двух частях</small>Коран</h1>
+      <p class="kr-sub">Толстая книга на 20 страниц, которая собирается из двух половин: нижней <b>«Ветхий Минет»</b> и верхней <b>«Новый Омлет»</b>. Не горит в лаве, в стак не складывается, а ещё её иногда роняет Махорага.</p>
+      <div class="kr-cta"><a class="k-btn" href="#craft">Собрать</a><a class="k-btn2" href="#read">Открыть книгу</a></div>
+      <div class="kr-stats">
+        <a href="#craft"><b>2</b><span>половины</span></a>
+        <a href="#read"><b>20</b><span>страниц</span></a>
+        <a href="#fire"><b>∞</b><span>в лаве</span></a>
+        <a href="#adv"><b id="stGot">0/4</b><span>ачивки</span></a>
+      </div>
+    </div>
+    <figure class="kr-stage" id="stage">
+      <div class="kr-halo" aria-hidden="true"></div>
+      <div class="kr-3d" id="book3d" aria-label="3D-модель книги, крути мышью или пальцем">
+        <div class="kr-part top" id="pTop"></div>
+        <div class="kr-part bot" id="pBot"></div>
+      </div>
+      <figcaption class="kr-stage-cap">
+        <button type="button" class="kr-b" id="splitBtn">Разделить</button>
+        <span id="partName">Коран · zitraksmode:koran</span>
+      </figcaption>
+      <div class="kr-lectern" aria-hidden="true"></div>
+    </figure>
+  </section>
+
+  <!-- ============ 01 КРАФТ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">I · crafting</span><h2>Две половины</h2></div><span class="sec-q">сырое + жареное</span></header>
+    <p class="sec-p reveal">Нижняя половина крафтится из сырой свинины, верхняя из жареной. Обе ложатся в верстак рядом, в любую строку, и получается целая книга. Жми на результат, чтобы забрать.</p>
+    <div class="kr-chain reveal">
+      <div class="kr-step" data-step="1">
+        <div class="kr-step-h"><em>I</em>Ветхий Минет<small>нижняя половина</small></div>
+        <div id="craftA"></div>
+      </div>
+      <div class="kr-step kr-furn" data-step="f">
+        <div class="kr-step-h"><em>→</em>Печка<small>сырое в жареное</small></div>
+        <div class="kr-furnace" id="furn">
+          <div class="kr-f-grid">
+            <button type="button" class="k-slot" id="fIn" data-tip="Сырая свинина" data-tip-sub="minecraft:porkchop"><img alt=""><b></b></button>
+            <span class="kr-f-fire"><i id="fFire"></i></span>
+            <span class="k-slot" data-tip="Уголь" data-tip-sub="minecraft:coal"><img alt=""></span>
+          </div>
+          <div class="kr-f-arrow"><i id="fArrow"></i></div>
+          <button type="button" class="k-slot kr-f-out" id="fOut" data-tip="Жареная свинина" data-tip-sub="minecraft:cooked_porkchop"><img alt=""><b></b></button>
+        </div>
+        <p class="kr-hint" id="fHint">Жми на сырую свинину: пожарю пять штук.</p>
+      </div>
+      <div class="kr-step" data-step="2">
+        <div class="kr-step-h"><em>II</em>Новый Омлет<small>верхняя половина</small></div>
+        <div id="craftB"></div>
+      </div>
+      <div class="kr-step wide" data-step="3">
+        <div class="kr-step-h"><em>III</em>Коран<small>половины рядом</small></div>
+        <div id="craftC"></div>
+        <p class="kr-hint">Рецепт в одну строку: «Ветхий» слева, «Новый» справа. Можно в любую из трёх строк верстака.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 ЧТЕНИЕ ============ -->
+  <section class="sec" id="read">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">II · reading</span><h2>Открыть книгу</h2></div><span class="sec-q">ПКМ по предмету</span></header>
+    <p class="sec-p reveal">ПКМ открывает обычное окно книги, как у подписанной. Текст зашит в предмет: при каждом открытии страницы записываются заново. Тут только страницы про сам мод, остальные к нему отношения не имеют.</p>
+    <div class="kr-read reveal">
+      <div class="kr-bookwrap">
+        <div class="kr-book" id="book">
+          <span class="kr-pg-n" id="pgN"></span>
+          <div class="kr-pg-t" id="pgT"></div>
+          <button type="button" class="kr-arr back" id="pgBack" aria-label="Назад"></button>
+          <button type="button" class="kr-arr fwd" id="pgFwd" aria-label="Вперёд"></button>
+        </div>
+        <div class="kr-dots" id="pgDots"></div>
+      </div>
+      <div class="kr-read-side">
+        <div class="kr-card">
+          <h3>Как это устроено</h3>
+          <ul class="kr-ul">
+            <li>Предмет, а не подписанная книга. Своё окно не нужно: мод открывает ванильный <code>BookViewScreen</code> и отдаёт ему страницы.</li>
+            <li>Каждая страница хранит свой цвет, жирность и курсив, как текст в <code>/tellraw</code>.</li>
+            <li>Текст пишется в NBT при каждом ПКМ, поэтому поменять его нельзя: книга всегда перезапишется обратно.</li>
+          </ul>
+        </div>
+        <div class="kr-card kr-bug">
+          <h3>Ачивка за чтение</h3>
+          <p>«Знание — сила» проверяет, что в книге 20 страниц. Но страницы записываются <b>до</b> проверки, так что в игре ачивка прилетает с первого же ПКМ, листать не обязательно. Тут честнее: дочитай до конца.</p>
+          <div class="kr-read-bar"><i id="readBar"></i></div>
+          <span class="kr-dim" id="readTxt"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 ЛАВА ============ -->
+  <section class="sec" id="fire">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">III · fire resistant</span><h2>Не горит</h2></div><span class="sec-q">isFireResistant = true</span></header>
+    <p class="sec-p reveal">Как незеритовые вещи: брошенная в лаву или огонь книга не сгорает, а всплывает и качается на поверхности. Кидай что угодно из хотбара и сравни.</p>
+    <div class="kr-pool reveal" id="pool">
+      <div class="kr-lava" id="lava"></div>
+      <div class="kr-rim l"></div><div class="kr-rim r"></div>
+      <div class="kr-float" id="floats"></div>
+      <div class="kr-pool-hot" id="poolHot"></div>
+    </div>
+    <div class="kr-hotbar reveal" id="hotbar" role="toolbar" aria-label="Что бросить в лаву"></div>
+    <p class="kr-hint reveal" style="text-align:center">Клик по предмету в хотбаре бросает его в лаву. Клик по всплывшей книге вылавливает её обратно.</p>
+  </section>
+
+  <!-- ============ 04 ГДЕ ВЗЯТЬ ============ -->
+  <section class="sec" id="get">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · obtaining</span><h2>Где взять</h2></div></header>
+    <div class="kr-get reveal">
+      <div class="kr-card kr-way">
+        <img src="../../assets/textures/p17/i/crafting_table.png" alt="">
+        <div><b>Верстак</b><p>10 свиных отбивных: 5 сырых и 5 жареных. Две половины, потом целая книга.</p></div>
+      </div>
+      <div class="kr-card kr-way">
+        <div class="kr-pct"><b>30%</b><span>шанс</span></div>
+        <div><b>Махорага</b><p>Выпадает при смерти Махораги, отдельным броском вместе с остальным лутом. <a href="#" id="toMah">Пункт №21</a>.</p></div>
+      </div>
+    </div>
+    <div class="kr-props reveal" id="props"></div>
+  </section>
+
+  <!-- ============ 05 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 06 ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <p class="fin-q">Двадцать страниц.<br><em>Не горит, не тонет, не складывается.</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../shared/model3d.js"></script>
+<script src="../../shared/gl3d.js"></script>
+<script src="../../data/p17_models.js"></script>
+<script src="../../data/p17_tex.js"></script>
+<script src="../../data/p17_pages.js"></script>
+<script src="../../data/p17_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

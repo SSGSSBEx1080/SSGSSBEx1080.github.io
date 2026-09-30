@@ -202,6 +202,8 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc-15 .pc-bg::before{content:"18+";position:absolute;right:12%;top:18%;padding:2px 7px;font:900 22px/1 Arial,sans-serif;color:#000;background:#ff9000;border-radius:4px;transform:rotate(8deg);box-shadow:0 0 18px rgba(255,144,0,.55)}
 .pc-16 .pc-bg{background:radial-gradient(ellipse 40% 60% at 70% 20%,rgba(255,228,170,.22),transparent 70%),radial-gradient(circle at 25% 25%,rgba(255,255,255,.035) 0 2px,transparent 3px) 0 0/16px 16px,linear-gradient(180deg,#4a1a1f,#240b0e)}
 .pc-16 .pc-bg::before{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(180deg,#8a6128 0 2px,rgba(20,10,6,.85) 2px);opacity:.8}
+.pc-17 .pc-bg{background:radial-gradient(ellipse 50% 70% at 72% 10%,rgba(236,208,138,.22),transparent 70%),linear-gradient(160deg,#1d5a3a,#0b2417)}
+.pc-17 .pc-bg::before{content:"";position:absolute;inset:8px;border:1px solid rgba(216,178,90,.45);box-shadow:inset 0 0 0 3px rgba(0,0,0,.25),inset 0 0 0 4px rgba(216,178,90,.25);border-radius:10px;pointer-events:none}
 @keyframes aqRise{from{transform:translateY(0)}to{transform:translateY(-220px)}}
 @keyframes prNoz{0%{transform:translate(-40px,0)}50%{transform:translate(30px,6px)}100%{transform:translate(-20px,12px)}}
 @keyframes ktCut{0%{clip-path:inset(0 100% 0 0)}35%,70%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 100%)}}
@@ -414,6 +416,9 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .lg-c[data-s="15"]{font-family:Arial,Helvetica,sans-serif;font-weight:900;color:#000;text-shadow:0 2px 0 rgba(0,0,0,.25);background:#ff9000;border-radius:.12em;padding:0 .06em;font-size:.86em;line-height:1.05;box-shadow:0 0 18px rgba(255,144,0,.45)}
 /* 16 Картины: золото в раме */
 .lg-c[data-s="16"]{font-family:'LG Cormorant';font-weight:700;font-size:1.08em;color:transparent;background:linear-gradient(180deg,#f6dd9a 10%,#d9a55b 45%,#6e4618 95%);-webkit-background-clip:text;background-clip:text;text-shadow:none;filter:drop-shadow(0 3px 0 #2a0f13) drop-shadow(0 0 10px rgba(217,165,91,.45))}
+/* 17 Коран: старый шрифт, пергамент на зелёной коже */
+@font-face{font-family:'LG OldSt';font-weight:700;font-display:swap;src:url(../assets/fonts/OldStandard-700n-latin.woff2) format('woff2')}
+.lg-c[data-s="17"]{font-family:'LG OldSt';font-weight:700;color:#efe3c2;font-size:1.04em;text-shadow:0 3px 0 #1d5a3a,0 6px 0 #0b2417,0 0 16px rgba(236,208,138,.45)}
 @keyframes lgScan{from{background-position:0 100%}to{background-position:0 -100%}}
 .lg-tip{height:22px;margin-top:6px;font:400 14px var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-4px);transition:.2s}
 .lg-tip.on{opacity:1;transform:none}
