@@ -127,13 +127,37 @@
   const box = (w, x0, y0, z0, x1, y1, z1, k, hollow) => { for (let y = y0; y <= y1; y++) for (let z = z0; z <= z1; z++) for (let x = x0; x <= x1; x++) { if (hollow && x > x0 && x < x1 && z > z0 && z < z1) continue; setB(w, x, y, z, k); } };
 
   // блок-состояние -> id в атласе (точное совпадение, потом по имени блока), иначе камень
-  const stateIndex = {}; B.forEach((b, i) => { if (b && b.key) { stateIndex[b.key] = i; const base = b.key.split("[")[0]; if (!(base in stateIndex)) stateIndex[base] = i; } });
+  // Палитра хранит состояния ванильных НЕкубических блоков вместе с facing/half/shape.
+  // В .zlp порядок свойств может отличаться от порядка в атласе: сравниваем пары, а не строки.
+  const properties = (st) => Object.fromEntries((/\[([^\]]+)\]/.exec(st)?.[1] || "").split(",").filter(Boolean).map((pair) => pair.trim().split("=")));
+  const canonical = (st) => {
+    const base = st.split("[")[0], p = properties(st), keys = Object.keys(p).sort();
+    return base + (keys.length ? "[" + keys.map((k) => `${k}=${p[k]}`).join(",") + "]" : "");
+  };
+  const stateIndex = {}, variants = {};
+  B.forEach((b, i) => {
+    if (!b || !b.key) return;
+    stateIndex[b.key] = i; stateIndex[canonical(b.key)] = i;
+    const base = b.key.split("[")[0];
+    if (!(base in stateIndex)) stateIndex[base] = i;
+    (variants[base] ||= []).push({ i, p: properties(b.key) });
+  });
   function stateToVox(st) {
-    if (stateIndex[st]) return stateIndex[st];
+    if (stateIndex[st] || stateIndex[canonical(st)]) return stateIndex[st] || stateIndex[canonical(st)];
     const base = st.split("[")[0], short = base.replace(/^minecraft:/, "");
     if (short === "grass_block" && /snowy=true/.test(st)) return KEY.snowy_grass;
+    // Если состояние отличается несущественным свойством (waterlogged, powered),
+    // сохраняем ориентацию/половину/форму, а не берём первую форму по имени блока.
+    const want = properties(st), choices = variants[base];
+    if (choices && Object.keys(want).length) {
+      const weight = { facing: 6, half: 6, shape: 5, part: 5, type: 5, axis: 5, open: 4, hanging: 4, face: 4, east: 3, north: 3, south: 3, west: 3 };
+      const best = choices.map(({ i, p }) => ({ i, score: Object.entries(want).reduce((s, [k, v]) => s + (p[k] === v ? (weight[k] || 1) : p[k] == null ? 0 : -(weight[k] || 1)), 0) }))
+        .sort((a, b) => b.score - a.score)[0];
+      if (best && best.score > 0) return best.i;
+    }
     return stateIndex[base] || KEY[short] || 0;
   }
+  ZM.p13StateIndex = stateToVox; // консольная проверка соответствия сложных block states моделям
   // id атласа -> настоящая строка состояния для чертежа
   function voxToState(id) {
     const k = B[id].key;

@@ -95,33 +95,39 @@
   </section>
 
     <!-- ============ 04 МЕЛКИЙ ШРИФТ ============ -->
-  <section class="sec" id="fine">
-    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · details</span><h2>Тонкости</h2></div><span class="sec-q">то, что видно только в коде</span></header>
+  <section class="sec" id="fine" data-zm-insights>
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · details</span><h2>Серверный эксперимент</h2></div><span class="sec-q">то, что видно только в коде</span></header>
     <div class="hb-server reveal pnl">
       <div class="hb-srv-cubes" id="srvCubes"></div>
       <div>
-        <b>На сервере блок скучнее</b>
-        <p>Списки картинок собираются из ресурсов игры, а их читает только клиент. В одиночной игре всё работает. На выделенном сервере списки пустые, и каждая грань выпадает запасной: <b>порно №1</b> или <b>хентай №1</b>, по три штуки. Мемов там нет совсем, так что «Смехуятинку» на сервере не получить.</p>
+        <b>Проверь: одиночная игра или выделенный сервер?</b>
+        <div class="hb-server-switch" id="srvMode" role="group" aria-label="Где установлен блок">
+          <button type="button" class="on" data-mode="client" aria-pressed="true">Одиночная игра</button>
+          <button type="button" data-mode="server" aria-pressed="false">Выделенный сервер</button>
+          <button type="button" data-mode="reroll">↻ Ещё раз</button>
+        </div>
+        <p id="srvRead" aria-live="polite"></p>
+        <details class="hb-server-note"><summary>Почему на сервере всё иначе?</summary><p>Списки картинок загружает клиент из ресурсов и ресурспаков. В одиночной игре они доступны. На выделенном сервере списки пустые: каждая грань получает запасную картинку — порно №1 или хентай №1, по три каждой. Мемы не выпадают, ачивку за два мема так не открыть.</p></details>
       </div>
     </div>
     <div class="hb-fine reveal" id="fineBox"></div>
   </section>
 
-<!-- ============ 03 АЧИВКИ ============ -->
+  <!-- ============ ИСТОРИЯ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <!-- ============ ВЕТКА ДОСТИЖЕНИЙ ПУНКТА ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">V · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
       <div class="adv-detail" id="advDetail"></div>
       <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
     </div>
     <div class="adv-list reveal" id="advList"></div>
-  </section>
-
-  <!-- ============ 04 ИСТОРИЯ ============ -->
-  <section class="sec" id="hist">
-    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">VI · changelog</span><h2>Версии</h2></div></header>
-    <div class="k-tl reveal" id="tl"></div>
   </section>
 
   <section class="finale" id="finale">
@@ -138,5 +144,6 @@
 <script src="../../data/p15_list.js"></script>
 <script src="../../data/p15_adv.js"></script>
 <script src="app.js"></script>
+<script src="../../data/hub_adv.js"></script>
 </body>
 </html>
