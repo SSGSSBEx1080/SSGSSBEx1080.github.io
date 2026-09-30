@@ -119,7 +119,7 @@
     $("#pfXpTxt").textContent = st.xp >= st.xpAll ? `${st.xp} XP · всё собрано` : `${st.xp} / ${st.xpAll} XP · до ${st.lv.L + 1} уровня ${Math.ceil(st.lv.span - st.lv.cur)} XP`;
     $("#pfStats").innerHTML = [[`${st.got}/${st.all}`, "ачивок"], [st.xp, "опыта"], [`${st.full}/${HUB.length}`, "пунктов закрыто"], [`${seen.filter((n) => LIVE.some((p) => p.n === n)).length}/${LIVE.length}`, "страниц открыто"]]
       .map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join("");
-    $("#pfPts").innerHTML = HUB.map((pt) => { const p = st.per[pt.n]; return `<a href="${pt.page}${pt.n === 1 ? "#tree" : "#adv"}" style="--tone:${pt.tone}" class="${p.got === p.all ? "full" : ""}" title="${esc(pt.title)}: ${p.got}/${p.all}"><img src="${pt.icon}" alt="">№${pad2(pt.n)} <span style="margin-left:auto">${p.got}/${p.all}</span><i style="width:${(p.got / p.all) * 100}%"></i></a>`; }).join("");
+    $("#pfPts").innerHTML = HUB.map((pt) => { const p = st.per[pt.n]; return `<a href="${pt.page}#adv" style="--tone:${pt.tone}" class="${p.got === p.all ? "full" : ""}" title="${esc(pt.title)}: ${p.got}/${p.all}"><img src="${pt.icon}" alt="">№${pad2(pt.n)} <span style="margin-left:auto">${p.got}/${p.all}</span><i style="width:${(p.got / p.all) * 100}%"></i></a>`; }).join("");
     $("#pfQ").textContent = `ур. ${st.lv.L} · ${rankOf(st.lv.L)}`;
     // профили
     const list = PF.list(), act = PF.me().id;
@@ -206,7 +206,7 @@
     }).join("") || `<p class="pf-empty">Ничего не нашлось.</p>`;
     // найденные ачивки (только полученные: скрытые не выдаём)
     const found = q.length >= 2 && cfg.done ? HUB.flatMap((pt) => pt.adv.filter((a) => st.per[pt.n].g.has(a.key) && (a.t + " " + a.d).toLowerCase().includes(q)).map((a) => ({ a, pt }))) : [];
-    $("#ptFound").innerHTML = found.slice(0, 12).map(({ a, pt }) => `<a href="${pt.page}${pt.n === 1 ? "#tree" : "#adv"}"><img src="${a.icon}" alt=""><span style="color:${a.c}">${esc(a.t.replace(/§[kr]/g, ""))}</span><small>№${pad2(pt.n)} ${esc(pt.title)}</small></a>`).join("");
+    $("#ptFound").innerHTML = found.slice(0, 12).map(({ a, pt }) => `<a href="${pt.page}#adv"><img src="${a.icon}" alt=""><span style="color:${a.c}">${esc(a.t.replace(/§[kr]/g, ""))}</span><small>№${pad2(pt.n)} ${esc(pt.title)}</small></a>`).join("");
     $("#ptQ").textContent = `${LIVE.length} из ${ZM.POINTS.length} готово`;
   }
   $("#ptFilter").addEventListener("click", (e) => { const b = e.target.closest("[data-f]"); if (!b) return; ptF = b.dataset.f; $$("#ptFilter button").forEach((x) => x.classList.toggle("on", x === b)); ptRender(); });
@@ -246,7 +246,7 @@
     }).join("") + HUB.map((pt, r) => { const last = nodes.filter((n) => n.pt === pt).pop(), p = st.per[pt.n];
       return `<span class="tw-lab" data-n="${pt.n}" style="left:${last.x + 64}px;top:${TW.y0 + r * TW.row + 18}px;--tone:${pt.tone}"><em>№${pad2(pt.n)}</em> ${esc(pt.title)} · ${p.got}/${p.all}</span>`; }).join("");
     $("#trQ").textContent = `${st.got} / ${st.all} · ${st.xp} XP`;
-    $("#twRows").innerHTML = HUB.map((pt) => { const p = st.per[pt.n]; return `<a href="${pt.page}${pt.n === 1 ? "#tree" : "#adv"}" data-n="${pt.n}" style="--tone:${pt.tone}"><img src="${pt.icon}" alt=""><span>№${pad2(pt.n)} ${esc(pt.title)}</span><b>${p.got}/${p.all}</b><i style="width:${(p.got / p.all) * 100}%"></i></a>`; }).join("");
+    $("#twRows").innerHTML = HUB.map((pt) => { const p = st.per[pt.n]; return `<a href="${pt.page}#adv" data-n="${pt.n}" style="--tone:${pt.tone}"><img src="${pt.icon}" alt=""><span>№${pad2(pt.n)} ${esc(pt.title)}</span><b>${p.got}/${p.all}</b><i style="width:${(p.got / p.all) * 100}%"></i></a>`; }).join("");
   }
   function applyPan() {
     const W = twIn.clientWidth, H = twIn.clientHeight, sw = TW.W * TW.s, sh = TW.H * TW.s, m = 60;
@@ -274,7 +274,7 @@
     const fr = n.root ? "task" : n.a.frame, title = n.root ? "ZitraksMode" : show ? obf(n.a.t) : "???";
     const desc = n.root ? `${esc(ROOT.d)}<em>Получено ${st.got} из ${st.all} · ${st.xp} XP</em>` : show ? obf(n.a.d) : "Скрытое достижение. Откроется, когда получишь.";
     twTip.innerHTML = `<div class="tw-bar"><span class="tw-ic"><span class="adv-frame ${show ? fr : "task"}${has ? "" : " locked"}"></span>${show ? `<img src="${n.a.icon}" alt="">` : "<i>?</i>"}</span><b style="${has && n.a.c && !n.root ? `color:${n.a.c === "#FFFFFF" ? "#fff" : n.a.c}` : ""}">${title}</b></div>`
-      + `<div class="tw-desc">${desc}${has && !n.root && n.a.xp ? `<em>+${n.a.xp} XP · ${{ task: "обычная", goal: "цель", challenge: "испытание" }[n.a.frame]}</em>` : ""}${pin && !n.root ? `<a href="${n.pt.page}${n.pt.n === 1 ? "#tree" : "#adv"}">№${pad2(n.pt.n)} ${esc(n.pt.title)} →</a>` : ""}</div>`;
+      + `<div class="tw-desc">${desc}${has && !n.root && n.a.xp ? `<em>+${n.a.xp} XP · ${{ task: "обычная", goal: "цель", challenge: "испытание" }[n.a.frame]}</em>` : ""}${pin && !n.root ? `<a href="${n.pt.page}#adv">№${pad2(n.pt.n)} ${esc(n.pt.title)} →</a>` : ""}</div>`;
     twTip.hidden = false;
     const frR = twTip.parentElement.getBoundingClientRect(), inR = twIn.getBoundingClientRect(), sz = n.root ? 60 : 52;
     const nx = inR.left - frR.left + TW.pan.x + n.x * TW.s - (sz * (1 - TW.s)) / 2 * 0, ny = inR.top - frR.top + TW.pan.y + n.y * TW.s + (sz * TW.s - 52) / 2;
@@ -321,11 +321,11 @@
   addEventListener("resize", () => { applyPan(); sizeBg(); });
 
   // живой фон окна корня: dynamic_bg.png, зеркально замощённый, медленно плывёт и сдвигается вслед за картой
-  const bg = $("#twBg"), bgc = bg.getContext("2d"); bgc.imageSmoothingEnabled = false; let bgVis = false, tile = null;
+  const bg = $("#twBg"), bgc = bg.getContext("2d"); let bgVis = false, tile = null;
   const bgImg = new Image();
   bgImg.onload = () => {   // 2×2 с зеркалами: стыков не видно
     const w = 620, h = Math.round((w * bgImg.height) / bgImg.width), c = document.createElement("canvas"); c.width = w * 2; c.height = h * 2;
-    const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
+    const g = c.getContext("2d");
     [[1, 1, 0, 0], [-1, 1, 2 * w, 0], [1, -1, 0, 2 * h], [-1, -1, 2 * w, 2 * h]].forEach(([sx, sy, tx, ty]) => { g.setTransform(sx, 0, 0, sy, tx, ty); g.drawImage(bgImg, 0, 0, w, h); });
     tile = c;
   };
@@ -357,10 +357,7 @@
 
   /* ================= вкладки: ветка каждого пункта отдельно, как на страницах ================= */
   const TILE = { 1: "assets/textures/mc/stone.png", 2: "assets/textures/mc/p2/block_tnt_side.png", 3: "assets/textures/mc/stone.png", 4: "assets/textures/mc/stone.png", 5: "assets/textures/mc/p2/terrain/dirt.png",
-    6: "assets/textures/p6/pink_wool.png", 7: "assets/textures/p7/v/end_stone_bricks.png", 8: "assets/textures/mc/quartz.png", 9: "assets/textures/p9/v/pink_wool.png", 10: "assets/textures/p10/lime_concrete.png", 11: "assets/textures/p11/blue_wool.png", 12: "assets/textures/p12/crimson_planks.png",
-    13: "assets/textures/p13/printer_bottom.png", 14: "assets/textures/p14/v/prismarine.png", 15: "assets/textures/p15/hentai_block.png", 16: "assets/textures/p16/b/wall.png",
-    17: "assets/textures/p17/v/blackstone.png", 18: "assets/textures/p18/v/sandstone.png", 19: "assets/textures/p19/v/stone.png",
-    20: "assets/textures/p20/v/jukebox_side.png", 21: "assets/textures/p21/b/blackstone.png", 22: "assets/textures/p22/v/hay_side.png" };
+    6: "assets/textures/p6/pink_wool.png", 7: "assets/textures/p7/v/end_stone_bricks.png", 8: "assets/textures/mc/quartz.png", 9: "assets/textures/p9/v/pink_wool.png", 10: "assets/textures/p10/lime_concrete.png", 11: "assets/textures/p11/blue_wool.png", 12: "assets/textures/p12/crimson_planks.png" };
   const FR_RU = { task: "обычная", goal: "цель", challenge: "испытание" };
   let tab = 0, ptSel = null;
   const aTitle = (a) => `<span style="color:${a.c && a.c !== "#FFFFFF" ? a.c : "#fff"}">${obf(a.t)}</span>`;
@@ -391,7 +388,7 @@
       + (hidden ? `<div class="adv-row locked"><span class="fr"><span class="adv-frame task locked"></span><span class="q">?</span></span><span><span class="t">??? × ${hidden}</span><br><span class="d">Скрыты, пока не получишь</span></span></div>` : "");
     const n = list.filter((x) => g.has(x.key)).length, xp = list.filter((x) => g.has(x.key)).reduce((s, x) => s + x.xp, 0), xpAll = list.reduce((s, x) => s + x.xp, 0);
     $("#twPBar").style.width = (n / list.length) * 100 + "%"; $("#twPTxt").textContent = `${n} / ${list.length} · ${xp}/${xpAll} XP`;
-    $("#twPGo").href = pt.page + (pt.n === 1 ? "#tree" : "#adv");
+    $("#twPGo").href = pt.page + "#adv";
   }
   function setTab(n) {
     tab = n; ptSel = null; hideTip(); sfx("click", 0.35, n ? 1.25 : 1);
@@ -402,9 +399,6 @@
     tabsRender(st); if (pt) { ptBoard(st); $("#twPt").scrollTop = 0; } else requestAnimationFrame(() => { sizeBg(); home(); });
     const on = $("#twTabs .on"); if (on) on.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
   }
-  // Прямая ссылка с любого пункта: index.html#tree/22 открывает его вкладку.
-  const linkedTab = () => { const n = +(/^#tree\/(\d+)$/.exec(location.hash) || [])[1]; if (HUB.some((p) => p.n === n)) { setTab(n); requestAnimationFrame(() => $("#tree").scrollIntoView({ block: "start", behavior: "instant" })); } };
-  addEventListener("hashchange", linkedTab);
   $("#twTabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab-n]"); if (b && +b.dataset.tabN !== tab) setTab(+b.dataset.tabN); });
   $("#twPt").addEventListener("click", (e) => { const b = e.target.closest("[data-k]"); if (!b) return; ptSel = b.dataset.k; sfx("click", 0.3, 1.2); ptBoard(stats()); });
   $("#twRows").addEventListener("click", (e) => { const a = e.target.closest("a"); if (!a || e.ctrlKey || e.metaKey) return; const n = +a.dataset.n; if (!n) return; e.preventDefault(); setTab(n); $("#tw").scrollIntoView({ behavior: "smooth", block: "center" }); });
@@ -422,8 +416,8 @@
   /* ================= всё вместе ================= */
   function renderAll() { const st = stats(); heroRender(st); profileRender(st); ptRender(); treeRender(st); tabsRender(st); if (tab) ptBoard(st); PF.refresh(); }
   document.documentElement.style.scrollBehavior = "smooth";
-  applyCfg(); layout(); tl(); renderAll(); linkedTab();
-  requestAnimationFrame(() => { sizeBg(); if (!tab) home(); requestAnimationFrame(frame); });
+  applyCfg(); layout(); tl(); renderAll();
+  requestAnimationFrame(() => { sizeBg(); home(); requestAnimationFrame(frame); });
   // вернулся со страницы пункта: обновить прогресс
   addEventListener("pageshow", (e) => { if (e.persisted) renderAll(); });
   addEventListener("storage", (e) => { if (e.key && e.key.startsWith("zm:")) renderAll(); });

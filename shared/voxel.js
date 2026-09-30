@@ -71,13 +71,13 @@ float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
     let size = img.width, t = tile, lvl = 0;
     while (size > 1) {
-      const ns = size >> 1, nt = t >> 1, c = document.createElement("canvas"); c.width = c.height = ns; const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
+      const ns = size >> 1, nt = t >> 1, c = document.createElement("canvas"); c.width = c.height = ns; const g = c.getContext("2d"); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
       if (nt >= 1) { const n = size / t; for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) g.drawImage(src, x * t, y * t, t, t, x * nt, y * nt, nt, nt); }
       else g.drawImage(src, 0, 0, ns, ns);
       gl.texImage2D(gl.TEXTURE_2D, ++lvl, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c); src = c; size = ns; t = nt;
     }
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     const an = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
     if (an) gl.texParameterf(gl.TEXTURE_2D, an.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(4, gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
@@ -146,6 +146,8 @@ float f=smoothstep(G.x,G.y,vD);float a=(W>.5?.74:1.)*(A>.5?1.-f:1.);col=A>.5?col
             for (const [a, b] of [[0, 0], [1, 0], [1, 1], [0, 1]]) {
               const q = [0, 1, 2].map((i) => lo[i] + (f.o[i] + a * f.u[i] + b * f.v[i]) * (hi[i] - lo[i]));
               let su = fullUV ? a : f.u[ua] > 0 ? q[ua] : 1 - q[ua], sv = fullUV ? b : f.v[va] > 0 ? q[va] : 1 - q[va];
+              const fuv = bx[13] && bx[13][fi]; // явный uv грани из ванильной модели [u0,v0,u1,v1] в пикселях 0..16
+              if (fuv) { su = (fuv[0] + a * (fuv[2] - fuv[0])) / 16; sv = (fuv[1] + b * (fuv[3] - fuv[1])) / 16; }
               su = Math.min(1, Math.max(0, su)); sv = Math.min(1, Math.max(0, sv));
               cs.push([x + q[0], y + q[1], z + q[2], tu + eps + su * (ts - 2 * eps), tv + eps + sv * (ts - 2 * eps), f.s, glow]);
             }

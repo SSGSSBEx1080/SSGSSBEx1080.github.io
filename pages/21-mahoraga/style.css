@@ -300,7 +300,7 @@ h3{font:700 30px/1.1 var(--f-big);color:var(--bone);margin:0 0 10px}
 .mh-lt-row img{width:22px;height:22px;image-rendering:pixelated}
 .mh-lt-row span{font:12px var(--f-mono);color:var(--dim)}
 
-/* ---------- 08 мелочи ---------- */
+/* ---------- 08 тонкости ---------- */
 .mh-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .mh-fact{position:relative;padding:18px 16px 16px;background:rgba(15,17,20,.88);border:1px solid var(--ln);border-radius:4px;overflow:hidden}
 .mh-fact>span{position:absolute;right:10px;top:4px;font:700 44px/1 var(--f-big);color:rgba(201,164,92,.12)}
@@ -379,7 +379,9 @@ h3{font:700 30px/1.1 var(--f-big);color:var(--bone);margin:0 0 10px}
   .mh-dl>div{grid-template-columns:1fr;gap:2px}
 }
 
-/* hero: статус адаптации под полоской */
-.mh-bar em{display:block;margin-top:6px;min-height:14px;font:italic 12px/1.2 var(--f-body,system-ui);color:#e8e2cf;text-shadow:0 1px 2px #000;letter-spacing:.02em;opacity:0;transition:opacity .25s}
-.mh-bar em.on{opacity:1}
-.mh-bar em b{color:#ffd76a;font-style:normal}
+/* hero: всплывающий урон */
+.mh-hpops{position:absolute;inset:8% 0 auto;height:40%;pointer-events:none;z-index:3}
+.mh-stage figcaption a{color:var(--gold);pointer-events:auto}
+.mh-stage figcaption{pointer-events:none}
+/* ПК: 3D-аванпост тянется на высоту правой колонки, без пустоты под ним */
+@media (min-width:901px){ .mh-op{align-items:stretch} .mh-op-view{height:auto;min-height:520px} }

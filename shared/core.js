@@ -17,7 +17,7 @@
   /* ---------- localStorage с неймспейсом ---------- */
   ZM.store = {
     get(k, d) { try { const v = localStorage.getItem("zm:" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem("zm:" + k, JSON.stringify(v)); dispatchEvent(new CustomEvent("zm:change", { detail: { key: k } })); } catch (e) {} },
+    set(k, v) { try { localStorage.setItem("zm:" + k, JSON.stringify(v)); } catch (e) {} },
   };
 
   /* ---------- Профили: весь прогресс сайта (ключи zm:*) принадлежит активному профилю ----------
@@ -83,59 +83,6 @@
       document.querySelectorAll(".zm-me").forEach((el) => { el.querySelector("img").src = this.avatarUrl(me.avatar); el.querySelector(".zm-me-n").textContent = me.nick; el.querySelector("b").textContent = "★ " + this.gotCount(); });
     },
   };
-
-  /* Единый маршрут по пункту и ссылка на ту же ветку главного дерева.
-     Число/прогресс читаются из того же zm:pNN.adv, что использует страница. */
-  document.addEventListener("DOMContentLoaded", () => {
-    const m = /\/pages\/(\d\d)-/.exec(location.pathname), n = m && +m[1];
-    if (!n || !ZM.POINTS) return;
-    const pt = ZM.POINTS.find((p) => p.n === n), branch = ZM.HUB_ADV?.find((p) => p.n === n), adv = ZM["P" + m[1]]?.advancements;
-    const main = document.querySelector("main"), target = document.querySelector("#adv") || document.querySelector("#tree");
-    if (!main || !pt || !target || !adv || !branch) return;
-    const store = `p${m[1]}.adv`, treeUrl = ZM.url(`index.html#tree/${n}`);
-    const board = target.querySelector(".adv-board");
-    const panel = document.createElement("div"); panel.className = "zm-branch-sync";
-    panel.innerHTML = `<div class="zm-branch-mark"><img src="${ZM.url(pt.icon)}" alt=""></div><div class="zm-branch-copy"><strong>Ветка №${m[1]} · ${ZM.esc(pt.title)}</strong><span>Тот же прогресс, что в общем древе. Достижения сохраняются в активном профиле.</span></div><b class="zm-branch-count" aria-live="polite"></b><a href="${treeUrl}">Открыть в главном древе ↗</a>`;
-    if (board) target.insertBefore(panel, board); else target.appendChild(panel);
-    const map = document.createElement("div"); map.className = "zm-branch-map"; map.setAttribute("aria-label", "Ветка достижений пункта в главном древе");
-    panel.appendChild(map);
-    const refresh = () => {
-      const got = new Set(ZM.store.get(store, []));
-      panel.querySelector(".zm-branch-count").textContent = `${branch.adv.filter((a) => got.has(a.key)).length} / ${branch.adv.length}`;
-      map.innerHTML = `<span class="zm-branch-root" title="Корень ветки ${ZM.esc(pt.title)}"><img src="${ZM.url(pt.icon)}" alt=""></span>` + branch.adv.map((a) => {
-        const has = got.has(a.key), show = has || !a.hidden, parent = branch.adv.find((p) => p.key === a.parent);
-        return `<span class="zm-branch-edge ${has ? "on" : ""}" aria-hidden="true"></span><button type="button" data-adv-key="${ZM.esc(a.key)}" class="zm-branch-node ${has ? "has" : "locked"} ${a.frame}" title="${show ? ZM.esc(a.t.replace(/§[kr]/g, "")) : "Скрытое достижение"}${parent ? ` · после ${got.has(parent.key) ? ZM.esc(parent.t) : "???"}` : ""}" aria-label="${show ? ZM.esc(a.t.replace(/§[kr]/g, "")) : "Скрытое достижение"}${has ? ", получено" : ", не получено"}"><span class="adv-frame ${show ? a.frame : "task"}${has ? "" : " locked"}"></span>${show ? `<img src="${ZM.url(a.icon)}" alt="">` : "<b>?</b>"}</button>`;
-      }).join("");
-    };
-    map.addEventListener("click", (e) => {
-      const node = e.target.closest("[data-adv-key]"); if (!node) return;
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-      const own = target.querySelector(`[data-k="${node.dataset.advKey}"]`); if (own) own.click();
-    });
-    refresh();
-    addEventListener("zm:change", (e) => { if (e.detail?.key === store) refresh(); });
-    addEventListener("pageshow", refresh);
-    addEventListener("storage", (e) => {
-      if (e.key === `zm:${store}`) {
-        refresh();
-        // Ранние страницы хранят свой массив got внутри app.js; перечитываем их
-        // при внешнем изменении, чтобы не затереть прогресс другой вкладки.
-        if (n < 14) location.reload();
-      }
-    });
-
-    // Маршрут вместо ещё одной стены вступительного текста. Ведёт прямо к опытам.
-    const sections = [...main.children].filter((el) => el.tagName === "SECTION" && el.id && el.querySelector("h2") && !/^(hist|history|finale)$/.test(el.id));
-    if (sections.length > 2) {
-      const first = main.querySelector("section"), route = document.createElement("nav");
-      route.className = "zm-route"; route.setAttribute("aria-label", "Маршрут по пункту");
-      route.innerHTML = `<div class="zm-route-intro"><span>ПУТЕВОДИТЕЛЬ / №${m[1]}</span><b>Выбери, что попробовать</b></div><div class="zm-route-links">${sections.map((sec, i) => `<a href="#${encodeURIComponent(sec.id)}"><small>${String(i + 1).padStart(2, "0")}</small>${ZM.esc(sec.querySelector("h2").textContent.trim())}<span aria-hidden="true">↗</span></a>`).join("")}</div>`;
-      if (first) first.after(route);
-    }
-    main.querySelectorAll("section > p").forEach((p) => {
-      if (p.textContent.length > 240 && !p.closest(".hero, .ml-hero, .gz-hero") && !p.classList.contains("fin-q")) p.classList.add("zm-story");
-    });
-  });
 
   /* ---------- Текст с § форматированием ---------- */
   ZM.mcText = (t) => {
