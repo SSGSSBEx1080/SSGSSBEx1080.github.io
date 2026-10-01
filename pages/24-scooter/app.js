@@ -20,12 +20,12 @@
     ['wolf', 'Волк / кот / лиса', .5], ['chicken', 'Курица / кролик / попугай', .2]
   ];
   const byType = Object.fromEntries(TYPES.map(t => [t[0], t]));
-  const s = { owned: false, port: false, grade: 'flat', riders: ['player'], speed: 0,
+  const s = { owned: false, port: false, grade: 'flat', riders: ['player'], customMasses: [null], speed: 0,
     charge: 1000000, meters: 0, go: false, brake: false, cruise: false, charging: false, atStation: false };
   const scooter = new Image(); scooter.src = U('assets/textures/p24/scooter_side.png');
   const cv = $('#rideCanvas'), ctx = cv.getContext('2d');
   function masses() {
-    const mass = 1 + s.riders.reduce((v, k) => v + byType[k][2], 0);
+    const mass = 1 + s.riders.reduce((v, k, i) => v + (s.customMasses[i] ?? byType[k][2]), 0);
     return { mass, heavy: clamp((mass - 1) / 24, 0, 1), count: s.riders.length };
   }
   function crewUI() {
@@ -37,19 +37,32 @@
       else {
         const sel = document.createElement('select'); sel.setAttribute('aria-label', `Пассажир ${i + 1}: тип моба`);
         TYPES.forEach(([id, name, mass]) => { const option = new Option(`${name} · ${mass}`, id); sel.add(option); });
-        sel.value = key; sel.addEventListener('change', () => { s.riders[i] = sel.value; crewUI(); }); row.append(sel);
+        sel.value = key; sel.addEventListener('change', () => { s.riders[i] = sel.value; s.customMasses[i] = null; crewUI(); }); row.append(sel);
       }
-      const value = document.createElement('span'); value.textContent = byType[key][2].toFixed(1); row.append(value);
-      if (i) { const rm = document.createElement('button'); rm.type = 'button'; rm.textContent = '×'; rm.setAttribute('aria-label', `Убрать пассажира ${i + 1}`); rm.addEventListener('click', () => { s.riders.splice(i, 1); crewUI(); }); row.append(rm); }
+      if (i) {
+        const weight = document.createElement('input'); weight.type = 'number'; weight.min = '0.1'; weight.max = '32'; weight.step = '0.1';
+        weight.value = String(s.customMasses[i] ?? byType[key][2]);
+        weight.title = `Масса пассажира ${i + 1}, по умолчанию ${byType[key][2]} из мода; изменение — гипотетический тест`;
+        weight.setAttribute('aria-label', `Масса пассажира ${i + 1} в игровых единицах`);
+        weight.classList.toggle('modified', s.customMasses[i] != null);
+        weight.addEventListener('change', () => {
+          const n = Number(weight.value);
+          if (!Number.isFinite(n) || n <= 0) { s.customMasses[i] = null; }
+          else s.customMasses[i] = Math.round(clamp(n, .1, 32) * 10) / 10;
+          if (s.customMasses[i] === byType[s.riders[i]][2]) s.customMasses[i] = null;
+          crewUI();
+        }); row.append(weight);
+        const rm = document.createElement('button'); rm.type = 'button'; rm.textContent = '×'; rm.setAttribute('aria-label', `Убрать пассажира ${i + 1}`); rm.addEventListener('click', () => { s.riders.splice(i, 1); s.customMasses.splice(i, 1); crewUI(); }); row.append(rm);
+      } else { const value = document.createElement('span'); value.textContent = byType[key][2].toFixed(1); row.append(value); }
       rows.append(row);
     });
     const { mass, heavy } = masses(); $('#crewN').textContent = `${s.riders.length} / 5`;
     $('#totalMass').textContent = mass.toFixed(1); $('#massBar').style.width = `${Math.max(6, Math.round(heavy * 100))}%`;
-    $('#massNote').textContent = `1.0 самокат + ${s.riders.map(k => byType[k][2].toFixed(1)).join(' + ')} экипаж`;
+    $('#massNote').textContent = `1.0 самокат + ${s.riders.map((k,i) => (s.customMasses[i] ?? byType[k][2]).toFixed(1)).join(' + ')} экипаж${s.customMasses.some(v => v != null) ? ' · с ручной массой' : ''}`;
     $('#addRider').disabled = s.riders.length >= 5;
     paint();
   }
-  $('#addRider').addEventListener('click', () => { if (s.riders.length < 5) { s.riders.push('iron_golem'); crewUI(); } });
+  $('#addRider').addEventListener('click', () => { if (s.riders.length < 5) { s.riders.push('iron_golem'); s.customMasses.push(null); crewUI(); } });
   const labels = { flat: '→ РОВНАЯ ДОРОГА', down: '↘ СПУСК / МАССА ПОМОГАЕТ', up: '↗ ПОДЪЁМ / МАССА МЕШАЕТ' };
   document.querySelectorAll('[data-grade]').forEach(btn => btn.addEventListener('click', () => {
     s.grade = btn.dataset.grade;
