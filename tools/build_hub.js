@@ -6,11 +6,14 @@ const R = path.join(__dirname, "..");
 global.window = global; global.ZM = {};
 // Load advancement definitions, not multi-megabyte model/texture datasets.
 const DATA = { 1: "p01_numbers", 2: "p02_tnt", 3: "p03_snipers", 4: "p04_miner", 5: "p05_adun", 6: "p06_labubu", 7: "p07_ender", 8: "p08_mih", 9: "p09_dildo", 10: "p10_creeper", 11: "p11_jbl", 12: "p12_katana", 13: "p13_printer" };
-for (let n = 1; n <= 24; n++) {
+for (let n = 1; n <= 26; n++) {
   const f = DATA[n] || `p${n}_adv`;
   eval(fs.readFileSync(path.join(R, "data", f + ".js"), "utf8"));
 }
 eval(fs.readFileSync(path.join(R, "shared/points.js"), "utf8"));
+// Ветка №22 утверждена пользователем: сохранять редакционные тексты при пересборке хаба.
+eval(fs.readFileSync(path.join(R, "data/hub_adv.js"), "utf8"));
+const preserved22 = ZM.HUB_ADV.find((p) => p.n === 22);
 
 const MC = { 0: "#000000", 1: "#0000AA", 2: "#00AA00", 3: "#00AAAA", 4: "#AA0000", 5: "#AA00AA", 6: "#FFAA00", 7: "#AAAAAA", 8: "#555555", 9: "#5555FF", a: "#55FF55", b: "#55FFFF", c: "#FF5555", d: "#FF55FF", e: "#FFFF55", f: "#FFFFFF" };
 const has = (p) => !!p && fs.existsSync(path.join(R, p));
@@ -50,11 +53,14 @@ const ICON = {
   21: (a) => first(`assets/textures/p21/i/${a.icon}.png`),
   22: (a) => first(`assets/textures/p22/i/${a.icon}.png`),
   23: (a) => first(`assets/textures/p23/i/${a.icon}.png`, `assets/textures/p23/${a.icon}.svg`),
-  24: (a) => first(`assets/textures/p24/${a.icon}.svg`),
+  24: (a) => first(({ scooter: "assets/textures/p24/scooter_item.png", station: "assets/textures/mc/p2/item_redstone.png", speed: "assets/textures/p3/vanilla/item_barrier.png" })[a.icon], `assets/textures/p24/${a.icon}.svg`),
+  25: (a) => first(`assets/textures/p25/i/${a.icon}.png`),
+  26: (a) => first(`assets/textures/p26/${a.icon}.png`, `assets/textures/p26/v/${a.icon}.png`),
 };
-const DIRS = { 23: "23_max", 24: "24_scooter", 1: "01_numbers", 2: "02_tnt_armor", 3: "03_sniper", 4: "04_miner", 5: "05_adun", 6: "p06", 7: "p07", 8: "p08", 9: "09_dildo", 10: "10_creeper", 11: "11_jbl", 12: "12_katana" };
+const DIRS = { 23: "23_max", 24: "24_scooter", 26: "26_vacuum", 1: "01_numbers", 2: "02_tnt_armor", 3: "03_sniper", 4: "04_miner", 5: "05_adun", 6: "p06", 7: "p07", 8: "p08", 9: "09_dildo", 10: "10_creeper", 11: "11_jbl", 12: "12_katana" };
 const out = [], warn = [];
-for (let n = 1; n <= 24; n++) {
+for (let n = 1; n <= 26; n++) {
+  if (n === 22 && preserved22) { out.push(preserved22); continue; }
   const P = ZM["P" + String(n).padStart(2, "0")], pt = ZM.POINTS.find((p) => p.n === n);
   const dir = DIRS[n] && path.join(R, "mod-src/advancements", DIRS[n]);
   const par = {};

@@ -13,9 +13,9 @@ for(const [src,asset] of [['mod-src/textures/item/vacuum.png','assets/textures/p
   const state=await p.evaluate(()=>({model:!!window.P26CHAMBER?.model.fan,particles:P26CHAMBER.count,range:P26APP.range(),branch:!!document.querySelector('.zm-branch-sync'),source:ZM.P26G.geo.bones.length,anim:Object.keys(ZM.P26G.anim),overflow:document.documentElement.scrollWidth-innerWidth,hero:document.querySelector('#heroVisual').classList.contains('model-ready')}));
   assert.equal(state.model,true);assert.equal(state.source,6);assert.equal(state.hero,true);assert.equal(state.branch,true);assert.ok(state.particles>=20);assert.deepEqual(state.anim,['idle','suck']);assert.ok(state.overflow<=1,`overflow ${width}px: ${state.overflow}`);
   if(width===1440){
-   await p.screenshot({path:'/home/user/wiki/.cache/p26-hero.png'});
+   await p.screenshot({path:'/tmp/p26-hero.png'});
    await p.locator('#lab').scrollIntoViewIfNeeded();await p.waitForTimeout(400);
-   await p.screenshot({path:'/home/user/wiki/.cache/p26-lab.png'});
+   await p.screenshot({path:'/tmp/p26-lab.png'});
    assert.deepEqual(await p.evaluate(()=>{const m=P26APP.state.mode;P26APP.state.mode='blocks';const a=P26APP.matches(P26APP.byId('dropper'));P26APP.state.mode='misc';const b=P26APP.matches(P26APP.byId('wheat')),c=P26APP.matches(P26APP.byId('dropper'));P26APP.state.mode=m;return[a,b,c]}),[false,true,true]);
    await p.locator('#soundOn').uncheck();await p.locator('#powerRange').fill('10');await p.locator('#suckBtn').click();
    await p.waitForTimeout(2600);
@@ -37,10 +37,18 @@ for(const [src,asset] of [['mod-src/textures/item/vacuum.png','assets/textures/p
    await p.locator('#transferBtn').click();await p.waitForTimeout(450);assert.ok(parseInt(await p.locator('#playerItems').textContent())>=65);
    await p.locator('#suckBtn').click();await p.evaluate(()=>{P26APP.state.maxSecs=59.97;P26APP.state.mode='food';P26APP.state.power=10;});await p.waitForTimeout(220);
    assert.ok((await p.evaluate(()=>ZM.store.get('p26.adv',[]))).includes('max_power_60s'));
-   await p.locator('#storage').scrollIntoViewIfNeeded();await p.screenshot({path:'/home/user/wiki/.cache/p26-storage.png'});
+   await p.locator('#storage').scrollIntoViewIfNeeded();await p.screenshot({path:'/tmp/p26-storage.png'});
    assert.equal(await p.locator('.zm-branch-count').textContent(),'3 / 3');
+   await p.reload({waitUntil:'networkidle'});await p.waitForFunction(()=>window.P26APP&&window.P26CHAMBER);
+   assert.equal(await p.locator('#capacityBig').textContent(),'177');
+   assert.ok((await p.evaluate(()=>ZM.store.get('p26.adv',[]))).length===3);
+   await p.locator('[data-specimen="B"]').click();assert.equal(await p.locator('#capacityBig').textContent(),'027');assert.equal(await p.locator('.slot img').count(),1);
   }
-  if(width===375)await p.screenshot({path:'/home/user/wiki/.cache/p26-mobile.png',fullPage:true});
+  if(width===375)await p.screenshot({path:'/tmp/p26-mobile.png',fullPage:true});
   assert.deepEqual(errors,[],`${width}: ${errors.join('\n')}`);await p.close();console.log(`№26 ${width}px: WebGL source model, branch, assets, responsive OK`);
  }
+ const software=await chromium.launch({headless:true,args:['--no-sandbox','--disable-webgl']});
+ try{const p=await software.newPage();const e=[];p.on('pageerror',x=>e.push(x.message));await p.goto(base+'/pages/26-vacuum/',{waitUntil:'networkidle'});
+  await p.waitForFunction(()=>window.P26CHAMBER?.fallback,{timeout:8000});await p.locator('#soundOn').uncheck();await p.locator('[data-mode="misc"]').click();await p.locator('#suckBtn').click();await p.locator('#spawnBtn').click();await p.waitForTimeout(2500);assert.ok(await p.evaluate(()=>P26APP.state.caught)>0);assert.deepEqual(e,[]);await p.close();console.log('№26 no-WebGL: working interactive fallback OK');
+ }finally{await software.close();}
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});
