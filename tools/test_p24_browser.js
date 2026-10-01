@@ -24,7 +24,7 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       });
       assert.ok(hotbarFits, `all nine slots should be visible at ${width}px`);
       assert.equal(await page.locator('#miniMap').count(), 1);
-      assert.ok(await page.locator('#gameHotbar [data-slot="1"] img').evaluate(img => img.src.endsWith('/scooter_item.png') && img.complete && img.naturalWidth === 192));
+      assert.ok(await page.locator('#gameHotbar [data-slot="1"] img').evaluate(img => img.src.endsWith('/scooter_item.png') && img.complete && img.naturalWidth === 1024));
       assert.ok(await page.locator('.sc-port-display .sc-port-cube .face').count() === 6);
       await page.locator('#gameHotbar [data-slot="1"]').click();
       assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p24.adv'))), ['scooter_craft']);

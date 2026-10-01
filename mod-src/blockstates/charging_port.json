@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "zitraksmode:block/charging_port" },
+    "facing=south": { "model": "zitraksmode:block/charging_port", "y": 180 },
+    "facing=west":  { "model": "zitraksmode:block/charging_port", "y": 270 },
+    "facing=east":  { "model": "zitraksmode:block/charging_port", "y": 90 }
+  }
+}

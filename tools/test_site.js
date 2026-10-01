@@ -87,6 +87,27 @@ assert.match(scooterHtml, /id="worldCam"/, 'The rider must be able to toggle fir
 const rideWorld = fs.readFileSync(path.join(root, 'pages/24-scooter/ride3d.js'), 'utf8');
 assert.match(rideWorld, /P24G/, 'The ride must use the source scooter geometry');
 assert.match(rideWorld, /scooters\.png/, 'The ride must use the source scooter texture');
+// The original Google Drive mod resources, not re-created art, must power №24.
+for (const name of ['charging_port_front.png', 'charging_port_side.png',
+  'charging_port_top.png', 'charging_port_bottom.png']) {
+  assert.ok(fs.readFileSync(path.join(root, 'assets/textures/p24', name)).equals(
+    fs.readFileSync(path.join(root, 'mod-src/textures/block', name))), `${name} must match the original mod PNG byte for byte`);
+}
+for (const [name, runtime] of [['scooter.png', 'scooter_item.png'], ['charging_port.png', 'charging_port_item.png']]) {
+  assert.ok(fs.readFileSync(path.join(root, 'assets/textures/p24', runtime)).equals(
+    fs.readFileSync(path.join(root, 'mod-src/textures/item', name))), `${runtime} must be the game item, not a redraw`);
+}
+const portModel = JSON.parse(fs.readFileSync(path.join(root, 'mod-src/models/block/charging_port.json')));
+assert.equal(portModel.parent, 'minecraft:block/orientable');
+for (const face of ['front', 'side', 'top', 'bottom'])
+  assert.equal(portModel.textures[face], `zitraksmode:block/charging_port_${face}`);
+const scooterItemModel = JSON.parse(fs.readFileSync(path.join(root, 'mod-src/models/item/scooter.json')));
+assert.equal(scooterItemModel.textures.layer0, 'zitraksmode:item/scooter');
+assert.ok(fs.readFileSync(path.join(root, 'mod-src/textures/entity/scooters.png')).equals(
+  fs.readFileSync(path.join(root, 'assets/textures/p24/scooters.png'))));
+assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'mod-src/geo/scooter.geo.json')))),
+  JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'mod-src/geo/p24_scooter.geo.json')))));
+assert.match(rideWorld, /PORT_FRONT/, '3D model must actually load and render the game front face');
 assert.ok(fs.existsSync(path.join(root, 'shared/vendor/three/LICENSE')), 'Bundled Three.js license missing');
 assert.ok(fs.existsSync(path.join(root, 'shared/vendor/three/three.module.js')), 'Offline 3D engine missing');
 const scooterApp = fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8');

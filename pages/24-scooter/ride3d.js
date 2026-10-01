@@ -22,10 +22,12 @@ const blockTexture = filename => {
   tex.colorSpace = T.SRGBColorSpace; tex.magFilter = tex.minFilter = T.NearestFilter;
   return new T.MeshLambertMaterial({ map: tex });
 };
-// Charging-port art is reconstructed from real Minecraft iron/redstone tiles.
-// No charging_port block model or texture was supplied with these sources.
+// Exact block/orientable model: four original faces from the complete mod's
+// src/main/resources/assets/zitraksmode textures and charging_port.json.
 const PORT_SIDE = blockTexture('charging_port_side.png');
 const PORT_TOP = blockTexture('charging_port_top.png');
+const PORT_FRONT = blockTexture('charging_port_front.png');
+const PORT_BOTTOM = blockTexture('charging_port_bottom.png');
 const COLORS = {
   grass: material('#679645', 1, 'grass'), grassSide: material('#6c6841', 2, 'grass'),
   dirt: material('#816248', 3, 'brick'), road: material('#5e666a', 4, 'brick'),
@@ -210,21 +212,16 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard, onPort }
     const tile = box(road, patch.x, .14, z, 4, .13, 2, COLORS[patch.kind]);
     markers.push({ object: tile, x: patch.x, z, lift: .14 });
   }
-  // A *single solid 3D Minecraft block*, not the old untextured 3-block
-  // column. Source says CHARGING_PORT is a block, radius X/Z ±2, Y ±1.
-  // Exact mod block PNG/model are missing; these 16px faces were reconstructed
-  // from the vanilla iron + redstone textures shipped with this repository.
+  // A *single* textured Minecraft block from the mod's actual orientable
+  // model: front faces south (+Z) toward the approaching rider. The pad and
+  // floating wayfinding sign are course furniture, not faces of the block.
   const charger = new T.Group(); charger.position.set(5, 0, 23); decorations.add(charger);
   box(charger, 0, -.04, 0, 3.1, .08, 3.1, COLORS.stone);
-  const body = box(charger, 0, .73, 0, 1.45, 1.45, 1.45,
-    [PORT_SIDE, PORT_SIDE, PORT_TOP, PORT_SIDE, PORT_SIDE, PORT_SIDE]);
+  const body = box(charger, 0, .56, 0, 1.12, 1.12, 1.12,
+    [PORT_SIDE, PORT_SIDE, PORT_TOP, PORT_BOTTOM, PORT_FRONT, PORT_SIDE]);
   body.userData.chargingPort = true;
-  const pulse = box(charger, 0, 1.48, 0, .65, .07, .65, COLORS.charge);
-  // Low luminous corners keep the 1-block silhouette readable after dark.
-  for (const x of [-1.25, 1.25]) for (const z of [-1.25, 1.25])
-    box(charger, x, .06, z, .15, .12, .15, COLORS.charge);
-  const sign = label('CHARGING PORT', '#85f5ed'); sign.position.set(0, 2.62, 0); charger.add(sign);
-  const point = new T.PointLight('#80fff1', 2.1, 9); point.position.set(0, 1.7, 0); charger.add(point);
+  const sign = label('CHARGING PORT', '#85f5ed'); sign.position.set(0, 2.48, 0); charger.add(sign);
+  const point = new T.PointLight('#80fff1', 1.4, 8); point.position.set(0, 1.6, 0); charger.add(point);
   markers.push({ object: charger, x: 5, z: 23, lift: 0 }); stations.push(charger);
   // Painted stripe + blocky caution chevrons make the route navigable.
   for (let z = -94; z <= 36; z += 10) {
@@ -364,8 +361,7 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard, onPort }
         p.life -= dt; p.mesh.position.x += p.vx * dt; p.mesh.position.y += p.vy * dt; p.mesh.position.z += p.vz * dt;
         p.mesh.scale.setScalar(clamp(p.life * .35, .01, .2));
       }
-      pulse.scale.y = .9 + Math.sin(now * .005) * .08;
-      point.intensity = 1.8 + Math.sin(now * .005) * .5;
+      point.intensity = 1.2 + Math.sin(now * .005) * .25;
       renderer.render(scene, camera);
     }
   }
@@ -377,7 +373,7 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard, onPort }
     raycaster.setFromCamera(new T.Vector2(
       (event.clientX - rect.left) / rect.width * 2 - 1,
       1 - (event.clientY - rect.top) / rect.height * 2), camera);
-    if (raycaster.intersectObjects([body, pulse, sign], true).length) onPort();
+    if (raycaster.intersectObjects([body, sign], true).length) onPort();
   });
   return {
     tick, park, reset, floorAt, get location() { return { ...loc, floor: floorAt() }; },
