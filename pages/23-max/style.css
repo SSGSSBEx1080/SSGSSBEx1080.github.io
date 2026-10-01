@@ -627,3 +627,28 @@ body.mx-focus-open main{z-index:200}
 .mx-p-cover>em{left:auto;right:18px}
 /* Фотопортреты новых персонажей сглажены; старые пиксельные аватары остаются pixelated. */
 .mx-screen canvas.mx-ava.photo,.mx-p-portrait canvas.mx-ava.photo,.mx-inbox-person canvas.mx-ava.photo,.mx-scene-ping canvas.mx-ava.photo{image-rendering:auto}
+
+/* №23 · The original oversized MAX item icon is the cover again. The
+   anti-censorship test belongs in section 03, not on top of the hero. */
+.mx-icon-stage{position:relative;display:grid;place-items:center;isolation:isolate;width:min(100%,530px);aspect-ratio:1;margin-inline:auto}
+.mx-icon-stage::before{content:"";position:absolute;inset:9%;background:conic-gradient(from 30deg,#6a32ff,#2479ff,#40deff,#a142fd,#6a32ff);filter:blur(67px);opacity:.39;z-index:-1;animation:mxGlow 6s ease-in-out infinite}
+.mx-icon-orbit{position:absolute;inset:3%;border:1px solid #506ecb6b;border-radius:50%;pointer-events:none}
+.mx-icon-orbit::before,.mx-icon-orbit::after{content:"";position:absolute;width:9px;height:9px;background:#67d5ff;box-shadow:0 0 20px #359bff;left:50%;top:-5px;border-radius:50%}
+.mx-icon-orbit::after{top:auto;bottom:-5px;left:22%;background:#b67aff}
+.orbit-one{animation:mxOrbit 18s linear infinite}.orbit-two{inset:12%;border-style:dashed;opacity:.52;animation:mxOrbit 28s linear infinite reverse}
+@keyframes mxOrbit{to{transform:rotate(360deg)}}
+.mx-icon-launch{display:block;position:relative;width:76%;aspect-ratio:1;padding:0;background:none;border:0;cursor:pointer;filter:drop-shadow(0 34px 35px #0009);transition:filter .3s,transform .3s}
+.mx-icon-launch:hover,.mx-icon-launch:focus-visible{transform:scale(1.055) rotate(-2deg);filter:drop-shadow(0 40px 50px #3c6cff82);outline:none}
+.mx-icon-launch:focus-visible::after{content:"";position:absolute;inset:-7px;border:3px solid #a5d9ff;border-radius:20%}
+.mx-icon-launch .mx-icon{width:100%;height:100%;display:block;object-fit:cover;image-rendering:auto;border-radius:17%;animation:mxFloat 5s ease-in-out infinite}
+.mx-icon-code,.mx-icon-corner{position:absolute;pointer-events:none;color:#99b7fc;font:14px/1.3 var(--f-px);letter-spacing:.1em}
+.mx-icon-code{left:0;top:8%}.mx-icon-corner{right:0;bottom:10%;text-align:right;font-size:22px;color:#83e9ff}
+.mx-hero-art{max-width:600px;gap:16px}
+.mx-hero-cap{display:grid;gap:5px;text-align:center;font:12px/1.3 var(--f-px);color:#aebfe2;letter-spacing:.04em}
+.mx-hero-cap b{color:#fff;font-weight:500}.mx-hero-cap span{overflow-wrap:anywhere}
+.mx-cz-send{margin-top:14px;border:0;cursor:pointer}
+@media(max-width:900px){.mx-hero-art{order:0}.mx-icon-stage{width:min(100%,440px)}.mx-hero{gap:20px}}
+@media(max-width:640px){.mx-icon-stage{width:min(100%,370px)}.mx-hero{padding-top:95px}.mx-icon-code{font-size:11px}.mx-icon-corner{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.mx-icon-orbit,.mx-icon-stage::before,.mx-icon-launch .mx-icon{animation:none}}
+@media(max-width:900px){.mx-hero-art{order:-1}.mx-icon-stage{width:min(100%,390px)}}
+@media(max-width:640px){.mx-icon-stage{width:min(100%,310px)}.mx-hero{padding-top:75px}}

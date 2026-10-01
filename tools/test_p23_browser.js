@@ -14,9 +14,11 @@ const url = base.replace(/\/$/, '') + '/pages/23-max/index.html';
       const page = await context.newPage(), errors = [];
       page.on('pageerror', (error) => errors.push(error.message));
       await page.goto(url);
-      await page.locator('#heroDraft').fill('Привет, как дела?');
-      assert.match(await page.locator('#heroAfter').innerText(), /Салам/);
-      await page.locator('#heroDraft').press('Enter');
+      await page.locator('#czIn').fill('Привет, как дела?');
+      assert.match(await page.locator('#czOut').innerText(), /Салам/);
+      assert.equal(await page.locator('.mx-hero .mx-term-chat').count(), 0);
+      assert.ok(await page.locator('#heroIcon img').evaluate(img => img.complete && img.naturalWidth > 500));
+      await page.locator('#czToChat').click();
       assert.equal(await page.locator('#mxStage.focused[aria-modal=true]').count(), 1);
       await page.locator('.mx-modal.reg [data-x=save]').click();
       assert.equal(await page.locator('.mx-input').inputValue(), 'Привет, как дела?');
@@ -43,6 +45,21 @@ const url = base.replace(/\/$/, '') + '/pages/23-max/index.html';
       await page.locator('.mx-input').fill('мне нравится твой стрим');
       await page.locator('.mx-send').click();
       await page.waitForFunction(() => JSON.parse(localStorage.getItem('zm:p23.max')).msgs.some((m) => m.from === 'pv' && m.scene === 'reply'));
+      for (const [name, id, text, expected] of [
+        ['5opka', 'p5', 'Сколько тебе лет?', /42.*стар|стар.*42/i],
+        ['Диор Армани', 'pd', 'Как звучит припев?', /дикс.*кокс/i],
+        ['Чеченцы', 'pc', 'Давай заключим перемирие', /мир|рейд/i],
+        ['Мама', 'pm', 'Мне грустно и тревожно', /слушаю|расскажи|важнее/i],
+      ]) {
+        await page.locator(`.mx-row[aria-label^="${name}"]`).click();
+        await page.locator('.mx-input').fill(text);
+        await page.locator('.mx-send').click();
+        await page.waitForFunction(id => JSON.parse(localStorage.getItem('zm:p23.max')).msgs.some(m => m.from === id && m.scene === 'reply'), id);
+        const last = await page.evaluate(id => JSON.parse(localStorage.getItem('zm:p23.max')).msgs.filter(m => m.from === id && m.scene === 'reply').at(-1).text, id);
+        assert.match(last, expected, `${id} must react to the topic`);
+      }
+      const memories = await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p23.max')).dialogue);
+      for (const id of ['p5', 'pd', 'pc', 'pv', 'pm']) assert.ok(memories[id]?.lastTopic);
       await page.locator('#mxClose').click();
       await page.locator('[data-q=favorite]').click();
       await page.locator('.mx-input').fill('Заметка для себя');

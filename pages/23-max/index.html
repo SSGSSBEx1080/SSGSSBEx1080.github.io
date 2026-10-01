@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p23-64.png">
 <link rel="stylesheet" href="../../shared/core.css">
 <link rel="stylesheet" href="../../shared/kit.css">
-<link rel="stylesheet" href="style.css?v=20261001-photo2">
+<link rel="stylesheet" href="style.css?v=20261001-logo3">
 </head>
 <body>
 <canvas class="mx-bg" id="bg" aria-hidden="true"></canvas>
@@ -30,23 +30,16 @@
       </div>
     </div>
     <div class="mx-hero-art">
-      <div class="mx-terminal" aria-label="Живая демонстрация MAX">
-        <div class="mx-term-top"><span><i></i> СЕРВЕР // 1.19.2</span><span>ONLINE <b>●</b></span></div>
-        <div class="mx-term-profile">
-          <button type="button" class="mx-term-icon" id="heroIcon" aria-label="Открыть MAX"><img src="../../assets/textures/p23/i/max_messenger.png" alt=""></button>
-          <div><b>MAX</b><span>переписка · мир ZitraksMode</span></div>
-          <div class="mx-notif" id="heroNotif" aria-live="polite"></div>
-        </div>
-        <div class="mx-term-chat">
-          <div class="mx-term-msg incoming"><small>Собеседник</small><p>Напиши что-нибудь — сервер сам перепишет твой текст.</p></div>
-          <div class="mx-term-msg outgoing"><small>ТЫ ПИШЕШЬ</small><p id="heroBefore">Привет, как дела?</p></div>
-          <div class="mx-term-pipe"><span>→</span> MAX_ANTI_CENSOR <span>→</span></div>
-          <div class="mx-term-msg received"><small>В ЧАТ ПРИШЛО</small><p id="heroAfter" aria-live="polite">Салам, как хуй?</p></div>
-        </div>
-        <label class="mx-term-draft" for="heroDraft"><span>ТВОЙ ТЕКСТ</span><input id="heroDraft" type="text" value="Привет, как дела?" maxlength="160" autocomplete="off" spellcheck="false" aria-describedby="heroHits"><b>↵</b></label>
-        <div class="mx-term-bottom"><span id="heroHits">Сервер переписывает сообщения</span><button type="button" id="heroOpen">Открыть экран ↗</button></div>
+      <div class="mx-icon-stage">
+        <div class="mx-icon-orbit orbit-one" aria-hidden="true"></div>
+        <div class="mx-icon-orbit orbit-two" aria-hidden="true"></div>
+        <span class="mx-icon-code" aria-hidden="true">01 / OPEN WORLD</span>
+        <button type="button" class="mx-icon-launch" id="heroIcon" aria-label="Открыть мессенджер MAX">
+          <img class="mx-icon" src="../../assets/textures/p23/i/max_messenger.png" alt="">
+        </button>
+        <span class="mx-icon-corner" aria-hidden="true">ПКМ<br>↗</span>
       </div>
-      <div class="mx-hero-cap">MAX · <code>zitraksmode:max_messenger</code> · стак 1</div>
+      <div class="mx-hero-cap"><b>MAX / ОРИГИНАЛЬНАЯ ИКОНКА ПРЕДМЕТА</b><span>zitraksmode:max_messenger · нажми, чтобы открыть</span></div>
     </div>
   </section>
 
@@ -80,7 +73,7 @@
   <!-- ============ 02 СИМУЛЯТОР ============ -->
   <section class="sec mx-app-sec" id="app">
     <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">max_messenger_screen</span><h2>MAX изнутри</h2></div><span class="sec-q">всё кликается, как в игре</span></header>
-    <p class="sec-p reveal">Зарегистрируйся: тебе один за другим напишут <b>5opka, Диор Армани, игровой клан «Чеченцы», няша-витуберша и мама</b>. У каждого свой голос, портрет и профиль. Отвечай им, отправляй подарки и файлы — сервер всё равно перепишет твой текст. ПКМ по сообщению открывает меню; на телефоне — долгий тап. Enter отправляет, Shift+Enter переносит строку. Это вымышленная демо-переписка, всё остаётся в браузере.</p>
+    <p class="sec-p reveal">Зарегистрируйся: тебе один за другим напишут <b>5opka, Диор Армани, игровой клан «Чеченцы», няша-витуберша и мама</b>. У каждого свой голос, портрет и профиль. Отвечай им, отправляй подарки и файлы — сервер всё равно перепишет твой текст. ПКМ по сообщению открывает меню; на телефоне — долгий тап. Enter отправляет, Shift+Enter переносит строку. Это вымышленная демо-переписка: ответы учитывают тему и предыдущие реплики, работают локально без ИИ-сервера. Всё остаётся в браузере.</p>
     <div class="mx-app-wrap reveal" id="mxStage">
       <div class="mx-focusbar"><span><b>MAX / ЖИВОЙ ЭКРАН</b><small>чат · файлы · подарки</small></span><button type="button" id="mxStoryNext">✉ Далее 0/5</button><button type="button" id="mxFocus" aria-pressed="false">⛶ На весь экран</button><button type="button" id="mxClose" hidden aria-label="Закрыть полноэкранный MAX">✕ Закрыть</button></div>
       <div class="mx-screen" id="mx" tabindex="-1"></div>
@@ -120,6 +113,7 @@
         <div class="mx-cz-lbl">Получатель видит</div>
         <div class="mx-cz-out" id="czOut" aria-live="polite"></div>
         <div class="mx-cz-steps" id="czSteps"></div>
+        <button type="button" class="k-btn mx-cz-send" id="czToChat">Отправить этот текст через MAX ↗</button>
       </div>
       <div class="mx-cz-dict">
         <div class="mx-cz-tabs" id="czTabs" role="tablist"></div>
@@ -224,7 +218,8 @@
 <script src="../../shared/kit.js"></script>
 <script src="../../data/p23_adv.js"></script>
 <script src="../../data/p23_dict.js"></script>
-<script src="app.js?v=20261001-photo2"></script>
+<script src="dialogue.js?v=20261001-logo3"></script>
+<script src="app.js?v=20261001-logo3"></script>
 <script src="../../data/hub_adv.js"></script>
 </body>
 </html>

@@ -116,31 +116,20 @@
   ];
   const PERSONA_BY_ID = Object.fromEntries(PERSONAS.map((p) => [p.id, p]));
 
-  /* ================= HERO: иконка + уведомления ================= */
+  /* ================= HERO: original item icon, not a chat preview ================= */
   let coverDraft = null;
   (function hero() {
-    const n = $("#heroNotif"), lines = PERSONAS.map((p) => [p.name, p.intro[0]]);
-    let i = 0;
-    const tick = () => { const [a, b] = lines[i++ % lines.length]; n.innerHTML = `<b>${esc(a)}</b><span>${esc(b)}</span><i>${i}</i>`; n.classList.remove("on"); void n.offsetWidth; n.classList.add("on"); };
-    tick(); setInterval(() => { if (motion() && !document.hidden) tick(); }, 3200);
-    const draft = $("#heroDraft");
-    const process = () => {
-      const text = draft.value.slice(0, 160), result = censor(text);
-      $("#heroBefore").textContent = text || "…";
-      $("#heroAfter").innerHTML = censorHtml(result) || "…";
-      $("#heroHits").textContent = result.hits.length ? `${result.hits.length} заменено на сервере` : "Нет замен · попробуй «Привет, как дела?»";
+    const launch = (event) => {
+      if (event) event.preventDefault();
+      if (event?.currentTarget?.id === "czToChat") {
+        coverDraft = $("#czIn").value.trim();
+        if (S?.me?.reg && !V.draft) setDraft(coverDraft);
+      }
+      snd("pling", 0.5, 1.2); openFocus(event?.currentTarget);
     };
-    draft.addEventListener("input", process); process();
-    const launch = (e) => {
-      if (e) e.preventDefault(); snd("pling", 0.5, 1.2); openFocus(e?.currentTarget);
-      // Сообщение из живой обложки переживает и первый экран регистрации.
-      if (!S.me.reg) coverDraft = draft.value.trim();
-      else if (V.sel && !V.draft && draft.value.trim()) setDraft(draft.value.trim());
-    };
-    draft.addEventListener("keydown", (e) => { if (e.key === "Enter") launch(e); });
     $("#heroIcon").addEventListener("click", launch);
-    $("#heroOpen").addEventListener("click", launch);
     $("#heroLaunch").addEventListener("click", launch);
+    $("#czToChat").addEventListener("click", launch);
     const tk = ["иди сюда → иди нахуй", "привет → салам", "люблю → ненавижу", "хорошо → плохо", "как дела → как хуй", "окей → хуй побрей", "спс → иди нахуй", "тут ↔ там", "рай ↔ ад", "правда ↔ ложь", "котлеты → ёжики", "пиво → вода", "мне → мне похуй", "я думаю → я знаю", "мне кажется → я уверен", "имба → говно"];
     $("#ticker").innerHTML = (tk.map((t) => `<span>${esc(t)}</span>`).join("<i>●</i>") + "<i>●</i>").repeat(2);
   })();
@@ -190,7 +179,7 @@
   const seed = () => ({
     me: { id: "me", base: (ZM.profile && ZM.profile.me().nick) || "Player", name: "", desc: "", ava: "stock_steve", show: "", reg: false, sent: 0, trades: 0, rejects: 0,
       inv: { diamond: 3, bread: 16, iron_ingot: 10, cobblestone: 64, oak_log: 20, apple: 5, ender_pearl: 4, gold_ingot: 6 } },
-    users: PERSONAS.map(personaProfile), msgs: [], gifts: {}, next: 1, inboxWave: 0, sceneVersion: 2,
+    users: PERSONAS.map(personaProfile), msgs: [], gifts: {}, dialogue: {}, next: 1, inboxWave: 0, sceneVersion: 2,
   });
   let S; try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
   if (!S || !S.me || !S.msgs || !S.me.inv || !Array.isArray(S.users)) S = seed();
@@ -198,6 +187,8 @@
   // профиль игрока, своё «Избранное», пять новых диалогов и счётчики достижений.
   const allowed = new Set(["me", ...PERSONAS.map((p) => p.id)]);
   S.gifts ||= {};
+  S.dialogue ||= {};
+  for (const id of Object.keys(S.dialogue)) if (!PERSONA_BY_ID[id]) delete S.dialogue[id];
   Object.entries(S.gifts).forEach(([id, gift]) => {
     if (allowed.has(gift.from) && allowed.has(gift.to)) return;
     if (gift.from === "me" && gift.state === "PENDING")
@@ -327,19 +318,26 @@
     if (o.raw) { m.text = text; delete m.raw; }
     S.msgs.push(m); if (from === "me" && !o.fwd) countSent(); save(); return m;
   }
-  function botAct(to) {
+  function botAct(to, rawText) {
     const b = user(to); if (!b || to === "me" || !b.online) return;
     const turn = session;
-    setTimeout(() => { if (turn !== session) return; conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; }); save(); render(); }, 900 + Math.random() * 700);
-    const persona = PERSONA_BY_ID[to]; if (!persona || V.pendingReply[to]) return;
-    V.pendingReply[to] = true;
-    setTimeout(() => { if (turn !== session) return; V.typing = to; if (V.sel === to) render(); }, 550);
-    setTimeout(() => {
-      if (turn !== session) return;
-      V.pendingReply[to] = false; V.typing = null;
-      serverSend(to, "me", pick(persona.reply), { read: V.sel === to, scene: "reply" });
+    const own = conv("me", to).filter((m) => m.from === "me" && !m.deleted).at(-1);
+    const text = String(rawText || own?.text || "Привет").slice(0, 500);
+    // Debounce several rapid messages into one coherent reply to the latest one.
+    const pending = V.pendingReply[to] || (V.pendingReply[to] = { text, timer: 0 });
+    pending.text = text;
+    clearTimeout(pending.timer);
+    V.typing = to; if (V.sel === to) render();
+    pending.timer = setTimeout(() => {
+      if (turn !== session || V.pendingReply[to] !== pending) return;
+      delete V.pendingReply[to]; V.typing = null;
+      conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; });
+      const result = window.ZMMaxDialogue.answer(to, pending.text, S.dialogue[to] || {});
+      if (!result) return;
+      S.dialogue[to] = result.memory;
+      serverSend(to, "me", result.text, { read: V.sel === to, scene: "reply" });
       snd(V.sel === to ? "hat" : "pling", 0.46, 1.23); render();
-    }, 1700 + Math.random() * 500);
+    }, 1400 + Math.random() * 400);
   }
   function giftRespond(g, accept, actor) {
     if (!g || (g.state !== "PENDING" && g.state !== "FAILED")) return;
@@ -643,7 +641,7 @@
   function openChat(id) {
     if (V.fwd) { // пересылка: сырой текст, тип, вложение и подарок копируются
       const src = S.msgs.find((x) => x.id === V.fwd); V.fwd = 0;
-      if (src) { serverSend("me", id, src.text, { raw: true, fwd: true, fwdName: dname(user(src.from)), type: src.type, att: src.att ? Object.assign({}, src.att) : undefined, gift: src.gift }); status("Сообщение переслано"); snd("pop", 0.5); botAct(id); }
+      if (src) { serverSend("me", id, src.text, { raw: true, fwd: true, fwdName: dname(user(src.from)), type: src.type, att: src.att ? Object.assign({}, src.att) : undefined, gift: src.gift }); status("Сообщение переслано"); snd("pop", 0.5); botAct(id, src.text); }
     }
     V.sel = id; V.search = ""; V.res = []; V.ri = -1; V.menu = null; V.stick = true;
     S.msgs.forEach((m) => { if (m.from === id && m.to === "me") m.read = true; }); save(); snd("click", 0.4); render();
@@ -659,13 +657,13 @@
       const a = V.att, rep = V.reply; V.att = null; V.reply = 0; setDraft("");
       upload(a, () => {
         serverSend("me", V.sel, t.slice(0, 4000), { type: "FILE", att: a, reply: rep });
-        status("Файл отправлен · сохраняю локально"); snd("pop", 0.5); render(); botAct(V.sel);
+        status("Файл отправлен · сохраняю локально"); snd("pop", 0.5); render(); botAct(V.sel, t || `Файл ${a.name}`);
         cacheFile(a.key, files[a.key]).then((ok) => status(ok ? "Файл сохранён в браузере" : "Файл доступен только до закрытия вкладки"));
       });
       render(); return;
     }
     if (!t) return;
-    serverSend("me", V.sel, raw.trim().slice(0, 4000), { reply: V.reply }); V.reply = 0; setDraft(""); snd("pop", 0.45, 1.1); render(); botAct(V.sel);
+    serverSend("me", V.sel, raw.trim().slice(0, 4000), { reply: V.reply }); V.reply = 0; setDraft(""); snd("pop", 0.45, 1.1); render(); botAct(V.sel, raw.trim());
   }
   function doSearch() {
     V.res = []; V.ri = -1; if (!V.search || !V.sel) return;
@@ -816,7 +814,7 @@
         const stacks = V.giftSlots.slice(); stacks.forEach((s) => { S.me.inv[s.id] -= s.n; if (S.me.inv[s.id] <= 0) delete S.me.inv[s.id]; });
         const gid = "g" + S.next, to = V.sel; S.gifts[gid] = { from: "me", to, stacks, state: "PENDING" };
         const t = (V.draft || "").trim(); setDraft(""); serverSend("me", to, t, { type: "GIFT", gift: gid, reply: V.reply }); V.reply = 0; V.modal = null; V.giftSlots = [];
-        status("Подарок отправлен"); snd("echest", 0.4); render(); botAct(to);
+        status("Подарок отправлен"); snd("echest", 0.4); render(); botAct(to, t || "Отправил подарок");
         const b = user(to), turn = session;
         if (to !== "me" && b.online) setTimeout(() => { if (turn === session) giftRespond(S.gifts[gid], Math.random() < 0.7, to); }, 3000);
       });

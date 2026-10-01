@@ -56,7 +56,7 @@ assert.equal(HUB_ADV.find(p => p.n === 23).adv.length, 4);
 const maxHtml = fs.readFileSync(path.join(root, 'pages/23-max/index.html'), 'utf8');
 const maxApp = fs.readFileSync(path.join(root, 'pages/23-max/app.js'), 'utf8');
 assert.match(maxApp, /ZM\.reveal\(\)/, 'MAX sections must be revealed, not left invisible');
-for (const id of ['heroDraft', 'heroAfter', 'mxStage', 'mxFocus', 'mxClose', 'mxStoryNext', 'mxInboxPeople', 'mxQuestList', 'mxNotesToggle']) {
+for (const id of ['heroIcon', 'czToChat', 'mxStage', 'mxFocus', 'mxClose', 'mxStoryNext', 'mxInboxPeople', 'mxQuestList', 'mxNotesToggle']) {
   assert.ok(maxHtml.includes(`id="${id}"`), `MAX interactive control ${id} missing`);
 }
 for (const name of ['5opka', 'Диор Армани', 'Чеченцы', 'Няша Кавай', 'Мама']) {
@@ -68,6 +68,9 @@ for (const id of ['p5', 'pd', 'pc', 'pv', 'pm']) {
   assert.equal(avatar.subarray(1, 4).toString(), 'PNG', `Missing PNG photo for ${id}`);
   assert.ok(avatar.readUInt32BE(16) >= 512, `Photo for ${id} is too small`);
 }
+assert.match(maxHtml, /dialogue\.js/, 'MAX must load context-aware local conversation engine');
+assert.match(maxApp, /ZMMaxDialogue\.answer/, 'MAX must use contextual replies');
+assert.doesNotMatch(maxHtml.slice(maxHtml.indexOf('class="mx-hero"'), maxHtml.indexOf('class="mx-ticker"')), /mx-term-chat/, 'Hero must show original large icon, not a chat');
 assert.match(maxApp, /class="mx-note"/, 'MAX notes should be interactive disclosure cards');
 assert.equal(POINTS.find(p => p.n === 24).page, 'pages/24-scooter/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 24).adv.length, 3);
