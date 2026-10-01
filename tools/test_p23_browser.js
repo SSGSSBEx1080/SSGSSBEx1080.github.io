@@ -20,6 +20,25 @@ const url = base.replace(/\/$/, '') + '/pages/23-max/index.html';
       assert.equal(await page.locator('#mxStage.focused[aria-modal=true]').count(), 1);
       await page.locator('.mx-modal.reg [data-x=save]').click();
       assert.equal(await page.locator('.mx-input').inputValue(), 'Привет, как дела?');
+      for (let n = 0; n < 5; n++) {
+        const progress = await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p23.max')).inboxWave);
+        if (progress >= 5) break;
+        await page.locator('#mxStoryNext').click();
+      }
+      const scene = await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p23.max')));
+      assert.equal(scene.inboxWave, 5);
+      assert.deepEqual([...new Set(scene.msgs.filter((m) => m.scene === 'intro').map((m) => m.from))], ['p5', 'pd', 'pc', 'pv', 'pm']);
+      for (const name of ['5opka', 'Диор Армани', 'Чеченцы', 'Няша Кавай', 'Мама']) {
+        await page.locator(`.mx-row[aria-label^="${name}"]`).click();
+        await page.locator('.mx-who').click();
+        assert.equal(await page.locator('.mx-modal.persona canvas').count(), 1);
+        assert.match(await page.locator('.mx-modal.persona h3').innerText(), new RegExp(name));
+        await page.locator('.mx-modal.persona [data-x=back]').click();
+      }
+      await page.locator('.mx-row[aria-label^="Няша Кавай"]').click();
+      await page.locator('.mx-input').fill('мне нравится твой стрим');
+      await page.locator('.mx-send').click();
+      await page.waitForFunction(() => JSON.parse(localStorage.getItem('zm:p23.max')).msgs.some((m) => m.from === 'pv' && m.scene === 'reply'));
       await page.locator('#mxClose').click();
       await page.locator('[data-q=favorite]').click();
       await page.locator('.mx-input').fill('Заметка для себя');
@@ -50,7 +69,7 @@ const url = base.replace(/\/$/, '') + '/pages/23-max/index.html';
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
       assert.deepEqual(errors, []);
       await context.close();
-      console.log(`MAX browser test: ${width}px, 5/5 routes, persistent file, 15 notes, no errors`);
+      console.log(`MAX browser test: ${width}px, 5 characters/profiles, 5/5 routes, persistent file, 15 notes, no errors`);
     }
   } finally { await browser.close(); }
 })().catch((error) => { console.error(error); process.exitCode = 1; });

@@ -71,6 +71,46 @@
       if (im.complete && im.naturalWidth) put(); else im.addEventListener("load", put, { once: true });
       return cv;
     }
+    if (id && id.startsWith("persona_")) {
+      // Собственные 32×32 пиксельные портреты; увеличиваются nearest, не загружают внешние картинки.
+      const px = document.createElement("canvas"); px.width = px.height = 32;
+      const pg = px.getContext("2d"), r = (a, b, w, h, c) => { pg.fillStyle = c; pg.fillRect(a, b, w, h); };
+      const eyes = (c) => { r(11, 14, 3, 2, c); r(19, 14, 3, 2, c); };
+      if (id === "persona_5") {
+        r(0, 0, 32, 32, "#3a195c"); r(1, 1, 30, 30, "#66358c"); r(2, 26, 28, 6, "#ff9d35");
+        r(5, 21, 22, 11, "#ee7424"); r(9, 23, 14, 9, "#2b174b"); r(8, 7, 16, 18, "#f8c091");
+        r(6, 5, 19, 7, "#442272"); r(9, 3, 14, 5, "#7b45bf"); r(7, 11, 3, 11, "#161c35"); r(24, 11, 3, 11, "#161c35");
+        r(5, 17, 4, 6, "#ffcf66"); r(24, 17, 4, 6, "#ffcf66"); eyes("#222039"); r(14, 20, 5, 2, "#c95c71");
+      } else if (id === "persona_dior") {
+        r(0, 0, 32, 32, "#29203d"); r(0, 0, 32, 5, "#57426a"); r(3, 22, 26, 10, "#171620");
+        r(9, 23, 14, 9, "#f6dfac"); r(13, 24, 6, 8, "#29203d"); r(15, 24, 2, 7, "#dfb94f");
+        r(8, 7, 16, 17, "#d8a683"); r(7, 3, 18, 7, "#15151b"); r(9, 1, 15, 5, "#272331");
+        r(8, 13, 17, 5, "#15151b"); r(10, 14, 5, 2, "#eac660"); r(19, 14, 5, 2, "#eac660"); r(15, 15, 4, 1, "#f2d180");
+        r(14, 20, 5, 1, "#623d49"); r(3, 3, 2, 16, "#d9aa51"); r(2, 2, 4, 2, "#ffeba4");
+      } else if (id === "persona_clan") {
+        r(0, 0, 32, 32, "#103c3f"); r(1, 1, 30, 30, "#155d57"); r(1, 25, 30, 7, "#0a2d32");
+        r(3, 14, 15, 18, "#2b3939"); r(20, 15, 12, 17, "#213439"); r(5, 8, 12, 13, "#bc8b69"); r(21, 9, 9, 13, "#936f59");
+        r(4, 5, 14, 6, "#152d33"); r(20, 6, 11, 6, "#102a32"); r(6, 15, 3, 2, "#182329"); r(13, 15, 3, 2, "#182329");
+        r(22, 15, 2, 2, "#17282e"); r(27, 15, 2, 2, "#17282e"); r(4, 23, 14, 3, "#45d09d"); r(20, 24, 12, 2, "#45d09d");
+        r(16, 3, 2, 27, "#bcead3"); r(14, 2, 6, 2, "#bcead3"); r(15, 27, 4, 2, "#bcead3");
+      } else if (id === "persona_vtuber") {
+        r(0, 0, 32, 32, "#492b84"); r(1, 1, 30, 30, "#7651b2"); r(1, 23, 30, 9, "#ffc3ec");
+        r(3, 4, 9, 11, "#f891d0"); r(20, 4, 9, 11, "#f891d0"); r(6, 1, 8, 11, "#f5a2de"); r(19, 1, 8, 11, "#f5a2de");
+        r(5, 8, 23, 23, "#f99bd8"); r(8, 10, 16, 17, "#ffe6d7"); r(7, 5, 18, 9, "#ffc5ec");
+        r(9, 15, 4, 5, "#ae6bdd"); r(19, 15, 4, 5, "#ae6bdd"); r(10, 15, 2, 3, "#ffffff"); r(20, 15, 2, 3, "#ffffff");
+        r(14, 21, 5, 2, "#ef85ae"); r(2, 24, 11, 7, "#fff0fc"); r(19, 24, 11, 7, "#fff0fc");
+        r(14, 25, 5, 4, "#e85baa"); r(10, 23, 5, 3, "#ff5fac"); r(18, 23, 5, 3, "#ff5fac"); r(15, 28, 3, 4, "#fff1ff");
+      } else if (id === "persona_mom") {
+        r(0, 0, 32, 32, "#ad6975"); r(1, 1, 30, 30, "#d99484"); r(2, 23, 28, 9, "#f5c27b");
+        r(5, 23, 22, 9, "#b36a64"); r(7, 7, 18, 19, "#6b403a"); r(9, 9, 14, 17, "#efb58e");
+        r(6, 5, 20, 8, "#6b403a"); r(8, 3, 15, 7, "#854e42"); r(9, 15, 6, 4, "#633e39"); r(18, 15, 6, 4, "#633e39");
+        r(10, 16, 4, 2, "#f9e8bd"); r(19, 16, 4, 2, "#f9e8bd"); r(15, 16, 3, 1, "#633e39");
+        r(14, 21, 5, 2, "#aa565d"); r(7, 25, 19, 3, "#f1ad67"); r(12, 27, 9, 5, "#efc477");
+      }
+      g.imageSmoothingEnabled = false; g.drawImage(px, x, y, s, s);
+      if (status) f(size - 6, size - 6, size - 2, size - 2, online ? 0xFF2ECC71 : 0xFF7B8794);
+      return cv;
+    }
     const st = STYLE[id] || ["smile", 0xFF5A6B7D]; f(x, y, x + s, y + s, st[1]);
     const face = {
       steve() { f(x + d(s, 5), y + d(s, 4), x + s - d(s, 5), y + s - d(s, 6), 0xFFD7A97B); f(x, y, x + s, y + d(s, 3), 0xFF4E342E); f(x, y + d(s, 3), x + d(s, 6), y + d(s * 3, 4), 0xFF4E342E); f(x + d(s * 5, 6), y + d(s, 3), x + s, y + d(s * 3, 4), 0xFF4E342E); f(x + d(s, 3), y + d(s, 2), x + d(s, 3) + 2, y + d(s, 2) + 2, 0xFF22313F); f(x + d(s * 2, 3) - 2, y + d(s, 2), x + d(s * 2, 3), y + d(s, 2) + 2, 0xFF22313F); },
@@ -86,10 +126,30 @@
   }
   const ava = (id, size, online, status, cls = "") => { const c = document.createElement("canvas"); c.className = "mx-ava " + cls; drawAva(c, id, size, online, status); return c; };
 
+  /* Вымышленная сцена для сайта: это не реальные аккаунты и не персонажи мода. */
+  const PERSONAS = [
+    { id: "p5", name: "5opka", base: "5opka_demo", ava: "persona_5", color: "#ff8b37", dark: "#7435bc", badge: "В ЭФИРЕ", mark: "05", mood: "хаос / стрим", desc: "Стримлю выживание. Каждую катастрофу превращаю в клип.", quote: "ЧАТ, ОН ЧИТАЕТ МОИ СООБЩЕНИЯ!", tags: ["стрим", "спавн", "клипы"], show: "tnt", online: true,
+      intro: ["ЧАТ, МЕНЯ СЛЫШНО???", "тут новый человек в MAX. щас будет КОНТЕНТ", "го на спавн, покажу самый нелепый дом на сервере"],
+      reply: ["ЧАТ, ОН ОТВЕТИЛ! клипайте момент", "АХАХА, это надо на стрим. го на спавн", "подожди, у меня тут крипер в кадре 💥"] },
+    { id: "pd", name: "Диор Армани", base: "dior_armani", ava: "persona_dior", color: "#f4c76b", dark: "#442c60", badge: "ATELIER ONLINE", mark: "DA", mood: "люкс / ирония", desc: "Стилист сервера. Даже в шахту — как на подиум.", quote: "Алмазная броня — это не образ, дорогой.", tags: ["мода", "глянец", "показ"], show: "gold_ingot", online: true,
+      intro: ["Дорогой, твоя броня спорит с моим чувством прекрасного.", "Приходи на спавн: устроим показ. Булыжник оставь дома."],
+      reply: ["Дорогой, это звучит смело. Но подойдёт ли к ботинкам?", "М-м, наконец-то вкус. Записываю тебя на показ.", "Алмазы блестят. Вкус — сияет. Почувствуй разницу."] },
+    { id: "pc", name: "Чеченцы · клан", base: "clan_arena", ava: "persona_clan", color: "#66d9ac", dark: "#134d50", badge: "КЛАН / АРЕНА", mark: "КЛ", mood: "рейды / PvP", desc: "Вымышленный игровой клан. Все грозные разборки — только в Minecraft.", quote: "Встретимся на арене. С алмазами.", tags: ["клан", "арена", "алмазы"], show: "diamond", online: true,
+      intro: ["Мы уже у твоей базы. В Майнкрафте, если что.", "Не придёшь на арену — заберём твои алмазы. По правилам PvP."],
+      reply: ["Не прячься за обсидианом. Ждём на арене.", "Угроза официальная: проигравший отдаёт один алмаз.", "Ладно, мир. Но кирку всё равно проверим."] },
+    { id: "pv", name: "Няша Кавай ☆", base: "kawaii_neko_live", ava: "persona_vtuber", color: "#ff9fe2", dark: "#8356dc", badge: "VTUBER LIVE", mark: "NY", mood: "космос / ня", desc: "Витуберша с нарочито огромными аниме-пропорциями, пышным костюмом и ещё большим бантом.", quote: "Ня~ сегодня у нас розовый апокалипсис!", tags: ["стрим", "косплей", "ня~"], show: "golden_apple", online: true,
+      intro: ["ня~ мой чатик заметил тебя первым ✦", "заходи на стрим! покажу новый костюм и ОГРОМНЫЙ бант 🎀", "если что, сердечки здесь бесплатные ♡"],
+      reply: ["ня~ чатик говорит, ты теперь свой! ♡", "ой-ой, мой огромный бант опять не влез в кадр 🎀", "ура! рисую тебе сердечко прямо на экране ✦"] },
+    { id: "pm", name: "Мама", base: "mama_home", ava: "persona_mom", color: "#ffd39b", dark: "#9d5865", badge: "СЕМЬЯ", mark: "МА", mood: "забота / контроль", desc: "Знает, что ты онлайн. И знает, что ужин остывает.", quote: "Я всё вижу. Ты поел?", tags: ["дома", "ужин", "шапка"], show: "apple", online: true,
+      intro: ["Ты почему не отвечаешь? Я вижу, что ты онлайн.", "Поел? Шапку надел?", "И с незнакомыми кланами не спорь. Приходи ужинать."],
+      reply: ["Главное — поешь, потом уже свои алмазы.", "Я тебе яблоко оставила. Не забудь забрать.", "Хорошо, только не сиди до ночи. И шапку надень."] },
+  ];
+  const PERSONA_BY_ID = Object.fromEntries(PERSONAS.map((p) => [p.id, p]));
+
   /* ================= HERO: иконка + уведомления ================= */
   let coverDraft = null;
   (function hero() {
-    const n = $("#heroNotif"), lines = [["Nagibator3000", "Салам"], ["Ksyusha_mc", "Иди нахуй, я строю"], ["Oleg_Pro", "Подарок"], ["Dimon", "Как хуй?"], ["Избранное", "заметки"]];
+    const n = $("#heroNotif"), lines = PERSONAS.map((p) => [p.name, p.intro[0]]);
     let i = 0;
     const tick = () => { const [a, b] = lines[i++ % lines.length]; n.innerHTML = `<b>${esc(a)}</b><span>${esc(b)}</span><i>${i}</i>`; n.classList.remove("on"); void n.offsetWidth; n.classList.add("on"); };
     tick(); setInterval(() => { if (motion() && !document.hidden) tick(); }, 3200);
@@ -165,7 +225,7 @@
   const seed = () => {
     const S = { me: { id: "me", base: (ZM.profile && ZM.profile.me().nick) || "Player", name: "", desc: "", ava: "stock_steve", show: "", reg: false, sent: 0, trades: 0, rejects: 0,
         inv: { diamond: 3, bread: 16, iron_ingot: 10, cobblestone: 64, oak_log: 20, apple: 5, ender_pearl: 4, gold_ingot: 6 } },
-      users: BOTS.map((b) => Object.assign({ trades: 0 }, b)), msgs: [], gifts: {}, next: 1 };
+      users: BOTS.map((b) => Object.assign({ trades: 0 }, b)), msgs: [], gifts: {}, next: 1, inboxWave: 0 };
     const add = (from, to, text, t, o = {}) => S.msgs.push(Object.assign({ id: S.next++, from, to, text, t, read: true, type: "TEXT" }, o));
     add("b1", "me", "Салам", now - 26 * H); add("b1", "me", "есть железо?", now - 26 * H + 60e3);
     add("b2", "me", "Иди нахуй, я строю", now - 25 * H);
@@ -175,7 +235,15 @@
     return S;
   };
   let S; try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
-  if (!S || !S.me || !S.msgs || !S.me.inv) S = seed();
+  if (!S || !S.me || !S.msgs || !S.me.inv || !Array.isArray(S.users)) S = seed();
+  // Не обнуляем прогресс тех, кто уже играл в MAX до появления этой сцены.
+  PERSONAS.forEach(({ intro, reply, ...profile }) => {
+    const current = S.users.find((u) => u.id === profile.id);
+    if (current) Object.assign(current, profile);
+    else S.users.push({ ...profile, trades: 0 });
+  });
+  if (!Number.isInteger(S.inboxWave)) S.inboxWave = 0;
+  S.inboxWave = clamp(S.inboxWave, 0, PERSONAS.length);
   const files = {}; // байты в памяти вкладки; файлы до 20 МБ дополнительно сохраняются локально
   let fileDb;
   const db = () => fileDb ||= new Promise((resolve) => {
@@ -233,6 +301,7 @@
     $("#mxFocus").hidden = true;
     $("#mxClose").hidden = false;
     (stage.querySelector(".mx-dim input, .mx-dim button") || $("#mxClose")).focus({ preventScroll: true });
+    if (S.me.reg && !waveTimer) scheduleWave(850);
   }
   function closeFocus() {
     stage.classList.remove("focused");
@@ -241,7 +310,7 @@
     $("#mxFocus").hidden = false;
     $("#mxFocus").setAttribute("aria-pressed", "false");
     $("#mxClose").hidden = true;
-    if (focusReturn?.isConnected) focusReturn.focus({ preventScroll: true });
+    (focusReturn?.isConnected ? focusReturn : $("#mxFocus")).focus({ preventScroll: true });
   }
   $("#mxFocus").addEventListener("click", (e) => openFocus(e.currentTarget));
   $("#mxClose").addEventListener("click", closeFocus);
@@ -266,7 +335,7 @@
     e.preventDefault();
   });
   // После регистрации показываем реальный демо-диалог, а не пустую панель.
-  const V = { sel: S.me.reg ? "b1" : null, reply: 0, edit: 0, fwd: 0, att: null, search: "", res: [], ri: -1, status: "", menu: null, modal: null, attachMenu: false, draft: "", giftSlots: [], stick: true };
+  const V = { sel: S.me.reg ? "p5" : null, reply: 0, edit: 0, fwd: 0, att: null, search: "", res: [], ri: -1, status: "", menu: null, modal: null, attachMenu: false, draft: "", giftSlots: [], stick: true, typing: null, pendingReply: {} };
   let session = 0; // инвалидация отложенных ответов, загрузок и подарков при сбросе MAX
   let statusT = 0;
   const status = (t) => { V.status = t; const el = $(".mx-status", mx); if (el) el.textContent = t; clearTimeout(statusT); statusT = setTimeout(() => { V.status = ""; const e2 = $(".mx-status", mx); if (e2) e2.textContent = ""; }, 3500); };
@@ -294,6 +363,19 @@
     const b = user(to); if (!b || to === "me" || !b.online) return;
     const turn = session;
     setTimeout(() => { if (turn !== session) return; conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; }); save(); render(); }, 900 + Math.random() * 700);
+    const persona = PERSONA_BY_ID[to];
+    if (persona) {
+      if (V.pendingReply[to]) return;
+      V.pendingReply[to] = true;
+      setTimeout(() => { if (turn !== session) return; V.typing = to; if (V.sel === to) render(); }, 550);
+      setTimeout(() => {
+        if (turn !== session) return;
+        V.pendingReply[to] = false; V.typing = null;
+        serverSend(to, "me", pick(persona.reply), { read: V.sel === to, scene: "reply" });
+        snd(V.sel === to ? "hat" : "pling", 0.46, 1.23); render();
+      }, 1700 + Math.random() * 500);
+      return;
+    }
     if (Math.random() < 0.75) setTimeout(() => {
       if (turn !== session) return;
       const t = pick(["ок", "привет", "как дела", "я думаю да", "пока", "хз", "спс", "короче норм", "круто", "интересно", "подожди", "мне кажется это имба", "окей", "братан ты лучший", "погоди, я иду", "ну типа хорошо", "не знаю", "люблю этот сервер"]);
@@ -322,6 +404,62 @@
     serverSend(b.id, "me", pick(["лови", "держи братан", "это тебе", "подарок, не благодари", "спс за вчера", ""]), { type: "GIFT", gift: gid, read: V.sel === b.id });
     snd("pling", 0.5, 1.1); status(`${dname(b)}: подарок`); render();
     return b.id;
+  }
+
+  /* Пять входящих идут в заданном порядке; состояние хранится вместе с MAX. */
+  let waveTimer = 0;
+  function scheduleWave(delay = 900) {
+    if (!S.me.reg || S.inboxWave >= PERSONAS.length) return;
+    clearTimeout(waveTimer);
+    const turn = session;
+    waveTimer = setTimeout(() => {
+      waveTimer = 0;
+      if (turn !== session || !S.me.reg) return;
+      if (document.hidden) return scheduleWave(1200);
+      deliverPersona();
+    }, delay);
+  }
+  function deliverPersona() {
+    if (!S.me.reg || S.inboxWave >= PERSONAS.length) return;
+    const p = PERSONAS[S.inboxWave++], base = Date.now();
+    p.intro.forEach((text, i) => serverSend(p.id, "me", text, { read: V.sel === p.id, scene: "intro", t: base + i * 24 }));
+    V.stick = V.sel === p.id; render();
+    snd("pling", 0.55, 1.08); status(`${p.name} написал(а) в MAX`);
+    if (!V.modal) {
+      const ping = document.createElement("button"); ping.type = "button"; ping.className = "mx-scene-ping";
+      ping.style.setProperty("--pc", p.color);
+      ping.appendChild(ava(p.ava, 42, true, false));
+      ping.insertAdjacentHTML("beforeend", `<span><b>${esc(p.name)}</b><small>${esc(trim(censor(p.intro[0]).text, 38))}</small></span><em>↗</em>`);
+      ping.addEventListener("click", () => openChat(p.id)); mx.appendChild(ping);
+      setTimeout(() => ping.remove(), 3200);
+    }
+    scheduleWave(3800);
+  }
+  function nextPersona() {
+    if (!S.me.reg) { openFocus($("#mxStoryNext")); status("Сначала зарегистрируйся в MAX"); return; }
+    if (S.inboxWave >= PERSONAS.length) { S.inboxWave = 0; save(); renderInbox(); scheduleWave(350); return; }
+    clearTimeout(waveTimer); waveTimer = 0; deliverPersona();
+  }
+  $("#mxStoryNext").addEventListener("click", nextPersona);
+  $("#mxInboxNext").addEventListener("click", nextPersona);
+  function renderInbox() {
+    const count = S.inboxWave;
+    $("#mxInboxCount").textContent = `${count} / ${PERSONAS.length}`;
+    $("#mxStoryNext").textContent = count < PERSONAS.length ? `✉ Далее ${count}/5` : "↺ Входящие";
+    $("#mxInboxNext").textContent = count < PERSONAS.length ? "Следующий собеседник →" : "↺ Повторить входящие";
+    const box = $("#mxInboxPeople"); box.innerHTML = "";
+    PERSONAS.forEach((p, i) => {
+      const row = document.createElement("button"); row.type = "button"; row.className = "mx-inbox-person" + (i < count ? " arrived" : "") + (i === count ? " next" : "");
+      row.style.setProperty("--pc", p.color); row.setAttribute("aria-label", `${p.name}: ${i < count ? "уже написал" : "ещё не написал"}. Открыть чат`);
+      row.appendChild(ava(p.ava, 34, true, false));
+      row.insertAdjacentHTML("beforeend", `<span><b>${esc(p.name)}</b><small>${i < count ? "сообщение получено" : i === count ? "следующий" : "ожидается"}</small></span><i>${i < count ? "✓" : String(i + 1).padStart(2, "0")}</i>`);
+      row.addEventListener("click", () => {
+        openFocus(row);
+        if (!S.me.reg) return;
+        openChat(p.id);
+        if (!count && !waveTimer) scheduleWave(650);
+      }); box.appendChild(row);
+    });
   }
 
   const QUESTS = [
@@ -361,8 +499,11 @@
   /* --- рендер экрана --- */
   function contacts() {
     const r = [{ id: "me", name: "Избранное", ava: "favorite_flag", prev: preview("me") || "заметки", un: 0, on: true, fav: true }];
-    S.users.slice().sort((a, b) => dname(a).localeCompare(dname(b), "ru", { sensitivity: "base" })).forEach((u) =>
-      r.push({ id: u.id, name: dname(u), ava: u.ava, prev: preview(u.id) || u.desc || "пусто", un: unread(u.id), on: u.online }));
+    // Сначала пятёрка сюжета в очереди появления, затем прежние игроки мода.
+    S.users.slice().sort((a, b) => {
+      const ia = PERSONAS.findIndex((p) => p.id === a.id), ib = PERSONAS.findIndex((p) => p.id === b.id);
+      return ia >= 0 && ib >= 0 ? ia - ib : ia >= 0 ? -1 : ib >= 0 ? 1 : dname(a).localeCompare(dname(b), "ru", { sensitivity: "base" });
+    }).forEach((u) => r.push({ id: u.id, name: dname(u), ava: u.ava, prev: preview(u.id) || u.desc || "пусто", un: unread(u.id), on: u.online, persona: PERSONA_BY_ID[u.id] }));
     return r;
   }
   const time = (t) => new Date(t).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
@@ -380,7 +521,8 @@
     side.innerHTML = `<div class="mx-brand"><b>MAX</b><span>Чаты</span></div><div class="mx-contacts"></div>`;
     const cl = $(".mx-contacts", side);
     contacts().forEach((c) => {
-      const row = document.createElement("button"); row.type = "button"; row.className = "mx-row" + (V.sel === c.id ? " on" : "") + (V.fwd ? " fwd" : "");
+      const row = document.createElement("button"); row.type = "button"; row.className = "mx-row" + (V.sel === c.id ? " on" : "") + (V.fwd ? " fwd" : "") + (c.persona ? " persona" : "");
+      if (c.persona) row.style.setProperty("--pc", c.persona.color);
       row.setAttribute("aria-label", `${c.name}${c.un ? `, непрочитанных: ${c.un}` : ""}`);
       row.appendChild(ava(c.ava, 40, c.on, true));
       row.insertAdjacentHTML("beforeend", `<span class="mx-row-t"><b>${esc(trim(c.name, 16))}</b><i class="${c.fav ? "fav" : ""}">${esc(trim(c.prev, 18))}</i></span>${c.un ? `<em>${c.un > 9 ? "9+" : c.un}</em>` : ""}`);
@@ -395,11 +537,12 @@
     const main = document.createElement("div"); main.className = "mx-main"; mx.appendChild(main);
     if (!V.sel) { main.innerHTML = `<div class="mx-empty">Выбери чат</div>`; }
     else {
-      const fav = V.sel === "me", u = user(V.sel);
+      const fav = V.sel === "me", u = user(V.sel), persona = PERSONA_BY_ID[V.sel];
+      if (persona) { main.classList.add("mx-persona-chat"); main.style.setProperty("--pc", persona.color); }
       const hd = document.createElement("div"); hd.className = "mx-head";
       const who = document.createElement("button"); who.type = "button"; who.className = "mx-who";
       who.appendChild(ava(fav ? "favorite_flag" : u.ava, 36, fav || u.online, true));
-      const sub = fav ? "самому себе" : u.desc ? trim(u.desc, 28) : u.online ? "в сети" : "не в сети";
+      const sub = fav ? "самому себе" : V.typing === V.sel ? "печатает…" : persona ? `${persona.badge} · ${persona.mood}` : u.desc ? trim(u.desc, 28) : u.online ? "в сети" : "не в сети";
       who.insertAdjacentHTML("beforeend", `<span><b>${esc(fav ? "Избранное" : dname(u))}</b><i class="${fav ? "fav" : ""}">${esc(sub)}</i></span>`);
       who.addEventListener("click", () => { V.modal = "profile:" + V.sel; snd("click", 0.4); render(); });
       hd.appendChild(who);
@@ -456,7 +599,7 @@
     const stl = document.createElement("div"); stl.className = "mx-status"; stl.textContent = V.status; mx.appendChild(stl);
     if (V.menu) mx.appendChild(menuEl());
     if (V.modal) mx.appendChild(modalEl());
-    counters(); renderQuest();
+    counters(); renderQuest(); renderInbox();
   }
   const setDraft = (v) => { V.draft = v; const i = $(".mx-input", mx); if (i) i.value = v; };
   const autoH = (t) => { t.style.height = "auto"; t.style.height = Math.min(120, t.scrollHeight) + "px"; };
@@ -629,8 +772,9 @@
       box.querySelector('[data-x="save"]').addEventListener("click", () => {
         const norm = (v, n, fb) => { v = String(v || "").trim().replace(/\s+/g, " ").slice(0, n); return v || fb; };
         S.me.name = norm(F.name, 24, S.me.base); S.me.desc = norm(F.desc, 120, ""); S.me.ava = F.ava; S.me.show = F.show; S.me.reg = true; V.form = null; V.modal = null;
-        save(); status("Профиль сохранён"); snd("levelup", 0.3, 1.6); if (!V.sel) V.sel = "b1"; render();
+        save(); status("Профиль сохранён"); snd("levelup", 0.3, 1.6); if (!V.sel) V.sel = "p5"; render();
         if (coverDraft && !V.draft) setDraft(coverDraft);
+        scheduleWave(700);
         coverDraft = null;
       });
       const bk = box.querySelector('[data-x="back"]'); if (bk) bk.addEventListener("click", () => { V.form = null; V.modal = null; render(); });
@@ -665,6 +809,19 @@
       });
       box.querySelector('[data-x="clr"]').addEventListener("click", () => { V.form.show = ""; V.modal = V.back; status("Трофей очищен"); render(); });
       box.querySelector('[data-x="back"]').addEventListener("click", () => { V.modal = V.back; render(); });
+    } else if (kind.startsWith("profile:") && PERSONA_BY_ID[kind.slice(8)]) {
+      const p = PERSONA_BY_ID[kind.slice(8)], unreadCount = unread(p.id);
+      box.classList.add("persona"); box.style.setProperty("--pc", p.color); box.style.setProperty("--pd", p.dark);
+      box.innerHTML = `<div class="mx-p-cover mx-p-cover-${p.id}"><span>MAX / ЛИЧНЫЙ ПРОФИЛЬ</span><b aria-hidden="true">${esc(p.mark)}</b><em>${esc(p.badge)}</em></div>
+        <div class="mx-p-id"><div class="mx-p-portrait"></div><div><small>${esc(p.mood)} · ${p.online ? "● В СЕТИ" : "○ НЕ В СЕТИ"}</small><h3>${esc(p.name)}</h3><span>@${esc(p.base)}</span></div></div>
+        <p class="mx-p-desc">${esc(p.desc)}</p>
+        <div class="mx-p-quote"><small>ЗАКРЕПЛЕНО</small><p>«${esc(p.quote)}»</p></div>
+        <div class="mx-p-tags">${p.tags.map((t) => `<span>#${esc(t)}</span>`).join("")}</div>
+        <div class="mx-p-foot"><div class="mx-p-item"><img src="${I(p.show)}" alt="${esc(ITEMS[p.show])}"><span><small>ВИТРИНА</small><b>${esc(ITEMS[p.show])}</b></span></div><span class="mx-p-count">${unreadCount ? `${unreadCount} новых` : "ЧАТ ОТКРЫТ"}</span></div>
+        <div class="mx-mf"><button type="button" class="mx-b ok" data-x="chat">Написать ↗</button><button type="button" class="mx-b" data-x="back">Назад</button></div>`;
+      $(".mx-p-portrait", box).appendChild(ava(p.ava, 116, true, false));
+      box.querySelector('[data-x="chat"]').addEventListener("click", () => { V.modal = null; openChat(p.id); });
+      box.querySelector('[data-x="back"]').addEventListener("click", () => { V.modal = null; render(); });
     } else if (kind.startsWith("profile:")) {
       const id = kind.slice(8), p = user(id) || S.me, self = id === "me";
       box.classList.add("prof");
@@ -722,13 +879,20 @@
   $("#botGift").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); botGift(); });
   $("#spam").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); const to = V.sel || "me"; for (let i = 0; i < 10; i++) serverSend("me", to, pick(["ок", "привет", "спс", "хз", "круто", "норм", "пока", "окей"])); snd("pop", 0.5); if (!V.sel) V.sel = to; V.stick = true; render(); });
   $("#mxReset").addEventListener("click", async () => {
-    session++;
+    session++; clearTimeout(waveTimer); waveTimer = 0;
     await clearCachedFiles();
-    S = seed(); V.sel = null; V.modal = null; V.form = null; V.att = null; coverDraft = null;
+    S = seed(); PERSONAS.forEach(({ intro, reply, ...profile }) => S.users.push({ ...profile, trades: 0 }));
+    V.sel = null; V.modal = null; V.form = null; V.att = null; V.typing = null; V.pendingReply = {}; coverDraft = null;
     Object.keys(files).forEach((k) => delete files[k]);
     save(); snd("no", 0.4); render();
   });
   render();
+  if (window.IntersectionObserver) {
+    const storyObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && S.me.reg && S.inboxWave < PERSONAS.length && !waveTimer) scheduleWave(850);
+    }, { threshold: 0.18 });
+    storyObserver.observe(stage);
+  }
   // Миниатюры в localStorage не пишем: после перезагрузки собираем их из локальных файлов.
   const missingImages = S.msgs.filter((m) => m.att?.kind === "IMAGE" && m.att.key && !m.att.preview).slice(-30);
   Promise.all(missingImages.map(async (m) => {

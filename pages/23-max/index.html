@@ -80,9 +80,9 @@
   <!-- ============ 02 СИМУЛЯТОР ============ -->
   <section class="sec mx-app-sec" id="app">
     <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">max_messenger_screen</span><h2>MAX изнутри</h2></div><span class="sec-q">всё кликается, как в игре</span></header>
-    <p class="sec-p reveal">Зарегистрируйся и попробуй настоящий сценарий: <b>напиши в чат, отправь предмет или файл</b>, а затем проверь, что сделал с текстом сервер. ПКМ по сообщению открывает меню; на телефоне — долгий тап. Enter отправляет, Shift+Enter переносит строку. Данные демонстрации остаются в твоём браузере.</p>
+    <p class="sec-p reveal">Зарегистрируйся: тебе один за другим напишут <b>5opka, Диор Армани, игровой клан «Чеченцы», няша-витуберша и мама</b>. У каждого свой голос, портрет и профиль. Отвечай им, отправляй подарки и файлы — сервер всё равно перепишет твой текст. ПКМ по сообщению открывает меню; на телефоне — долгий тап. Enter отправляет, Shift+Enter переносит строку. Это вымышленная демо-переписка, всё остаётся в браузере.</p>
     <div class="mx-app-wrap reveal" id="mxStage">
-      <div class="mx-focusbar"><span><b>MAX / ЖИВОЙ ЭКРАН</b><small>чат · файлы · подарки</small></span><button type="button" id="mxFocus" aria-pressed="false">⛶ На весь экран</button><button type="button" id="mxClose" hidden aria-label="Закрыть полноэкранный MAX">✕ Закрыть</button></div>
+      <div class="mx-focusbar"><span><b>MAX / ЖИВОЙ ЭКРАН</b><small>чат · файлы · подарки</small></span><button type="button" id="mxStoryNext">✉ Далее 0/5</button><button type="button" id="mxFocus" aria-pressed="false">⛶ На весь экран</button><button type="button" id="mxClose" hidden aria-label="Закрыть полноэкранный MAX">✕ Закрыть</button></div>
       <div class="mx-screen" id="mx" tabindex="-1"></div>
       <aside class="mx-app-side">
         <div class="mx-counter"><b id="cntMsg">0</b><span>/ 100 сообщений</span><i><em id="cntBar"></em></i></div>
@@ -91,6 +91,13 @@
         <button type="button" class="btn-ghost" id="botGift">🎁 бот шлёт подарок</button>
         <button type="button" class="btn-ghost" id="spam">+10 сообщений (для ачивки)</button>
         <button type="button" class="btn-ghost" id="mxReset">↺ стереть данные MAX</button>
+        <div class="mx-inbox" id="mxInbox" aria-label="Входящие от персонажей">
+          <div class="mx-inbox-top"><span>СЮЖЕТ / ВХОДЯЩИЕ</span><b id="mxInboxCount">0 / 5</b></div>
+          <p>Они напишут по очереди. Открой любой профиль и ответь — каждый говорит по-своему.</p>
+          <div class="mx-inbox-list" id="mxInboxPeople"></div>
+          <button type="button" id="mxInboxNext">Следующий собеседник →</button>
+          <small>Вымышленные игровые диалоги, не реальные аккаунты.</small>
+        </div>
         <div class="mx-quests" id="mxQuests" aria-label="Маршрут по мессенджеру">
           <div class="mx-quests-head"><small>МАРШРУТ / ПЯТЬ ШАГОВ</small><b id="mxQuestCount">0 / 5</b></div>
           <div class="mx-quest-list" id="mxQuestList"></div>

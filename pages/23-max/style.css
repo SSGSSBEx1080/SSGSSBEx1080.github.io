@@ -534,3 +534,94 @@ body.mx-focus-open main{z-index:200}
 /* The notification has its own compact typography, not the huge MAX wordmark. */
 .mx-terminal .mx-notif b{font:400 14px/1.1 var(--f-px);white-space:nowrap}
 .mx-terminal .mx-notif span{font:400 12px/1.1 var(--f-px)}
+
+/* №23: пять вымышленных контактов — общий экран мода, пять собственных характеров. */
+.mx-row.persona::before{content:"";position:absolute;inset:5px auto 5px 0;width:3px;background:var(--pc);opacity:.7}
+.mx-row.persona.on{background:linear-gradient(90deg,color-mix(in srgb,var(--pc) 16%,#192536),#1b2839)}
+.mx-row.persona.on::before{width:4px;opacity:1}
+.mx-persona-chat .mx-head{background:linear-gradient(95deg,color-mix(in srgb,var(--pc) 14%,#151d27),#151d27 65%);border-bottom-color:var(--pc)}
+.mx-persona-chat .mx-who i{color:var(--pc)}
+.mx-persona-chat .mx-msg:not(.own) .mx-bub{border-left:2px solid var(--pc)}
+.mx-scene-ping{position:absolute;z-index:7;top:60px;right:11px;display:flex;align-items:center;gap:9px;width:min(290px,calc(100% - 80px));padding:8px;background:#192434;color:#fff;border:1px solid var(--pc);box-shadow:0 14px 30px #0009;text-align:left;cursor:pointer;animation:mxPing .25s ease-out both}
+.mx-scene-ping canvas{width:42px;height:42px;flex:none;image-rendering:pixelated}
+.mx-scene-ping span{display:grid;gap:2px;min-width:0;flex:1}
+.mx-scene-ping b{font:16px var(--f-px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mx-scene-ping small{color:#bed0e5;font:12px/1.2 var(--f-t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mx-scene-ping em{color:var(--pc);font-style:normal}
+.mx-scene-ping:hover,.mx-scene-ping:focus-visible{background:#263850;outline:2px solid var(--pc)}
+@keyframes mxPing{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+
+.mx-inbox{padding:12px;background:linear-gradient(155deg,#172538,#101a2c);border:1px solid #3e5575;border-radius:12px;color:#e8f3ff}
+.mx-inbox-top{display:flex;justify-content:space-between;align-items:center;gap:6px;font:13px/1.2 var(--f-px);color:#b9d5fa}
+.mx-inbox-top b{color:#fff;white-space:nowrap}
+.mx-inbox>p{font-size:12px;color:#aabed5;line-height:1.45;margin:9px 0}
+.mx-inbox-list{display:grid;gap:3px}
+.mx-inbox-person{display:flex;align-items:center;gap:7px;padding:4px;min-width:0;width:100%;text-align:left;border:1px solid transparent;background:#101b2b;color:#dfeaf7;cursor:pointer;transition:background .15s,border-color .15s}
+.mx-inbox-person:hover,.mx-inbox-person:focus-visible{background:#23344b;border-color:var(--pc);outline:none}
+.mx-inbox-person.arrived{border-left:2px solid var(--pc)}
+.mx-inbox-person.next{background:#1a2a3e}
+.mx-inbox-person canvas{width:34px;height:34px;image-rendering:pixelated;flex:none}
+.mx-inbox-person span{display:grid;gap:1px;min-width:0;flex:1}
+.mx-inbox-person b{font:12px/1.15 var(--f-px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mx-inbox-person small{font:11px/1.2 var(--f-t);color:#879cb4}
+.mx-inbox-person i{font:12px var(--f-px);font-style:normal;color:#8ea4ba}
+.mx-inbox-person.arrived i{color:#77e6a0}
+#mxInboxNext{width:100%;margin-top:9px;padding:9px 7px;border:1px solid #638bcb;background:#244d83;color:#fff;font:13px var(--f-px);cursor:pointer}
+#mxInboxNext:hover,#mxInboxNext:focus-visible{background:#356cb7;outline:2px solid #9bd0ff;outline-offset:2px}
+.mx-inbox>small{display:block;margin-top:8px;font:11px/1.35 var(--f-t);color:#8ea4ba}
+#mxStoryNext{margin-left:auto;background:#244d83;border-color:#638bcb;white-space:nowrap}
+#mxStoryNext:hover,#mxStoryNext:focus-visible{background:#356cb7}
+
+/* Профили не заменяют оригинальную экранную механику: это особые карточки внутри модалки. */
+.mx-modal.persona{width:min(550px,100%);padding:0;border-color:var(--pc);background:#101823;overflow-x:hidden}
+.mx-p-cover{position:relative;height:127px;overflow:hidden;background:radial-gradient(circle at 85% 50%,color-mix(in srgb,var(--pc) 34%,transparent),transparent 45%),linear-gradient(115deg,var(--pd),#121a2d 78%);border-bottom:2px solid var(--pc);padding:15px 18px;color:#fff}
+.mx-p-cover::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;background:repeating-linear-gradient(90deg,transparent 0 17px,var(--pc) 18px 19px,transparent 20px 39px)}
+.mx-p-cover>span{position:relative;z-index:1;font:12px var(--f-px);letter-spacing:.08em}
+.mx-p-cover>b{position:absolute;right:18px;top:4px;font:900 112px/1 var(--f-l);color:var(--pc);opacity:.5;transform:rotate(-10deg);letter-spacing:-.1em}
+.mx-p-cover>em{position:absolute;left:18px;bottom:16px;z-index:1;font:13px var(--f-px);font-style:normal;color:#fff;border:1px solid var(--pc);background:#0a1225b8;padding:6px 9px;letter-spacing:.1em}
+.mx-p-cover-p5{background-color:#42215f;background-image:radial-gradient(circle at 75% 25%,#fb943c66,transparent 36%),repeating-linear-gradient(-20deg,#452363 0 12px,#612f7b 13px 16px)}
+.mx-p-cover-pd{background-image:linear-gradient(115deg,#241c32,#513a54 55%,#ad8850)}
+.mx-p-cover-pc{background-image:radial-gradient(circle at 60% 70%,#73e9a933,transparent 60%),repeating-linear-gradient(45deg,#113a41 0 16px,#195151 17px 20px)}
+.mx-p-cover-pv{background-image:radial-gradient(circle at 88% 20%,#ffb2f0,#9b66de 49%,#3b2867);border-bottom-color:#ffd7f5}
+.mx-p-cover-pv::after{content:"✦   ♡   ✧   ♡   ✦";inset:27px 0 auto 28%;background:none;opacity:.7;color:#fff;font:28px var(--f-px);transform:rotate(-11deg);white-space:nowrap}
+.mx-p-cover-pm{background-image:linear-gradient(115deg,#80535c,#ca8a76 60%,#f3bd88)}
+.mx-p-id{display:flex;align-items:flex-end;gap:14px;padding:0 18px;margin-top:-34px;position:relative;z-index:2}
+.mx-p-portrait{padding:5px;background:#101823;border:2px solid var(--pc);box-shadow:0 8px 22px #0008;flex:none}
+.mx-p-portrait canvas{display:block;width:102px;height:102px;image-rendering:pixelated}
+.mx-p-id>div:last-child{padding:32px 0 4px;min-width:0}
+.mx-p-id small{font:12px/1.2 var(--f-px);color:var(--pc)}
+.mx-p-id h3{font:900 clamp(20px,4vw,27px)/1.1 var(--f-l);margin:4px 0;color:#fff}
+.mx-p-id span{font:12px var(--f-px);color:#90a9c3;overflow-wrap:anywhere}
+.mx-p-desc{margin:14px 18px;color:#d6e4f6;font:14px/1.45 var(--f-t)}
+.mx-p-quote{margin:0 18px;background:color-mix(in srgb,var(--pc) 11%,#0d1522);padding:10px 12px;border-left:3px solid var(--pc)}
+.mx-p-quote small{font:12px var(--f-px);color:var(--pc)}
+.mx-p-quote p{margin:5px 0 0;color:#fff;font:600 15px/1.35 var(--f-t)}
+.mx-p-tags{display:flex;flex-wrap:wrap;gap:5px;padding:12px 18px}
+.mx-p-tags span{padding:5px 7px;border:1px solid color-mix(in srgb,var(--pc) 55%,#192535);color:var(--pc);font:12px var(--f-px)}
+.mx-p-foot{margin:0 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #30445c;padding:10px 0}
+.mx-p-item{display:flex;align-items:center;gap:8px}
+.mx-p-item img{width:34px;height:34px;image-rendering:pixelated}
+.mx-p-item span{display:grid;gap:2px}
+.mx-p-item small{color:#829ab7;font:11px var(--f-px)}
+.mx-p-item b{font:13px var(--f-t)}
+.mx-p-count{font:12px var(--f-px);color:var(--pc)}
+.mx-modal.persona .mx-mf{padding:9px 18px 14px;border-top:1px solid #30445c;margin:0}
+.mx-modal.persona .mx-mf .ok{background:var(--pc);color:#101823;border-color:var(--pc)}
+@media(max-width:1100px){.mx-inbox{grid-column:1/-1}.mx-inbox-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){
+ .mx-inbox-list{grid-template-columns:1fr}
+ .mx-focusbar>span{min-width:0;flex:1}
+ .mx-focusbar b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .mx-focusbar button{padding:7px;font-size:12px}
+ #mxStoryNext{margin-left:0}
+ .mx-p-cover{height:105px}
+ .mx-p-portrait canvas{width:77px;height:77px}
+ .mx-p-id{margin-top:-22px;gap:10px}
+ .mx-p-id>div:last-child{padding-top:25px}
+ .mx-p-id h3{font-size:20px}
+ .mx-p-desc{margin-top:10px}
+ .mx-scene-ping{right:6px;top:58px;width:min(260px,calc(100% - 66px))}
+}
+@media(prefers-reduced-motion:reduce){.mx-scene-ping{animation:none}}
+/* Badge belongs on the right of the cover; the portrait overlaps the left edge. */
+.mx-p-cover>em{left:auto;right:18px}
