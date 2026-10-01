@@ -74,6 +74,12 @@ assert.doesNotMatch(maxHtml.slice(maxHtml.indexOf('class="mx-hero"'), maxHtml.in
 assert.match(maxApp, /class="mx-note"/, 'MAX notes should be interactive disclosure cards');
 assert.equal(POINTS.find(p => p.n === 24).page, 'pages/24-scooter/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 24).adv.length, 3);
+assert.equal(POINTS.find(p => p.n === 24).icon, 'assets/textures/p24/scooter_item.png');
+assert.equal(HUB_ADV.find(p => p.n === 24).adv.map(a => a.icon).join('|'), [
+  'assets/textures/p24/scooter_item.png',
+  'assets/textures/mc/p2/item_redstone.png',
+  'assets/textures/p3/vanilla/item_barrier.png'
+].join('|'), 'Bottom and home advancement icons must follow the real in-game items');
 const scooterHtml = fs.readFileSync(path.join(root, 'pages/24-scooter/index.html'), 'utf8');
 assert.match(scooterHtml, /ride3d\.js/, 'Playable voxel world must be loaded');
 assert.match(scooterHtml, /id="touchGo"/, 'Phone controls must remain available while viewing the world');

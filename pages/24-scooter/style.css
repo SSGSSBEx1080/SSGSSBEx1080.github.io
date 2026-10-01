@@ -92,3 +92,23 @@ body{font-family:var(--f-t);background:var(--bg);color:var(--tx)}main{overflow-x
 @media(max-width:350px){.sc-game-hotbar button{width:27px;height:30px;font-size:16px}.sc-game-hotbar button img{width:25px;height:24px}.sc-game-hotbar button:after{font-size:8px}}
 
 @media(max-width:600px){.sc-game-tools #worldGrade[data-grade=flat]:after{content:'→'}.sc-game-tools #worldGrade[data-grade=down]:after{content:'↘'}.sc-game-tools #worldGrade[data-grade=up]:after{content:'↗'}}
+#getScooter:before{content:'';display:inline-block;width:24px;height:24px;margin-right:7px;vertical-align:middle;background:url('../../assets/textures/p24/scooter_item.png') center/contain no-repeat}
+/* A true six-faced 3D preview of the same textured Minecraft block as on the
+   track. The game's missing custom charging_port textures are not fabricated. */
+.sc-port-display{flex:none;width:154px;min-height:168px;display:grid;place-items:center;align-content:center;gap:16px;perspective:440px;background:radial-gradient(circle at 50% 42%,#7ce8d533,transparent 66%),#15281e;border:1px solid #5c8a77;overflow:hidden}
+.sc-port-display small{font:700 9px/1.3 var(--f-mono);text-align:center;letter-spacing:.12em;color:#9ff9e3}
+.sc-port-cube{width:75px;height:75px;position:relative;transform-style:preserve-3d;transform:rotateX(-26deg) rotateY(34deg);animation:portTurn 10s linear infinite}
+.sc-port-cube .face{position:absolute;inset:0;background:url('../../assets/textures/p24/charging_port_side.png') center/cover no-repeat;image-rendering:pixelated;backface-visibility:hidden;border:1px solid #243d44}
+.sc-port-cube .front{transform:translateZ(37.5px)}.sc-port-cube .back{transform:rotateY(180deg) translateZ(37.5px)}
+.sc-port-cube .left{transform:rotateY(-90deg) translateZ(37.5px)}.sc-port-cube .right{transform:rotateY(90deg) translateZ(37.5px)}
+.sc-port-cube .top{background-image:url('../../assets/textures/p24/charging_port_top.png');transform:rotateX(90deg) translateZ(37.5px)}
+.sc-port-cube .bottom{transform:rotateX(-90deg) translateZ(37.5px)}
+@keyframes portTurn{50%{transform:rotateX(-26deg) rotateY(214deg)}to{transform:rotateX(-26deg) rotateY(394deg)}}
+.sc-port-source{border-top:1px dashed #668477;padding-top:10px;color:#a9c0b4;font:11px/1.55 var(--f-mono)}.sc-port-source code{color:#9df5dd}
+@media(max-width:600px){.sc-port-display{width:100px;min-height:135px}.sc-port-cube{width:54px;height:54px}.sc-port-cube .front{transform:translateZ(27px)}.sc-port-cube .back{transform:rotateY(180deg) translateZ(27px)}.sc-port-cube .left{transform:rotateY(-90deg) translateZ(27px)}.sc-port-cube .right{transform:rotateY(90deg) translateZ(27px)}.sc-port-cube .top{transform:rotateX(90deg) translateZ(27px)}.sc-port-cube .bottom{transform:rotateX(-90deg) translateZ(27px)}}
+@media(prefers-reduced-motion:reduce){.sc-port-cube{animation:none}}
+
+/* Leave the charging block visible at the right of the start: move the map
+   to the opposite side rather than covering the actual 3D port. */
+.sc-mini-map{left:13px;right:auto}
+@media(max-width:600px){.sc-mini-map{left:8px;right:auto}}

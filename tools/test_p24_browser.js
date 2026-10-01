@@ -24,6 +24,8 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       });
       assert.ok(hotbarFits, `all nine slots should be visible at ${width}px`);
       assert.equal(await page.locator('#miniMap').count(), 1);
+      assert.ok(await page.locator('#gameHotbar [data-slot="1"] img').evaluate(img => img.src.endsWith('/scooter_item.png') && img.complete && img.naturalWidth === 192));
+      assert.ok(await page.locator('.sc-port-display .sc-port-cube .face').count() === 6);
       await page.locator('#gameHotbar [data-slot="1"]').click();
       assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p24.adv'))), ['scooter_craft']);
       assert.equal(await page.locator('#getScooter').isDisabled(), true);
@@ -97,7 +99,14 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       assert.match(await page.locator('#worldDistance').textContent(), /РАДИУСЕ/);
       assert.ok(Number((await page.locator('#meters').textContent()).replace(/\D/g, '')) >= 1500);
       assert.equal(await page.locator('#chargeN').textContent(), '90%');
-      await page.locator('#getPort').click();
+      if (width === 1440) {
+        // The 16px textured charging block can actually be clicked in 3D.
+        await page.locator('#scene').scrollIntoViewIfNeeded();
+        await page.waitForTimeout(1050); // allow the following camera to reach the parked scooter
+        const canvas = await page.locator('#ride3d').boundingBox();
+        await page.mouse.click(canvas.x + canvas.width * .595, canvas.y + canvas.height * .615);
+        await page.waitForFunction(() => document.querySelector('#getPort').disabled, null, { timeout: 4000 });
+      } else await page.locator('#getPort').click();
       assert.match(await page.locator('#advTxt').textContent(), /^3 \/ 3/);
       await page.locator('#charge').click();
       await page.waitForFunction(() => Number(document.querySelector('#chargeN').textContent.replace('%', '')) >= 91, { timeout: 6000 });

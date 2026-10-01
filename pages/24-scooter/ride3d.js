@@ -17,6 +17,15 @@ const texture = (base, seed, kind = 'plain') => {
   const result = new T.CanvasTexture(canvas); result.magFilter = T.NearestFilter; result.minFilter = T.NearestFilter; result.colorSpace = T.SRGBColorSpace; return result;
 };
 const material = (base, seed, kind, extra = {}) => new T.MeshLambertMaterial({ map: texture(base, seed, kind), ...extra });
+const blockTexture = filename => {
+  const tex = new T.TextureLoader().load('../../assets/textures/p24/' + filename);
+  tex.colorSpace = T.SRGBColorSpace; tex.magFilter = tex.minFilter = T.NearestFilter;
+  return new T.MeshLambertMaterial({ map: tex });
+};
+// Charging-port art is reconstructed from real Minecraft iron/redstone tiles.
+// No charging_port block model or texture was supplied with these sources.
+const PORT_SIDE = blockTexture('charging_port_side.png');
+const PORT_TOP = blockTexture('charging_port_top.png');
 const COLORS = {
   grass: material('#679645', 1, 'grass'), grassSide: material('#6c6841', 2, 'grass'),
   dirt: material('#816248', 3, 'brick'), road: material('#5e666a', 4, 'brick'),
@@ -105,7 +114,7 @@ function cow() {
   return group;
 }
 
-function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
+function create({ canvas, getState, onCollision, onCheckpoint, onBoard, onPort }) {
   let renderer;
   try { renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: 'low-power' }); }
   catch (err) { console.warn('Block world unavailable; keeping 2D track', err); return null; }
@@ -185,7 +194,7 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
   wall(0, -32, 'stone', 1); wall(0, -45, 'dirt', 1);
   wall(5, -62, 'slime', 0); wall(-4, -78, 'obsidian', 1);
   // Source mechanic: nearby animals mount at low speed, to a maximum of five.
-  for (const [x, z] of [[4, 23], [-4, 5], [4, -11], [-4, -57]]) {
+  for (const [x, z] of [[-4, 23], [-4, 5], [4, -11], [-4, -57]]) {
     const animal = cow(); animal.position.set(x, 0, z); decorations.add(animal);
     markers.push({ object: animal, x, z, lift: 0 });
     mobMarkers.push({ object: animal, x, z, boarded: false });
@@ -201,14 +210,22 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
     const tile = box(road, patch.x, .14, z, 4, .13, 2, COLORS[patch.kind]);
     markers.push({ object: tile, x: patch.x, z, lift: .14 });
   }
-  // Physical charging station: park within 2 X/Z blocks and stop moving.
-  const charger = new T.Group(); charger.position.set(8, 0, 14); decorations.add(charger);
-  box(charger, 0, .55, 0, 2.4, 1.1, 2.4, COLORS.obsidian);
-  const column = box(charger, 0, 2.15, 0, 1.2, 2.2, 1.2, COLORS.charge);
-  box(charger, 0, 3.42, 0, 1.8, .4, 1.8, COLORS.stone);
-  const sign = label('CHARGE 1% / S', '#85f5ed'); sign.position.set(-1.5, 3.05, 0); sign.rotation.y = -.3; charger.add(sign);
-  const point = new T.PointLight('#80fff1', 3.2, 10); point.position.set(0, 3, 0); charger.add(point);
-  markers.push({ object: charger, x: 8, z: 14, lift: 0 }); stations.push(charger);
+  // A *single solid 3D Minecraft block*, not the old untextured 3-block
+  // column. Source says CHARGING_PORT is a block, radius X/Z ±2, Y ±1.
+  // Exact mod block PNG/model are missing; these 16px faces were reconstructed
+  // from the vanilla iron + redstone textures shipped with this repository.
+  const charger = new T.Group(); charger.position.set(5, 0, 23); decorations.add(charger);
+  box(charger, 0, -.04, 0, 3.1, .08, 3.1, COLORS.stone);
+  const body = box(charger, 0, .73, 0, 1.45, 1.45, 1.45,
+    [PORT_SIDE, PORT_SIDE, PORT_TOP, PORT_SIDE, PORT_SIDE, PORT_SIDE]);
+  body.userData.chargingPort = true;
+  const pulse = box(charger, 0, 1.48, 0, .65, .07, .65, COLORS.charge);
+  // Low luminous corners keep the 1-block silhouette readable after dark.
+  for (const x of [-1.25, 1.25]) for (const z of [-1.25, 1.25])
+    box(charger, x, .06, z, .15, .12, .15, COLORS.charge);
+  const sign = label('CHARGING PORT', '#85f5ed'); sign.position.set(0, 2.62, 0); charger.add(sign);
+  const point = new T.PointLight('#80fff1', 2.1, 9); point.position.set(0, 1.7, 0); charger.add(point);
+  markers.push({ object: charger, x: 5, z: 23, lift: 0 }); stations.push(charger);
   // Painted stripe + blocky caution chevrons make the route navigable.
   for (let z = -94; z <= 36; z += 10) {
     const dash = box(road, 0, .09, z, .22, .035, 4, COLORS.white);
@@ -222,6 +239,7 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
     skyGroup.add(cloud);
   }
   const loc = { x: 0, z: 28, heading: 0, nearPort: false, checkpoint: 0, grade: '', surface: '', mode: 'chase', cooldown: 0 };
+  camera.position.set(0, 5.1, 36); camera.lookAt(0, 1.4, 24);
   function height(z, grade = loc.grade) { return (grade === 'down' ? .085 : grade === 'up' ? -.085 : 0) * (z - 28); }
   function rebuild(grade, surface) {
     loc.grade = grade; loc.surface = surface;
@@ -247,7 +265,7 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
     const p = box(scene, 0, -99, 0, .11, .11, .11, i % 2 ? COLORS.dirt : COLORS.stone);
     return { mesh: p, life: 0, age: 0, vx: 0, vy: 0, vz: 0 };
   });
-  function park() { loc.x = 8; loc.z = 16; loc.heading = 0; loc.cooldown = .6; }
+  function park() { loc.x = 3.15; loc.z = 24; loc.heading = 0; loc.cooldown = .6; }
   function reset() {
     loc.x = 0; loc.z = 28; loc.heading = 0; loc.checkpoint = 0; loc.cooldown = .5;
     for (const mob of mobMarkers) { mob.boarded = false; mob.object.visible = true; mob.object.position.x = mob.x; mob.object.position.z = mob.z; }
@@ -304,7 +322,7 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
     player.rotation.y = -loc.heading;
     avatar.forEach((p, i) => { p.visible = state.owned && state.passengers > i && loc.mode === 'chase'; });
     scooter.root.visible = loc.mode === 'chase';
-    loc.nearPort = Math.abs(loc.x - 8) <= 2 && Math.abs(loc.z - 14) <= 2;
+    loc.nearPort = Math.abs(loc.x - 5) <= 2 && Math.abs(loc.z - 23) <= 2;
     return { x: loc.x, z: loc.z, nearPort: loc.nearPort, heading: loc.heading, checkpoint: loc.checkpoint, floor: floorAt() };
   }
   let last = 0, frame = 0, visible = true;
@@ -321,6 +339,8 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
       const rect = canvas.getBoundingClientRect(), w = Math.max(1, Math.round(rect.width)), h = Math.max(1, Math.round(rect.height));
       if (canvas.width !== Math.round(w * renderer.getPixelRatio()) || canvas.height !== Math.round(h * renderer.getPixelRatio())) {
         renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+        sign.scale.x = camera.aspect < .9 ? .82 : 1;
+        sign.position.x = camera.aspect < .9 ? -1.1 : 0;
       }
       const heading = loc.heading, fx = Math.sin(heading), fz = -Math.cos(heading);
       const look = new T.Vector3(loc.x + fx * (loc.mode === 'first' ? 13 : 4), height(loc.z) + (loc.mode === 'first' ? 1.8 : 1.4), loc.z + fz * (loc.mode === 'first' ? 13 : 4));
@@ -344,12 +364,21 @@ function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
         p.life -= dt; p.mesh.position.x += p.vx * dt; p.mesh.position.y += p.vy * dt; p.mesh.position.z += p.vz * dt;
         p.mesh.scale.setScalar(clamp(p.life * .35, .01, .2));
       }
-      column.scale.y = 2.2 + Math.sin(now * .004) * .16;
-      point.intensity = 2.5 + Math.sin(now * .004) * .7;
+      pulse.scale.y = .9 + Math.sin(now * .005) * .08;
+      point.intensity = 1.8 + Math.sin(now * .005) * .5;
       renderer.render(scene, camera);
     }
   }
   requestAnimationFrame(render);
+  const raycaster = new T.Raycaster();
+  canvas.addEventListener('pointerup', event => {
+    if (!onPort || !canvas.getBoundingClientRect().width) return;
+    const rect = canvas.getBoundingClientRect();
+    raycaster.setFromCamera(new T.Vector2(
+      (event.clientX - rect.left) / rect.width * 2 - 1,
+      1 - (event.clientY - rect.top) / rect.height * 2), camera);
+    if (raycaster.intersectObjects([body, pulse, sign], true).length) onPort();
+  });
   return {
     tick, park, reset, floorAt, get location() { return { ...loc, floor: floorAt() }; },
     setCameraMode(mode) { loc.mode = mode === 'first' ? 'first' : 'chase'; },

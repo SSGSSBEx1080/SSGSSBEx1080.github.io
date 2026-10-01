@@ -7,7 +7,7 @@
   ZM.topbar({ crumb: '№24 · Электросамокат', ...ZM.pointNav(24) });
   K.finNav(24, $('#finNav'));
   const adv = K.adv({ list: ZM.P24.advancements, store: 'p24.adv',
-    icon: a => U(`assets/textures/p24/${a.icon}.svg`),
+    icon: a => U(({ scooter: 'assets/textures/p24/scooter_item.png', station: 'assets/textures/mc/p2/item_redstone.png', speed: 'assets/textures/p3/vanilla/item_barrier.png' })[a.icon]),
     intro: 'Три скрытых достижения: самокат, зарядный порт и отметка 100 на HUD.' });
 
   // Source geometry, not a fabricated silhouette. A transparent render of the
@@ -64,7 +64,7 @@
       g.fillStyle = color; g.fillRect(px(x) - 4, pz(z) - 4, 8, 8);
     }
     for (const z of [-16, -52, -86]) { g.fillStyle = '#d5fb40'; g.fillRect(px(-7), pz(z), 2, 2); g.fillRect(px(7), pz(z), 2, 2); }
-    g.fillStyle = '#8dfff4'; g.fillRect(px(8) - 3, pz(14) - 3, 7, 7);
+    g.fillStyle = '#8dfff4'; g.fillRect(px(5) - 3, pz(23) - 3, 7, 7);
     g.save(); g.translate(px(loc.x), pz(loc.z)); g.rotate(loc.heading);
     g.fillStyle = '#fff'; g.beginPath(); g.moveTo(0, -7); g.lineTo(5, 6); g.lineTo(-5, 6); g.closePath(); g.fill(); g.restore();
   }
@@ -130,7 +130,7 @@
       button.classList.toggle('owned', (slot === 1 && s.owned) || (slot === 2 && s.port));
     });
     if (world) {
-      const loc = world.location, distance = Math.round(Math.hypot(loc.x - 8, loc.z - 14));
+      const loc = world.location, distance = Math.round(Math.hypot(loc.x - 5, loc.z - 23));
       $('#worldCoords').textContent = `XYZ ${Math.round(loc.x)} · ${Math.round(loc.z)}`;
       $('#worldDistance').textContent = distance <= 2 ? 'ϟ ПОРТ В РАДИУСЕ 2 БЛОКОВ' : `ϟ ПОРТ ↗ ${distance} БЛОКОВ`;
       $('#worldProgress').textContent = `${loc.checkpoint} / 3 арки`;
@@ -347,6 +347,14 @@
           if (state.health === 0) { state.owned = false; state.passengers = 0; riderState(); }
           impact(kind === 'border' ? 'КРАЙ МИРА: разверни самокат к трассе.' :
             `КАМЕНЬ: скользим вдоль стены · −${damage} прочности · пассажиры остались.`);
+        },
+        onPort: () => {
+          const loc = world.location;
+          if (Math.abs(loc.x - 5) > 3 || Math.abs(loc.z - 23) > 3) {
+            worldToast('ПОДЪЕДЬ К БЛОКУ ПОРТА · РАДИУС 2 БЛОКА'); return;
+          }
+          if (!state.port) $('#getPort').click();
+          else if (state.owned) $('#charge').click();
         },
         onBoard: () => {
           if (!state.owned || state.passengers >= 5) return;

@@ -7,7 +7,7 @@
 <meta name="description" content="№24: электросамокат из ZitraksMode. Исходная 3D-модель, интерактивный трек, поверхности, столкновения, зарядный порт и три достижения.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/p24-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p24-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="style.css?v=20261001-world6">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="style.css?v=20261001-world7">
 </head>
 <body><main>
 <section class="sc-hero" id="hero">
@@ -35,8 +35,8 @@
       <div class="sc-mini-map" id="miniMapWrap" hidden><canvas id="miniMap" width="140" height="140" aria-label="Мини-карта трассы, порт и положение самоката"></canvas><span>КАРТА / XZ</span></div>
       <div class="sc-game-timer" id="worldTimer" hidden>ЗАЕЗД <b id="timerValue">00:00.0</b> · РЕКОРД <b id="bestValue">—</b></div>
       <div class="sc-game-hotbar" id="gameHotbar" hidden role="toolbar" aria-label="Хотбар самоката">
-        <button type="button" data-slot="1" title="1 · Взять или сложить самокат" aria-label="Самокат"><img src="../../assets/textures/p24/scooter_side.png" alt=""></button>
-        <button type="button" data-slot="2" title="2 · Получить порт / включить зарядку" aria-label="Зарядный порт">ϟ</button>
+        <button type="button" data-slot="1" title="1 · Взять или сложить самокат" aria-label="Самокат"><img src="../../assets/textures/p24/scooter_item.png" alt=""></button>
+        <button type="button" data-slot="2" title="2 · Получить порт / включить зарядку" aria-label="Зарядный порт"><img src="../../assets/textures/p24/charging_port_top.png" alt=""></button>
         <button type="button" data-slot="3" data-surface="asphalt" title="3 · Асфальт" aria-label="Покрытие: асфальт">▥</button>
         <button type="button" data-slot="4" data-surface="water" title="4 · Вода" aria-label="Покрытие: вода">≋</button>
         <button type="button" data-slot="5" data-surface="honey" title="5 · Мёд" aria-label="Покрытие: мёд">⬡</button>
@@ -92,7 +92,8 @@
   <header class="sec-head"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">battery / station</span><h2>Пит-стоп</h2></div><span class="sec-q">1% заряда / сек</span></header>
   <div class="sc-garage">
     <div class="sc-port"><div class="sc-port-head">ЗАРЯДНЫЙ ПОРТ <span id="portLed">○ OFFLINE</span></div>
-      <div class="sc-port-body"><div class="sc-bolt">ϟ</div><p>Порт стоит <b>справа от старта</b>. Подъедь в радиус <b>2 блоков по X/Z</b>, ±1 по Y. При скорости ≤ 0,08 внутренних единиц он даёт <b>1% в секунду</b>. Чтобы сложить: остановись и поставь «На борту» на 0. Заряд и прочность сохраняются в NBT предмета.</p></div>
+      <div class="sc-port-body"><div class="sc-port-display" role="img" aria-label="Вращающаяся блочная 3D-реконструкция зарядного порта на текстурах Minecraft"><div class="sc-port-cube"><i class="face front"></i><i class="face back"></i><i class="face left"></i><i class="face right"></i><i class="face top"></i><i class="face bottom"></i></div><small>CHARGING_PORT<br>3D BLOCK</small></div><p>Порт стоит <b>справа от старта</b>. Подъедь в радиус <b>2 блоков по X/Z</b>, ±1 по Y. При скорости ≤ 0,08 внутренних единиц он даёт <b>1% в секунду</b>. Чтобы сложить: остановись и поставь «На борту» на 0. Заряд и прочность сохраняются в NBT предмета. Блок на треке можно нажать рядом с ним.</p></div>
+      <p class="sc-port-source">У блока в доступном исходнике есть ID <code>charging_port</code> и правило зарядки, но нет модели и PNG. Здесь — честная 3D-реконструкция из настоящих 16×16 текстур железа и редстоуна Minecraft; геометрия самоката и его атлас — оригинальные.</p>
       <div class="sc-port-read"><span>СТАНЦИЯ / ПРОГРЕСС</span><div><i id="portProgress"></i></div><b id="portPct">100%</b></div>
       <div class="sc-port-actions"><button type="button" id="getPort" class="sc-primary">Получить порт</button><button type="button" id="charge" disabled>Подключить зарядку</button><button type="button" id="pack" disabled>Сложить самокат</button></div>
     </div>
@@ -114,5 +115,5 @@
 </section>
 <section class="finale" id="finale"><p class="fin-q">Заряда хватит.<br><em>Дорогу выбираешь ты.</em></p><nav class="fin-nav" id="finNav"></nav></section>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/p24_geo.js"></script><script src="../../data/p24_adv.js"></script><script src="app.js?v=20261001-world6"></script><script type="module" src="ride3d.js?v=20261001-world6"></script><script src="../../data/hub_adv.js"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/p24_geo.js"></script><script src="../../data/p24_adv.js"></script><script src="app.js?v=20261001-world7"></script><script type="module" src="ride3d.js?v=20261001-world7"></script><script src="../../data/hub_adv.js"></script>
 </body></html>
