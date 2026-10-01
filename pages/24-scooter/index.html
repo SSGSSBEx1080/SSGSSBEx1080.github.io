@@ -1,14 +1,96 @@
-<!doctype html><html lang="ru" data-root="../../"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#181c1a"><title>№24 · Электросамокат — ZitraksMode Wiki</title><meta name="description" content="Электросамокат ZitraksMode: разгон по склону, пять пассажиров, батарея, зарядный порт и три достижения. 3D-модель из исходников мода."><link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/p24-32.png">
+<!doctype html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#181c1a">
+<title>№24 · Электросамокат — ZitraksMode Wiki</title>
+<meta name="description" content="№24: электросамокат из ZitraksMode. Исходная 3D-модель, интерактивный трек, поверхности, столкновения, зарядный порт и три достижения.">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/p24-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p24-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="style.css"></head><body><main>
-<section class="sc-hero" id="hero"><div class="sc-stripe" aria-hidden="true"></div><div class="sc-hero-copy"><span class="sc-over">TRACK TEST // 28 JUL 2026 <i>№24</i></span><h1>САМ<br>НА <em>ХОДУ</em></h1><p>Самокат, которому тесно в городе. До 80 на ровной. На спуске законы ограничения скорости заканчиваются — начинается физика массы, уклона и торможения.</p><div class="sc-hero-actions"><a class="k-btn" href="#track">На тестовый трек ↗</a><a class="k-btn2" href="#garage">В гараж</a></div><div class="sc-spec"><span><b>80</b> км/ч · ровная</span><span><b>5</b> мест</span><span><b>15 000</b> блоков · заряд</span></div></div><div class="sc-hero-model"><span>MODEL / SOURCE GEOMETRY</span><canvas id="hero3d" aria-label="Трёхмерная модель самоката. Проведите пальцем для вращения"></canvas><img id="modelFallback" src="../../assets/textures/p24/scooter.svg" alt="Силуэт самоката" hidden><small>ПОВЕРНИ МОДЕЛЬ ↗</small></div></section>
-<section class="sec" id="track"><header class="sec-head"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">ride simulator / local demo</span><h2>Тестовый трек</h2></div><span class="sec-q">W / ↑ — газ · S / ↓ — тормоз</span></header><p class="sec-p">Упрощённая <b>локальная модель</b> по константам <code>ScooterEntity.java</code>, не физический движок Minecraft. Удерживай «Газ» или W; выбери склон и число пассажиров. На спуске масса ускоряет разгон. Данные не отправляются на сервер.</p><div class="sc-sim"><div class="sc-scene" id="scene"><div class="sc-sky"><span class="sc-sun"></span><span class="sc-mount m1"></span><span class="sc-mount m2"></span></div><div class="sc-road"><div class="sc-lines" id="lines"></div></div><div class="sc-rider"><img src="../../assets/textures/p24/scooter.svg" alt="Самокат на трассе"></div><span class="sc-roadlabel" id="roadLabel">РОВНАЯ · ОГРАНИЧЕНИЕ 80</span></div>
-<div class="sc-dash"><span class="sc-dash-top">SCOOTER // TELEMETRY</span><div class="sc-speed"><strong id="speed">000</strong><span>км/ч <small>HUD<br>НЕ ФАКТИЧЕСКАЯ</small></span></div><div class="sc-meter"><i id="needle"></i></div><div class="sc-bars"><label>АККУМУЛЯТОР <b id="chargeN">100%</b><span><i id="chargeBar"></i></span></label><label>ПРОЧНОСТЬ <b id="healthN">500 / 500</b><span><i id="healthBar"></i></span></label></div><p id="rideLog" role="status">Сначала возьми самокат — потом выезжай на трассу.</p></div></div>
-<div class="sc-controls"><div><button type="button" id="getScooter" class="sc-primary">Взять самокат</button><button type="button" id="go" class="sc-hold" disabled>▲ ГАЗ <small>удерживать</small></button><button type="button" id="brake" class="sc-hold" disabled>▼ ТОРМОЗ <small>удерживать</small></button><button type="button" id="horn" disabled>⚑ СИГНАЛ</button></div><div class="sc-select"><label for="grade">Трасса</label><select id="grade"><option value="flat">Ровная дорога</option><option value="down">Крутой спуск</option><option value="up">Подъём</option></select><label for="pax">Пассажиры <output id="paxN">1 / 5</output></label><input id="pax" type="range" min="1" max="5" value="1"></div></div><p class="sc-caution">Показание HUD масштабирует внутреннюю скорость на 72, а реальное движение — только на 0,5. Поэтому «80 км/ч» на экране ≠ 80 блоков/час или реальная скорость в мире.</p></section>
-<section class="sec" id="garage"><header class="sec-head"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">battery / station</span><h2>Пит-стоп</h2></div></header><div class="sc-garage"><div class="sc-port"><div class="sc-port-head">ЗАРЯДНЫЙ ПОРТ <span id="portLed">○ OFFLINE</span></div><div class="sc-port-body"><div class="sc-bolt">ϟ</div><p>Радиус поиска: <b>2 блока по X/Z</b>, ±1 по Y. Пока скорость не выше 0,08 внутренних единиц, порт даёт <b>1% в секунду</b>. Батарея и прочность сохраняются в NBT предмета, когда самокат складывают.</p></div><div class="sc-port-actions"><button type="button" id="getPort" class="sc-primary">Получить порт</button><button type="button" id="charge" disabled>Подключить зарядку</button><button type="button" id="pack" disabled>Сложить самокат</button></div></div><div class="sc-brief"><span>ПРИМЕЧАНИЕ ИЗ КОДА</span><h3>В названии 320.<br>В условии — 100.</h3><p>Достижение <code>speed_100</code> проверяет <b>≥ 99,5 км/ч по HUD</b>. На ровной дороге лимит 80. Нужен спуск, не подбор новой кнопки в интерфейсе.</p><p>На мокрой дороге самокат теряет прочность; мёд, сено и слизь меняют движение. В симуляторе выше показаны только дорога и уклон.</p></div></div></section>
-<section class="sec" id="history"><header class="sec-head"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">point / 24</span><h2>Краткая спецификация</h2></div></header><div class="sc-facts"><div><strong>1 000 000</strong><span>единиц полного заряда</span></div><div><strong>15 000</strong><span>блоков по прямой на батарее</span></div><div><strong>500</strong><span>единиц прочности</span></div><div><strong>5</strong><span>пассажиров максимум</span></div></div></section>
-
-<section class="sec" id="adv"><header class="sec-head"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">advancements / 24_scooter</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header><p class="sec-p">Ветка внизу страницы связана с общим древом на главной. Получение портa — <b>по предмету в инвентаре</b>; скорость — по HUD, а не по пройденному расстоянию.</p><div class="adv-board"><div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div><div class="adv-detail" id="advDetail"></div><div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 3</span><button class="btn-ghost" type="button" id="advReset">↺ сбросить прогресс</button></div></div><div class="adv-list" id="advList"></div></section>
-
-  <section class="finale" id="finale"><p class="fin-q">Заряда хватит.<br><em>Дорогу выбираешь ты.</em></p><nav class="fin-nav" id="finNav"></nav></section>
-</main><script src="../../shared/core.js"></script><script src="../../shared/points.js"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/p24_geo.js"></script><script src="../../data/p24_adv.js"></script><script src="app.js"></script><script src="../../data/hub_adv.js"></script></body></html>
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="style.css?v=20261001-v2">
+</head>
+<body><main>
+<section class="sc-hero" id="hero">
+  <div class="sc-stripe" aria-hidden="true"></div>
+  <div class="sc-hero-copy">
+    <span class="sc-over">TRACK TEST // 28 JUL 2026 <i>№24</i></span>
+    <h1>САМ<br>НА <em>ХОДУ</em></h1>
+    <p>Самокат, которому тесно в городе. До 80 на ровной, а на спуске решает масса. Переключай покрытие, разгоняйся, пробуй стену и возвращайся к порту за зарядом.</p>
+    <div class="sc-hero-actions"><a class="k-btn" href="#track">На тестовый трек ↗</a><a class="k-btn2" href="#terrain">Испытать покрытие</a></div>
+    <div class="sc-spec"><span><b>80</b> км/ч · ровная</span><span><b>5</b> мест</span><span><b>15 000</b> блоков · заряд</span></div>
+  </div>
+  <div class="sc-hero-model"><span>ORIGINAL / SCOOTER.GEO.JSON</span><canvas id="hero3d" aria-label="Трёхмерная модель самоката. Проведите пальцем для вращения"></canvas><img id="modelFallback" src="../../assets/textures/p24/scooter_side.png" alt="Модель самоката" hidden><small>ПОТЯНИ, ЧТОБЫ ПОВЕРНУТЬ ↗</small></div>
+</section>
+<section class="sec" id="track">
+  <header class="sec-head"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">ride simulator / local demo</span><h2>Тестовый трек</h2></div><span class="sec-q">W / ↑ — газ · S / ↓ — тормоз</span></header>
+  <p class="sec-p">Упрощённая локальная модель по константам <code>ScooterEntity.java</code>, не настоящий движок Minecraft. Удерживай газ, выбери уклон и число пассажиров: на спуске масса ускоряет самокат, на подъёме мешает. Данные остаются в браузере.</p>
+  <div class="sc-sim">
+    <div class="sc-scene" id="scene" data-surface="asphalt">
+      <div class="sc-sky"><span class="sc-sun"></span><span class="sc-mount m1"></span><span class="sc-mount m2"></span></div>
+      <div class="sc-road"><div class="sc-lines" id="lines"></div></div>
+      <div class="sc-rider" id="rider"><div class="sc-crew" id="crew" aria-hidden="true"></div><img src="../../assets/textures/p24/scooter_side.png" alt="Самокат из оригинальной геометрии мода"></div>
+      <span class="sc-roadlabel" id="roadLabel">РОВНАЯ · ОГРАНИЧЕНИЕ 80</span>
+      <span class="sc-surface-tag" id="surfaceTag">ПОКРЫТИЕ / АСФАЛЬТ</span>
+      <div class="sc-impact" id="impact" hidden aria-live="polite"></div>
+    </div>
+    <div class="sc-dash">
+      <span class="sc-dash-top">SCOOTER // TELEMETRY</span>
+      <div class="sc-speed"><strong id="speed">000</strong><span>км/ч <small>HUD<br>НЕ ФАКТИЧЕСКАЯ</small></span></div>
+      <div class="sc-meter"><i id="needle"></i></div>
+      <div class="sc-odometer"><div><span>ПРОБЕГ</span><b id="meters">0 м</b></div><div><span>ОСТАЛОСЬ</span><b id="range">15 000 м</b></div></div>
+      <div class="sc-bars"><label>АККУМУЛЯТОР <b id="chargeN">100%</b><span><i id="chargeBar"></i></span></label><label>ПРОЧНОСТЬ <b id="healthN">500 / 500</b><span><i id="healthBar"></i></span></label></div>
+      <p id="rideLog" role="status">Сначала возьми самокат — потом выезжай на трассу.</p>
+    </div>
+  </div>
+  <div class="sc-controls">
+    <div><button type="button" id="getScooter" class="sc-primary">Взять самокат</button><button type="button" id="go" class="sc-hold" disabled>▲ ГАЗ <small>удерживать</small></button><button type="button" id="brake" class="sc-hold" disabled>▼ ТОРМОЗ <small>удерживать</small></button><button type="button" id="horn" disabled>⚑ СИГНАЛ</button></div>
+    <div class="sc-select"><label for="grade">Трасса</label><select id="grade"><option value="flat">Ровная дорога</option><option value="down">Крутой спуск</option><option value="up">Подъём</option></select><label for="pax">На борту <output id="paxN">1 / 5</output></label><input id="pax" type="range" min="0" max="5" value="1"></div>
+  </div>
+  <p class="sc-caution">На HUD одна внутренняя единица скорости = 72 «км/ч», а перемещение в мире = скорость × 0,5. Это показатели интерфейса мода, не реальные километры в час.</p>
+</section>
+<section class="sec" id="terrain">
+  <header class="sec-head"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">environment / collision lab</span><h2>Не только асфальт</h2></div><span class="sec-q">покрытие меняет физику</span></header>
+  <p class="sec-p">Мёд и сено гасят скорость, вода тормозит движение, слизь отражает от стены. Выбери покрытие и столкнись с препятствием: обычная стена сдвинет самокат, но не выбросит пассажиров. Здесь — наглядная лаборатория правил из <code>ScooterEntity.java</code>.</p>
+  <div class="sc-lab">
+    <div class="sc-surface-list" id="surfaceList" role="group" aria-label="Покрытие трассы">
+      <button type="button" data-surface="asphalt" aria-pressed="true"><i>▥</i><b>Асфальт</b><span>обычный накат</span><em>×1,00</em></button>
+      <button type="button" data-surface="water" aria-pressed="false"><i>≋</i><b>Вода</b><span>вязкое движение</span><em>×0,88</em></button>
+      <button type="button" data-surface="honey" aria-pressed="false"><i>⬡</i><b>Мёд</b><span>резкий тормоз</span><em>×0,55</em></button>
+      <button type="button" data-surface="hay" aria-pressed="false"><i>≡</i><b>Сено</b><span>мягкий тормоз</span><em>×0,75</em></button>
+      <button type="button" data-surface="slime" aria-pressed="false"><i>◉</i><b>Слизь</b><span>отскок от стены</span><em>↶</em></button>
+    </div>
+    <div class="sc-impact-lab"><span class="sc-lab-code">СТОЛКНОВЕНИЕ / НЕ БЕЗНАКАЗАННО</span><h3>Испытай стену</h3><p id="surfaceInfo">На сухой трассе самокат сохраняет ход. На скорости об стену — скольжение вдоль неё без автоматического сброса пассажиров.</p>
+      <div class="sc-impact-actions"><button type="button" id="testWall">▣ Врезаться в стену</button><button type="button" id="testObsidian">◆ Испытать обсидиан</button></div>
+      <div class="sc-lab-note" id="collisionNote" role="status">Сначала разгонись. До 20 на HUD препятствие почти не чувствуется.</div>
+    </div>
+  </div>
+  <div class="sc-events"><span>БОРТОВОЙ ЖУРНАЛ</span><ol id="rideFeed"><li>Ожидаем выезда на тестовый трек.</li></ol></div>
+</section>
+<section class="sec" id="garage">
+  <header class="sec-head"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">battery / station</span><h2>Пит-стоп</h2></div><span class="sec-q">1% заряда / сек</span></header>
+  <div class="sc-garage">
+    <div class="sc-port"><div class="sc-port-head">ЗАРЯДНЫЙ ПОРТ <span id="portLed">○ OFFLINE</span></div>
+      <div class="sc-port-body"><div class="sc-bolt">ϟ</div><p>Радиус поиска: <b>2 блока по X/Z</b>, ±1 по Y. При скорости ≤ 0,08 внутренних единиц порт даёт <b>1% в секунду</b>. Чтобы сложить: остановись и поставь «На борту» на 0. Заряд и прочность сохраняются в NBT предмета.</p></div>
+      <div class="sc-port-read"><span>СТАНЦИЯ / ПРОГРЕСС</span><div><i id="portProgress"></i></div><b id="portPct">100%</b></div>
+      <div class="sc-port-actions"><button type="button" id="getPort" class="sc-primary">Получить порт</button><button type="button" id="charge" disabled>Подключить зарядку</button><button type="button" id="pack" disabled>Сложить самокат</button></div>
+    </div>
+    <div class="sc-brief"><span>ЭКСПРЕСС-МАРШРУТ / БАТАРЕЯ</span><h3>Сначала потрать.<br>Потом заряди.</h3><p>Полный заряд — <b>1 000 000</b> единиц на <b>15 000</b> блоков. Не хочешь ехать десять минут? Промотай локально 1 500 блоков: уйдёт примерно 10%, а зарядный порт станет виден в деле.</p>
+      <button type="button" id="quickRide">→ Промотать 1 500 блоков</button>
+      <p class="sc-code-note">Достижение «320 км/ч peek» на деле проверяет <b>≥ 99,5 на HUD</b>. На ровной лимит 80; спуск снимает ограничение.</p>
+    </div>
+  </div>
+</section>
+<section class="sec" id="history">
+  <header class="sec-head"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">what the source actually says</span><h2>Под обтекателем</h2></div></header>
+  <div class="sc-facts"><div><strong>1 000 000</strong><span>единиц полного заряда</span></div><div><strong>15 000</strong><span>блоков по прямой на батарее</span></div><div><strong>500</strong><span>единиц прочности</span></div><div><strong>5</strong><span>пассажиров максимум</span></div></div>
+  <div class="sc-details"><article><span>01 / НЕ КИЛОМЕТРЫ</span><h3>Цифры и движение</h3><p>Спидометр показывает <code>DATA_SPEED × 72</code>, движение по миру — <code>DATA_SPEED × 0,5</code>. До 80 HUD на ровной, на спуске возможно больше; антибесконечный потолок — 500.</p></article><article><span>02 / МАССА</span><h3>Впятером тяжело</h3><p>Пассажиры делают разгон и поворот медленнее, зато утяжеляют спуск. Для четырёх и пяти человек высота преодолеваемой ступени падает с 1 до 0,6 и 0,5 блока.</p></article><article><span>03 / КАРМАН</span><h3>Нельзя на ходу</h3><p>Сложить самокат можно только без пассажиров и при скорости не выше 0,08. Предмет помнит заряд и прочность; обычная стена не сбрасывает седоков.</p></article></div>
+</section>
+<section class="sec" id="adv">
+  <header class="sec-head"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">advancements / 24_scooter</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+  <p class="sec-p">Ветка внизу страницы связана с общим древом на главной. Получение порта — по предмету в инвентаре; скорость — по HUD, не по пройденным блокам.</p>
+  <div class="adv-board"><div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div><div class="adv-detail" id="advDetail"></div><div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 3</span><button class="btn-ghost" type="button" id="advReset">↺ сбросить прогресс</button></div></div><div class="adv-list" id="advList"></div>
+</section>
+<section class="finale" id="finale"><p class="fin-q">Заряда хватит.<br><em>Дорогу выбираешь ты.</em></p><nav class="fin-nav" id="finNav"></nav></section>
+</main>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/p24_geo.js"></script><script src="../../data/p24_adv.js"></script><script src="app.js?v=20261001-v2"></script><script src="../../data/hub_adv.js"></script>
+</body></html>

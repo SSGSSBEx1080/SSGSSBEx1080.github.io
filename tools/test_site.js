@@ -71,6 +71,16 @@ for (const id of ['p5', 'pd', 'pc', 'pv', 'pm']) {
 assert.match(maxApp, /class="mx-note"/, 'MAX notes should be interactive disclosure cards');
 assert.equal(POINTS.find(p => p.n === 24).page, 'pages/24-scooter/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 24).adv.length, 3);
+const scooterHtml = fs.readFileSync(path.join(root, 'pages/24-scooter/index.html'), 'utf8');
+const scooterApp = fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8');
+for (const id of ['hero3d', 'surfaceList', 'testWall', 'testObsidian', 'quickRide', 'charge', 'pack', 'rideFeed']) {
+  assert.ok(scooterHtml.includes(`id="${id}"`), `Scooter interactive control ${id} missing`);
+}
+assert.doesNotMatch(scooterHtml, /scooter\.svg/, 'The track must show the source model rather than a placeholder icon');
+assert.match(scooterApp, /state\.passengers > 0/, 'Folding must reject a scooter with passengers');
+const scooterRender = fs.readFileSync(path.join(root, 'assets/textures/p24/scooter_side.png'));
+assert.equal(scooterRender.subarray(1, 4).toString(), 'PNG', 'Source geometry render must be PNG');
+assert.ok(scooterRender.readUInt32BE(16) >= 500, 'Scooter render must be crisp on desktop');
 // Every builtin printer blueprint must retain the exact blockstate, not just
 // the base block ID: hinges, wooden axes and tripwire connections matter.
 vm.runInNewContext(fs.readFileSync(path.join(root, 'data/p13_vox.js'), 'utf8'), ctx);
