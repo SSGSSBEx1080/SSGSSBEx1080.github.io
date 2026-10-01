@@ -212,6 +212,13 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc-20 .pc-bg::before{content:"67";position:absolute;right:9%;top:52%;font:400 40px/1 'LG Dela',sans-serif;color:#ffd700;letter-spacing:-.02em;transform:rotate(-5deg);text-shadow:0 3px 0 #8b4513}
 .pc-21 .pc-bg{background:radial-gradient(circle at 78% 30%,rgba(201,164,92,.35),transparent 40%),radial-gradient(ellipse at 10% 120%,rgba(15,107,112,.35),transparent 60%),linear-gradient(160deg,#16181c,#07080a)}
 .pc-21 .pc-bg::before{content:"\2638";position:absolute;right:7%;top:38%;font:400 54px/1 serif;color:#c9a45c;opacity:.85;text-shadow:0 0 18px rgba(201,164,92,.6)}
+.pc-22 .pc-bg{background:radial-gradient(ellipse 30% 26% at 78% 26%,#141210 60%,transparent 62%),radial-gradient(ellipse 18% 22% at 92% 70%,#141210 60%,transparent 62%),radial-gradient(ellipse 14% 12% at 60% 82%,#d7322c 55%,transparent 58%),linear-gradient(160deg,#f4efe3,#d8d0bd)}
+.pc-22 .pc-t,.pc-22 .pc-n,.pc-22 .pc-d{color:#141210;text-shadow:none}
+.pc-23 .pc-bg{background:radial-gradient(circle at 80% 26%,rgba(138,61,255,.55),transparent 45%),radial-gradient(circle at 20% 120%,rgba(53,198,255,.35),transparent 55%),linear-gradient(160deg,#0f1524,#0c1015)}
+.pc-23 .pc-bg::before{content:"MAX";position:absolute;right:8%;top:20%;font:800 30px/1 'LG Tektur',sans-serif;color:transparent;background:linear-gradient(135deg,#35c6ff,#8a3dff);-webkit-background-clip:text;background-clip:text}
+.pc-24 .pc-bg{background:repeating-linear-gradient(90deg,rgba(233,227,201,.5) 0 26px,transparent 26px 52px) 0 78%/100% 3px no-repeat,radial-gradient(circle at 80% 28%,rgba(0,224,160,.42),transparent 42%),linear-gradient(180deg,#0d1416,#070a0b);animation:pc24Road 1.2s linear infinite}
+.pc-24 .pc-bg::before{content:"80";position:absolute;right:9%;top:16%;font:800 italic 34px/1 'LG Tektur',sans-serif;color:#99ff99;text-shadow:0 0 12px rgba(0,224,160,.7)}
+@keyframes pc24Road{to{background-position:-52px 78%,0 0,0 0}}
 @keyframes sbSpin{to{transform:rotate(360deg)}}
 @keyframes aqRise{from{transform:translateY(0)}to{transform:translateY(-220px)}}
 @keyframes prNoz{0%{transform:translate(-40px,0)}50%{transform:translate(30px,6px)}100%{transform:translate(-20px,12px)}}
@@ -436,6 +443,12 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 @font-face{font-family:'LG Dela';font-display:swap;src:url(../assets/fonts/DelaGothic-400-latin.woff2) format('woff2')}
 .lg-c[data-s="20"]{font-family:'LG Dela';font-weight:400;background:linear-gradient(180deg,#fffbe6,#ffd700 50%,#a86f12);-webkit-background-clip:text;background-clip:text;color:transparent;--d:#8b4513;text-shadow:none;filter:drop-shadow(0 3px 0 #5a2d0c)}
 .lg-c[data-s="21"]{font-family:'LG Cormorant';font-weight:700;font-size:1.1em;color:transparent;background:linear-gradient(180deg,#fffaf0,#e8e2cf 45%,#a89e86);-webkit-background-clip:text;background-clip:text;text-shadow:none;filter:drop-shadow(0 3px 0 #b3122b) drop-shadow(0 0 12px rgba(201,164,92,.4))}
+/* 22 Дойка: молочно-белое с пятнами голштинки */
+.lg-c[data-s="22"]{font-family:'Rubik Mono One',sans-serif;color:#f4efe3;--d:#141210;text-shadow:0 3px 0 #141210,0 0 0 #000;font-size:.92em}
+/* 23 MAX: градиент иконки мессенджера */
+.lg-c[data-s="23"]{font-family:'LG Tektur';font-weight:800;color:transparent;background:linear-gradient(135deg,#35c6ff,#3c6cff 45%,#8a3dff);-webkit-background-clip:text;background-clip:text;text-shadow:none;filter:drop-shadow(0 3px 0 #1a1f6b) drop-shadow(0 0 12px rgba(60,108,255,.45))}
+/* 24 Самокат: мятный неон спидометра */
+.lg-c[data-s="24"]{font-family:'LG Tektur';font-weight:800;font-style:italic;color:#eafff8;--d:#00e0a0;text-shadow:0 0 6px #00e0a0,0 0 18px rgba(0,224,160,.7),3px 3px 0 #04261c}
 @keyframes lgScan{from{background-position:0 100%}to{background-position:0 -100%}}
 .lg-tip{height:22px;margin-top:6px;font:400 14px var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-4px);transition:.2s}
 .lg-tip.on{opacity:1;transform:none}
