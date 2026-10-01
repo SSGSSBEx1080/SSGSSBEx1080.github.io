@@ -392,10 +392,6 @@
   }
   function setTab(n) {
     tab = n; ptSel = null; hideTip(); sfx("click", 0.35, n ? 1.25 : 1);
-    // A branch link from any point page must open the matching tab, not just
-    // leave the visitor at an unrecognized #tree/NN fragment.
-    const branchHash = n ? `#tree/${n}` : '#tree';
-    if (location.hash !== branchHash) history.replaceState(null, '', branchHash);
     const pt = HUB.find((x) => x.n === n), st = stats();
     $("#tw").classList.toggle("pt", !!pt);
     $("#twIn2").hidden = !!pt; $("#twPt").hidden = !pt;
@@ -421,16 +417,7 @@
   function renderAll() { const st = stats(); heroRender(st); profileRender(st); ptRender(); treeRender(st); tabsRender(st); if (tab) ptBoard(st); PF.refresh(); }
   document.documentElement.style.scrollBehavior = "smooth";
   applyCfg(); layout(); tl(); renderAll();
-  const followBranchLink = () => {
-    const m = /^#tree\/(\d{1,2})$/.exec(location.hash);
-    if (m && HUB.some((pt) => pt.n === +m[1])) {
-      setTab(+m[1]);
-      requestAnimationFrame(() => document.getElementById('tree').scrollIntoView({ block: 'start', behavior: 'instant' }));
-    } else if (location.hash === '#tree' && tab) setTab(0);
-  };
-  followBranchLink();
-  addEventListener('hashchange', followBranchLink);
-  requestAnimationFrame(() => { sizeBg(); if (!tab) home(); requestAnimationFrame(frame); });
+  requestAnimationFrame(() => { sizeBg(); home(); requestAnimationFrame(frame); });
   // вернулся со страницы пункта: обновить прогресс
   addEventListener("pageshow", (e) => { if (e.persisted) renderAll(); });
   addEventListener("storage", (e) => { if (e.key && e.key.startsWith("zm:")) renderAll(); });

@@ -1,34 +1,272 @@
-<!doctype html><html lang="ru" data-root="../../"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101815">
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>№24 · Электросамокат — ZitraksMode Wiki</title>
-<meta name="description" content="Электросамокат ZitraksMode: 2D-симулятор склона и массы пассажиров, точный план генерируемой зарядной станции из NBT-шаблона и ветка достижений.">
-<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/p24-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p24-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="style.css?v=20261001-2d2"></head>
-<body><main>
-<header class="sc-hero" id="hero"><div class="sc-hero-copy">
-  <span class="sc-eyebrow"><i></i> FIELD NOTES / 24 — ZITRAKSMODE</span>
-  <h1>ДЕРЖИ<br><em>УКЛОН.</em></h1>
-  <p>Пять мест. Три рельефа. Один аккумулятор. Лёгкий самокат проворнее на равнине — тяжёлая команда быстрее на спуске. Проверь, кто доедет до зарядной станции.</p>
-  <div class="sc-hero-actions"><a class="sc-btn fill" href="#ride">Запустить симулятор <span>↘</span></a><a class="sc-btn" href="#station">Исследовать станцию ↗</a></div>
-  <div class="sc-hero-spec"><span><b>80</b><small>HUD / ровно</small></span><span><b>05</b><small>мест в моде</small></span><span><b>15K</b><small>блоков / заряд</small></span></div>
-</div><div class="sc-hero-art" aria-label="Электросамокат из исходной модели мода, вид сбоку"><div class="sc-art-grid"></div><span class="sc-art-no">24 / MOBILITY</span><div class="sc-art-sun"></div><div class="sc-art-road"></div><img src="../../assets/textures/p24/scooter_side.png" alt="Оригинальная модель самоката, вид сбоку"><span class="sc-art-caption">ZITRAKSMODE: SCOOTER <i>●</i> SOURCE ATLAS</span></div></header>
-<div class="sc-ticker" aria-hidden="true"><span>↓ MASS IS MOMENTUM &nbsp; / &nbsp; ↑ MASS IS RESISTANCE &nbsp; / &nbsp; → 80 KM/H LIMIT &nbsp; / &nbsp; 3 PORTS PER STATION &nbsp; / &nbsp; ↓ MASS IS MOMENTUM &nbsp; / &nbsp; ↑ MASS IS RESISTANCE &nbsp; / &nbsp; → 80 KM/H LIMIT</span></div>
-<section class="sec" id="ride"><header class="sec-head"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">20 ticks / second · 2D physics lab</span><h2>Пройди рельеф.</h2></div><span class="sec-q">W / ↑ газ · S / ↓ тормоз</span></header>
-<p class="sec-p">Нажми «Взять самокат», выбери уклон и удерживай газ или включи круиз. Меняй пассажиров на лету: <b>массы взяты из ScooterMassHelper.java</b>, а не придуманы для этой страницы. Это учебная 2D-модель формул мода, не игровой мир Minecraft.</p>
-<div class="sc-workbench">
- <div class="sc-ride-main"><div class="sc-screen"><div class="sc-screen-head"><span>● LIVE / 2D TERRAIN</span><span id="gradeRead">→ РОВНАЯ ДОРОГА</span></div><canvas id="rideCanvas" width="900" height="460" role="img" aria-label="Двумерная дорога и самокат, рельеф меняется переключателем"></canvas><div class="sc-screen-foot"><span>КРУТИ КОЛЁСА, НЕ МОДЕЛЬ</span><span id="rideStatus" role="status">ОЖИДАНИЕ ЗАПУСКА</span></div></div>
- <div class="sc-instruments"><div class="sc-speed"><small>SPEED / HUD</small><div><b id="speed">000</b><span>км/ч</span></div><div class="sc-speedline"><i id="speedLine"></i><em>80</em></div></div><div class="sc-meter"><small>АККУМУЛЯТОР</small><b id="chargeN">100%</b><div class="sc-meter-bar"><i id="chargeBar"></i></div><span id="range">≈ 15 000 блоков осталось</span></div><div class="sc-meter"><small>ПРОЙДЕНО</small><b id="meters">0 м</b><span>HUD = скорость × 72<br>движение = скорость × 0,5 / тик</span></div></div>
- <div class="sc-drive-controls"><button type="button" id="getScooter" class="sc-btn fill"><img src="../../assets/textures/p24/scooter_item.png" alt=""> Взять самокат</button><button type="button" id="go" disabled>↑ ГАЗ <small>удерживать</small></button><button type="button" id="cruise" disabled aria-pressed="false">◎ КРУИЗ <small>вкл / выкл</small></button><button type="button" id="brake" disabled>↓ ТОРМОЗ <small>удерживать</small></button><button type="button" id="rideReset">↺ Сброс поездки</button></div>
- </div>
- <aside class="sc-config"><div class="sc-config-head"><span>SIM CONTROL / 01</span><b>НАСТРОЙКА ЗАЕЗДА</b></div><fieldset class="sc-grades"><legend>УКЛОН МАРШРУТА</legend><button type="button" data-grade="flat" class="on" aria-pressed="true"><strong>→</strong><span>Ровно</span><small>лимит 80</small></button><button type="button" data-grade="down" aria-pressed="false"><strong>↘</strong><span>Спуск</span><small>масса помогает</small></button><button type="button" data-grade="up" aria-pressed="false"><strong>↗</strong><span>Подъём</span><small>масса мешает</small></button></fieldset>
- <div class="sc-crew-head"><span>ЭКИПАЖ / ДО 5 МЕСТ</span><b id="crewN">1 / 5</b></div><p class="sc-crew-help">Водитель — игрок (1.0). Добавь до четырёх пассажиров и выбери мобов. Поле массы заполнено <b>точным значением из мода</b>; можешь изменить его вручную для гипотетического теста. Это игровые единицы, не килограммы.</p><div id="crewRows" class="sc-crew"></div><button type="button" id="addRider" class="sc-add">＋ Добавить пассажира</button>
- <div class="sc-mass-total"><span>МАССА САМОКАТА + ЭКИПАЖА</span><b><span id="totalMass">2.0</span><small>ед.</small></b><div class="sc-mass-bar"><i id="massBar"></i></div><small id="massNote">1.0 самокат + 1.0 игрок</small></div><div class="sc-equation">HEAVY = clamp((масса − 1) / 24, 0, 1)<br>Тяжёлый разгоняется плавнее, но сильнее катится вниз.</div></aside>
-</div><p class="sc-source-line">Источник: <code>ScooterEntity.java</code> · <code>ScooterMassHelper.java</code> · симуляция без коллизий/сетевой физики.</p></section>
-<section class="sec" id="station"><header class="sec-head"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">original structure / scooter_station.nbt</span><h2>Не блок. Станция.</h2></div><span class="sec-q">10 × 6 × 11 блоков</span></header><p class="sec-p">В мире возникают <b>целые зарядные станции</b>: каменная площадка, кладка из андезита и туфа, железные детали, фонарь и три зарядных порта. Ниже — настоящий план слоёв NBT-шаблона из мода, не нарисованная бензоколонка. Нажми на один из портов.</p>
-<div class="sc-station-wrap"><div class="sc-blueprint"><div class="sc-blueprint-head"><div><small>OVERWORLD / STRUCTURE TEMPLATE</small><strong>СТАНЦИЯ №24</strong></div><span>10 W × 11 D</span></div><div class="sc-plan-toolbar"><span>СЛОЙ ШАБЛОНА</span><div id="layerTabs"><button type="button" data-layer="1" class="on" aria-pressed="true">01 · порты</button><button type="button" data-layer="2" aria-pressed="false">02 · стены</button><button type="button" data-layer="4" aria-pressed="false">04 · верх</button></div></div><div class="sc-plan-stage"><div id="stationGrid" class="sc-station-grid" role="group" aria-label="План станции из файла scooter_station.nbt"></div><div class="sc-plan-axis" aria-hidden="true">X → / Z ↓ &nbsp; · &nbsp; каждый квадрат = 1 блок</div></div><div class="sc-elevation"><div class="sc-elevation-head"><span>ФАСАД / Z → · Y ↑</span><small>передняя линия X=2 + опорная стенка X=5</small></div><div id="stationElevation" class="sc-elevation-grid" role="img" aria-label="Фасад станции: три зарядных порта под крышей из каменных плит"></div></div><div class="sc-plan-legend"><span><i class="stone"></i> камень</span><span><i class="concrete"></i> бетон / железо</span><span><i class="port"></i> зарядный порт</span><span><i class="void"></i> пустота</span></div></div>
-<div class="sc-station-side"><div class="sc-station-top"><img src="../../assets/textures/p24/charging_port_item.png" alt="Оригинальная иконка зарядного порта из мода"><div><small id="portLabel">ЗАРЯДНЫЙ ПОРТ / 01 ИЗ 03</small><strong>Точка подключения.</strong></div></div><p>Три порта в структуре стоят на координатах <code>[2,1,3]</code>, <code>[2,1,5]</code>, <code>[2,1,7]</code>. Их текстуры ниже — оригинальные файлы мода.</p><div class="sc-faces"><img src="../../assets/textures/p24/charging_port_front.png" alt="Лицевая грань порта"><img src="../../assets/textures/p24/charging_port_side.png" alt="Боковая грань порта"><img src="../../assets/textures/p24/charging_port_top.png" alt="Верхняя грань порта"></div><div class="sc-materials"><small>ВНУТРИ NBT / МАТЕРИАЛЫ ПОСТРОЙКИ</small><div><span><b>32</b> булыжника</span><span><b>30</b> полированного андезита</span><span><b>13</b> блоков туфа</span><span><b>12</b> блоков светло-серого бетона</span><span><b>08</b> железных прутьев</span><span><b>01</b> фонарь</span></div><em>Плюс каменные плиты, ступени, стены и таблички. Точный состав взят из шаблона структуры.</em></div><div class="sc-charge-display"><small>ЗАРЯД / +1% В СЕКУНДУ</small><div class="sc-meter-bar"><i id="stationChargeBar"></i></div><b id="stationChargeN">100%</b></div><button type="button" id="stationCharge" class="sc-btn fill" disabled>Подключить самокат ↗</button><button type="button" id="getPort" class="sc-quick">＋ Получить зарядный порт (предмет / достижение)</button><small id="stationHint" class="sc-station-hint" role="status">Возьми самокат в симуляторе. Для зарядки остановись.</small><button type="button" id="quickTrip" class="sc-quick">↗ Промотать 1 500 блоков для проверки заряда</button></div></div>
-<div class="sc-generation"><div class="sc-generation-copy"><span class="sc-eyebrow">WORLDGEN / FROM SCOOTERSTATIONSPAWNER.JAVA</span><h3>Редкая точка<br>на большой карте.</h3><p>В обычном мире — <b>одна станция на ячейку 768 × 768 блоков</b>, с отклонением до 120 блоков от центра. Вокруг игрока проверяются 3 × 3 ячейки; неподходящий рельеф может помешать установке. Поворот станции случайный, карта справа — схема ячеек, <b>не реальные координаты</b> вашего мира.</p><div class="sc-spawn-stats"><span><b>77%</b>без самоката</span><span><b>15%</b>один</span><span><b>06%</b>два</span><span><b>02%</b>три</span></div></div><div class="sc-world-map"><div class="sc-map-head">▦ КАРТА СЕТКИ / ВЫБЕРИ ЯЧЕЙКУ</div><div id="stationMap" class="sc-map-cells" role="group" aria-label="Условная сетка генерации станций"></div><div id="stationMapDetail" class="sc-map-detail">Нажми на ячейку, чтобы посмотреть пример генерации.</div></div></div></section>
-<section class="sec" id="notes"><header class="sec-head"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">inside the source / engineering notes</span><h2>За пределами HUD.</h2></div></header><div class="sc-notes"><article><span>01 / ДВИЖЕНИЕ</span><b>80 ≠ 80 блоков</b><p>Цифра на спидометре равна внутренней скорости × 72. Перемещение — скорость × 0,5 за тик. На ровном трасса ограничена 80 на HUD; на спуске потолок — 500.</p></article><article><span>02 / СКЛОН И МАССА</span><b>Тяжесть меняет всё</b><p>Масса включает самокат (1.0) и всех пассажиров. При 5 местах высота преодолеваемой ступени падает до 0,5 блока. Четыре голема могут вовсе не тронуться в крутой подъём: ускорение меньше порога 0,005 в коде мода. В браузере ступени не моделируются.</p></article><article><span>03 / БАТАРЕЯ</span><b>15 000 блоков</b><p>Полный заряд — 1 000 000 единиц. Расход зависит от пройденного пути, уклона и массы; порт восстанавливает 1% в секунду, если самокат стоит рядом.</p></article></div></section>
-<section class="sec" id="adv"><header class="sec-head"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">advancements / connected to the main tree</span><h2>Ветка достижений.</h2></div><span class="sec-q" id="advQ"></span></header><p class="sec-p">Эта ветка внизу страницы и вкладка №24 в главном древе используют один и тот же прогресс профиля. На спуске попробуй разогнаться до 100 по HUD.</p><div class="adv-board"><div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div><div class="adv-detail" id="advDetail"></div><div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 3</span><button class="btn-ghost" type="button" id="advReset">↺ сбросить прогресс</button></div></div><div class="adv-list" id="advList"></div></section>
-<section class="finale" id="finale"><p class="fin-q">Путь длинный.<br><em>Заряд не бесконечен.</em></p><nav class="fin-nav" id="finNav"></nav></section>
-</main><script src="../../shared/core.js"></script><script src="../../shared/points.js"></script><script src="../../shared/kit.js"></script><script src="../../data/p24_adv.js"></script><script src="../../data/p24_station.js"></script><script src="app.js?v=20261001-2d2"></script><script src="../../data/hub_adv.js"></script></body></html>
+<meta name="description" content="Пункт №24 мода ZitraksMode: электросамокат на пятерых со спидометром, зарядом на 15 000 блоков, тараном мягких блоков и станциями зарядки по всему миру.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="sc-bg" id="bg" aria-hidden="true"></canvas>
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="sc-hero" id="hero">
+    <div class="sc-hero-txt">
+      <div class="sc-tag"><span>№24</span>28.07.2026<i></i>v1.1.2<i></i>транспорт</div>
+      <h1 class="sc-logo"><span class="sc-l1">Электро</span><span class="sc-l2">самокат</span></h1>
+      <p class="sc-sub">Дека на пятерых, спидометр, который честно врёт в два раза, и заряд на пятнадцать тысяч блоков. С горки он разгоняется за сотню, мягкую стену проезжает насквозь, а кончившийся заряд пополняют на станциях, раскиданных по всему миру. Над станциями висит табличка «Бензина нет».</p>
+      <div class="sc-cta"><a class="k-btn" href="#drive">Тест-драйв</a><a class="k-btn2" href="#crash">Краш-тест</a><a class="k-btn2" href="#station">Станции</a></div>
+      <div class="sc-stats">
+        <a href="#drive"><b>80</b><span>км/ч на ровной</span></a>
+        <a href="#charge"><b>15 000</b><span>блоков на заряде</span></a>
+        <a href="#pax"><b>5</b><span>мест на деке</span></a>
+        <a href="#adv"><b id="stGot">0/3</b><span>ачивки</span></a>
+      </div>
+    </div>
+    <figure class="sc-stage" id="heroStage">
+      <div class="sc-glow" aria-hidden="true"></div>
+      <canvas class="sc-model" id="hero3d" aria-label="3D-модель самоката"></canvas>
+      <div class="sc-road" aria-hidden="true"><i id="heroRoad"></i></div>
+      <div class="sc-hud sc-hud-hero" id="heroHud"></div>
+      <div class="sc-hbar"><button type="button" class="sc-chip" id="heroGo" aria-pressed="false">▶ поехали</button><button type="button" class="sc-chip" id="heroHorn">♪ гудок</button><span class="sc-hint">тяни — повернуть · клик — гудок</span></div>
+    </figure>
+  </section>
+
+  <div class="sc-marq" aria-hidden="true"><div id="marq"></div></div>
+
+  <!-- ============ 01 ГАРАЖ ============ -->
+  <section class="sec" id="garage">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">scooter · geckolib</span><h2>Гараж</h2></div><span class="sec-q">модель, анимации, ливреи</span></header>
+    <p class="sec-p reveal">Самокат — сущность, а не блок: ставится с руки, как лодка, и снова складывается в предмет вместе с зарядом и прочностью. Модель на GeckoLib, три анимации. На стоянке он заваливается на подножку, на ходу подножка поднимается и крутятся колёса, задним ходом колёса идут в обратную сторону.</p>
+    <div class="sc-garage reveal">
+      <div class="sc-view">
+        <canvas id="gar3d" aria-label="Самокат: модель и анимации"></canvas>
+        <div class="sc-seatpins" id="garPins" aria-hidden="true"></div>
+        <div class="sc-view-bar">
+          <div class="sc-seg" id="garAnim" role="group" aria-label="Анимация">
+            <button type="button" data-a="idle" aria-pressed="true">Стоянка</button><button type="button" data-a="forward" aria-pressed="false">Вперёд</button><button type="button" data-a="backward" aria-pressed="false">Назад</button>
+          </div>
+          <button type="button" class="sc-chip" id="garSeats" aria-pressed="false">места</button>
+          <button type="button" class="sc-chip" id="garTop">вид сверху</button>
+        </div>
+      </div>
+      <aside class="sc-side">
+        <div class="sc-card">
+          <h3>Ливрея</h3>
+          <div class="sc-skins" id="skins"></div>
+          <p class="sc-small" id="skinNote"></p>
+        </div>
+        <div class="sc-card sc-tipcard">
+          <div class="sc-itemrow"><span class="sc-slot"><img src="../../assets/textures/p24/i/scooter.png" alt="Самокат"></span><div class="sc-tip" id="itemTip"></div></div>
+        </div>
+        <dl class="k-dl" id="garDl"></dl>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 02 ТЕСТ-ДРАЙВ ============ -->
+  <section class="sec" id="drive">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">physics · 20 tps</span><h2>Тест-драйв</h2></div><span class="sec-q">физика тик в тик</span></header>
+    <p class="sec-p reveal">Разгон, накат, подъём и спуск посчитаны по тем же формулам, что крутятся в игре, 20 раз в секунду. Держи <b>W</b> или кнопку «газ», <b>S</b> — тормоз и задний ход. На ровной самокат упирается в 80 по спидометру, на подъёме теряет скорость тем сильнее, чем больше народу на деке, а на спуске потолок почти пропадает. Пассажиров сажай в разделе ниже, они едут и здесь.</p>
+    <div class="sc-drive reveal">
+      <div class="sc-track" id="track" tabindex="0" aria-label="Трасса тест-драйва. W — газ, S — тормоз, пробел — гудок">
+        <canvas id="trackCv"></canvas>
+        <div class="sc-hud sc-hud-drive" id="driveHud"></div>
+        <div class="sc-truth" id="truth"></div>
+        <div class="sc-pedals">
+          <button type="button" class="sc-pedal brake" id="pBrake" aria-label="Тормоз / назад">S<small>тормоз</small></button>
+          <button type="button" class="sc-pedal gas" id="pGas" aria-label="Газ">W<small>газ</small></button>
+        </div>
+      </div>
+      <div class="sc-dpanel">
+        <div class="sc-card">
+          <h3>Рельеф</h3>
+          <div class="sc-seg sc-seg-wrap" id="slopeSeg" role="group" aria-label="Уклон"></div>
+          <h3>Под колёсами</h3>
+          <div class="sc-seg sc-seg-wrap" id="surfSeg" role="group" aria-label="Покрытие"></div>
+          <div class="sc-opts">
+            <button type="button" class="sc-chip" id="dPort" aria-pressed="false">⚡ рядом порт</button>
+            <button type="button" class="sc-chip" id="dHorn">♪ гудок</button>
+            <button type="button" class="sc-chip" id="dReset">↺ заново</button>
+          </div>
+        </div>
+        <div class="sc-card">
+          <h3>Телеметрия</h3>
+          <dl class="sc-tele" id="tele"></dl>
+        </div>
+      </div>
+    </div>
+    <div class="sc-graph reveal">
+      <canvas id="graphCv" aria-label="График скорости"></canvas>
+      <div class="sc-graph-l"><span><i style="background:#00e0a0"></i>спидометр</span><span><i style="background:#ffd166"></i>на самом деле</span><span><i style="background:#ff5a5a"></i>потолок</span></div>
+    </div>
+  </section>
+
+  <!-- ============ 03 ПАССАЖИРЫ ============ -->
+  <section class="sec" id="pax">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">seats · mass</span><h2>Пятеро на деке</h2></div><span class="sec-q">все стоят, никто не сидит</span></header>
+    <p class="sec-p reveal">Пять мест: водитель, середина, хвост и два боковых, развёрнутых наружу под 45°. Все едут стоя. Животные запрыгивают сами, если самокат почти стоит рядом с ними, остальные мобы — только если прижались вплотную. Каждый пассажир имеет массу, и она меняет всё: разгон, торможение, руль, накат с горы и силу тарана.</p>
+    <div class="sc-paxwrap reveal">
+      <div class="sc-deck">
+        <div class="sc-deckview" id="deck"></div>
+        <p class="sc-small">Выбери моба справа и кликни по месту. Клик по занятому месту — высадить. Водителем всегда едет игрок.</p>
+      </div>
+      <div class="sc-mobs">
+        <div class="sc-mobgrid" id="mobs"></div>
+        <dl class="sc-tele sc-massdl" id="massDl"></dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 КРАШ-ТЕСТ ============ -->
+  <section class="sec" id="crash">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">ram · dig · collide</span><h2>Краш-тест</h2></div><span class="sec-q">стена, моб, другой самокат</span></header>
+    <p class="sec-p reveal">Упёршись в стену быстрее 20 км/ч, самокат пробует её проломить. Сила удара — скорость, делённая на 80, умноженная на массу и на уклон. Ломает он только мягкое: землю, песок, стекло, листву, дерево, лёд. Камень и металл не поддаются ни при какой силе, самокат просто скользит вдоль стены. Пассажиров при ударе не выбрасывает.</p>
+    <div class="sc-crash reveal">
+      <div class="sc-lab">
+        <div class="sc-lane" id="lane"></div>
+        <div class="sc-labbar">
+          <label class="sc-range"><span>Скорость <b id="cSpdT">60 км/ч</b></span><input type="range" id="cSpd" min="0" max="200" step="1" value="60"></label>
+          <label class="sc-range"><span>Уклон <b id="cSlT">ровно</b></span><input type="range" id="cSl" min="0" max="4" step="1" value="0"></label>
+          <button type="button" class="k-btn" id="cGo">Таран!</button>
+        </div>
+        <div class="sc-blocks" id="cBlocks" role="group" aria-label="Блок стены"></div>
+      </div>
+      <aside class="sc-side">
+        <div class="sc-card"><h3>Протокол</h3><dl class="sc-tele" id="cOut"></dl><p class="sc-small" id="cNote"></p></div>
+      </aside>
+    </div>
+    <div class="sc-hits reveal">
+      <div class="sc-card sc-hit">
+        <h3>Сбить моба</h3>
+        <div class="sc-hitvis" id="mobVis"></div>
+        <dl class="sc-tele" id="mobOut"></dl>
+      </div>
+      <div class="sc-card sc-hit">
+        <h3>Самокат в самокат</h3>
+        <div class="sc-hitvis sc-two" id="twoVis"></div>
+        <dl class="sc-tele" id="twoOut"></dl>
+      </div>
+      <div class="sc-card sc-hit">
+        <h3>Если сломался</h3>
+        <div class="sc-loot" id="loot"></div>
+        <div class="sc-opts"><button type="button" class="sc-chip" id="lootA">поломка</button><button type="button" class="sc-chip" id="lootB">лобовое в обсидиан</button></div>
+        <p class="sc-small" id="lootNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 ЗАРЯДКА ============ -->
+  <section class="sec" id="charge">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">charge · charging_port</span><h2>Заряд</h2></div><span class="sec-q">1% в секунду у порта</span></header>
+    <p class="sec-p reveal">Батарея на миллион единиц, полной хватает на <b>15 000 блоков</b> пути. Тратится она на пройденные блоки, а не на время: стоять можно сколько угодно. В гору и с тяжёлым грузом расход растёт. Заряжается самокат, если стоит (или еле катится) в двух блоках от порта зарядки: 1% в секунду, полный бак за 100 секунд.</p>
+    <div class="sc-chg reveal">
+      <div class="sc-portbox">
+        <div class="sc-cube-wrap" id="cubeWrap"><div class="sc-cube" id="cube">
+          <i class="f-front"></i><i class="f-back"></i><i class="f-left"></i><i class="f-right"></i><i class="f-top"></i><i class="f-bottom"></i>
+        </div></div>
+        <div class="sc-portinfo">
+          <div class="sc-tip" id="portTip"></div>
+          <dl class="k-dl" id="portDl"></dl>
+        </div>
+      </div>
+      <div class="sc-card sc-calc">
+        <h3>Калькулятор поездки</h3>
+        <label class="sc-range"><span>Заряд <b id="kChT">100%</b></span><input type="range" id="kCh" min="0" max="100" step="0.5" value="100"></label>
+        <label class="sc-range"><span>Скорость <b id="kSpT">80 км/ч</b></span><input type="range" id="kSp" min="5" max="150" step="1" value="80"></label>
+        <div class="sc-seg sc-seg-wrap" id="kMode" role="group" aria-label="Условия"></div>
+        <div class="sc-battery"><i id="kBat"></i><span id="kBatT"></span></div>
+        <dl class="sc-tele" id="kOut"></dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 СТАНЦИИ ============ -->
+  <section class="sec" id="station">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">scooter_station.nbt</span><h2>Станции</h2></div><span class="sec-q">одна на квадрат 768×768</span></header>
+    <p class="sec-p reveal">Мир поделён на квадраты 768 на 768 блоков, и в каждом, куда ты доходишь, появляется ровно одна станция: где-то рядом с центром квадрата, со сдвигом до 120 блоков. Под навесом три порта зарядки, по бокам две таблички «Бензина нет». Самокаты стоят на станции не всегда: в 77% случаев их нет вовсе.</p>
+    <div class="sc-stwrap reveal">
+      <div class="sc-st3d">
+        <canvas id="st3d" aria-label="3D-модель станции зарядки"></canvas>
+        <div class="sc-view-bar">
+          <button type="button" class="sc-chip" id="stSign">табличка</button>
+          <button type="button" class="sc-chip" id="stPorts">порты</button>
+          <button type="button" class="sc-chip" id="stAll">вся станция</button>
+        </div>
+        <div class="sc-sthud" id="stHud">тяни — вращать</div>
+      </div>
+      <dl class="k-dl" id="stDl"></dl>
+    </div>
+    <div class="sc-map reveal">
+      <div class="sc-mapview">
+        <canvas id="mapCv" aria-label="Карта мира со станциями"></canvas>
+        <div class="sc-mapbar">
+          <button type="button" class="sc-chip" id="mapNew">↻ новый мир</button>
+          <span class="sc-hint" id="mapHint">тяни карту или игрока · клик по станции</span>
+        </div>
+      </div>
+      <aside class="sc-card sc-mapside">
+        <h3 id="msTitle">Станция</h3>
+        <div id="msBody" class="sc-small">Подойди к станции и кликни по ней.</div>
+        <div class="sc-opts" id="msAct"></div>
+        <div class="sc-odds" id="odds"></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 07 КРАФТ И УПРАВЛЕНИЕ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">recipe · controls</span><h2>Сборка и управление</h2></div><span class="sec-q">два точила и решётка</span></header>
+    <div class="sc-craftwrap reveal">
+      <div class="sc-card">
+        <div id="craftBox"></div>
+        <p class="sc-small" id="craftNote">Палка — руль, решётка — стойка, два точила — колёса, тяжёлая нажимная плита — дека.</p>
+      </div>
+      <div class="sc-keys" id="keys"></div>
+    </div>
+  </section>
+
+  <!-- ============ 08 ТОНКОСТИ ============ -->
+  <section class="sec" id="notes">
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">edge cases</span><h2>Тонкости</h2></div><span class="sec-q">то, что видно только в коде</span></header>
+    <div class="sc-notes reveal" id="notesBox"></div>
+  </section>
+
+  <!-- ============ 09 АЧИВКИ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 10 ВЕРСИИ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">10</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <p class="fin-q">Бензина нет.<br><em>Зато есть порт, сто секунд и пятнадцать тысяч блоков до следующего</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+<div class="sc-log" id="log" aria-live="polite"></div>
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../shared/geo3d.js"></script>
+<script src="../../shared/voxel.js"></script>
+<script src="../../data/p24_geo.js"></script>
+<script src="../../data/p24_station.js"></script>
+<script src="../../data/p24_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -75,11 +75,14 @@
         const a = [-(ox + sx) - inf, oy - inf, oz - inf], bb = [-ox + inf, oy + sy + inf, oz + sz + inf];
         let cm = M.id();
         if (c.rotation) { const cp = [-(c.pivot || [0, 0, 0])[0], (c.pivot || [0, 0, 0])[1], (c.pivot || [0, 0, 0])[2]]; cm = M.mul(M.t(cp[0], cp[1], cp[2]), M.mul(M.euler(c.rotation), M.t(-cp[0], -cp[1], -cp[2]))); }
-        const Q = faceQuads(a, bb), U = boxUV(c.uv[0], c.uv[1], Math.floor(sx + 1e-6), Math.floor(sy + 1e-6), Math.floor(sz + 1e-6)), mir = c.mirror ?? b.mirror;
+        // per-face UV (Blockbench «per-face»): {north:{uv:[u,v],uv_size:[w,h]},...}; отсутствующая грань не рисуется
+        const PF = Array.isArray(c.uv) ? null : c.uv || {};
+        const Q = faceQuads(a, bb), U = PF ? null : boxUV(c.uv[0], c.uv[1], Math.floor(sx + 1e-6), Math.floor(sy + 1e-6), Math.floor(sz + 1e-6)), mir = c.mirror ?? b.mirror;
         for (const f of Object.keys(Q)) {
           let face = f;
-          let [u1, v1, u2, v2] = U[face];
-          if (mir) { if (f === "east") [u1, v1, u2, v2] = U.west; else if (f === "west") [u1, v1, u2, v2] = U.east; [u1, u2] = [u2, u1]; }
+          if (PF && !PF[f]) continue;
+          let [u1, v1, u2, v2] = PF ? [PF[f].uv[0], PF[f].uv[1], PF[f].uv[0] + PF[f].uv_size[0], PF[f].uv[1] + PF[f].uv_size[1]] : U[face];
+          if (PF) {} else if (mir) { if (f === "east") [u1, v1, u2, v2] = U.west; else if (f === "west") [u1, v1, u2, v2] = U.east; [u1, u2] = [u2, u1]; }
           const q = Q[f].map((p) => M.ap(cm, p)), base = pos.length / 3;
           const cu = [[u1, v1], [u2, v1], [u2, v2], [u1, v2]];
           q.forEach((p, i) => { pos.push(...p); uvs.push(cu[i][0] / TW, cu[i][1] / TH); shd.push(SH[f]); });
@@ -93,16 +96,13 @@
     const tex = gl.createTexture(); let ready = false;
     const img = new Image();
     img.onload = () => { gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, opt.nearest ? gl.NEAREST : gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, opt.nearest ? gl.NEAREST : gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, opt.nearest ? gl.NEAREST : gl.LINEAR);
       // mip: большие рисованные текстуры (2048) — мипмапы + анизотропия, чтобы вдали не рябило и вблизи не мылилось
       const pot = (n) => (n & (n - 1)) === 0;
       if (opt.mip && pot(img.width) && pot(img.height)) {
-        gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, opt.nearest ? gl.NEAREST_MIPMAP_NEAREST : gl.LINEAR_MIPMAP_LINEAR);
-        if (!opt.nearest) {
-          const an = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
-          if (an) gl.texParameterf(gl.TEXTURE_2D, an.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
-        }
+        gl.generateMipmap(gl.TEXTURE_2D); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        const an = gl.getExtension("EXT_texture_filter_anisotropic") || gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
+        if (an) gl.texParameterf(gl.TEXTURE_2D, an.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
       }
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); ready = true; api.render(); };
     img.src = opt.tex;
@@ -146,9 +146,6 @@
     }
     const api = {
       bones, cam, st, over: {},
-      // Legacy milking scene animates legs and head directly; newer scenes edit
-      // the same per-bone overrides via `over`. Both interfaces stay supported.
-      setBoneRot(n, r) { if (r) this.over[n] = { rx: r[0], ry: r[1], rz: r[2] }; else delete this.over[n]; },
       resize() { const r = canvas.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d)); if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; } },
       setExtra(m) { extra = m; },
       M,

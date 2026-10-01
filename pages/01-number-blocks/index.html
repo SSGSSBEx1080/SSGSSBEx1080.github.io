@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>№01 · Цифроблоки — ZitraksMode Wiki</title>
 <meta name="description" content="Пункт №01 мода ZitraksMode: десять блоков с цифрами, их характеристики и скрытые достижения.">
-<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/p01-32.png">
-<link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p01-64.png">
 <link rel="stylesheet" href="../../shared/core.css">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -69,27 +67,9 @@
   </section>
 
   <!-- ============ ДОСТИЖЕНИЯ ============ -->
-
-  <!-- ============ КОНСТРУКТОР ============ -->
-  <section class="block-sec" id="builder">
-    <header class="sec-head reveal">
-      <span class="sec-n">01.3</span>
-      <h2>Собери число</h2>
-      <p>Для этого цифроблоки и нужны. Введи число, и оно выложится блоками, как в мире.</p>
-    </header>
-    <div class="builder reveal">
-      <label class="b-input">
-        <span>/setblock</span>
-        <input id="bInput" inputmode="numeric" autocomplete="off" maxlength="12" value="2025" aria-label="Число">
-      </label>
-      <div class="b-stage" id="bStage"><div class="b-wall" id="bWall"></div></div>
-      <div class="b-note" id="bNote"></div>
-    </div>
-  </section>
-
   <section class="block-sec" id="tree">
     <header class="sec-head reveal">
-      <span class="sec-n">01.4</span>
+      <span class="sec-n">01.3</span>
       <h2>Достижения</h2>
       <p>В ветке 11 ачивок: 10 за цифры и одна секретная. Всё как в игре: ачивка не видна, пока её не получишь. Добудь блок (зажми на карточке) или скрафть его, и она появится здесь. <b>Нажми на рамку</b>, чтобы посмотреть условие.</p>
     </header>
@@ -105,6 +85,23 @@
     <div class="adv-list reveal" id="advList"></div>
   </section>
 
+  <!-- ============ КОНСТРУКТОР ============ -->
+  <section class="block-sec" id="builder">
+    <header class="sec-head reveal">
+      <span class="sec-n">01.4</span>
+      <h2>Собери число</h2>
+      <p>Для этого цифроблоки и нужны. Введи число, и оно выложится блоками, как в мире.</p>
+    </header>
+    <div class="builder reveal">
+      <label class="b-input">
+        <span>/setblock</span>
+        <input id="bInput" inputmode="numeric" autocomplete="off" maxlength="12" value="2025" aria-label="Число">
+      </label>
+      <div class="b-stage" id="bStage"><div class="b-wall" id="bWall"></div></div>
+      <div class="b-note" id="bNote"></div>
+    </div>
+  </section>
+
   <footer class="page-foot">
     <div>Характеристики из <code>ModBlocks.registerNumberBlock()</code>. Интерфейс в стиле ванильного Minecraft 1.19.2.</div>
     <div class="pf-nav" id="pfNav"></div>
@@ -118,6 +115,5 @@
 <script src="../../shared/points.js"></script>
 <script src="../../shared/core.js"></script>
 <script src="app.js"></script>
-<script src="../../data/hub_adv.js"></script>
 </body>
 </html>

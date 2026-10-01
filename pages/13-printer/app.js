@@ -76,18 +76,16 @@
       g.setTransform(A[0], A[1], Bv[0], Bv[1], P0[0], P0[1]);
       const k = t / 16, du = r[0] * k, dv = r[1] * k, dw = (r[2] - r[0]) * k, dh = (r[3] - r[1]) * k, sx = (tile % cols) * t, sy = ((tile / cols) | 0) * t;
       const e = 0.04; // крошечный нахлёст, чтобы не было щелей между гранями
-      // P0..P2 describe the actual box face, not a full 16px cube. Crop its UV
-      // into that face; otherwise doors/slabs render as full-sized cubes in icons.
-      if (fullUV) g.drawImage(SA[shade], sx, sy, t, t, -e, -e, t + 2 * e, t + 2 * e);
-      else g.drawImage(SA[shade], sx + du, sy + dv, Math.max(0.01, dw), Math.max(0.01, dh), -e, -e, t + 2 * e, t + 2 * e);
+      if (fullUV) g.drawImage(SA[shade], sx, sy, t, t, du - e, dv - e, dw + 2 * e, dh + 2 * e);
+      else g.drawImage(SA[shade], sx + du, sy + dv, Math.max(0.01, dw), Math.max(0.01, dh), du - e, dv - e, dw + 2 * e, dh + 2 * e);
     };
     const sorted = boxes.slice().sort((p, q) => (p[0] + p[3] + p[1] + p[4] + p[2] + p[5]) - (q[0] + q[3] + q[1] + q[4] + q[2] + q[5]));
     for (const q of sorted) {
       const [x0, y0, z0, x1, y1, z1] = q.slice(0, 6).map((v) => v / 16), full = !!q[12];
       const X0 = q[0], Y0 = q[1], Z0 = q[2], X1 = q[3], Y1 = q[4], Z1 = q[5];
-      face(q[6], pr(x0, y1, z0), pr(x1, y1, z0), pr(x0, y1, z1), [X0, Z0, X1, Z1], full, 0);
-      face(q[9], pr(x0, y1, z1), pr(x1, y1, z1), pr(x0, y0, z1), [X0, 16 - Y1, X1, 16 - Y0], full, 1);
-      face(q[11], pr(x1, y1, z1), pr(x1, y1, z0), pr(x1, y0, z1), [16 - Z1, 16 - Y1, 16 - Z0, 16 - Y0], full, 2);
+      face(q[6], pr(0, y1, 0), pr(1, y1, 0), pr(0, y1, 1), [X0, Z0, X1, Z1], full, 0);
+      face(q[9], pr(0, 1, z1), pr(1, 1, z1), pr(0, 0, z1), [X0, 16 - Y1, X1, 16 - Y0], full, 1);
+      face(q[11], pr(x1, 1, 1), pr(x1, 1, 0), pr(x1, 0, 1), [16 - Z1, 16 - Y1, 16 - Z0, 16 - Y0], full, 2);
     }
     return (iconCache[key] = c.toDataURL());
   }

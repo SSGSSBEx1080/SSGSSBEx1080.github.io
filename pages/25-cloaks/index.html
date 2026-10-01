@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№25 · Плащи Логии — ZitraksMode Wiki</title>
+<meta name="description" content="Пункт №25 мода ZitraksMode: шесть плащей из One Piece. Логия пропускает удары сквозь тело, общий заряд, Ледниковый период Аокидзи, световой рывок Кизару, отражение Сэнгоку и последний рубеж Белоуса.">
+<meta name="theme-color" content="#08111f">
+<link rel="stylesheet" href="../../shared/core.css">
+<link rel="stylesheet" href="../../shared/kit.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas class="lg-bg" id="bg" aria-hidden="true"></canvas>
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="lg-hero" id="hero">
+    <div class="lg-kanji" aria-hidden="true">正義</div>
+    <div class="lg-hero-txt">
+      <div class="lg-tag"><span>№25</span>04.08.2026<i></i>v1.1.3<i></i>броня</div>
+      <h1 class="lg-logo"><span class="lg-l1">Плащи</span><span class="lg-l2">Логии</span></h1>
+      <p class="lg-sub">Шесть плащей из One Piece, которые надеваются вместо нагрудника. Логия пропускает удары сквозь тело, пока хватает заряда. Абсолютная защита просто гасит удар. У каждого плаща своя сила, а вода пробивает всех.</p>
+      <div class="lg-cta"><a class="k-btn" href="#logia">Ударить</a><a class="k-btn2" href="#powers">Силы</a><a class="k-btn2" href="#craft">Где взять</a></div>
+      <div class="lg-stats">
+        <a href="#cloaks"><b>6</b><span>плащей</span></a>
+        <a href="#gauge"><b>3 000</b><span>максимум заряда</span></a>
+        <a href="#water"><b>1</b><span>слабость на всех</span></a>
+        <a href="#adv"><b id="stGot">0/7</b><span>ачивок</span></a>
+      </div>
+    </div>
+    <figure class="lg-stage" id="heroStage">
+      <div class="lg-halo" aria-hidden="true"></div>
+      <canvas class="lg-model" id="hero3d" aria-label="3D-модель плаща на игроке"></canvas>
+      <canvas class="lg-hud" id="heroHud" width="44" height="164" aria-label="Шкала заряда плаща"></canvas>
+      <div class="lg-tip lg-tip-hero" id="heroTip"></div>
+      <div class="lg-hbar">
+        <button type="button" class="lg-chip" id="heroTurn" aria-pressed="false">↻ спиной</button>
+        <button type="button" class="lg-chip" id="heroHit">⚔ удар</button>
+        <span class="lg-hint">тяни — повернуть</span>
+      </div>
+      <div class="lg-pick" id="heroPick" role="tablist" aria-label="Плащ"></div>
+    </figure>
+  </section>
+
+  <div class="lg-marq" aria-hidden="true"><div id="marq"></div></div>
+
+  <!-- ============ 01 ШЕСТЬ ПЛАЩЕЙ ============ -->
+  <section class="sec" id="cloaks">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">LogiaCloakType</span><h2>Шесть плащей</h2></div><span class="sec-q">три уровня брони</span></header>
+    <p class="sec-p reveal">Плащ занимает слот нагрудника и даёт обычную броню, как железо или незерит. Главное в нём другое: <b>заряд</b>. Четыре плаща — логия, сквозь них проходят удары и стрелы. Сэнгоку и Белоус — <b>абсолютная защита</b>: гасят вообще любой удар, кроме падения в бездну, но тратят больше. Нажми на листовку, чтобы надеть плащ на всей странице.</p>
+    <div class="lg-posters reveal" id="posters"></div>
+    <div class="lg-cmp reveal">
+      <div class="lg-scroll"><table class="lg-table" id="cmpTable"></table></div>
+      <p class="lg-small">Прочность считается как у нагрудника: 16 × множитель материала. Все плащи не горят в лаве, как незерит, и не стакаются. Отталкивание гасит только последний уровень, наполовину.</p>
+    </div>
+  </section>
+
+  <!-- ============ 02 СКВОЗЬ ТЕЛО ============ -->
+  <section class="sec" id="logia">
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">LivingAttackEvent · HIGHEST</span><h2>Сквозь тело</h2></div><span class="sec-q">удар стоит заряда</span></header>
+    <p class="sec-p reveal">Каждый удар по игроку в плаще сначала спрашивает заряд. Хватает — удар отменяется целиком: ни урона, ни отбрасывания, а тело на миг рассыпается песком, лавой, льдом или светом. Не хватает — урон проходит как обычно. Оружие с <b>хаки</b> (катана и всё незеритовое) бьёт мимо заряда.</p>
+    <div class="lg-arena reveal">
+      <div class="lg-ring">
+        <canvas id="arenaCv" aria-label="Арена"></canvas>
+        <div class="lg-ring-hud">
+          <canvas class="lg-hud lg-hud-sm" id="arenaHud" width="44" height="164"></canvas>
+          <div class="lg-hp" id="arenaHp"></div>
+        </div>
+        <div class="lg-log" id="log" aria-live="polite"></div>
+      </div>
+      <aside class="lg-side">
+        <div class="lg-card">
+          <h3>Чем бить</h3>
+          <div class="lg-atk" id="atkList"></div>
+        </div>
+        <div class="lg-card">
+          <h3>Итог удара</h3>
+          <dl class="lg-tele" id="atkOut"></dl>
+          <p class="lg-small" id="atkNote">Выбери, чем ударить.</p>
+          <div class="lg-row"><button type="button" class="btn-ghost" id="arenaReset">↺ полный заряд и здоровье</button></div>
+        </div>
+      </aside>
+    </div>
+    <div class="lg-rules reveal" id="rules"></div>
+  </section>
+
+  <!-- ============ 03 ЗАРЯД ============ -->
+  <section class="sec" id="gauge">
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">LogiaGaugeCapability</span><h2>Заряд</h2></div><span class="sec-q">один на все плащи</span></header>
+    <p class="sec-p reveal">Заряд хранится не в плаще, а <b>в игроке</b>, и он один на все плащи. Переоделся из Акаину в Кизару — заряд тот же. Потолок задаёт надетый плащ, а если ни один не надет — самый ёмкий в инвентаре. Первый найденный плащ приходит полным. После любой траты пять секунд тишины, потом восстановление идёт ступеньками: 2 в секунду, через пять секунд 4, потом 6, и так без потолка, пока снова не потратишь.</p>
+    <div class="lg-regen reveal">
+      <div class="lg-card lg-graph">
+        <div class="lg-gh"><h3>Ступеньки восстановления</h3><div class="lg-seg" id="rgSrc" role="group" aria-label="Где плащ">
+          <button type="button" data-k="worn" aria-pressed="true">надет ×1</button><button type="button" data-k="inv" aria-pressed="false">в инвентаре ×¼</button><button type="button" data-k="stand" aria-pressed="false">на стойке ×2</button></div></div>
+        <canvas id="rgCv" aria-label="График восстановления заряда"></canvas>
+        <div class="lg-legend"><span><i style="background:var(--c)"></i>заряд</span><span><i style="background:#ffffff55"></i>скорость, ед/с</span></div>
+      </div>
+      <div class="lg-side">
+        <div class="lg-card">
+          <h3>С нуля до полного</h3>
+          <dl class="lg-tele" id="rgOut"></dl>
+        </div>
+        <div class="lg-card lg-stand">
+          <h3>Стойка для брони</h3>
+          <div class="lg-standrow">
+            <div class="lg-standcol"><canvas id="standCv" width="120" height="220" aria-label="Стойка с плащом"></canvas></div>
+            <div class="lg-standtxt">
+              <div class="lg-bar2"><span>игрок</span><i><b id="sbP"></b></i><em id="sbPv"></em></div>
+              <div class="lg-bar2"><span>стойка</span><i><b id="sbS"></b></i><em id="sbSv"></em></div>
+              <div class="lg-row"><button type="button" class="lg-chip" id="standPut">повесить плащ</button><button type="button" class="lg-chip" id="standSpend">потратить 500</button></div>
+              <p class="lg-small" id="standNote">Повесь плащ на стойку: у неё своя батарея, и заряжается она вдвое быстрее.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 СИЛЫ ============ -->
+  <section class="sec" id="powers">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">passive abilities</span><h2>Силы</h2></div><span class="sec-q">работают, пока плащ надет</span></header>
+    <div class="lg-ptabs reveal" id="pTabs" role="tablist" aria-label="Сила плаща"></div>
+    <div class="lg-power reveal" id="pBox">
+      <div class="lg-pstage"><canvas id="pCv" aria-label="Демонстрация силы"></canvas><div class="lg-pctl" id="pCtl"></div></div>
+      <div class="lg-ptxt"><h3 id="pTitle"></h3><div id="pText"></div><dl class="lg-tele" id="pOut"></dl></div>
+    </div>
+  </section>
+
+  <!-- ============ 05 ВОДА ============ -->
+  <section class="sec" id="water">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">applyCloakWaterSink</span><h2>Вода</h2></div><span class="sec-q">слабость всех фруктовиков</span></header>
+    <p class="sec-p reveal">Любой плащ тянет на дно, даже абсолютный: каждый тик в воде −0.08 к вертикальной скорости, вниз до 0.35 блока за тик. Всплыть почти нельзя. Носителям логии ещё хуже: стоит голове уйти под воду, воздух обнуляется и каждые полсекунды снимается 2 здоровья. Аокидзи тут особый: вода вокруг него замерзает раньше, чем успевает утопить.</p>
+    <div class="lg-pool reveal">
+      <canvas id="poolCv" aria-label="Падение в воду"></canvas>
+      <div class="lg-poolside">
+        <div class="lg-card"><h3>Прыжок в воду</h3>
+          <div class="lg-row" id="poolPick"></div>
+          <div class="lg-row"><button type="button" class="k-btn lg-jump" id="poolGo">Прыгнуть</button><button type="button" class="btn-ghost" id="poolOut">вытащить</button></div>
+          <dl class="lg-tele" id="poolTele"></dl>
+          <p class="lg-small" id="poolNote"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 ГДЕ ВЗЯТЬ ============ -->
+  <section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">loot · recipes</span><h2>Где взять</h2></div><span class="sec-q">всё начинается в пустыне</span></header>
+    <p class="sec-p reveal">Первый плащ не крафтится. Крокодайл лежит в сундуках пустынных храмов: к их добыче добавлен отдельный пул, плащ падает с шансом <b>35%</b>. Как только он попадает в руки, открываются рецепты всех остальных. Плащи адмиралов шьются из Крокодайла, а Сэнгоку и Белоус — из любого плаща адмирала. Исходный плащ при этом уходит в крафт.</p>
+    <div class="lg-tree reveal" id="tree"></div>
+    <div class="lg-craftwrap reveal">
+      <div class="lg-card lg-chestcard">
+        <h3>Сундук пустынного храма</h3>
+        <div class="lg-chest" id="chest"></div>
+        <div class="lg-row"><button type="button" class="k-btn" id="chestOpen">Открыть сундук</button><span class="lg-small" id="chestCnt"></span></div>
+      </div>
+      <div class="lg-card">
+        <div class="lg-seg lg-rtabs" id="rTabs" role="tablist" aria-label="Рецепт"></div>
+        <div id="craftBox"></div>
+        <p class="lg-small" id="craftNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 РЕМОНТ ============ -->
+  <section class="sec" id="anvil">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">LogiaCloakRepairHandler</span><h2>Ремонт</h2></div><span class="sec-q">всегда 1 уровень</span></header>
+    <p class="sec-p reveal">Плащ чинится на наковальне материалом своей стихии. Один предмет за раз, цена всегда <b>1 уровень опыта</b>, сколько бы раз ты его ни чинил. Чем ценнее материал, тем больше прочности он возвращает. Крокодайла починить нечем: у песка особого ремонта нет.</p>
+    <div class="lg-anv reveal">
+      <div class="lg-anvui" id="anvUi"></div>
+      <div class="lg-card"><h3>Материалы</h3><div class="lg-mats" id="anvMats"></div><p class="lg-small" id="anvNote"></p></div>
+    </div>
+  </section>
+
+  <!-- ============ 08 ТОНКОСТИ ============ -->
+  <section class="sec" id="notes">
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">edge cases</span><h2>Тонкости</h2></div><span class="sec-q">то, что видно только в коде</span></header>
+    <div class="lg-notes reveal" id="notesBox"></div>
+  </section>
+
+  <!-- ============ 09 ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal" id="advBoard">
+      <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+      <div class="adv-detail" id="advDetail"></div>
+      <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
+    </div>
+    <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 10 ВЕРСИИ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">10</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <section class="finale" id="finale">
+    <p class="fin-q">Абсолютная справедливость.<br><em>Пока хватает заряда и пока рядом нет воды</em></p>
+    <nav class="fin-nav" id="finNav"></nav>
+  </section>
+</main>
+<script src="../../shared/core.js"></script>
+<script src="../../shared/points.js"></script>
+<script src="../../shared/kit.js"></script>
+<script src="../../shared/geo3d.js"></script>
+<script src="../../data/p25_geo.js"></script>
+<script src="../../data/p25_adv.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
