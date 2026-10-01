@@ -64,6 +64,8 @@ h3{font:800 20px var(--f-t);color:var(--ink);margin-bottom:8px}
 .ml-sun::after{content:"";position:absolute;left:-10%;right:-10%;bottom:-2%;height:30%;background:linear-gradient(#79b84f,#5d9b3a);border-top:3px solid var(--ink)}
 .ml-cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
 .ml-cv:active{cursor:grabbing}
+/* Снимки в дереве — изображения с WebGL-холста, а не обычные PNG-ассеты. */
+.ml-node img[data-snap]{image-rendering:pixelated}
 .ml-plinth{position:absolute;left:50%;bottom:9%;width:46%;height:14px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(rgba(29,26,23,.28),transparent 70%);pointer-events:none}
 .ml-heroSw{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);display:flex;gap:4px;padding:4px;background:#fff;border:2px solid var(--ink);border-radius:999px;z-index:2}
 .ml-heroSw button{padding:7px 12px;border-radius:999px;font:700 13px var(--f-t);color:var(--ink)}

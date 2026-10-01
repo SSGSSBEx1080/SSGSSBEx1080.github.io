@@ -50,7 +50,9 @@
   // процедурные анимации вместо ванильных: ходьба (ноги), кивок головы, «дёрнулся» при дойке
   function beast(cv, kind, tex, opt = {}) {
     if (!GL) return null;
-    const o = { geo: G[kind], tex: TEX[tex], nearest: tex === "cow" || tex === "rav", keep: !!opt.keep, tint: [1, 1, 1] };
+    // Все варианты используют пиксельные текстуры мода. При смене скина
+    // фильтр WebGL остаётся тем же, поэтому nearest нужен не только корове.
+    const o = { geo: G[kind], tex: TEX[tex], nearest: true, keep: !!opt.keep, tint: [1, 1, 1] };
     const g = ZMGeo.create(cv, o); if (!g) return null;
     g.o = o; g.kind = kind; g.texKey = tex;
     const bb = g.bbox(Object.keys(g.bones));

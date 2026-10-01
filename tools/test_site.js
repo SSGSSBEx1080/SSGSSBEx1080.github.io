@@ -11,6 +11,18 @@ for (const f of ['shared/points.js', 'data/hub_adv.js', 'data/p20_models.js']) {
 }
 const { POINTS, HUB_ADV, P20M } = ctx.ZM;
 const live = POINTS.filter(p => p.page);
+function checkFavicons(html, stem, prefix) {
+  for (const size of [32, 64]) {
+    const name = `${stem}-${size}.png`, file = path.join(root, 'assets/favicons', name);
+    assert.ok(html.includes(`rel="icon" type="image/png" sizes="${size}x${size}" href="${prefix}${name}"`), `${stem}: missing ${size}px tab icon link`);
+    assert.ok(fs.existsSync(file), `${stem}: icon missing on disk`);
+    const png = fs.readFileSync(file);
+    assert.equal(png.subarray(1, 4).toString(), 'PNG', `${name}: PNG signature`);
+    assert.equal(png.readUInt32BE(16), size, `${name}: width`);
+    assert.equal(png.readUInt32BE(20), size, `${name}: height`);
+  }
+}
+checkFavicons(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), 'home', 'assets/favicons/');
 assert.equal(HUB_ADV.length, live.length, 'Every live point must have a branch in the hub');
 for (const p of live) {
   const branch = HUB_ADV.find(b => b.n === p.n);
@@ -20,6 +32,7 @@ for (const p of live) {
   assert.ok(fs.existsSync(path.join(root, p.page)), `Missing page: ${p.page}`);
   assert.ok(fs.existsSync(path.join(root, p.icon)), `Missing point icon: ${p.icon}`);
   const html = fs.readFileSync(path.join(root, p.page), 'utf8');
+  checkFavicons(html, `p${String(p.n).padStart(2, '0')}`, '../../assets/favicons/');
   assert.match(html, /data\/hub_adv\.js/, `Page #${p.n} must load the shared branch`);
   assert.match(html, /shared\/core\.js/, `Page #${p.n} must load progress sync`);
   const anchor = p.n === 1 ? 'id="tree"' : 'id="adv"';
@@ -60,6 +73,7 @@ for (const b of atlas.blocks.filter(b => b?.key?.startsWith('minecraft:tripwire'
 const milk = fs.readFileSync(path.join(root, 'pages/22-milk/app.js'), 'utf8');
 assert.match(milk, /herdUI\(/);
 assert.match(milk, /#heroSw/);
+assert.match(milk, /nearest: true/, 'All cow/bull/ravager skins must use crisp WebGL filtering');
 assert.match(milk, /#factsBox/);
 assert.doesNotMatch(milk, /penView/);
 assert.match(fs.readFileSync(path.join(root, 'shared/geo3d.js'), 'utf8'), /setBoneRot\(n, r\)/, 'Original #22 bone animations require this renderer API');
