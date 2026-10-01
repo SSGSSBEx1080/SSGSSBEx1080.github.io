@@ -138,9 +138,7 @@
       cv.addEventListener("pointermove", (e) => { if (!drag) return; E.cam.yaw = drag.yaw - (e.clientX - drag.x) * 0.008; E.cam.pitch = clamp(drag.pitch + (e.clientY - drag.y) * 0.006, 0.05, 1.35); lastI = performance.now(); E.dirty = true; });
       const up = () => (drag = null); cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
       $("#opFrame").addEventListener("click", () => {
-        const f = OUT.frame; // Рамка висит на западной стороне обсидиана x+1: лицевая UV — западная
-        // грань блока-рамки. Подойти изнутри (x−), иначе видна только стена.
-        focus = { target: [f[0] + 0.88, f[1] + 0.5, f[2] + 0.5], yaw: -Math.PI / 2, pitch: 0.10, dist: 1.65 };
+        const f = OUT.frame; focus = { target: [f[0] + 0.9, f[1] + 0.5, f[2] + 0.5], yaw: -Math.PI / 2 + 0.25, pitch: 0.12, dist: 5.2 };
         ZM.sfx("click", 0.5); $("#opHud").textContent = "рамка на восточной стене · свиток выпадает всегда (шанс 100%)";
       });
       const vis = visible(cv); let last = performance.now();
