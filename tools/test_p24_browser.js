@@ -1,126 +1,69 @@
-/* Optional end-to-end smoke test for №24 with a local server on port 8080.
-   PLAYWRIGHT_MODULE may point to a separate installation. */
-const assert = require('node:assert/strict');
+/* Live 2D simulator + source station + connected branches in every page.
+   Run with a static server and Playwright. Set SCOOTER_BASE_URL / PLAYWRIGHT_MODULE if needed. */
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\/$/, '') + '/pages/24-scooter/index.html';
-
+const assert = require('node:assert/strict');
 (async () => {
-  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--enable-unsafe-swiftshader'] });
-  try {
-    for (const width of [1440, 390, 320]) {
-      const context = await browser.newContext({ viewport: { width, height: 900 } });
-      const page = await context.newPage(), errors = [];
-      page.on('pageerror', e => errors.push(e.message));
-      page.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); });
-      await page.goto(url);
-      await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}' });
-      await page.locator('#scene.world-ready').waitFor({ timeout: 20000 });
-      assert.ok(await page.locator('.sc-rider img').evaluate(img => img.complete && img.naturalWidth > 500));
-      assert.ok(await page.locator('#adv').evaluate(el => el.compareDocumentPosition(document.querySelector('#garage')) & Node.DOCUMENT_POSITION_PRECEDING));
-      assert.equal(await page.locator('#gameHotbar button').count(), 9);
-      const hotbarFits = await page.locator('#gameHotbar').evaluate(el => {
-        const end = el.querySelector('[data-slot="9"]').getBoundingClientRect().right;
-        return end <= el.getBoundingClientRect().right;
-      });
-      assert.ok(hotbarFits, `all nine slots should be visible at ${width}px`);
-      assert.equal(await page.locator('#miniMap').count(), 1);
-      assert.ok(await page.locator('#gameHotbar [data-slot="1"] img').evaluate(img => img.src.endsWith('/scooter_item.png') && img.complete && img.naturalWidth === 1024));
-      assert.ok(await page.locator('.sc-port-display .sc-port-cube .face').count() === 6);
-      await page.locator('#gameHotbar [data-slot="1"]').click();
-      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p24.adv'))), ['scooter_craft']);
-      assert.equal(await page.locator('#getScooter').isDisabled(), true);
-      await page.locator('#worldCam').click();
-      assert.equal(await page.locator('#worldCrosshair').isVisible(), true);
-      await page.locator('#gameHotbar [data-slot="9"]').click();
-      assert.equal(await page.locator('#worldCrosshair').isVisible(), false);
-      if (width === 1440) {
-        await page.locator('#track h2').click();
-        await page.keyboard.down('w');
-        await page.waitForFunction(() => Number(document.querySelector('#worldProgress').textContent.charAt(0)) >= 1, null, { timeout: 18000 });
-        assert.match(await page.locator('#worldCoords').textContent(), /XYZ/);
-        assert.match(await page.locator('#timerValue').textContent(), /00:/);
-        await page.waitForFunction(() => Number(document.querySelector('#healthN').textContent.split(' / ')[0]) < 500, null, { timeout: 12000 });
-        await page.keyboard.up('w');
-        assert.match(await page.locator('#collisionNote').textContent(), /КАМЕНЬ/);
-      } else {
-        const button = page.locator('#touchGo');
-        await button.scrollIntoViewIfNeeded();
-        const r = await button.boundingBox();
-        await page.mouse.move(r.x + r.width / 2, r.y + r.height / 2);
-        await page.mouse.down();
-        await page.waitForFunction(() => Number(document.querySelector('#worldCoords').textContent.split('·')[1]) < 26, null, { timeout: 9000 });
-        await page.mouse.up();
-      }
-      await page.locator('#worldReset').click();
-      assert.match(await page.locator('#worldCoords').textContent(), /0 · 28/);
-      await page.keyboard.press('5');
-      assert.equal(await page.locator('#surfaceTag').textContent(), 'ПОД КОЛЁСАМИ / МЁД');
-      assert.equal(await page.locator('#surfaceList [data-surface=honey]').getAttribute('aria-pressed'), 'true');
-      await page.locator('#gameHotbar [data-slot="4"]').click();
-      const beforeWater = Number((await page.locator('#healthN').textContent()).split(' / ')[0]);
-      await page.waitForFunction(old => Number(document.querySelector('#healthN').textContent.split(' / ')[0]) < old, beforeWater, { timeout: 10000 });
-      await page.locator('#surfaceList [data-surface=slime]').click();
-      await page.locator('#grade').selectOption('down');
-      await page.locator('#grade').focus();
-      await page.keyboard.down('w');
-      await page.waitForFunction(() => Number(document.querySelector('#speed').textContent) > 3, null, { timeout: 7000 });
-      await page.keyboard.up('w');
-      await page.keyboard.press('g');
-      assert.equal(await page.locator('#worldGrade').getAttribute('data-grade'), 'up');
-      await page.keyboard.press('g'); await page.keyboard.press('g');
-      assert.equal(await page.locator('#worldGrade').getAttribute('data-grade'), 'down');
-      await page.locator('#worldReset').click();
-      await page.locator('#track h2').click();
-      await page.keyboard.down('w');
-      await page.waitForFunction(() => Number(document.querySelector('#speed').textContent) >= 101, { timeout: 15000 });
-      await page.keyboard.up('w');
-      assert.ok((await page.locator('#speed').textContent()).trim() !== '000');
-      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p24.adv'))), ['scooter_craft', 'speed_100']);
-      await page.locator('#testWall').click();
-      assert.match(await page.locator('#collisionNote').textContent(), /СЛИЗЬ: отскок/);
-      assert.equal(await page.locator('#getScooter').isDisabled(), true);
-      await page.locator('#worldReset').click();
-      await page.locator('#track h2').click();
-      await page.keyboard.down('w');
-      // Trigger the instant lab action in the same frame as the speed reading:
-      // steering and collisions continue while the page is being scrolled.
-      await page.waitForFunction(() => {
-        if (Number(document.querySelector('#speed').textContent) < 85) return false;
-        document.querySelector('#testObsidian').click(); return true;
-      }, null, { timeout: 15000 });
-      await page.keyboard.up('w');
-      assert.match(await page.locator('#collisionNote').textContent(), /разрушен/);
-      assert.equal(await page.locator('#healthN').textContent(), '0 / 500');
-      await page.locator('#getScooter').click();
-      assert.equal(await page.locator('#healthN').textContent(), '500 / 500');
-      await page.locator('#grade').selectOption('flat');
-      await page.locator('#surfaceList [data-surface=asphalt]').click();
-      await page.locator('#quickRide').click();
-      assert.match(await page.locator('#worldDistance').textContent(), /РАДИУСЕ/);
-      assert.ok(Number((await page.locator('#meters').textContent()).replace(/\D/g, '')) >= 1500);
-      assert.equal(await page.locator('#chargeN').textContent(), '90%');
-      if (width === 1440) {
-        // The 16px textured charging block can actually be clicked in 3D.
-        await page.locator('#scene').scrollIntoViewIfNeeded();
-        await page.waitForTimeout(1050); // allow the following camera to reach the parked scooter
-        const canvas = await page.locator('#ride3d').boundingBox();
-        await page.mouse.click(canvas.x + canvas.width * .595, canvas.y + canvas.height * .615);
-        await page.waitForFunction(() => document.querySelector('#getPort').disabled, null, { timeout: 4000 });
-      } else await page.locator('#getPort').click();
-      assert.match(await page.locator('#advTxt').textContent(), /^3 \/ 3/);
-      await page.locator('#charge').click();
-      await page.waitForFunction(() => Number(document.querySelector('#chargeN').textContent.replace('%', '')) >= 91, { timeout: 6000 });
-      await page.locator('#pack').click();
-      assert.match(await page.locator('#rideLog').textContent(), /БЕЗ пассажиров/);
-      await page.locator('#pax').evaluate(el => { el.value = '0'; el.dispatchEvent(new Event('input', { bubbles: true })); });
-      await page.locator('#pack').click();
-      assert.match(await page.locator('#rideLog').textContent(), /предмет хранит заряд/);
-      assert.equal(await page.locator('#getScooter').isEnabled(), true);
-      assert.equal(await page.locator('#go').isDisabled(), true);
-      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
-      assert.deepEqual(errors, []);
-      await context.close();
-      console.log(`Scooter browser test: ${width}px, 3D block world, steering/touch, checkpoints, collisions, 5 surfaces, 3/3 awards, charge/fold, no errors`);
-    }
-  } finally { await browser.close(); }
-})().catch(e => { console.error(e); process.exitCode = 1; });
+ const b = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+ const page = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+ const errs = []; page.on('pageerror', e => errs.push(e.message));
+ const root = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8765').replace(/\/$/, '');
+ try {
+  await page.goto(`${root}/pages/24-scooter/index.html`); await page.waitForSelector('#stationGrid .cell');
+  assert.equal(await page.locator('#stationGrid .cell').count(), 110);
+  assert.equal(await page.locator('#stationGrid button.port').count(), 3);
+  assert.equal(await page.locator('.zm-branch-map [data-adv-key]').count(), 3);
+  await page.locator('#getScooter').click();
+  assert.match(await page.locator('#advTxt').innerText(), /1 \/ 3/);
+  await page.locator('#addRider').click();
+  await page.locator('#crewRows select').selectOption('iron_golem');
+  assert.equal(await page.locator('#totalMass').innerText(), '10.0');
+  await page.locator('[data-grade="down"]').click();
+  await page.locator('#cruise').click();
+  await page.waitForFunction(() => Number(document.querySelector('#speed').textContent) >= 100, { timeout: 18000 });
+  assert.match(await page.locator('#advTxt').innerText(), /2 \/ 3/);
+  await page.locator('#cruise').click();
+  await page.locator('#quickTrip').click();
+  assert.equal(await page.locator('#stationCharge').isEnabled(), true);
+  await page.locator('#stationCharge').click();
+  const charge1 = Number((await page.locator('#stationChargeN').innerText()).replace('%',''));
+  await page.waitForTimeout(1500);
+  const charge2 = Number((await page.locator('#stationChargeN').innerText()).replace('%',''));
+  assert.ok(charge2 > charge1, `Charging did not increase: ${charge1} -> ${charge2}`);
+  await page.locator('#getPort').click();
+  assert.match(await page.locator('#advTxt').innerText(), /3 \/ 3/);
+  await page.locator('[data-layer="4"]').click();
+  assert.equal(await page.locator('#stationGrid .cell').count(), 110);
+  await page.locator('[data-layer="1"]').click();
+  await page.locator('#stationGrid button.port').nth(2).click();
+  assert.match(await page.locator('#portLabel').innerText(), /03 ИЗ 03/);
+  if (process.env.SCOOTER_SCREENSHOT_DIR) await page.screenshot({path:process.env.SCOOTER_SCREENSHOT_DIR + '/p24-desktop.png',fullPage:true});
+  const branchLink = await page.locator('#adv .zm-branch-sync a').getAttribute('href');
+  assert.match(branchLink, /#tree\/24$/);
+  await page.goto(root + '/index.html#tree/24');
+  await page.waitForSelector('#twTabs .on');
+  assert.equal(await page.locator('#twTabs .on').getAttribute('data-tab-n'), '24');
+  assert.match(await page.locator('#twPTxt').innerText(), /3 \/ 3/);
+  assert.equal(await page.locator('#twChain [data-k]').count(), 3);
+  // Runtime test across all 24 pages, not just presence of static markup.
+  const paths = await page.evaluate(() => ZM.POINTS.filter(p => p.page).map(p => p.page));
+  for (const path of paths) {
+    await page.goto(root + '/' + path, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(80);
+    const n=+path.match(/pages\/(\d\d)-/)[1];
+    const panel=page.locator('#adv .zm-branch-sync, #tree .zm-branch-sync');
+    assert.equal(await panel.count(),1, `Branch missing: ${path}`);
+    assert.ok((await panel.locator('.zm-branch-node').count()) >= 1, `Nodes missing: ${path}`);
+    const link = await panel.locator('a').getAttribute('href');
+    assert.match(link, new RegExp(`#tree/${n}$`));
+    const box = await panel.boundingBox(); assert.ok(box && box.width > 200 && box.height > 80, `Branch not visible: ${path}`);
+  }
+  await page.setViewportSize({width:375,height:812});
+  await page.goto(root + '/pages/24-scooter/index.html');
+  await page.waitForSelector('#stationGrid .cell');
+  const size = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
+  assert.ok(size[0] <= size[1] + 1, `Horizontal overflow ${size}`);
+  if (process.env.SCOOTER_SCREENSHOT_DIR) await page.screenshot({path:process.env.SCOOTER_SCREENSHOT_DIR + '/p24-mobile.png',fullPage:true});
+  assert.equal(errs.length, 0, errs.join('\n'));
+  console.log('2D ride, actual masses, 3 NBT ports, charging, 24 live branches, deep link, mobile width: OK');
+ } finally { await b.close(); }
+})().catch(e => { console.error(e); process.exitCode=1; });

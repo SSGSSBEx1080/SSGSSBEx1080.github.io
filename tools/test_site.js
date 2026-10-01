@@ -81,12 +81,20 @@ assert.equal(HUB_ADV.find(p => p.n === 24).adv.map(a => a.icon).join('|'), [
   'assets/textures/p3/vanilla/item_barrier.png'
 ].join('|'), 'Bottom and home advancement icons must follow the real in-game items');
 const scooterHtml = fs.readFileSync(path.join(root, 'pages/24-scooter/index.html'), 'utf8');
-assert.match(scooterHtml, /ride3d\.js/, 'Playable voxel world must be loaded');
-assert.match(scooterHtml, /id="touchGo"/, 'Phone controls must remain available while viewing the world');
-assert.match(scooterHtml, /id="worldCam"/, 'The rider must be able to toggle first-person view');
-const rideWorld = fs.readFileSync(path.join(root, 'pages/24-scooter/ride3d.js'), 'utf8');
-assert.match(rideWorld, /P24G/, 'The ride must use the source scooter geometry');
-assert.match(rideWorld, /scooters\.png/, 'The ride must use the source scooter texture');
+assert.match(scooterHtml, /id="rideCanvas"/, '2D simulator canvas must exist');
+assert.doesNotMatch(scooterHtml, /ride3d\.js|hero3d|worldCam/, 'Rejected 3D track must not be loaded');
+for (const id of ['stationGrid', 'stationMap', 'crewRows', 'getScooter', 'cruise', 'go', 'brake', 'stationCharge', 'getPort', 'quickTrip']) {
+  assert.ok(scooterHtml.includes(`id="${id}"`), `Scooter interactive control ${id} missing`);
+}
+vm.runInNewContext(fs.readFileSync(path.join(root, 'data/p24_station.js'), 'utf8'), ctx);
+const station = ctx.ZM.P24ST;
+assert.equal(String(station.size), '10,6,11', 'Station plan must use real NBT dimensions');
+assert.equal(station.blocks.filter(([x,y,z,i]) => station.palette[i] === 'zitraksmode:charging_port').map(([x,y,z]) => `${x},${y},${z}`).join('|'),
+  '2,1,3|2,1,5|2,1,7', 'All 3 source station ports must be present');
+assert.equal(station.blocks.length, 198, 'Preserve every non-air template block');
+assert.ok(fs.existsSync(path.join(root, 'mod-src/structures/scooter_station.nbt')));
+assert.match(fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8'), /mass - 1\) \/ 24/, 'Simulator must use source mass formula');
+assert.match(fs.readFileSync(path.join(root, 'mod-src/java/p24/ScooterMassHelper.java'), 'utf8'), /IRON_GOLEM\) return 8\.0D/, 'Authentic mass helper missing');
 // The original Google Drive mod resources, not re-created art, must power №24.
 for (const name of ['charging_port_front.png', 'charging_port_side.png',
   'charging_port_top.png', 'charging_port_bottom.png']) {
@@ -107,15 +115,6 @@ assert.ok(fs.readFileSync(path.join(root, 'mod-src/textures/entity/scooters.png'
   fs.readFileSync(path.join(root, 'assets/textures/p24/scooters.png'))));
 assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'mod-src/geo/scooter.geo.json')))),
   JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'mod-src/geo/p24_scooter.geo.json')))));
-assert.match(rideWorld, /PORT_FRONT/, '3D model must actually load and render the game front face');
-assert.ok(fs.existsSync(path.join(root, 'shared/vendor/three/LICENSE')), 'Bundled Three.js license missing');
-assert.ok(fs.existsSync(path.join(root, 'shared/vendor/three/three.module.js')), 'Offline 3D engine missing');
-const scooterApp = fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8');
-for (const id of ['hero3d', 'surfaceList', 'testWall', 'testObsidian', 'quickRide', 'charge', 'pack', 'rideFeed']) {
-  assert.ok(scooterHtml.includes(`id="${id}"`), `Scooter interactive control ${id} missing`);
-}
-assert.doesNotMatch(scooterHtml, /scooter\.svg/, 'The track must show the source model rather than a placeholder icon');
-assert.match(scooterApp, /state\.passengers > 0/, 'Folding must reject a scooter with passengers');
 const scooterRender = fs.readFileSync(path.join(root, 'assets/textures/p24/scooter_side.png'));
 assert.equal(scooterRender.subarray(1, 4).toString(), 'PNG', 'Source geometry render must be PNG');
 assert.ok(scooterRender.readUInt32BE(16) >= 500, 'Scooter render must be crisp on desktop');

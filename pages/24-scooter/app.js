@@ -1,403 +1,232 @@
-/* №24 · Original Bedrock scooter geometry/atlas; local teaching simulation of
-   ScooterEntity constants, not the Minecraft physics or a server-side ride. */
+/* №24 · 2D illustration of source formulas. No WebGL, no fabricated masses.
+   Exact structure geometry: data/p24_station.js derived from scooter_station.nbt. */
 (function () {
-  const { $ } = ZM, K = ZM.kit, U = ZM.url;
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const { $, url: U } = ZM, K = ZM.kit;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const fmt = n => Math.round(n).toLocaleString('ru-RU');
   ZM.topbar({ crumb: '№24 · Электросамокат', ...ZM.pointNav(24) });
   K.finNav(24, $('#finNav'));
   const adv = K.adv({ list: ZM.P24.advancements, store: 'p24.adv',
     icon: a => U(({ scooter: 'assets/textures/p24/scooter_item.png', station: 'assets/textures/mc/p2/item_redstone.png', speed: 'assets/textures/p3/vanilla/item_barrier.png' })[a.icon]),
-    intro: 'Три скрытых достижения: самокат, зарядный порт и отметка 100 на HUD.' });
-
-  // Source geometry, not a fabricated silhouette. A transparent render of the
-  // same model is the canvas fallback and the graphic in the track.
-  const canvas = $('#hero3d');
-  if (window.ZMGeo && ZMGeo.supported()) {
-    try {
-      const g = ZMGeo.create(canvas, { geo: ZM.P24G, tex: U('assets/textures/p24/scooters.png'), nearest: true, lit: .78 });
-      const box = g.bbox(Object.keys(g.bones)), spinner = K.spinner(canvas, { ry: -32, rx: 0 }, 35);
-      Object.assign(g.cam, { target: box.c.slice(), dist: Math.max(...box.size) * 1.92, yaw: 37, pitch: 18, fov: 37 });
-      let last = 0, heroVisible = true;
-      new IntersectionObserver(entries => { heroVisible = entries[0].isIntersecting; }, { threshold: .01 }).observe(canvas);
-      function draw(now) {
-        const dt = Math.min(.05, (now - last) / 1000 || 0); last = now;
-        if (!document.hidden && heroVisible && now - (draw.lastPaint || 0) > 32) {
-          draw.lastPaint = now;
-          if (spinner.idle() && !matchMedia('(prefers-reduced-motion: reduce)').matches) spinner.ry += dt * 9;
-          g.cam.yaw = spinner.ry + 70; g.cam.pitch = 18 + spinner.rx * .4;
-          g.tick(dt); g.render();
-        }
-        requestAnimationFrame(draw);
+    intro: 'Получите предмет самоката, зарядный порт и отметку 100 по спидометру.' });
+  // All values come from the exact ScooterMassHelper.java table (in mod-src/java/p24).
+  const TYPES = [
+    ['player', 'Игрок', 1], ['iron_golem', 'Железный голем', 8], ['ravager', 'Разоритель', 7],
+    ['hoglin', 'Хоглин / зоглин', 6], ['polar_bear', 'Белый медведь', 5.5], ['warden', 'Варден', 12],
+    ['sniffer', 'Нюхач', 5.5], ['camel', 'Верблюд', 5], ['horse', 'Лошадь', 4.5],
+    ['panda', 'Панда', 4], ['cow', 'Корова', 3.5], ['llama', 'Лама', 3.5],
+    ['goat', 'Коза / эндермен', 2.5], ['pig', 'Свинья / овца', 2.2],
+    ['zombie', 'Зомби / скелет / крипер', 1.2], ['villager', 'Житель', 1.1],
+    ['wolf', 'Волк / кот / лиса', .5], ['chicken', 'Курица / кролик / попугай', .2]
+  ];
+  const byType = Object.fromEntries(TYPES.map(t => [t[0], t]));
+  const s = { owned: false, port: false, grade: 'flat', riders: ['player'], speed: 0,
+    charge: 1000000, meters: 0, go: false, brake: false, cruise: false, charging: false, atStation: false };
+  const scooter = new Image(); scooter.src = U('assets/textures/p24/scooter_side.png');
+  const cv = $('#rideCanvas'), ctx = cv.getContext('2d');
+  function masses() {
+    const mass = 1 + s.riders.reduce((v, k) => v + byType[k][2], 0);
+    return { mass, heavy: clamp((mass - 1) / 24, 0, 1), count: s.riders.length };
+  }
+  function crewUI() {
+    const rows = $('#crewRows'); rows.replaceChildren();
+    s.riders.forEach((key, i) => {
+      const row = document.createElement('div'); row.className = 'sc-rider';
+      const badge = document.createElement('b'); badge.className = 'sc-rnum' + (i === 0 ? ' driver' : ''); badge.textContent = String(i + 1).padStart(2, '0'); row.append(badge);
+      if (i === 0) { const label = document.createElement('span'); label.textContent = 'Водитель · игрок'; label.style.flex = '1'; label.style.fontSize = '11px'; row.append(label); }
+      else {
+        const sel = document.createElement('select'); sel.setAttribute('aria-label', `Пассажир ${i + 1}: тип моба`);
+        TYPES.forEach(([id, name, mass]) => { const option = new Option(`${name} · ${mass}`, id); sel.add(option); });
+        sel.value = key; sel.addEventListener('change', () => { s.riders[i] = sel.value; crewUI(); }); row.append(sel);
       }
-      requestAnimationFrame(draw);
-    } catch (error) {
-      canvas.hidden = true; $('#modelFallback').hidden = false;
-      console.warn('Scooter 3D fallback', error);
-    }
-  } else { canvas.hidden = true; $('#modelFallback').hidden = false; }
-
-  const SURFACE = {
-    asphalt: { title: 'АСФАЛЬТ', factor: 1, text: 'На сухой трассе самокат сохраняет ход. Обычная стена сдвигает его вдоль преграды, не выбрасывая пассажиров.' },
-    water: { title: 'ВОДА', factor: .88, text: 'Вода тормозит движение до 0,88 за тик, а корпус теряет 1 прочность каждые 5 тиков (≈4 в секунду) — так устроен ScooterEntity.' },
-    honey: { title: 'МЁД', factor: .55, text: 'Медовые блоки гасят скорость до 55% от прежней за тик. Промчаться сквозь липкую стену не получится.' },
-    hay: { title: 'СЕНО', factor: .75, text: 'Сено снижает скорость до 75% за тик. Тормоз плавнее, чем в меду, но разгон снова придётся набирать.' },
-    slime: { title: 'СЛИЗЬ', factor: 1, text: 'Слизь меняет направление столкновения: самокат отскакивает от стенки, сохраняя модуль скорости, если поверхность позволяет.' }
-  };
-  const state = { owned: false, port: false, charging: false, speed: 0, charge: 1000000,
-    health: 500, passengers: 1, grade: 'flat', surface: 'asphalt',
-    keys: { go: false, brake: false, left: false, right: false }, meters: 0, offset: 0 };
-  let world = null, worldInfo = null;
-  const run = { ticks: 0, started: false, finished: false, best: Number(ZM.store.get('p24.best', 0)) || 0 };
-  let waterTicks = 0, mapTicks = 0;
-  const clock = ticks => { const sec = ticks / 20; return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(Math.floor(sec % 60)).padStart(2, '0')}.${Math.floor(sec * 10 % 10)}`; };
-  function drawMap() {
-    const cv = $('#miniMap'), g = cv.getContext('2d');
-    if (!world) return;
-    const loc = world.location, px = x => 70 + x * 1.8, pz = z => (40 - z) * .98;
-    g.fillStyle = '#183529'; g.fillRect(0, 0, 140, 140);
-    g.fillStyle = '#324936'; for (let z = 0; z < 140; z += 8) for (let x = 0; x < 140; x += 8)
-      if (((x * 17 + z * 13) % 7) < 3) g.fillRect(x, z, 2, 2);
-    g.fillStyle = '#737970'; g.fillRect(px(-6), 0, 12 * 1.8, 140);
-    g.fillStyle = '#e5e7b9'; for (let z = 5; z < 140; z += 13) g.fillRect(69, z, 2, 5);
-    for (const [x, z, color] of [[0, -32, '#c8c5b8'], [0, -45, '#ae7556'], [5, -62, '#8aea66'], [-4, -78, '#a986e2']]) {
-      g.fillStyle = color; g.fillRect(px(x) - 4, pz(z) - 4, 8, 8);
-    }
-    for (const z of [-16, -52, -86]) { g.fillStyle = '#d5fb40'; g.fillRect(px(-7), pz(z), 2, 2); g.fillRect(px(7), pz(z), 2, 2); }
-    g.fillStyle = '#8dfff4'; g.fillRect(px(5) - 3, pz(23) - 3, 7, 7);
-    g.save(); g.translate(px(loc.x), pz(loc.z)); g.rotate(loc.heading);
-    g.fillStyle = '#fff'; g.beginPath(); g.moveTo(0, -7); g.lineTo(5, 6); g.lineTo(-5, 6); g.closePath(); g.fill(); g.restore();
-  }
-  function worldToast(text, achievement = false) {
-    const el = $(achievement ? '#worldAdvToast' : '#worldToast');
-    el.textContent = text; el.hidden = false; clearTimeout(el.hideTimer);
-    el.hideTimer = setTimeout(() => { el.hidden = true; }, achievement ? 3800 : 2600);
-  }
-  function award(key, title) {
-    if (adv.has(key)) return;
-    adv.grant(key); worldToast(`✦ ДОСТИЖЕНИЕ ПОЛУЧЕНО · ${title}`, true);
-  }
-  const $log = $('#rideLog');
-  function note(message, feed = true) {
-    $log.textContent = message;
-    if (feed) {
-      const li = document.createElement('li'); li.textContent = message;
-      $('#rideFeed').prepend(li);
-      while ($('#rideFeed').children.length > 5) $('#rideFeed').lastElementChild.remove();
-    }
-  }
-  function riderState() {
-    const canRide = state.owned && state.passengers > 0;
-    $('#go').disabled = !canRide; $('#brake').disabled = !canRide; $('#horn').disabled = !canRide;
-    $('#steerL').disabled = !canRide; $('#steerR').disabled = !canRide;
-    $('#getScooter').disabled = state.owned;
-    $('#getScooter').textContent = state.owned ? '✓ Ты на самокате' : 'Взять самокат';
-    $('#pack').disabled = !state.owned;
-    if (!canRide) state.keys.go = state.keys.brake = state.keys.left = state.keys.right = false;
-    $('#paxN').textContent = `${state.passengers} / 5`;
-    $('#crew').replaceChildren(...Array.from({ length: state.owned ? state.passengers : 0 }, (_, index) => {
-      const head = document.createElement('i'); head.style.setProperty('--i', index);
-      return head;
-    }));
-  }
-  function present() {
-    const s = state, display = Math.round(Math.abs(s.speed) * 72), percent = s.charge / 10000;
-    $('#speed').textContent = String(display).padStart(3, '0');
-    $('#chargeN').textContent = `${Math.round(percent)}%`; $('#chargeBar').style.width = percent + '%';
-    $('#healthN').textContent = `${s.health} / 500`; $('#healthBar').style.width = s.health / 5 + '%';
-    $('#needle').style.left = clamp(display / 500 * 100, 0, 99) + '%';
-    $('#meters').textContent = fmt(s.meters) + ' м';
-    $('#range').textContent = fmt(s.charge / 1000000 * 15000) + ' м';
-    $('#lines').style.backgroundPositionX = -(s.offset % 100) + 'px';
-    $('#roadLabel').textContent = { flat: 'РОВНАЯ · ОГРАНИЧЕНИЕ 80', down: 'СПУСК · БЕЗ ЛИМИТА 80', up: 'ПОДЪЁМ · ГРАВИТАЦИЯ' }[s.grade];
-    const beneath = s.surface === 'asphalt' && world?.location.surface === 'asphalt' ? (worldInfo?.floor || s.surface) : s.surface;
-    $('#surfaceTag').textContent = `ПОД КОЛЁСАМИ / ${SURFACE[beneath].title}`;
-    $('#scene').dataset.surface = s.surface;
-    $('#worldGrade').dataset.grade = s.grade;
-    $('#worldGrade').textContent = ({ flat: '→ РОВНО', down: '↘ УКЛОН', up: '↗ ПОДЪЁМ' })[s.grade];
-    $('#rider').classList.toggle('moving', s.owned && display > 5);
-    $('#portProgress').style.width = percent + '%'; $('#portPct').textContent = Math.round(percent) + '%';
-    const near = !world || !!worldInfo?.nearPort;
-    const active = s.charging && s.port && s.owned && near && Math.abs(s.speed) <= .08 && s.charge < 1000000;
-    $('#portLed').textContent = active ? '● CHARGING' : s.port && s.charging ? near ? '○ STOP FIRST' : '○ TOO FAR' : '○ OFFLINE';
-    $('#portLed').classList.toggle('on', active);
-    $('#chargeBar').classList.toggle('low', percent < 15);
-    $('#timerValue').textContent = run.started || run.finished ? clock(run.ticks) : '00:00.0';
-    $('#bestValue').textContent = run.best ? clock(run.best) : '—';
-    $('#gameHotbar').querySelectorAll('[data-slot]').forEach(button => {
-      const slot = +button.dataset.slot;
-      button.classList.toggle('active', slot === (s.surface === 'asphalt' ? 3 : { water: 4, honey: 5, hay: 6, slime: 7 }[s.surface]));
-      button.classList.toggle('owned', (slot === 1 && s.owned) || (slot === 2 && s.port));
+      const value = document.createElement('span'); value.textContent = byType[key][2].toFixed(1); row.append(value);
+      if (i) { const rm = document.createElement('button'); rm.type = 'button'; rm.textContent = '×'; rm.setAttribute('aria-label', `Убрать пассажира ${i + 1}`); rm.addEventListener('click', () => { s.riders.splice(i, 1); crewUI(); }); row.append(rm); }
+      rows.append(row);
     });
-    if (world) {
-      const loc = world.location, distance = Math.round(Math.hypot(loc.x - 5, loc.z - 23));
-      $('#worldCoords').textContent = `XYZ ${Math.round(loc.x)} · ${Math.round(loc.z)}`;
-      $('#worldDistance').textContent = distance <= 2 ? 'ϟ ПОРТ В РАДИУСЕ 2 БЛОКОВ' : `ϟ ПОРТ ↗ ${distance} БЛОКОВ`;
-      $('#worldProgress').textContent = `${loc.checkpoint} / 3 арки`;
-      if (++mapTicks % 6 === 0) drawMap();
-      $('#worldQuest').textContent = !s.owned ? 'ЗАДАНИЕ / ВОЗЬМИ САМОКАТ' :
-        s.charge < 950000 && s.port ? 'ЗАДАНИЕ / ВЕРНИСЬ К ПОРТУ' :
-        loc.checkpoint >= 3 ? 'МАРШРУТ ПРОЙДЕН · НАЙДИ ЗАРЯДКУ' : `ЗАДАНИЕ / ПРОЙДИ АРКУ 0${loc.checkpoint + 1}`;
-    }
+    const { mass, heavy } = masses(); $('#crewN').textContent = `${s.riders.length} / 5`;
+    $('#totalMass').textContent = mass.toFixed(1); $('#massBar').style.width = `${Math.max(6, Math.round(heavy * 100))}%`;
+    $('#massNote').textContent = `1.0 самокат + ${s.riders.map(k => byType[k][2].toFixed(1)).join(' + ')} экипаж`;
+    $('#addRider').disabled = s.riders.length >= 5;
+    paint();
   }
-  // 20 simulated ticks/sec. Uses the constants for acceleration, drag, HUD
-  // display and movement; cannot reproduce Minecraft collisions or terrain.
-  function step() {
-    if (!state.owned) { if (world) worldInfo = world.tick(state); present(); return; }
-    const s = state, heavy = clamp((s.passengers - 1) * .14, 0, 1);
-    const down = s.grade === 'down' ? .85 : 0, up = s.grade === 'up' ? .55 : 0;
-    const boost = 1 + s.passengers * .08 + heavy * .55;
-    const accel = .032 * (1 - .55 * heavy) * (down ? 1 + .7 * down * boost * (1 + .85 * heavy) : up ? (1 - .3 * up) * (1 - .65 * heavy) : 1);
-    let target = s.speed;
-    if (s.keys.go && s.charge > 0 && s.passengers > 0) target += accel + (down ? .032 * .55 * down * boost * (1 + .85 * heavy) : 0);
-    else if (s.keys.brake && s.passengers > 0) target -= s.speed > .03 ? .085 * (1 - .45 * heavy) : accel * 1.15;
-    else if (down) target = s.speed * (.965 + (.992 + .006 * heavy - .965) * down) + .032 * .75 * down * boost * (1 + .85 * heavy);
-    else target *= up ? .965 + (.94 - .06 * heavy - .965) * up : .965;
-    if (Math.abs(target) < .005) target = 0;
-    s.speed = clamp(s.speed + (target - s.speed) * (.34 - .16 * heavy), -18 / 72, down ? 500 / 72 : 80 / 72);
-    const floor = world?.floorAt() || s.surface;
-    s.speed *= SURFACE[floor].factor;
-    if (!run.started && !run.finished && Math.abs(s.speed) > .05) run.started = true;
-    if (run.started && !run.finished) run.ticks++;
-    if (floor === 'water') {
-      if (++waterTicks % 5 === 0) {
-        s.health = Math.max(0, s.health - 1);
-        if (s.health === 0) { s.speed = 0; s.owned = false; s.passengers = 0; riderState();
-          note('ВОДА: корпус разрушен. Постоянное купание снимает по 4 прочности в секунду.'); }
-      }
-    } else waterTicks = 0;
-    if (world) worldInfo = world.tick(s, .05);
-    const moved = Math.abs(s.speed) * .5; // MOVE_SCALE=.5, HUD_SCALE=72
-    if (s.charge > 0 && moved > .001) {
-      s.charge = Math.max(0, s.charge - moved * (1000000 / 15000) * (up ? 1.2 : 1));
-      s.meters += moved;
-    }
-    if (s.port && s.charging && (!world || worldInfo?.nearPort) && Math.abs(s.speed) <= .08 && s.charge < 1000000)
-      s.charge = Math.min(1000000, s.charge + 500); // 1%/sec × 20 ticks
-    s.offset += Math.abs(s.speed) * 19;
-    if (s.speed * 72 >= 99.5) award('speed_100', '320 км/ч peek · 100 на HUD');
-    present();
-  }
-  let prev = performance.now(), acc = 0;
-  function loop(now) {
-    const dt = Math.min(1, (now - prev) / 1000); prev = now;
-    if (!document.hidden) { acc = Math.min(1, acc + dt); while (acc >= .05) { step(); acc -= .05; } }
-    requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
+  $('#addRider').addEventListener('click', () => { if (s.riders.length < 5) { s.riders.push('iron_golem'); crewUI(); } });
+  const labels = { flat: '→ РОВНАЯ ДОРОГА', down: '↘ СПУСК / МАССА ПОМОГАЕТ', up: '↗ ПОДЪЁМ / МАССА МЕШАЕТ' };
+  document.querySelectorAll('[data-grade]').forEach(btn => btn.addEventListener('click', () => {
+    s.grade = btn.dataset.grade;
+    document.querySelectorAll('[data-grade]').forEach(b => { b.classList.toggle('on', b === btn); b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+    $('#gradeRead').textContent = labels[s.grade];
+    $('#rideStatus').textContent = s.grade === 'down' ? 'НА СПУСКЕ ВОЗМОЖНО 100+ НА HUD' : s.grade === 'up' ? 'ПОДЪЁМ ТОРМОЗИТ ЭКИПАЖ · ТЯЖЁЛЫЕ МОГУТ ЗАСТРЯТЬ' : 'ЛИМИТ 80 НА HUD';
+    paint();
+  }));
   $('#getScooter').addEventListener('click', () => {
-    if (state.health <= 0) { state.health = 500; state.charge = 1000000; world?.reset(); note('Новый самокат для следующего испытания. Старый разбился об обсидиан.'); }
-    state.owned = true; state.passengers = 1; $('#pax').value = 1; state.speed = 0;
-    riderState(); ZM.sfx('equip', .42); award('scooter_craft', 'МТС Юрент');
-    note('Самокат на трассе. Удерживай газ; для достижения 100 переключи уклон на спуск.'); present();
+    if (s.owned) return; s.owned = true; adv.grant('scooter_craft');
+    $('#getScooter').disabled = true; $('#getScooter').lastChild.textContent = ' ✓ Самокат получен';
+    $('#go').disabled = $('#brake').disabled = $('#cruise').disabled = false;
+    $('#rideStatus').textContent = 'УДЕРЖИВАЙ ГАЗ ИЛИ ВКЛЮЧИ КРУИЗ';
+    display();
   });
-  $('#getPort').addEventListener('click', () => {
-    state.port = true; $('#getPort').disabled = true; $('#charge').disabled = false;
-    ZM.sfx('pop', .48); award('find_station', 'Бензина нет'); note('Порт у тебя в инвентаре. Подъедь к станции справа от старта, остановись и подключи зарядку.'); present();
-  });
-  $('#charge').addEventListener('click', () => {
-    state.charging = !state.charging;
-    $('#charge').textContent = state.charging ? 'Отключить порт' : 'Подключить зарядку';
-    if (state.charging) ZM.sfx('enchant', .25);
-    note(state.charging ? (world && !worldInfo?.nearPort ? 'Порт слишком далеко: подъедь к светящемуся блоку справа от старта на 2 блока.' : 'Заряд идёт только при скорости ≤ 0,08 и в двух блоках от станции.') : 'Порт отключён.'); present();
-  });
-  $('#pack').addEventListener('click', () => {
-    if (Math.abs(state.speed) > .08) { note('Нельзя складывать на ходу: притормози до 0,08 внутренней скорости.'); return; }
-    if (state.passengers > 0) { note('В Minecraft складывать можно лишь БЕЗ пассажиров. Передвинь ползунок «На борту» на 0, потом складывай.'); return; }
-    state.owned = false; state.charging = false; $('#charge').textContent = 'Подключить зарядку';
-    riderState(); ZM.sfx('pop', .4); note(`Самокат сложен: предмет хранит заряд ${Math.round(state.charge / 10000)}% и прочность ${state.health}/500.`); present();
-  });
-  $('#grade').addEventListener('change', event => {
-    state.grade = event.target.value;
-    note({ flat: 'Ровная дорога: HUD ограничен 80.', down: 'Спуск: лимит 80 снят, пассажиры усиливают инерцию.', up: 'Подъём: разгон тяжелее, расход заряда выше.' }[state.grade]); present();
-  });
-  $('#pax').addEventListener('input', event => {
-    state.passengers = +event.target.value; riderState();
-    note(state.passengers === 0 ? 'Все слезли. Скорость должна упасть до 0,08, прежде чем складывать самокат.' : `На борту ${state.passengers} из 5. Масса влияет на разгон и инерцию.`);
-  });
-  $('#horn').addEventListener('click', () => { note('Бип-бип! Сигнал из ScooterEntity.honk().'); ZM.sfx('click', .35); });
-  for (const [selector, key] of [['#go', 'go'], ['#brake', 'brake'], ['#steerL', 'left'], ['#steerR', 'right'],
-    ['#touchGo', 'go'], ['#touchBrake', 'brake'], ['#touchL', 'left'], ['#touchR', 'right']]) {
-    const button = $(selector), on = event => {
-      if (button.disabled || !state.owned || state.passengers < 1) return;
-      event.preventDefault(); state.keys[key] = true; button.classList.add('pressed');
-      try { button.setPointerCapture(event.pointerId); } catch (_) { /* keyboard or synthesized click */ }
-    }, off = () => { state.keys[key] = false; button.classList.remove('pressed'); };
-    button.addEventListener('pointerdown', on);
-    for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(name, off);
+  function cruise(on) {
+    s.cruise = on; $('#cruise').setAttribute('aria-pressed', String(on));
+    $('#cruise').childNodes[0].textContent = on ? '◉ КРУИЗ ' : '◎ КРУИЗ ';
   }
-  const keyOf = event => ({ KeyW: 'go', ArrowUp: 'go', KeyS: 'brake', ArrowDown: 'brake',
-    Space: 'brake', KeyA: 'left', ArrowLeft: 'left', KeyD: 'right', ArrowRight: 'right' })[event.code];
-  const keyButton = { go: '#go', brake: '#brake', left: '#steerL', right: '#steerR' };
-  addEventListener('keydown', event => {
-    if (event.target.matches('input:not([type=range]),textarea,[contenteditable=true]') ||
-      ((event.target.matches('select,input[type=range]')) && event.code.startsWith('Arrow'))) return;
-    if (/^Digit[1-9]$/.test(event.code) && world) {
-      event.preventDefault(); $('#gameHotbar [data-slot="' + event.code.slice(-1) + '"]').click(); return;
-    }
-    if (!state.owned || state.passengers < 1) return;
-    if (event.code === 'KeyG' && world) { event.preventDefault(); $('#worldGrade').click(); return; }
-    if (event.code === 'KeyC' && world) { event.preventDefault(); $('#worldCam').click(); return; }
-    if (event.code === 'KeyR' && world) { event.preventDefault(); $('#worldReset').click(); return; }
-    if (event.code === 'KeyE' && state.port) { event.preventDefault(); $('#charge').click(); return; }
-    if (event.code === 'KeyF') { event.preventDefault(); $('#horn').click(); return; }
-    const key = keyOf(event);
-    if (key) { event.preventDefault(); state.keys[key] = true; $(keyButton[key]).classList.add('pressed'); }
-  });
-  addEventListener('keyup', event => {
-    const key = keyOf(event); if (key) { state.keys[key] = false; $(keyButton[key]).classList.remove('pressed'); }
-  });
-  addEventListener('blur', () => {
-    state.keys.go = state.keys.brake = state.keys.left = state.keys.right = false;
-    for (const selector of Object.values(keyButton)) $(selector).classList.remove('pressed');
-  });
-
-  $('#surfaceList').addEventListener('click', event => {
-    const button = event.target.closest('[data-surface]'); if (!button) return;
-    state.surface = button.dataset.surface;
-    for (const choice of $('#surfaceList').querySelectorAll('button')) choice.setAttribute('aria-pressed', String(choice === button));
-    $('#surfaceInfo').textContent = SURFACE[state.surface].text;
-    note(`Трасса: ${SURFACE[state.surface].title.toLowerCase()}. ${SURFACE[state.surface].text}`); present();
-  });
-  function impact(message) {
-    $('#collisionNote').textContent = message; note(message);
-    const badge = $('#impact'); badge.textContent = message; badge.hidden = false;
-    $('#scene').classList.remove('shaken'); void $('#scene').offsetWidth;
-    $('#scene').classList.add('shaken'); ZM.sfx('anvil', .24);
-    clearTimeout(impact.timer); impact.timer = setTimeout(() => { badge.hidden = true; $('#scene').classList.remove('shaken'); }, 2400);
-    present();
+  $('#cruise').addEventListener('click', () => cruise(!s.cruise));
+  function hold(el, key) {
+    el.addEventListener('pointerdown', e => { if (el.disabled) return; e.preventDefault(); s[key] = true; el.setPointerCapture(e.pointerId); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(evt => el.addEventListener(evt, () => { s[key] = false; }));
   }
-  $('#testWall').addEventListener('click', () => {
-    if (!state.owned) { impact('Сначала возьми самокат на треке.'); return; }
-    const speed = Math.abs(state.speed * 72);
-    if (speed < 20) { state.speed = 0; impact('Тихий контакт: остановился у стены. Разгонись хотя бы до 20 на HUD.'); return; }
-    if (state.surface === 'slime') {
-      // The original mod reflects the movement vector, keeping its magnitude.
-      impact(`СЛИЗЬ: отскок! ${Math.round(speed)} на HUD сохранены; направление поменялось.`);
-    } else {
-      state.speed *= state.surface === 'honey' ? .55 : state.surface === 'hay' ? .75 : .25;
-      impact(`СТЕНА: скольжение вдоль препятствия. Все ${state.passengers} на борту — никого не сбросило.`);
+  hold($('#go'), 'go'); hold($('#brake'), 'brake');
+  addEventListener('keydown', e => { if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return; if (['w', 'W', 'ArrowUp'].includes(e.key)) { if (s.owned) { s.go = true; e.preventDefault(); } }
+    if (['s', 'S', 'ArrowDown', ' '].includes(e.key)) { if (s.owned) { s.brake = true; e.preventDefault(); } } });
+  addEventListener('keyup', e => { if (['w', 'W', 'ArrowUp'].includes(e.key)) s.go = false; if (['s', 'S', 'ArrowDown', ' '].includes(e.key)) s.brake = false; });
+  addEventListener('blur', () => { s.go = s.brake = false; });
+  $('#rideReset').addEventListener('click', () => { s.speed = 0; s.charge = 1000000; s.meters = 0; s.go = s.brake = s.charging = s.atStation = false; cruise(false); $('#rideStatus').textContent = 'ПОЕЗДКА СБРОШЕНА · ДОСТИЖЕНИЯ СОХРАНЕНЫ'; display(); });
+  // ScooterEntity: grade sign +up / -down, heavy=(mass-1)/24,
+  // BASE_ACCEL .032, BRAKE_FORCE .085, NATURAL_FRICTION .965,
+  // smooth .34→.18, HUD speed*72, movement speed*.5.
+  // Constant schematic grade (.65) instead of actual terrain sampling/collisions.
+  function step() {
+    if (!s.owned) return;
+    // At a station the scooter is parked on the station platform, not on the
+    // selected test slope. Otherwise downhill coast would undo a stationary charge.
+    if (s.charging) {
+      s.speed = 0; s.charge = Math.min(1000000, s.charge + 500);
+      if (s.charge >= 1000000) s.charging = false;
+      display(); return;
     }
+    if (s.atStation && !s.go && !s.cruise) { s.speed = 0; display(); return; }
+    if (s.go || s.cruise) s.atStation = false;
+    const { mass, heavy, count } = masses();
+    const down = s.grade === 'down' ? 1 : 0, up = s.grade === 'up' ? 1 : 0;
+    const massDown = 1 + .85 * heavy, massUp = 1 - .65 * heavy;
+    const pack = 1 + count * .08 + heavy * .55;
+    const accel = .032 * (1 - .55 * heavy) * (down ? 1 + .70 * pack * massDown : up ? .70 * massUp : 1);
+    let target = s.speed;
+    if (s.brake && s.charge > 0) target = s.speed > .03 ? s.speed - .085 * (1 - .45 * heavy) : s.speed - accel * 1.15;
+    else if ((s.go || s.cruise) && s.charge > 0) target = s.speed + accel + (down ? .032 * .55 * pack * massDown : 0);
+    else if (down) target = s.speed * (.992 + .006 * heavy) + .032 * .75 * pack * massDown;
+    else if (up) target = s.speed * (.94 - .06 * heavy);
+    else target = s.speed * .965;
+    if (Math.abs(target) < .005) target = 0;
+    s.speed = clamp(s.speed + (target - s.speed) * (.34 - .16 * heavy), -18 / 72,
+      down ? 500 / 72 : up ? (80 / 72) * clamp(.90 - clamp((mass - 1) / 10, 0, 2) * .10, .28, 1) : (80 / 72) * (count >= 5 ? .98 : count === 4 ? .99 : 1));
+    // Do not zero the smoothed result while accelerating: with four golems
+    // one tick is < .005, but ScooterEntity thresholds the TARGET, not speed.
+    if (Math.abs(s.speed) < .005 && !(s.go || s.cruise || down)) s.speed = 0;
+    const moved = Math.abs(s.speed) * .5; s.meters += moved;
+    if (moved > .001 && s.charge > 0) {
+      const massDrain = mass >= 5 ? 1.1 : 1;
+      const slopeDrain = up ? 1.2 : 1; // slopeFactor < .85 in mod, on steep ascents
+      s.charge = Math.max(0, s.charge - moved * (1000000 / 15000) * massDrain * slopeDrain);
+    }
+    if (s.charging && Math.abs(s.speed) <= .08 && s.charge < 1000000) s.charge = Math.min(1000000, s.charge + 500);
+    if (s.charging && Math.abs(s.speed) > .08) { s.charging = false; $('#rideStatus').textContent = 'ЗАРЯДКА ПРЕРВАНА / САМОКАТ ЕДЕТ'; }
+    if (!adv.has('speed_100') && Math.abs(s.speed) * 72 >= 99.5) adv.grant('speed_100');
+    display();
+  }
+  const hill = [[0,375],[65,355],[125,345],[205,305],[272,313],[355,272],[430,267],[508,246],[575,215],[650,226],[735,185],[825,165],[900,150]];
+  function paint() {
+    // Native 900×460 canvas; CSS scales it evenly on phones. No 3D render.
+    const w = 900, h = 460, slope = s.grade === 'down' ? .18 : s.grade === 'up' ? -.18 : 0;
+    ctx.clearRect(0, 0, w, h);
+    const sky = ctx.createLinearGradient(0, 0, 0, h); sky.addColorStop(0, '#173e40'); sky.addColorStop(.7, '#456a61'); sky.addColorStop(1, '#829980'); ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#b5ed86'; ctx.fillRect(690, 65, 93, 93); ctx.fillStyle = '#d3ffc3'; ctx.fillRect(702, 77, 69, 69);
+    ctx.fillStyle = '#527b65'; ctx.beginPath(); ctx.moveTo(0, 285); hill.forEach(([x, y]) => ctx.lineTo(x, y)); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill();
+    ctx.fillStyle = '#284c41'; ctx.beginPath(); ctx.moveTo(0, 325); hill.forEach(([x, y]) => ctx.lineTo(x, y + 65)); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill();
+    const roadY = x => 331 + slope * (x - 450);
+    ctx.fillStyle = '#243d34'; ctx.beginPath(); ctx.moveTo(0, roadY(0)); ctx.lineTo(w, roadY(w)); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill();
+    ctx.strokeStyle = '#bcf470'; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(0, roadY(0)); ctx.lineTo(w, roadY(w)); ctx.stroke();
+    ctx.save(); ctx.beginPath(); ctx.moveTo(0, roadY(0) + 62); ctx.lineTo(w, roadY(w) + 62); ctx.strokeStyle = '#9eac8c'; ctx.lineWidth = 4; ctx.setLineDash([44, 50]); ctx.lineDashOffset = -(s.meters * 22 % 94); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#132820'; for (let i = 0; i < 27; i++) {
+      const x = ((i * 77 - s.meters * 6) % 940 + 940) % 940 - 30, y = roadY(x) + 13;
+      ctx.fillRect(x, y, 11, 7); ctx.fillRect(x + 14, y + 11, 7, 4);
+    }
+    // Source-derived scooter side image; pixel avatars illustrate occupied seats.
+    ctx.save(); ctx.translate(375, roadY(375) - 3); ctx.rotate(Math.atan(slope));
+    ctx.fillStyle = '#061b18aa'; ctx.beginPath(); ctx.ellipse(0, 3, 125, 13, 0, 0, Math.PI * 2); ctx.fill();
+    const colors = ['#e9c4a0','#a1c5d2','#c6afdf','#b3dfa8','#ebd08e'];
+    s.riders.forEach((key, i) => {
+      const px = -74 + i * 36, py = -120 - (i === 0 ? 10 : 0);
+      ctx.fillStyle = '#142b2e'; ctx.fillRect(px + 4, py + 29, 22, 40);
+      ctx.fillStyle = colors[i]; ctx.fillRect(px + 8, py, 20, 20);
+      ctx.fillStyle = '#202b27'; ctx.fillRect(px + 8, py, 20, 4);
+      ctx.fillStyle = '#101b1d'; ctx.fillRect(px + 23, py + 9, 3, 3);
+      ctx.fillStyle = '#628c6b'; ctx.fillRect(px, py + 25, 30, 31);
+      ctx.fillStyle = '#1c3931'; ctx.fillRect(px + 10, py + 55, 7, 13); ctx.fillRect(px + 21, py + 55, 7, 13);
+    });
+    if (scooter.complete && scooter.naturalWidth) { ctx.imageSmoothingEnabled = false; ctx.drawImage(scooter, -134, -156, 278, 166); }
+    else { ctx.fillStyle = '#bac5bd'; ctx.fillRect(-115,-23,235,15); ctx.fillRect(90,-142,15,130); }
+    ctx.restore();
+    ctx.fillStyle = '#10251dcb'; ctx.fillRect(26, 27, 182, 53); ctx.fillStyle = '#baf652'; ctx.font = 'bold 17px monospace'; ctx.fillText(s.grade === 'down' ? '↘   DESCENT' : s.grade === 'up' ? '↗   ASCENT' : '→   FLAT', 42, 61);
+    ctx.fillStyle = '#d8f8c3'; ctx.font = 'bold 13px monospace'; ctx.fillText('Z / 24', 789, 33);
+  }
+  scooter.onload = paint;
+  function display() {
+    const kmh = Math.round(Math.abs(s.speed) * 72), pct = Math.round(s.charge / 10000);
+    $('#speed').textContent = String(kmh).padStart(3, '0'); $('#speedLine').style.width = `${clamp(kmh / 500 * 100, 0, 100)}%`;
+    $('#chargeN').textContent = pct + '%'; $('#chargeBar').style.width = pct + '%';
+    $('#meters').textContent = fmt(s.meters) + ' м'; $('#range').textContent = `≈ ${fmt(s.charge / 1000000 * 15000)} блоков осталось`;
+    $('#stationChargeBar').style.width = pct + '%'; $('#stationChargeN').textContent = pct + '%';
+    const canCharge = s.owned && s.charge < 999999 && Math.abs(s.speed) <= .08;
+    $('#stationCharge').disabled = !canCharge;
+    $('#stationCharge').textContent = s.charging ? '■ Отключить зарядку' : 'ϟ Подключить самокат ↗';
+    $('#stationHint').textContent = !s.owned ? 'Возьми самокат в симуляторе.' : Math.abs(s.speed) > .08 ? 'Остановись: зарядка работает до скорости 0,08.' : s.charge >= 999999 ? 'Аккумулятор полон. Промотай маршрут для проверки.' : s.charging ? 'Зарядка идёт · +1% в секунду · порт рядом.' : 'Самокат стоит рядом с выбранным портом. Подключи зарядку.';
+    if (s.charging) $('#rideStatus').textContent = `ϟ ЗАРЯДКА НА СТАНЦИИ / ${pct}%`;
+    paint();
+  }
+  $('#stationCharge').addEventListener('click', () => { if (!s.owned) return; s.charging = !s.charging; display(); });
+  $('#quickTrip').addEventListener('click', () => {
+    if (!s.owned) { K.say('Сначала возьми самокат в симуляторе.', true); $('#ride').scrollIntoView({behavior:'smooth'}); return; }
+    s.speed = 0; s.go = s.brake = s.charging = false; s.atStation = true; cruise(false);
+    s.meters += 1500;
+    const { mass } = masses(); s.charge = Math.max(0, s.charge - (1000000 / 15000) * 1500 * (mass >= 5 ? 1.1 : 1) * (s.grade === 'up' ? 1.2 : 1));
+    $('#rideStatus').textContent = 'ПРОМОТКА / ПРИПАРКОВАН У СТАНЦИИ'; display();
   });
-  $('#testObsidian').addEventListener('click', () => {
-    if (!state.owned) { impact('Сначала возьми самокат на треке.'); return; }
-    if (Math.abs(state.speed * 72) < 70) { impact('Обсидиан опасен на скорости. Разгонись до 70 на HUD, затем попробуй ещё раз.'); return; }
-    state.health = 0; state.speed = 0; state.passengers = 0; state.owned = false;
-    state.charging = false; $('#charge').textContent = 'Подключить зарядку'; riderState();
-    impact('ОБСИДИАН: самокат разрушен, пассажиры выброшены. Возьми новый для следующего теста.');
-  });
-  $('#quickRide').addEventListener('click', () => {
-    if (!state.owned) { note('Сначала возьми самокат на тестовом треке.'); return; }
-    const distance = Math.min(1500, Math.floor(state.charge / (1000000 / 15000)));
-    if (!distance) { note('Заряд пуст. Подключи порт и дождись хотя бы одного процента.'); return; }
-    state.charge = Math.max(0, state.charge - distance * (1000000 / 15000));
-    state.meters += distance; state.speed = 0; state.keys.go = state.keys.brake = false;
-    // An express route ends at a level charging bay, even when it started on a slope.
-    state.grade = 'flat'; $('#grade').value = 'flat'; world?.park(); if (world) worldInfo = world.tick(state);
-    note(`Экспресс-маршрут: ${fmt(distance)} блоков пройдено. Самокат припаркован у станции; осталось ${Math.round(state.charge / 10000)}% батареи. Теперь проверь порт.`); present();
-  });
-  $('#gameHotbar').addEventListener('click', event => {
-    const button = event.target.closest('[data-slot]'); if (!button) return;
-    const slot = +button.dataset.slot;
-    if (slot === 1) {
-      if (!state.owned) $('#getScooter').click();
-      else if (state.passengers || Math.abs(state.speed) > .08)
-        worldToast('ЧТОБЫ СЛОЖИТЬ: ОСТАНОВИСЬ И ПОСТАВЬ «НА БОРТУ» НА 0');
-      else $('#pack').click();
-    } else if (slot === 2) {
-      if (!state.port) $('#getPort').click(); else $('#charge').click();
-    } else if (button.dataset.surface) $('#surfaceList [data-surface="' + button.dataset.surface + '"]').click();
-    else if (slot === 8) { if (!$('#horn').disabled) $('#horn').click(); }
-    else if (slot === 9) $('#worldCam').click();
-  });
-  $('#worldGrade').addEventListener('click', () => {
-    const grades = ['flat', 'down', 'up'];
-    $('#grade').value = grades[(grades.indexOf(state.grade) + 1) % 3];
-    $('#grade').dispatchEvent(new Event('change', { bubbles: true }));
-    worldToast({ flat: 'РОВНАЯ ДОРОГА · ЛИМИТ 80', down: 'СПУСК · ЛИМИТ СНЯТ', up: 'ПОДЪЁМ · ТЯЖЁЛЫЙ РАЗГОН' }[state.grade]);
-  });
-  // The ES module initializes the 3D world after this classic script has run.
-  addEventListener('scooterworldready', () => {
-    try {
-      world = window.ZMScooterWorld.create({ canvas: $('#ride3d'), getState: () => state,
-        onCollision: ({ kind, speed }) => {
-          if (kind === 'plow') {
-            state.health = Math.max(1, state.health - 2);
-            ZM.sfx('stone', .45);
-            worldToast('ПЛУГ! ГРУНТ РАЗБИТ · −2 ПРОЧНОСТИ');
-            note(`Грунт пробит на ${Math.round(speed)} HUD: тяжёлая загрузка или разгон ≥70.`); return;
-          }
-          if (kind === 'mob') {
-            const loss = Math.max(1, Math.min(25, Math.round(speed / 22)));
-            state.health = Math.max(0, state.health - loss);
-            state.speed *= .9; ZM.sfx('hit', .35);
-            worldToast(`СТОЛКНОВЕНИЕ С МОБОМ · −${loss} ПРОЧНОСТИ`);
-            note('Слишком быстро для посадки коровы: подъезжай медленно (≤25 на HUD).');
-            if (state.health === 0) { state.speed = 0; state.passengers = 0; state.owned = false; riderState(); }
-            return;
-          }
-          if (kind === 'slime') { impact(`СЛИЗЬ: отскок без потери скорости · ${Math.round(speed)} на HUD.`); return; }
-          if (kind === 'obsidian' && speed >= 70) {
-            state.health = 0; state.speed = 0; state.passengers = 0; state.owned = false;
-            state.charging = false; $('#charge').textContent = 'Подключить зарядку'; riderState();
-            impact('ОБСИДИАН: самокат разбит, пассажиры выброшены. Возьми новый.'); return;
-          }
-          const damage = speed >= 20 ? Math.max(1, Math.round(speed * .045)) : 0;
-          state.health = Math.max(0, state.health - damage);
-          if (state.health === 0) { state.owned = false; state.passengers = 0; riderState(); }
-          impact(kind === 'border' ? 'КРАЙ МИРА: разверни самокат к трассе.' :
-            `КАМЕНЬ: скользим вдоль стены · −${damage} прочности · пассажиры остались.`);
-        },
-        onPort: () => {
-          const loc = world.location;
-          if (Math.abs(loc.x - 5) > 3 || Math.abs(loc.z - 23) > 3) {
-            worldToast('ПОДЪЕДЬ К БЛОКУ ПОРТА · РАДИУС 2 БЛОКА'); return;
-          }
-          if (!state.port) $('#getPort').click();
-          else if (state.owned) $('#charge').click();
-        },
-        onBoard: () => {
-          if (!state.owned || state.passengers >= 5) return;
-          state.passengers++; $('#pax').value = state.passengers; riderState();
-          ZM.sfx('pop', .45); worldToast(`КОРОВА ЗАПРЫГНУЛА · ${state.passengers} / 5 НА БОРТУ`);
-          note(`Попутчик подобран на низкой скорости. Теперь ${state.passengers} из 5: разгон тяжелее, спуск быстрее.`);
-        },
-        onCheckpoint: number => {
-          ZM.sfx('orb', .6, 1 + number * .1);
-          if (number === 3) {
-            run.finished = true; run.started = false;
-            if (!run.best || run.ticks < run.best) { run.best = run.ticks; ZM.store.set('p24.best', run.best); }
-            worldToast(`ФИНИШ · ${clock(run.ticks)} · РЕКОРД ${clock(run.best)}`);
-            note(`Три арки пройдены! Время: ${clock(run.ticks)}. Проверь заряд и попробуй побить рекорд.`);
-          } else {
-            worldToast(`✓ АРКА 0${number} / 03 · ВРЕМЯ ${clock(run.ticks)}`);
-            note(`Арка ${number}/3 пройдена! Держись дороги, объезжай блоки и следи за зарядом.`);
-          }
-        }
-      });
-      if (!world) return;
-      $('#ride3d').hidden = false; $('#scene').classList.add('world-ready');
-      for (const id of ['gameTop', 'gameSide', 'gameTools', 'gameHotbar', 'gamePad', 'miniMapWrap', 'worldTimer']) $("#" + id).hidden = false;
-      worldInfo = world.tick(state); present();
-    } catch (error) { console.warn('Block-world fallback', error); world = null; }
-  });
-  $('#worldCam').addEventListener('click', () => {
-    if (!world) return;
-    const mode = world.cameraMode === 'chase' ? 'first' : 'chase'; world.setCameraMode(mode);
-    $('#worldCam').textContent = mode === 'chase' ? '◉ КАМЕРА' : '⊕ ОТ 1-ГО ЛИЦА';
-    $('#worldCrosshair').hidden = mode !== 'first';
-    worldToast(mode === 'first' ? 'ВИД ОТ ПЕРВОГО ЛИЦА · C — ПЕРЕКЛЮЧИТЬ' : 'КАМЕРА ОТ ТРЕТЬЕГО ЛИЦА');
-  });
-  $('#worldReset').addEventListener('click', () => {
-    if (!world) return;
-    world.reset(); run.ticks = 0; run.started = run.finished = false; waterTicks = 0;
-    state.passengers = state.owned ? 1 : 0; $('#pax').value = state.passengers; riderState(); state.speed = 0; state.keys.go = state.keys.brake = state.keys.left = state.keys.right = false;
-    worldInfo = world.tick(state); note('Ты на старте. Держи W/газ и рули A/D; порт справа.'); present();
-  });
-  $('#worldExpand').addEventListener('click', async () => {
-    try { if (document.fullscreenElement) await document.exitFullscreen(); else await $('#scene').requestFullscreen(); }
-    catch (_) { worldToast('Браузер не разрешил полноэкранный режим.'); }
-  });
-  addEventListener('fullscreenchange', () => { $('#worldExpand').textContent = document.fullscreenElement ? '⤢' : '⛶'; });
-  riderState(); present();
+  $('#getPort').addEventListener('click', () => { if (s.port) return; s.port = true; adv.grant('find_station'); $('#getPort').textContent = '✓ Зарядный порт получен'; $('#getPort').disabled = true; });
+  // Actual NBT block positions, including stone, walls, lantern, and the 3 ports.
+  const st = ZM.P24ST, blocks = new Map(st.blocks.map(([x,y,z,i]) => [`${x},${y},${z}`, st.palette[i]]));
+  const portZ = [3,5,7]; let chosen = 0, layer = 1;
+  function material(id) {
+    if (!id) return 'void'; if (id.includes('charging_port')) return 'port';
+    if (id.includes('iron') || id.includes('lantern')) return 'iron';
+    if (id.includes('concrete')) return 'concrete'; return 'stone';
+  }
+  function plan() {
+    const grid = $('#stationGrid'); grid.replaceChildren();
+    for (let z = 0; z < 11; z++) for (let x = 0; x < 10; x++) {
+      const id = blocks.get(`${x},${layer},${z}`), port = material(id) === 'port';
+      const cell = document.createElement(port ? 'button' : 'div');
+      cell.className = `cell ${material(id)}${port && z === portZ[chosen] ? ' on' : ''}`;
+      cell.title = `[${x}, ${layer}, ${z}] · ${id || 'воздух'}`;
+      if (port) { cell.type = 'button'; cell.innerHTML = `<img src="${U('assets/textures/p24/charging_port_item.png')}" alt="">`;
+        cell.setAttribute('aria-label', `Выбрать порт ${portZ.indexOf(z) + 1} из 3`);
+        cell.addEventListener('click', () => { chosen = portZ.indexOf(z); $('#portLabel').textContent = `ЗАРЯДНЫЙ ПОРТ / 0${chosen + 1} ИЗ 03`; plan(); }); }
+      grid.append(cell);
+    }
+  }
+  // Orthographic facade from two actual NBT slices. X=2 contains the three
+  // ports and signs; X=5 is the supporting rear wall. No invented geometry.
+  const elevation = $('#stationElevation');
+  for (let y = 5; y >= 0; y--) for (let z = 0; z < 11; z++) {
+    const front = blocks.get(`2,${y},${z}`), rear = blocks.get(`5,${y},${z}`);
+    const id = front || rear, port = material(front) === 'port';
+    const cell = document.createElement('span'); cell.className = `facade-cell ${material(id)}${port ? ' port' : ''}`;
+    cell.title = `[2, ${y}, ${z}]${front ? ' · ' + front : rear ? ' · задний план: ' + rear : ' · воздух'}`;
+    if (port) { cell.innerHTML = `<img src="${U('assets/textures/p24/charging_port_front.png')}" alt="">`; cell.setAttribute('aria-label', `Зарядный порт ${portZ.indexOf(z) + 1}`); }
+    elevation.append(cell);
+  }
+  $('#layerTabs').addEventListener('click', e => { const btn = e.target.closest('[data-layer]'); if (!btn) return; layer = +btn.dataset.layer;
+    $('#layerTabs').querySelectorAll('button').forEach(b => { b.classList.toggle('on', b === btn); b.setAttribute('aria-pressed', String(b === btn)); }); plan(); });
+  plan();
+  // Diagram only: deterministic pseudo-roll illustrating source weights, not world seed.
+  const map = $('#stationMap');
+  for (let z = -2; z <= 2; z++) for (let x = -2; x <= 2; x++) {
+    const btn = document.createElement('button'); btn.type = 'button'; btn.setAttribute('aria-label', `Ячейка ${x}, ${z}`);
+    const hash = (Math.imul(x + 19, 1103515245) ^ Math.imul(z + 29, 12345)) >>> 0;
+    const roll = hash % 100; const num = roll < 2 ? 3 : roll < 8 ? 2 : roll < 23 ? 1 : 0;
+    btn.innerHTML = `<span>${x},${z}</span>`;
+    btn.addEventListener('click', () => { map.querySelectorAll('button').forEach(b => b.classList.remove('on')); btn.classList.add('on');
+      $('#stationMapDetail').textContent = `Ячейка [${x}, ${z}] · пример: ${num ? `${num} самокат${num === 1 ? '' : 'а'}` : 'без самоката'} · станция может не установиться на неподходящем рельефе.`; });
+    map.append(btn); if (!x && !z) btn.click();
+  }
+  crewUI(); display(); setInterval(step, 50);
 })();
