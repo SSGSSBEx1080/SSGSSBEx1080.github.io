@@ -58,6 +58,7 @@
   /* ================= аватарки: drawAvatarSquare и стоковые лица из экрана ================= */
   const STYLE = { stock_steve: ["steve", 0xFF6D4C41], stock_alex: ["alex", 0xFFBF6D32], stock_smile: ["smile", 0xFFF4C542], stock_cat: ["cat", 0xFFE88BC8, 0xFFFFFFFF], stock_skull: ["skull", 0xFF8A8F98], favorite_flag: ["favorite_flag", 0xFF2673F2, 0xFFFFFFFF] };
   const imgCache = {};
+  const PORTRAITS = { persona_5: "p5", persona_dior: "pd", persona_clan: "pc", persona_vtuber: "pv", persona_mom: "pm" };
   function drawAva(cv, id, size, online, status) {
     cv.width = cv.height = size; const g = cv.getContext("2d"); g.imageSmoothingEnabled = false;
     const f = (x1, y1, x2, y2, c) => { g.fillStyle = typeof c === "number" ? hex(c) : c; g.fillRect(Math.floor(x1), Math.floor(y1), Math.floor(x2) - Math.floor(x1), Math.floor(y2) - Math.floor(y1)); };
@@ -71,44 +72,13 @@
       if (im.complete && im.naturalWidth) put(); else im.addEventListener("load", put, { once: true });
       return cv;
     }
-    if (id && id.startsWith("persona_")) {
-      // Собственные 32×32 пиксельные портреты; увеличиваются nearest, не загружают внешние картинки.
-      const px = document.createElement("canvas"); px.width = px.height = 32;
-      const pg = px.getContext("2d"), r = (a, b, w, h, c) => { pg.fillStyle = c; pg.fillRect(a, b, w, h); };
-      const eyes = (c) => { r(11, 14, 3, 2, c); r(19, 14, 3, 2, c); };
-      if (id === "persona_5") {
-        r(0, 0, 32, 32, "#3a195c"); r(1, 1, 30, 30, "#66358c"); r(2, 26, 28, 6, "#ff9d35");
-        r(5, 21, 22, 11, "#ee7424"); r(9, 23, 14, 9, "#2b174b"); r(8, 7, 16, 18, "#f8c091");
-        r(6, 5, 19, 7, "#442272"); r(9, 3, 14, 5, "#7b45bf"); r(7, 11, 3, 11, "#161c35"); r(24, 11, 3, 11, "#161c35");
-        r(5, 17, 4, 6, "#ffcf66"); r(24, 17, 4, 6, "#ffcf66"); eyes("#222039"); r(14, 20, 5, 2, "#c95c71");
-      } else if (id === "persona_dior") {
-        r(0, 0, 32, 32, "#29203d"); r(0, 0, 32, 5, "#57426a"); r(3, 22, 26, 10, "#171620");
-        r(9, 23, 14, 9, "#f6dfac"); r(13, 24, 6, 8, "#29203d"); r(15, 24, 2, 7, "#dfb94f");
-        r(8, 7, 16, 17, "#d8a683"); r(7, 3, 18, 7, "#15151b"); r(9, 1, 15, 5, "#272331");
-        r(8, 13, 17, 5, "#15151b"); r(10, 14, 5, 2, "#eac660"); r(19, 14, 5, 2, "#eac660"); r(15, 15, 4, 1, "#f2d180");
-        r(14, 20, 5, 1, "#623d49"); r(3, 3, 2, 16, "#d9aa51"); r(2, 2, 4, 2, "#ffeba4");
-      } else if (id === "persona_clan") {
-        r(0, 0, 32, 32, "#103c3f"); r(1, 1, 30, 30, "#155d57"); r(1, 25, 30, 7, "#0a2d32");
-        r(3, 14, 15, 18, "#2b3939"); r(20, 15, 12, 17, "#213439"); r(5, 8, 12, 13, "#bc8b69"); r(21, 9, 9, 13, "#936f59");
-        r(4, 5, 14, 6, "#152d33"); r(20, 6, 11, 6, "#102a32"); r(6, 15, 3, 2, "#182329"); r(13, 15, 3, 2, "#182329");
-        r(22, 15, 2, 2, "#17282e"); r(27, 15, 2, 2, "#17282e"); r(4, 23, 14, 3, "#45d09d"); r(20, 24, 12, 2, "#45d09d");
-        r(16, 3, 2, 27, "#bcead3"); r(14, 2, 6, 2, "#bcead3"); r(15, 27, 4, 2, "#bcead3");
-      } else if (id === "persona_vtuber") {
-        r(0, 0, 32, 32, "#492b84"); r(1, 1, 30, 30, "#7651b2"); r(1, 23, 30, 9, "#ffc3ec");
-        r(3, 4, 9, 11, "#f891d0"); r(20, 4, 9, 11, "#f891d0"); r(6, 1, 8, 11, "#f5a2de"); r(19, 1, 8, 11, "#f5a2de");
-        r(5, 8, 23, 23, "#f99bd8"); r(8, 10, 16, 17, "#ffe6d7"); r(7, 5, 18, 9, "#ffc5ec");
-        r(9, 15, 4, 5, "#ae6bdd"); r(19, 15, 4, 5, "#ae6bdd"); r(10, 15, 2, 3, "#ffffff"); r(20, 15, 2, 3, "#ffffff");
-        r(14, 21, 5, 2, "#ef85ae"); r(2, 24, 11, 7, "#fff0fc"); r(19, 24, 11, 7, "#fff0fc");
-        r(14, 25, 5, 4, "#e85baa"); r(10, 23, 5, 3, "#ff5fac"); r(18, 23, 5, 3, "#ff5fac"); r(15, 28, 3, 4, "#fff1ff");
-      } else if (id === "persona_mom") {
-        r(0, 0, 32, 32, "#ad6975"); r(1, 1, 30, 30, "#d99484"); r(2, 23, 28, 9, "#f5c27b");
-        r(5, 23, 22, 9, "#b36a64"); r(7, 7, 18, 19, "#6b403a"); r(9, 9, 14, 17, "#efb58e");
-        r(6, 5, 20, 8, "#6b403a"); r(8, 3, 15, 7, "#854e42"); r(9, 15, 6, 4, "#633e39"); r(18, 15, 6, 4, "#633e39");
-        r(10, 16, 4, 2, "#f9e8bd"); r(19, 16, 4, 2, "#f9e8bd"); r(15, 16, 3, 1, "#633e39");
-        r(14, 21, 5, 2, "#aa565d"); r(7, 25, 19, 3, "#f1ad67"); r(12, 27, 9, 5, "#efc477");
-      }
-      g.imageSmoothingEnabled = false; g.drawImage(px, x, y, s, s);
-      if (status) f(size - 6, size - 6, size - 2, size - 2, online ? 0xFF2ECC71 : 0xFF7B8794);
+    if (PORTRAITS[id]) {
+      f(2, 2, size - 2, size - 2, 0xFF182235);
+      let im = imgCache[id];
+      if (!im) { im = imgCache[id] = new Image(); im.src = U(`assets/textures/p23/portraits/${PORTRAITS[id]}.png`); }
+      const put = () => { g.imageSmoothingEnabled = true; g.drawImage(im, 2, 2, s, s);
+        if (status) f(size - 6, size - 6, size - 2, size - 2, online ? 0xFF2ECC71 : 0xFF7B8794); };
+      if (im.complete && im.naturalWidth) put(); else im.addEventListener("load", put, { once: true });
       return cv;
     }
     const st = STYLE[id] || ["smile", 0xFF5A6B7D]; f(x, y, x + s, y + s, st[1]);
@@ -124,25 +94,25 @@
     if (status) f(size - 6, size - 6, size - 2, size - 2, online ? 0xFF2ECC71 : 0xFF7B8794);
     return cv;
   }
-  const ava = (id, size, online, status, cls = "") => { const c = document.createElement("canvas"); c.className = "mx-ava " + cls; drawAva(c, id, size, online, status); return c; };
+  const ava = (id, size, online, status, cls = "") => { const c = document.createElement("canvas"); c.className = "mx-ava " + cls + (PORTRAITS[id] ? " photo" : ""); drawAva(c, id, size, online, status); return c; };
 
   /* Вымышленная сцена для сайта: это не реальные аккаунты и не персонажи мода. */
   const PERSONAS = [
-    { id: "p5", name: "5opka", base: "5opka_demo", ava: "persona_5", color: "#ff8b37", dark: "#7435bc", badge: "В ЭФИРЕ", mark: "05", mood: "хаос / стрим", desc: "Стримлю выживание. Каждую катастрофу превращаю в клип.", quote: "ЧАТ, ОН ЧИТАЕТ МОИ СООБЩЕНИЯ!", tags: ["стрим", "спавн", "клипы"], show: "tnt", online: true,
-      intro: ["ЧАТ, МЕНЯ СЛЫШНО???", "тут новый человек в MAX. щас будет КОНТЕНТ", "го на спавн, покажу самый нелепый дом на сервере"],
-      reply: ["ЧАТ, ОН ОТВЕТИЛ! клипайте момент", "АХАХА, это надо на стрим. го на спавн", "подожди, у меня тут крипер в кадре 💥"] },
-    { id: "pd", name: "Диор Армани", base: "dior_armani", ava: "persona_dior", color: "#f4c76b", dark: "#442c60", badge: "ATELIER ONLINE", mark: "DA", mood: "люкс / ирония", desc: "Стилист сервера. Даже в шахту — как на подиум.", quote: "Алмазная броня — это не образ, дорогой.", tags: ["мода", "глянец", "показ"], show: "gold_ingot", online: true,
-      intro: ["Дорогой, твоя броня спорит с моим чувством прекрасного.", "Приходи на спавн: устроим показ. Булыжник оставь дома."],
-      reply: ["Дорогой, это звучит смело. Но подойдёт ли к ботинкам?", "М-м, наконец-то вкус. Записываю тебя на показ.", "Алмазы блестят. Вкус — сияет. Почувствуй разницу."] },
-    { id: "pc", name: "Чеченцы · клан", base: "clan_arena", ava: "persona_clan", color: "#66d9ac", dark: "#134d50", badge: "КЛАН / АРЕНА", mark: "КЛ", mood: "рейды / PvP", desc: "Вымышленный игровой клан. Все грозные разборки — только в Minecraft.", quote: "Встретимся на арене. С алмазами.", tags: ["клан", "арена", "алмазы"], show: "diamond", online: true,
-      intro: ["Мы уже у твоей базы. В Майнкрафте, если что.", "Не придёшь на арену — заберём твои алмазы. По правилам PvP."],
-      reply: ["Не прячься за обсидианом. Ждём на арене.", "Угроза официальная: проигравший отдаёт один алмаз.", "Ладно, мир. Но кирку всё равно проверим."] },
-    { id: "pv", name: "Няша Кавай ☆", base: "kawaii_neko_live", ava: "persona_vtuber", color: "#ff9fe2", dark: "#8356dc", badge: "VTUBER LIVE", mark: "NY", mood: "космос / ня", desc: "Витуберша с нарочито огромными аниме-пропорциями, пышным костюмом и ещё большим бантом.", quote: "Ня~ сегодня у нас розовый апокалипсис!", tags: ["стрим", "косплей", "ня~"], show: "golden_apple", online: true,
-      intro: ["ня~ мой чатик заметил тебя первым ✦", "заходи на стрим! покажу новый костюм и ОГРОМНЫЙ бант 🎀", "если что, сердечки здесь бесплатные ♡"],
-      reply: ["ня~ чатик говорит, ты теперь свой! ♡", "ой-ой, мой огромный бант опять не влез в кадр 🎀", "ура! рисую тебе сердечко прямо на экране ✦"] },
-    { id: "pm", name: "Мама", base: "mama_home", ava: "persona_mom", color: "#ffd39b", dark: "#9d5865", badge: "СЕМЬЯ", mark: "МА", mood: "забота / контроль", desc: "Знает, что ты онлайн. И знает, что ужин остывает.", quote: "Я всё вижу. Ты поел?", tags: ["дома", "ужин", "шапка"], show: "apple", online: true,
-      intro: ["Ты почему не отвечаешь? Я вижу, что ты онлайн.", "Поел? Шапку надел?", "И с незнакомыми кланами не спорь. Приходи ужинать."],
-      reply: ["Главное — поешь, потом уже свои алмазы.", "Я тебе яблоко оставила. Не забудь забрать.", "Хорошо, только не сиди до ночи. И шапку надень."] },
+    { id: "p5", name: "5opka", base: "5opka_demo", ava: "persona_5", color: "#ff8b37", dark: "#7435bc", badge: "В ЭФИРЕ", mark: "42", mood: "42 / старость / стрим", desc: "Уже 42. Считает себя древним артефактом и говорит об этом в каждом сообщении.", quote: "МНЕ 42. Я СТАРЫЙ. ГДЕ МОИ ОЧКИ?", tags: ["42", "старый", "чат"], show: "tnt", online: true,
+      intro: ["ЧАТ, МНЕ 42. Я СТАРЫЙ. ЭТО MAX ИЛИ ТЕЛЕФОН С КНОПКАМИ?", "мне 42, а я опять потерял очки. они на мне. Я СТАРЫЙ", "ты тут? ответь деду 42 лет, пока я не забыл, зачем написал"],
+      reply: ["спасибо, молодой человек. мне 42 и я старый, так что повтори погромче", "ЧАТ, МНЕ ОТВЕТИЛИ! в мои 42 это уже событие года", "я старый, мне 42, а этот MAX шрифт ещё мельче сделал?!"] },
+    { id: "pd", name: "Диор Армани", base: "dior_armani", ava: "persona_dior", color: "#f4c76b", dark: "#442c60", badge: "ЕДИНСТВЕННЫЙ ХИТ", mark: "DA", mood: "музыкант / опечатки", desc: "Один трек, сто опечаток, ни одной мысли записать второй.", quote: "АЙ ЛОВ ДИКС ЭНД КОКС, АЙ ФАКИН САКИНГ БОЛС", tags: ["1 трек", "рэп", "опечатки"], show: "gold_ingot", online: true,
+      intro: ["йо паслушый мой единствиный трек. другово нет", "АЙ ЛОВ ДИКС ЭНД КОКС, АЙ ФАКИН САКИНГ БОЛС!!! ЭТО ПРИПЕФ", "паставь лойк пж. я над етим трекам три года пыстел"],
+      reply: ["ты паслушыл трек? ай лов дикс энд кокс, ай факин сакинг болс!", "мне гаварят записать фтарой. зачем, если первый идеален??", "спосиба за рицензию! мой единствиный хит опять на репите"] },
+    { id: "pc", name: "Чеченцы · клан", base: "clan_arena", ava: "persona_clan", color: "#66d9ac", dark: "#134d50", badge: "КЛАН / АРЕНА", mark: "КЛ", mood: "рейды / PvP", desc: "Вымышленный клан сервера. Суровые угрозы — только базе и алмазам в Minecraft.", quote: "Мы знаем, где твой сундук. В игре, конечно.", tags: ["клан", "рейд", "алмазы"], show: "diamond", online: true,
+      intro: ["Слушай сюда. Мы нашли твою базу. Координаты даже маме твоей скинем.", "До заката отдай алмазы, или от твоего дома останется один верстак. В Майнкрафте.", "Это последнее предупреждение. Не заставляй нас копать 64 блока вниз."],
+      reply: ["Дерзишь? Тогда первой пострадает твоя ферма куриц. PvP-рейд, без обид.", "У тебя десять минут. Потом мы ставим табличку «НАШЕ» на твоём сундуке.", "Ладно, мир. Но алмазы всё равно пересчитаем."] },
+    { id: "pv", name: "Няша Кавай ☆", base: "kawaii_neko_live", ava: "persona_vtuber", color: "#ff9fe2", dark: "#8356dc", badge: "VTUBER LIVE", mark: "NY", mood: "ня / стрим / косплей", desc: "Взрослая витуберша с аниме-пропорциями на максималках и костюмом, который еле влезает в кадр.", quote: "Бубсы на максимум, лаги на минимум, ня~", tags: ["стрим", "косплей", "ня~"], show: "golden_apple", online: true,
+      intro: ["ня~ меня видно? у меня опять бубсы в кадр не помещаются ♡", "чатик просит повернуться, а я пытаюсь не уронить микрофон", "ты пришёл на стрим или опять на мои пропорции смотришь? ✦"],
+      reply: ["ня~ спасибо! только глазами выше, у меня тут ещё и контент есть ♡", "я не виновата, что костюм шили по меркам куклы, а бубсы по меркам босса", "ой, чатик опять спорит, что больше: мои пропорции или пинг сервера 🎀"] },
+    { id: "pm", name: "Мама", base: "mama_home", ava: "persona_mom", color: "#ffd39b", dark: "#9d5865", badge: "СЕМЬЯ / ТРЕВОГА", mark: "МА", mood: "ругается / кормит", desc: "Знает, что ты онлайн. Уже третий раз зовёт ужинать и сейчас заберёт роутер.", quote: "Я тебе не автосообщение! ИДИ ЕШЬ!", tags: ["ужин", "вайфай", "шапка"], show: "apple", online: true,
+      intro: ["Я ТЕБЯ ТРИ РАЗА ЗВАЛА! Ты чего в этом MAX торчишь, ужин остыл!", "Что за мужик пишет тебе про 42? И певца этого с его песней выключи, стыдоба!", "Клан грозит снести базу?! Сейчас я им сама базу снесу. А ты жрать иди, блин.", "Я сама этому клану напишу, пусть только попробуют"],
+      reply: ["Не «сейчас», а СЕЙЧАС. Суп на плите, телефон на столе!", "Ещё одно сообщение — и роутер поедет жить ко мне в комнату.", "Всё, хватит про самокат и бубсы! Домашку сделал? Шапку надел?"] },
   ];
   const PERSONA_BY_ID = Object.fromEntries(PERSONAS.map((p) => [p.id, p]));
 
@@ -215,33 +185,31 @@
 
   /* ================= 02 СИМУЛЯТОР ================= */
   const KEY = "zm:p23.max";
-  const now = Date.now(), H = 3600e3;
-  const BOTS = [
-    { id: "b1", name: "Nagibator3000", base: "Nagibator3000", desc: "", ava: "stock_skull", online: true },
-    { id: "b2", name: "Ksyusha_mc", base: "Ksyusha_mc", desc: "строю замки, не пишите", ava: "stock_cat", online: true },
-    { id: "b3", name: "Oleg_Pro", base: "OlegPro2009", desc: "", ava: "stock_alex", online: false },
-    { id: "b4", name: "Dimon", base: "dimon_minecraft", desc: "продаю алмазы недорого", ava: "stock_smile", online: true },
-  ];
-  const seed = () => {
-    const S = { me: { id: "me", base: (ZM.profile && ZM.profile.me().nick) || "Player", name: "", desc: "", ava: "stock_steve", show: "", reg: false, sent: 0, trades: 0, rejects: 0,
-        inv: { diamond: 3, bread: 16, iron_ingot: 10, cobblestone: 64, oak_log: 20, apple: 5, ender_pearl: 4, gold_ingot: 6 } },
-      users: BOTS.map((b) => Object.assign({ trades: 0 }, b)), msgs: [], gifts: {}, next: 1, inboxWave: 0 };
-    const add = (from, to, text, t, o = {}) => S.msgs.push(Object.assign({ id: S.next++, from, to, text, t, read: true, type: "TEXT" }, o));
-    add("b1", "me", "Салам", now - 26 * H); add("b1", "me", "есть железо?", now - 26 * H + 60e3);
-    add("b2", "me", "Иди нахуй, я строю", now - 25 * H);
-    add("b2", "me", "координаты базы: 1250 64 -830", now - 25 * H + 30e3, { deleted: true, hr: false });
-    add("b2", "me", "ой не туда", now - 25 * H + 40e3);
-    add("b4", "me", "Стой сука, есть дело", now - 2 * H, { read: false }); add("b4", "me", "продаю алмазы, 1 алмаз = 3 железа", now - 2 * H + 20e3, { read: false });
-    return S;
-  };
+  const now = Date.now();
+  const personaProfile = ({ intro, reply, ...profile }) => ({ ...profile, trades: 0 });
+  const seed = () => ({
+    me: { id: "me", base: (ZM.profile && ZM.profile.me().nick) || "Player", name: "", desc: "", ava: "stock_steve", show: "", reg: false, sent: 0, trades: 0, rejects: 0,
+      inv: { diamond: 3, bread: 16, iron_ingot: 10, cobblestone: 64, oak_log: 20, apple: 5, ender_pearl: 4, gold_ingot: 6 } },
+    users: PERSONAS.map(personaProfile), msgs: [], gifts: {}, next: 1, inboxWave: 0, sceneVersion: 2,
+  });
   let S; try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
   if (!S || !S.me || !S.msgs || !S.me.inv || !Array.isArray(S.users)) S = seed();
-  // Не обнуляем прогресс тех, кто уже играл в MAX до появления этой сцены.
-  PERSONAS.forEach(({ intro, reply, ...profile }) => {
-    const current = S.users.find((u) => u.id === profile.id);
-    if (current) Object.assign(current, profile);
-    else S.users.push({ ...profile, trades: 0 });
+  // Удаляем старые четыре чата и их переписку даже из сохранений, оставляя
+  // профиль игрока, своё «Избранное», пять новых диалогов и счётчики достижений.
+  const allowed = new Set(["me", ...PERSONAS.map((p) => p.id)]);
+  S.gifts ||= {};
+  Object.entries(S.gifts).forEach(([id, gift]) => {
+    if (allowed.has(gift.from) && allowed.has(gift.to)) return;
+    if (gift.from === "me" && gift.state === "PENDING")
+      gift.stacks.forEach(({ id: item, n }) => { S.me.inv[item] = (S.me.inv[item] || 0) + n; });
+    delete S.gifts[id];
   });
+  S.msgs = S.msgs.filter((m) => allowed.has(m.from) && allowed.has(m.to));
+  S.users = PERSONAS.map((p) => ({ ...personaProfile(p), trades: S.users.find((u) => u.id === p.id)?.trades || 0 }));
+  if (S.sceneVersion !== 2) {
+    S.msgs = S.msgs.filter((m) => m.scene !== "intro" && m.scene !== "reply");
+    S.inboxWave = 0; S.sceneVersion = 2;
+  }
   if (!Number.isInteger(S.inboxWave)) S.inboxWave = 0;
   S.inboxWave = clamp(S.inboxWave, 0, PERSONAS.length);
   const files = {}; // байты в памяти вкладки; файлы до 20 МБ дополнительно сохраняются локально
@@ -363,24 +331,15 @@
     const b = user(to); if (!b || to === "me" || !b.online) return;
     const turn = session;
     setTimeout(() => { if (turn !== session) return; conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; }); save(); render(); }, 900 + Math.random() * 700);
-    const persona = PERSONA_BY_ID[to];
-    if (persona) {
-      if (V.pendingReply[to]) return;
-      V.pendingReply[to] = true;
-      setTimeout(() => { if (turn !== session) return; V.typing = to; if (V.sel === to) render(); }, 550);
-      setTimeout(() => {
-        if (turn !== session) return;
-        V.pendingReply[to] = false; V.typing = null;
-        serverSend(to, "me", pick(persona.reply), { read: V.sel === to, scene: "reply" });
-        snd(V.sel === to ? "hat" : "pling", 0.46, 1.23); render();
-      }, 1700 + Math.random() * 500);
-      return;
-    }
-    if (Math.random() < 0.75) setTimeout(() => {
+    const persona = PERSONA_BY_ID[to]; if (!persona || V.pendingReply[to]) return;
+    V.pendingReply[to] = true;
+    setTimeout(() => { if (turn !== session) return; V.typing = to; if (V.sel === to) render(); }, 550);
+    setTimeout(() => {
       if (turn !== session) return;
-      const t = pick(["ок", "привет", "как дела", "я думаю да", "пока", "хз", "спс", "короче норм", "круто", "интересно", "подожди", "мне кажется это имба", "окей", "братан ты лучший", "погоди, я иду", "ну типа хорошо", "не знаю", "люблю этот сервер"]);
-      serverSend(to, "me", t, { read: V.sel === to }); snd(V.sel === to ? "hat" : "pling", 0.45, 1.3); render();
-    }, 2200 + Math.random() * 1800);
+      V.pendingReply[to] = false; V.typing = null;
+      serverSend(to, "me", pick(persona.reply), { read: V.sel === to, scene: "reply" });
+      snd(V.sel === to ? "hat" : "pling", 0.46, 1.23); render();
+    }, 1700 + Math.random() * 500);
   }
   function giftRespond(g, accept, actor) {
     if (!g || (g.state !== "PENDING" && g.state !== "FAILED")) return;
@@ -401,7 +360,14 @@
     const pool = [["diamond", 3], ["bread", 12], ["rotten_flesh", 20], ["dirt", 64], ["emerald", 5], ["cookie", 8], ["totem_of_undying", 1], ["golden_apple", 2], ["tnt", 4], ["bone", 10], ["netherite_ingot", 1], ["name_tag", 1]];
     const stacks = pool.sort(() => Math.random() - 0.5).slice(0, n).map(([id, c]) => ({ id, n: c }));
     const gid = "g" + S.next; S.gifts[gid] = { from: b.id, to: "me", stacks, state: "PENDING" };
-    serverSend(b.id, "me", pick(["лови", "держи братан", "это тебе", "подарок, не благодари", "спс за вчера", ""]), { type: "GIFT", gift: gid, read: V.sel === b.id });
+    const giftsFrom = {
+      p5: "мне 42, я старый, поэтому дарю то, что в инвентаре нашёл",
+      pd: "эта вищь идёт бонусам к моему единствиному треку",
+      pc: "дарим тебе это. Но алмазы всё ещё ждём.",
+      pv: "ня~ подарочек от чатика, бубсы не прилагаются ♡",
+      pm: "На, возьми. И на ужин не опаздывай, блин.",
+    };
+    serverSend(b.id, "me", giftsFrom[b.id], { type: "GIFT", gift: gid, read: V.sel === b.id });
     snd("pling", 0.5, 1.1); status(`${dname(b)}: подарок`); render();
     return b.id;
   }
@@ -422,7 +388,8 @@
   function deliverPersona() {
     if (!S.me.reg || S.inboxWave >= PERSONAS.length) return;
     const p = PERSONAS[S.inboxWave++], base = Date.now();
-    p.intro.forEach((text, i) => serverSend(p.id, "me", text, { read: V.sel === p.id, scene: "intro", t: base + i * 24 }));
+    p.intro.forEach((text, i) => serverSend(p.id, "me", text, { read: V.sel === p.id, scene: "intro", t: base + i * 24,
+      ...(p.id === "pm" && i === p.intro.length - 1 ? { deleted: true, hr: false } : {}) }));
     V.stick = V.sel === p.id; render();
     snd("pling", 0.55, 1.08); status(`${p.name} написал(а) в MAX`);
     if (!V.modal) {
@@ -490,7 +457,7 @@
     const key = q.dataset.q;
     if (key === "register") { V.modal = "profile:me"; render(); return; }
     if (key === "favorite") { openChat("me"); setDraft("Заметка для себя: "); }
-    if (key === "chat") { openChat("b1"); setDraft("Привет, как дела?"); }
+    if (key === "chat") { openChat("p5"); setDraft("Привет, как дела?"); }
     if (key === "gift") { const id = botGift(); openChat(id); }
     if (key === "file") { openChat("me"); fileIn.click(); }
     const input = $(".mx-input", mx); if (input && key !== "gift") input.focus();
@@ -828,7 +795,7 @@
       box.innerHTML = `<div class="mx-mh"><b>Профиль</b><span>${self ? "это ты" : p.online ? "в сети" : "не в сети"}</span></div><div class="mx-pv"><div class="mx-pv-a"></div><div class="mx-pv-t">
         <div class="mx-lbl2">Ник</div><div>${esc(dname(p))}</div><div class="mx-lbl2">Логин</div><div>${esc(trim(p.base, 24))}</div><div class="mx-lbl2">Описание</div><div class="mx-pv-d">${esc(p.desc || "Описание пока пустое")}</div></div></div>
         <div class="mx-lbl2 pad">Витрина</div><div class="mx-pv-show"><span class="mx-slotbox">${p.show ? `<img src="${I(p.show)}" alt="">` : ""}</span>${esc(p.show ? ITEMS[p.show] : "Пусто")}</div>
-        <div class="mx-lbl2 pad">UUID <span class="mx-uuid">${self ? "3f2a…c91e" : { b1: "9b1d…04aa", b2: "c7e0…5f12", b3: "12ab…e77d", b4: "e4f3…0b9c" }[id] || "…"}</span></div>
+        <div class="mx-lbl2 pad">UUID <span class="mx-uuid">${self ? "3f2a…c91e" : "…"}</span></div>
         <div class="mx-mf">${self ? `<button type="button" class="mx-b ok" data-x="edit">Изменить</button>` : ""}<button type="button" class="mx-b" data-x="back">Назад</button></div>`;
       $(".mx-pv-a", box).appendChild(ava(self ? S.me.ava : p.ava, 108, self || p.online, false));
       const ed = box.querySelector('[data-x="edit"]'); if (ed) ed.addEventListener("click", () => { V.modal = "profile-edit"; V.form = null; render(); });
@@ -881,12 +848,12 @@
   $("#mxReset").addEventListener("click", async () => {
     session++; clearTimeout(waveTimer); waveTimer = 0;
     await clearCachedFiles();
-    S = seed(); PERSONAS.forEach(({ intro, reply, ...profile }) => S.users.push({ ...profile, trades: 0 }));
+    S = seed();
     V.sel = null; V.modal = null; V.form = null; V.att = null; V.typing = null; V.pendingReply = {}; coverDraft = null;
     Object.keys(files).forEach((k) => delete files[k]);
     save(); snd("no", 0.4); render();
   });
-  render();
+  render(); save(); // зафиксировать миграцию и удаление старых чатов сразу при открытии
   if (window.IntersectionObserver) {
     const storyObserver = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && S.me.reg && S.inboxWave < PERSONAS.length && !waveTimer) scheduleWave(850);
@@ -902,7 +869,11 @@
       resolve();
     }));
   })).then(() => { if (missingImages.length) render(); });
-  setInterval(() => { if (Math.random() < 0.35 && S.me.reg && document.visibilityState === "visible" && isVis(mx)) { const b = pick(S.users.filter((u) => u.online)); serverSend(b.id, "me", pick(["привет", "ты тут?", "го на спавн", "кто взорвал мой дом", "окей", "хорошо", "иди сюда"]), { read: V.sel === b.id }); snd("pling", 0.35, 1.2); render(); } }, 20000);
+  setInterval(() => { if (Math.random() < 0.35 && S.me.reg && document.visibilityState === "visible" && isVis(mx)) {
+    const b = pick(S.users.filter((u) => u.online));
+    serverSend(b.id, "me", pick(PERSONA_BY_ID[b.id].reply), { read: V.sel === b.id, scene: "ambient" });
+    snd("pling", 0.35, 1.2); render();
+  } }, 20000);
   function isVis(el) { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }
 
   /* ================= 03 АНТИЦЕНЗУРА: переводчик и словарь ================= */
@@ -1042,7 +1013,7 @@
 
   /* ================= 07 ТОНКОСТИ ================= */
   const NOTES = [
-    ["Удалённое можно воскресить", "У получателя удалённое сообщение превращается в «Сообщение удалено», но сырой текст на сервере остаётся. «Переслать» в меню есть всегда и берёт именно сырой текст: перешли удалёнку себе в «Избранное» и прочитай. В симуляторе у Ksyusha_mc такое лежит."],
+    ["Удалённое можно воскресить", "У получателя удалённое сообщение превращается в «Сообщение удалено», но сырой текст на сервере остаётся. «Переслать» в меню есть всегда и берёт именно сырой текст: перешли удалёнку себе в «Избранное» и прочитай. В симуляторе у Мамы такое лежит."],
     ["Удалить — значит спрятать у себя", "Удаление прячет сообщение только у отправителя. Полностью текст стирается лишь в «Избранном», где отправитель и получатель — один человек."],
     ["Пересылка без цензуры и счётчика", "Пересланное не проходит антицензуру второй раз и не идёт в зачёт ста сообщений. Зато оно копирует вложение и даже id подарка."],
     ["Подарок, который нельзя принять", "Если переслать чужой подарок, у нового получателя будет пузырь с вещами и статусом, но без кнопок: подарок адресован не ему."],

@@ -27,7 +27,11 @@ const url = base.replace(/\/$/, '') + '/pages/23-max/index.html';
       }
       const scene = await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p23.max')));
       assert.equal(scene.inboxWave, 5);
+      assert.deepEqual(scene.users.map((u) => u.id), ['p5', 'pd', 'pc', 'pv', 'pm']);
       assert.deepEqual([...new Set(scene.msgs.filter((m) => m.scene === 'intro').map((m) => m.from))], ['p5', 'pd', 'pc', 'pv', 'pm']);
+      assert.ok(scene.msgs.filter((m) => m.from === 'p5' && m.scene === 'intro').every((m) => /42/.test(m.text)));
+      assert.ok(scene.msgs.some((m) => m.from === 'pd' && /АЙ ЛОВ ДИКС/.test(m.text)));
+      assert.ok(scene.msgs.some((m) => m.from === 'pm' && m.deleted));
       for (const name of ['5opka', 'Диор Армани', 'Чеченцы', 'Няша Кавай', 'Мама']) {
         await page.locator(`.mx-row[aria-label^="${name}"]`).click();
         await page.locator('.mx-who').click();

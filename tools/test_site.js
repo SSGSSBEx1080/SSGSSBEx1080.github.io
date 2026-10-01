@@ -62,6 +62,12 @@ for (const id of ['heroDraft', 'heroAfter', 'mxStage', 'mxFocus', 'mxClose', 'mx
 for (const name of ['5opka', 'Диор Армани', 'Чеченцы', 'Няша Кавай', 'Мама']) {
   assert.ok(maxApp.includes(name), `MAX fictional contact ${name} missing`);
 }
+assert.doesNotMatch(maxApp, /Nagibator3000|Ksyusha_mc|Oleg_Pro|Dimon/, 'Old demo contacts must be removed');
+for (const id of ['p5', 'pd', 'pc', 'pv', 'pm']) {
+  const avatar = fs.readFileSync(path.join(root, `assets/textures/p23/portraits/${id}.png`));
+  assert.equal(avatar.subarray(1, 4).toString(), 'PNG', `Missing PNG photo for ${id}`);
+  assert.ok(avatar.readUInt32BE(16) >= 512, `Photo for ${id} is too small`);
+}
 assert.match(maxApp, /class="mx-note"/, 'MAX notes should be interactive disclosure cards');
 assert.equal(POINTS.find(p => p.n === 24).page, 'pages/24-scooter/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 24).adv.length, 3);

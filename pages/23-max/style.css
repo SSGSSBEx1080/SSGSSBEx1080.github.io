@@ -625,3 +625,5 @@ body.mx-focus-open main{z-index:200}
 @media(prefers-reduced-motion:reduce){.mx-scene-ping{animation:none}}
 /* Badge belongs on the right of the cover; the portrait overlaps the left edge. */
 .mx-p-cover>em{left:auto;right:18px}
+/* Фотопортреты новых персонажей сглажены; старые пиксельные аватары остаются pixelated. */
+.mx-screen canvas.mx-ava.photo,.mx-p-portrait canvas.mx-ava.photo,.mx-inbox-person canvas.mx-ava.photo,.mx-scene-ping canvas.mx-ava.photo{image-rendering:auto}
