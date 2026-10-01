@@ -87,6 +87,7 @@
   const ava = (id, size, online, status, cls = "") => { const c = document.createElement("canvas"); c.className = "mx-ava " + cls; drawAva(c, id, size, online, status); return c; };
 
   /* ================= HERO: иконка + уведомления ================= */
+  let coverDraft = null;
   (function hero() {
     const n = $("#heroNotif"), lines = [["Nagibator3000", "Салам"], ["Ksyusha_mc", "Иди нахуй, я строю"], ["Oleg_Pro", "Подарок"], ["Dimon", "Как хуй?"], ["Избранное", "заметки"]];
     let i = 0;
@@ -100,7 +101,13 @@
       $("#heroHits").textContent = result.hits.length ? `${result.hits.length} заменено на сервере` : "Нет замен · попробуй «Привет, как дела?»";
     };
     draft.addEventListener("input", process); process();
-    const launch = (e) => { if (e) e.preventDefault(); snd("pling", 0.5, 1.2); openFocus(e?.currentTarget); };
+    const launch = (e) => {
+      if (e) e.preventDefault(); snd("pling", 0.5, 1.2); openFocus(e?.currentTarget);
+      // Сообщение из живой обложки переживает и первый экран регистрации.
+      if (!S.me.reg) coverDraft = draft.value.trim();
+      else if (V.sel && !V.draft && draft.value.trim()) setDraft(draft.value.trim());
+    };
+    draft.addEventListener("keydown", (e) => { if (e.key === "Enter") launch(e); });
     $("#heroIcon").addEventListener("click", launch);
     $("#heroOpen").addEventListener("click", launch);
     $("#heroLaunch").addEventListener("click", launch);
@@ -220,14 +227,16 @@
   function openFocus(trigger) {
     focusReturn = trigger || document.activeElement;
     stage.classList.add("focused", "in");
+    stage.setAttribute("role", "dialog"); stage.setAttribute("aria-modal", "true"); stage.setAttribute("aria-label", "Экран мессенджера MAX");
     document.body.classList.add("mx-focus-open");
     $("#mxFocus").setAttribute("aria-pressed", "true");
     $("#mxFocus").hidden = true;
     $("#mxClose").hidden = false;
-    $("#mxClose").focus({ preventScroll: true });
+    (stage.querySelector(".mx-dim input, .mx-dim button") || $("#mxClose")).focus({ preventScroll: true });
   }
   function closeFocus() {
     stage.classList.remove("focused");
+    stage.removeAttribute("role"); stage.removeAttribute("aria-modal"); stage.removeAttribute("aria-label");
     document.body.classList.remove("mx-focus-open");
     $("#mxFocus").hidden = false;
     $("#mxFocus").setAttribute("aria-pressed", "false");
@@ -237,15 +246,28 @@
   $("#mxFocus").addEventListener("click", (e) => openFocus(e.currentTarget));
   $("#mxClose").addEventListener("click", closeFocus);
   document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape" || !stage.classList.contains("focused")) return;
-    if (e.target.closest(".mx-input") && (V.edit || V.reply || V.att || V.fwd)) return;
+    if (!stage.classList.contains("focused")) return;
+    if (e.key === "Tab") {
+      const scope = stage.querySelector(".mx-dim") || stage;
+      const focusable = Array.from(scope.querySelectorAll('button:not([disabled]):not([hidden]), input:not([disabled]), textarea:not([disabled]), [tabindex="0"]'))
+        .filter((el) => el.getClientRects().length && getComputedStyle(el).visibility !== "hidden");
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (!first) { e.preventDefault(); $("#mxClose").focus(); }
+      else if (e.shiftKey && (document.activeElement === first || !scope.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !scope.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+      return;
+    }
+    if (e.key !== "Escape") return;
     if (V.menu || V.attachMenu) { V.menu = null; V.attachMenu = false; render(); }
+    else if (V.modal === "crop") { V.modal = V.crop.back; V.crop = null; render(); }
+    else if (V.modal === "picker") { V.modal = V.back; render(); }
     else if (V.modal && V.modal !== "register") { V.modal = null; render(); }
     else if (!V.modal) closeFocus();
     e.preventDefault();
   });
   // После регистрации показываем реальный демо-диалог, а не пустую панель.
   const V = { sel: S.me.reg ? "b1" : null, reply: 0, edit: 0, fwd: 0, att: null, search: "", res: [], ri: -1, status: "", menu: null, modal: null, attachMenu: false, draft: "", giftSlots: [], stick: true };
+  let session = 0; // инвалидация отложенных ответов, загрузок и подарков при сбросе MAX
   let statusT = 0;
   const status = (t) => { V.status = t; const el = $(".mx-status", mx); if (el) el.textContent = t; clearTimeout(statusT); statusT = setTimeout(() => { V.status = ""; const e2 = $(".mx-status", mx); if (e2) e2.textContent = ""; }, 3500); };
   const counters = () => {
@@ -270,14 +292,16 @@
   }
   function botAct(to) {
     const b = user(to); if (!b || to === "me" || !b.online) return;
-    setTimeout(() => { conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; }); save(); render(); }, 900 + Math.random() * 700);
+    const turn = session;
+    setTimeout(() => { if (turn !== session) return; conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; }); save(); render(); }, 900 + Math.random() * 700);
     if (Math.random() < 0.75) setTimeout(() => {
+      if (turn !== session) return;
       const t = pick(["ок", "привет", "как дела", "я думаю да", "пока", "хз", "спс", "короче норм", "круто", "интересно", "подожди", "мне кажется это имба", "окей", "братан ты лучший", "погоди, я иду", "ну типа хорошо", "не знаю", "люблю этот сервер"]);
       serverSend(to, "me", t, { read: V.sel === to }); snd(V.sel === to ? "hat" : "pling", 0.45, 1.3); render();
     }, 2200 + Math.random() * 1800);
   }
   function giftRespond(g, accept, actor) {
-    if (g.state !== "PENDING" && g.state !== "FAILED") return;
+    if (!g || (g.state !== "PENDING" && g.state !== "FAILED")) return;
     if (!accept) {
       g.state = "REJECTED";
       if (g.from === "me") S.me.inv = addInv(S.me.inv, g.stacks);
@@ -408,7 +432,12 @@
       main.appendChild(cp);
       const inp = $(".mx-input", cp); inp.value = draft; autoH(inp);
       inp.addEventListener("input", () => { V.draft = inp.value; autoH(inp); });
-      inp.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } else if (e.key === "Escape") cancelBars(); });
+      inp.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+        else if (e.key === "Escape" && (V.edit || V.reply || V.att || V.fwd || V.attachMenu)) {
+          e.stopPropagation(); cancelBars();
+        } else if (e.key === "Escape" && !stage.classList.contains("focused")) cancelBars();
+      });
       $(".mx-send", cp).addEventListener("click", send);
       $(".mx-plus", cp).addEventListener("click", () => { V.attachMenu = !V.attachMenu; snd("click", 0.4); render(); });
       const bx = $(".mx-bar-x", cp); if (bx) bx.addEventListener("click", cancelBars);
@@ -500,7 +529,7 @@
     }
     render(); const inp = $(".mx-input", mx); if (inp && a !== "FORWARD") inp.focus();
   }
-  function cancelBars() { if (V.edit) setDraft(""); V.reply = 0; V.edit = 0; V.fwd = 0; V.att = null; render(); }
+  function cancelBars() { if (V.edit) setDraft(""); V.reply = 0; V.edit = 0; V.fwd = 0; V.att = null; V.attachMenu = false; render(); }
   function openChat(id) {
     if (V.fwd) { // пересылка: сырой текст, тип, вложение и подарок копируются
       const src = S.msgs.find((x) => x.id === V.fwd); V.fwd = 0;
@@ -564,9 +593,10 @@
     if (V.modal === "register" || V.modal === "profile-edit") avatarFile(f); else if (V.sel) takeFile(f); else status("Выбери чат"); });
   function upload(a, done) {
     const box = document.createElement("div"); box.className = "mx-xfer"; mx.appendChild(box);
-    const chunks = Math.max(1, Math.ceil(a.size / (30 * 1024))); let i = 0; const step = Math.max(1, Math.ceil(chunks / 40));
+    const chunks = Math.max(1, Math.ceil(a.size / (30 * 1024))); let i = 0; const step = Math.max(1, Math.ceil(chunks / 40)), turn = session;
     status("Файл отправляется...");
     const iv = setInterval(() => {
+      if (turn !== session) { clearInterval(iv); box.remove(); return; }
       i = Math.min(chunks, i + step); const p = Math.round(i / chunks * 100);
       box.innerHTML = `<b>Отправка файла</b><span>${p}%</span><i><em style="width:${p}%"></em></i><small>${esc(trim(a.name, 22))} · чанк ${i}/${chunks}</small>`;
       if (i >= chunks) { clearInterval(iv); box.classList.add("ok"); setTimeout(() => box.remove(), 900); done(); }
@@ -600,6 +630,8 @@
         const norm = (v, n, fb) => { v = String(v || "").trim().replace(/\s+/g, " ").slice(0, n); return v || fb; };
         S.me.name = norm(F.name, 24, S.me.base); S.me.desc = norm(F.desc, 120, ""); S.me.ava = F.ava; S.me.show = F.show; S.me.reg = true; V.form = null; V.modal = null;
         save(); status("Профиль сохранён"); snd("levelup", 0.3, 1.6); if (!V.sel) V.sel = "b1"; render();
+        if (coverDraft && !V.draft) setDraft(coverDraft);
+        coverDraft = null;
       });
       const bk = box.querySelector('[data-x="back"]'); if (bk) bk.addEventListener("click", () => { V.form = null; V.modal = null; render(); });
     } else if (kind === "crop") {
@@ -661,7 +693,8 @@
         const gid = "g" + S.next, to = V.sel; S.gifts[gid] = { from: "me", to, stacks, state: "PENDING" };
         const t = (V.draft || "").trim(); setDraft(""); serverSend("me", to, t, { type: "GIFT", gift: gid, reply: V.reply }); V.reply = 0; V.modal = null; V.giftSlots = [];
         status("Подарок отправлен"); snd("echest", 0.4); render(); botAct(to);
-        const b = user(to); if (to !== "me" && b.online) setTimeout(() => giftRespond(S.gifts[gid], Math.random() < 0.7, to), 3000);
+        const b = user(to), turn = session;
+        if (to !== "me" && b.online) setTimeout(() => { if (turn === session) giftRespond(S.gifts[gid], Math.random() < 0.7, to); }, 3000);
       });
       box.querySelector('[data-x="cancel"]').addEventListener("click", () => { V.modal = null; render(); });
     } else if (kind.startsWith("img:")) {
@@ -689,8 +722,9 @@
   $("#botGift").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); botGift(); });
   $("#spam").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); const to = V.sel || "me"; for (let i = 0; i < 10; i++) serverSend("me", to, pick(["ок", "привет", "спс", "хз", "круто", "норм", "пока", "окей"])); snd("pop", 0.5); if (!V.sel) V.sel = to; V.stick = true; render(); });
   $("#mxReset").addEventListener("click", async () => {
+    session++;
     await clearCachedFiles();
-    S = seed(); V.sel = null; V.modal = null; V.form = null; V.att = null;
+    S = seed(); V.sel = null; V.modal = null; V.form = null; V.att = null; coverDraft = null;
     Object.keys(files).forEach((k) => delete files[k]);
     save(); snd("no", 0.4); render();
   });
