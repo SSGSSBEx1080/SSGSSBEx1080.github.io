@@ -4,211 +4,197 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>№22 · Дойка быка и разорителя — ZitraksMode Wiki</title>
-<meta name="description" content="Пункт №22 мода ZitraksMode: у коров появился пол, быка можно подоить, разорителя — усмирить ведром. Ведро спермы, медный бык, медная шерсть и испанские сапоги.">
-<meta name="theme-color" content="#f4efe3">
+<meta name="description" content="Пункт №22 мода ZitraksMode: у коров появился пол. Бык при дойке даёт ведро спермы, разоритель после дойки становится смирным, ножницы делают быка лысым или медным, из медной шерсти шьются испанские сапоги.">
+<meta name="theme-color" content="#f2f2f2">
 <link rel="stylesheet" href="../../shared/core.css">
 <link rel="stylesheet" href="../../shared/kit.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas class="mk-bg" id="bg" aria-hidden="true"></canvas>
+<canvas class="ml-bg" id="bg" aria-hidden="true"></canvas>
 <main>
   <!-- ============ HERO ============ -->
-  <section class="mk-hero" id="hero">
-    <div class="mk-drip" aria-hidden="true"></div>
-    <div class="mk-hero-txt">
-      <div class="mk-tag"><span>№22</span>18.05.2026<i></i>механика · мобы</div>
-      <h1 class="mk-logo"><span class="mk-l1">Дойка</span><span class="mk-l2">быка <em>и</em> разорителя</span></h1>
-      <p class="mk-sub">У коров появился пол. Какой именно, выясняется только под ведром: половина стада даёт молоко, другая половина — совсем не молоко. Тем же ведром можно навсегда успокоить разорителя, а если постричь быка, начинается пасхалка, которая заканчивается испанскими сапогами.</p>
-      <div class="mk-cta"><a class="k-btn" href="#farm">На выгон</a><a class="k-btn2" href="#ravager">Разоритель</a><a class="k-btn2" href="#egg">Медный бык</a></div>
-      <div class="mk-stats">
-        <a href="#farm"><b>50%</b><span>стада — быки</span></a>
-        <a href="#bucket"><b>32</b><span>тика на глоток</span></a>
-        <a href="#egg"><b>×2</b><span>скорость в сапогах</span></a>
+  <section class="ml-hero" id="hero">
+    <div class="ml-hero-txt">
+      <div class="ml-tag"><span>№22</span>18.05.2026<i></i>механика · фермерство</div>
+      <h1 class="ml-logo"><span class="ml-l1">Дойка</span><span class="ml-l2">быка <em>и</em> разорителя</span></h1>
+      <p class="ml-sub">У каждой коровы теперь есть пол, и узнаёшь ты его только с ведром в руке. Корова даст молоко. Бык даст ведро, которое лучше не нюхать. Разоритель после дойки забывает, зачем пришёл в деревню, а стриженый бык иногда оказывается медным.</p>
+      <div class="ml-cta"><a class="k-btn" href="#pen">В загон</a><a class="k-btn2" href="#ravager">Разоритель</a><a class="k-btn2" href="#boots">Сапоги</a></div>
+      <div class="ml-stats">
+        <a href="#pen"><b>50%</b><span>что это бык</span></a>
+        <a href="#bucket"><b>4</b><span>случайных бафа</span></a>
+        <a href="#shear"><b>3</b><span>вида быка</span></a>
         <a href="#adv"><b id="stGot">0/6</b><span>ачивки</span></a>
       </div>
     </div>
-    <figure class="mk-stage" id="heroStage">
-      <div class="mk-sun" aria-hidden="true"></div>
-      <div class="mk-who" id="heroWho"><b>?</b><span>пол не известен</span></div>
-      <canvas class="mk-model" id="hero3d" aria-label="3D-модель коровы"></canvas>
-      <div class="mk-grass" aria-hidden="true"></div>
-      <div class="mk-pops" id="heroPops" aria-hidden="true"></div>
-      <div class="mk-hbar"><button type="button" id="heroNext" class="mk-chip">↻ другая корова</button><span class="mk-hint">клик по корове — подоить · тяни — повернуть</span></div>
+    <figure class="ml-stage" id="heroStage">
+      <div class="ml-sun" aria-hidden="true"></div>
+      <canvas class="ml-cv" id="hero3d" aria-label="3D-модель быка"></canvas>
+      <div class="ml-plinth" aria-hidden="true"></div>
+      <div class="ml-heroSw" id="heroSw" role="group" aria-label="Кого показать">
+        <button type="button" data-t="bull" class="on">Бык</button><button type="button" data-t="copper">Медный</button><button type="button" data-t="bald">Лысый</button><button type="button" data-t="cow">Корова</button>
+      </div>
+      <figcaption>тяни — повернуть · клик — муу</figcaption>
     </figure>
   </section>
 
-  <div class="mk-tick" aria-hidden="true"><div id="tick"></div></div>
+  <div class="ml-tick" aria-hidden="true"><div id="tick"></div></div>
 
-  <!-- ============ 01 ВЫГОН ============ -->
-  <section class="sec" id="farm">
-    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">cow · bucket · shears</span><h2>Выгон</h2></div><span class="sec-q">одна корова, три инструмента</span></header>
-    <p class="sec-p reveal">Пустое ведро в <b>основной руке</b> и клик по корове. Если пол ещё не назначен, мод бросает монетку и записывает результат в корову навсегда. Корова даёт обычное <b>ведро молока</b>, бык — <b>ведро спермы</b> и меняет морду на улыбающуюся. Ножницы работают только на быках, меч — чтобы посмотреть, что с кого падает.</p>
-    <div class="mk-farm reveal">
-      <div class="mk-pen">
-        <div class="mk-pen-view" id="penView">
-          <div class="mk-grass"></div>
-          <canvas id="pen3d" aria-label="Корова на выгоне"></canvas>
-          <div class="mk-pen-hud"><span id="penWho">Корова · пол не назначен</span><span id="penVar"></span></div>
-          <div class="mk-pops" id="penPops" aria-hidden="true"></div>
-          <div class="mk-dead" id="penDead" hidden>☠</div>
-        </div>
-        <div class="mk-hot" id="hot" role="toolbar" aria-label="Хотбар"></div>
-        <div class="mk-opts">
-          <button type="button" class="mk-chip" id="penNew">↻ новая корова</button>
-          <button type="button" class="mk-chip" id="penBaby" aria-pressed="false">телёнок</button>
-          <button type="button" class="mk-chip" id="penRe">⟳ перезайти в мир</button>
-          <button type="button" class="mk-chip" id="penFull" aria-pressed="false">инвентарь забит</button>
-          <button type="button" class="mk-chip" id="penCreative" aria-pressed="false">креатив</button>
-        </div>
-        <div class="k-log mk-log" id="log"></div>
+  <!-- ============ 01 ЗАГОН ============ -->
+  <section class="sec" id="pen">
+    <header class="sec-head reveal"><span class="sec-n">01</span><div class="sec-t"><span class="sec-k">bucket · shears · sword</span><h2>Загон</h2></div><span class="sec-q">пол выпадает при первой дойке</span></header>
+    <p class="sec-p reveal">Шесть коров, про которых ничего не известно. Бери в хотбаре ведро, ножницы или меч и кликай по той, что стоит на помосте. Всё считается так же, как в моде: пол, варианты шерсти, дроп.</p>
+    <div class="ml-pen reveal">
+      <div class="ml-pen-stage">
+        <canvas class="ml-cv" id="pen3d" aria-label="Корова в загоне"></canvas>
+        <div class="ml-pen-name" id="penName">Корова №1</div>
+        <div class="ml-pen-hint" id="penHint">клик по корове — применить предмет из руки</div>
+        <div class="ml-hotbar" id="hotbar" role="toolbar" aria-label="Хотбар"></div>
       </div>
-      <aside class="mk-side">
-        <div class="mk-card">
-          <h3>Инвентарь</h3>
-          <div class="mk-inv" id="inv"></div>
-          <button type="button" class="btn-ghost" id="invRefill">+ 16 вёдер</button>
+      <div class="ml-pen-side">
+        <div class="ml-herd" id="herd" role="list" aria-label="Стадо"></div>
+        <div class="ml-inv">
+          <div class="ml-inv-t"><span>Инвентарь</span><button type="button" class="btn-ghost" id="invClear">выбросить всё</button></div>
+          <div class="ml-inv-g" id="inv"></div>
         </div>
-        <div class="mk-card">
-          <h3>Статистика стада</h3>
-          <div class="mk-ratio"><i id="rCow"></i><i id="rBull"></i></div>
-          <div class="mk-ratio-l"><span>коровы <b id="nCow">0</b></span><span>быки <b id="nBull">0</b></span></div>
-          <p class="mk-small" id="ratioNote">Подои несколько коров: доля быков будет гулять вокруг половины.</p>
-        </div>
-        <dl class="k-dl mk-dl" id="farmDl"></dl>
-      </aside>
+        <div class="ml-tally" id="tally"></div>
+      </div>
+    </div>
+    <div class="ml-rules reveal">
+      <article><img class="px" src="../../assets/textures/p22/i/bucket.png" alt=""><b>Ведро</b><p>Только в основной руке. Первая дойка решает пол: 50 на 50, и больше он не меняется. Корова даёт ведро молока, бык даёт ведро спермы. Ведро кладётся в свободный слот, а не остаётся в руке.</p></article>
+      <article><img class="px" src="../../assets/textures/p22/i/shears.png" alt=""><b>Ножницы</b><p>Работают только на быке с шерстью. Монетка: медный бык или лысый бык плюс 1–2 кожи. Ножницы теряют 1 прочность, звук как у стрижки овцы.</p></article>
+      <article><img class="px" src="../../assets/textures/p22/i/iron_sword.png" alt=""><b>Смерть</b><p>Обычный бык роняет то же, что корова. Лысый — без кожи. Медный — без кожи, зато с 1–3 блоками медной шерсти.</p></article>
     </div>
   </section>
 
-  <!-- ============ 02 ТРИ БЫКА ============ -->
-  <section class="sec" id="bulls">
-    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">variants</span><h2>Корова и три быка</h2></div><span class="sec-q">4 текстуры · тяни любую</span></header>
-    <p class="sec-p reveal">Бык — та же ванильная корова, только с другой текстурой. Ножницы стригут его один раз: с шансом <b>50%</b> бык становится <b>лысым</b> и роняет 1–2 кожи, иначе превращается в <b>медного</b>. Оба варианта больше не стригутся и при смерти не дают кожи.</p>
-    <div class="mk-bulls reveal" id="bullsBox"></div>
-  </section>
-
-  <!-- ============ 03 РАЗОРИТЕЛЬ ============ -->
+  <!-- ============ 02 РАЗОРИТЕЛЬ ============ -->
   <section class="sec" id="ravager">
-    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">ravager</span><h2>Разоритель</h2></div><span class="sec-q">одно ведро — и он ручной</span></header>
-    <div class="mk-rv reveal">
-      <div class="mk-rv-view" id="rvView">
-        <div class="mk-grass mk-grass-rv"></div>
-        <canvas id="rv3d" aria-label="3D-модель разорителя"></canvas>
-        <div class="mk-rv-name" id="rvName">Разоритель</div>
-        <div class="mk-pops" id="rvPops" aria-hidden="true"></div>
-        <div class="mk-rv-btns">
-          <button type="button" class="k-btn" id="rvMilk"><img src="../../assets/textures/p22/i/bucket.png" alt="" class="px">Подоить</button>
-          <button type="button" class="k-btn2" id="rvHit">Ударить</button>
-          <button type="button" class="k-btn2" id="rvRe">Перезайти</button>
-          <button type="button" class="k-btn2" id="rvNew">Новый</button>
+    <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">ravager · tamed</span><h2>Разоритель</h2></div><span class="sec-q">секретный способ обезвредить</span></header>
+    <p class="sec-p reveal">Разорителя тоже можно подоить обычным пустым ведром. Пол у него не проверяется: ведро спермы выдаётся сразу, а сам зверь становится смирным навсегда, даже после перезахода в мир.</p>
+    <div class="ml-rv reveal">
+      <div class="ml-rv-stage" id="rvStage">
+        <canvas class="ml-cv" id="rv3d" aria-label="3D-модель разорителя"></canvas>
+        <div class="ml-rv-state" id="rvState"><i></i><span>агрессивный</span></div>
+        <div class="ml-rv-ui">
+          <button type="button" class="k-btn" id="rvMilk"><img class="px" src="../../assets/textures/p22/i/bucket.png" alt="">Подоить</button>
+          <button type="button" class="k-btn2" id="rvReset">Новый разоритель</button>
         </div>
       </div>
-      <div class="mk-rv-side">
-        <p class="mk-p">Кликни по разорителю пустым ведром. В инвентарь падает <b>ведро спермы</b>, а у зверя стираются все цели ИИ, включая поиск жертвы. Вместо них ставятся четыре мирных: не тонуть, бродить на скорости 0.4, смотреть на игрока в радиусе 6 блоков и оглядываться. Меняется и текстура.</p>
-        <div class="mk-goals">
-          <div><h4>До дойки</h4><ol id="gBefore"></ol></div>
-          <div><h4>После</h4><ol id="gAfter"></ol></div>
+      <div class="ml-rv-side">
+        <div class="ml-ai">
+          <div class="ml-ai-col" id="aiBefore"><h3>До дойки</h3><ul><li>бросается на игроков, жителей и железных големов</li><li>таранит и кусает, оглушается щитом</li><li>катает на спине разбойника или вызывателя</li><li>приходит с рейдом</li></ul></div>
+          <div class="ml-ai-col calm" id="aiAfter"><h3>После дойки</h3><ul><li>все цели сброшены, списка целей больше нет</li><li>гуляет медленно, на 0.4 от своей скорости</li><li>смотрит на игроков в радиусе 6 блоков</li><li>крутит головой и держится на воде</li></ul></div>
         </div>
-        <p class="mk-small" id="rvNote">Сделать это можно только один раз. Повторный клик по ручному разорителю ничего не даёт, ведро остаётся пустым.</p>
+        <dl class="k-dl" id="rvDl"></dl>
       </div>
     </div>
   </section>
 
-  <!-- ============ 04 ВЕДРО ============ -->
+  <!-- ============ 03 ВЕДРО ============ -->
   <section class="sec" id="bucket">
-    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">sperm_bucket</span><h2>Ведро спермы</h2></div><span class="sec-q">пьётся, как молоко</span></header>
-    <div class="mk-bk reveal">
-      <div class="mk-bk-art">
-        <img src="../../assets/textures/p22/sperm_bucket.png" alt="Ведро спермы" class="mk-bk-img" id="bkImg">
-        <button type="button" class="k-btn mk-drink" id="drink"><span>Зажми, чтобы выпить</span><i id="drinkBar"></i></button>
+    <header class="sec-head reveal"><span class="sec-n">03</span><div class="sec-t"><span class="sec-k">zitraksmode:sperm_bucket</span><h2>Ведро спермы</h2></div><span class="sec-q">пьётся 1,6 секунды</span></header>
+    <div class="ml-bk reveal">
+      <div class="ml-bk-card">
+        <div class="ml-bk-item" id="bkItem"><img class="px" src="../../assets/textures/p22/i/sperm_bucket.png" alt="Ведро спермы"><div class="ml-drops" id="bkDrops" aria-hidden="true"></div></div>
+        <div class="ml-bk-name">Ведро спермы</div>
+        <button type="button" class="ml-drink" id="bkDrink"><span class="ml-drink-f" id="bkFill"></span><b>Зажми, чтобы выпить</b></button>
+        <div class="ml-fx" id="bkFx" aria-live="polite"></div>
       </div>
-      <div class="mk-bk-hud" id="bkHud">
-        <div class="mk-screen" id="screen">
-          <div class="mk-screen-sky"></div>
-          <div class="mk-screen-dark" id="blind"></div>
-          <div class="mk-effects" id="effects"></div>
-          <i class="mk-scr-cross" aria-hidden="true"></i>
-          <img class="mk-scr-hand" id="scrHand" src="../../assets/textures/p22/i/sperm_bucket.png" alt="">
-          <div class="mk-scr-bar"><div class="mk-hearts" id="hearts"></div><div class="mk-hotbar"><i class="sel"></i><img id="scrSlot" src="../../assets/textures/p22/i/sperm_bucket.png" alt=""></div></div>
-          <div class="mk-screen-t" id="screenT">0.0 с</div>
+      <div class="ml-bk-side">
+        <div class="ml-tl2" id="bkTl"></div>
+        <div class="ml-roll">
+          <div class="ml-roll-t">Бонус сразу после глотка. Один из четырёх, по 25%:</div>
+          <div class="ml-roll-g" id="bkRoll"></div>
+          <div class="ml-roll-s" id="bkStat">выпито: 0</div>
         </div>
-        <ol class="mk-steps" id="bkSteps">
-          <li data-s="0"><b>0–1.6 с</b> пьёшь 32 тика, как молоко. Еда 0, насыщение 0, но пить можно и сытым</li>
-          <li data-s="1"><b>сразу</b> отравление I и слепота I на 2 секунды, пустое ведро возвращается в руку</li>
-          <li data-s="2"><b>+2 с</b> одно случайное из четырёх: прыгучесть, спешка, скорость или «Герой деревни», все I уровня на 5 секунд</li>
-        </ol>
-        <dl class="k-dl mk-dl" id="bkDl"></dl>
+        <dl class="k-dl" id="bkDl"></dl>
       </div>
     </div>
   </section>
 
-  <!-- ============ 05 МЕДНЫЙ БЫК ============ -->
-  <section class="sec mk-egg" id="egg">
-    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">посхалка</span><h2>Медный бык</h2></div><span class="sec-q">ножницы → шерсть → сапоги</span></header>
-    <p class="sec-p reveal">Медный бык — античное орудие казни, испанский сапог — средневековое. В моде из первого делают второе. Постриженный в медь бык при смерти роняет <b>1–3 медной шерсти</b>, из четырёх шерстинок крафтятся <b>испанские сапоги</b>. Бегать в них вдвое быстрее, но каждые 10 секунд они отнимают полсердца.</p>
-    <div class="mk-chain reveal" id="chain">
-      <div class="mk-link"><div class="mk-link-ic"><img src="../../assets/textures/p22/i/shears.png" alt="" class="px"></div><b>Стрижка</b><span>50% — медный бык</span></div>
-      <i></i>
-      <div class="mk-link"><div class="mk-link-ic"><img src="../../assets/textures/p22/i/iron_sword.png" alt="" class="px"></div><b>Смерть</b><span>1–3 медной шерсти, без кожи</span></div>
-      <i></i>
-      <div class="mk-link"><div class="mk-link-ic"><img src="../../assets/textures/p22/i/copper_wool.png" alt=""></div><b>Верстак</b><span>4 шерсти, как ванильные ботинки</span></div>
-      <i></i>
-      <div class="mk-link"><div class="mk-link-ic"><img src="../../assets/textures/p22/i/spanish_boots.png" alt=""></div><b>Сапоги</b><span>на ноги, если не страшно</span></div>
-    </div>
-    <div class="mk-egg-grid reveal">
-      <div class="mk-wool">
-        <div class="mk-cube-wrap" id="cubeWrap"><div class="mk-cube" id="cube"><i class="f1"></i><i class="f2"></i><i class="f3"></i><i class="f4"></i><i class="f5"></i><i class="f6"></i></div></div>
+  <!-- ============ 04 СТРИЖКА ============ -->
+  <section class="sec" id="shear">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">shears · copper wool</span><h2>Медный бык</h2></div><span class="sec-q">шанс 1 к 4 с каждой коровы</span></header>
+    <p class="sec-p reveal">Медная шерсть не крафтится и не лежит в сундуках. Её носит только медный бык, а до медного быка каждая корова идёт через две монетки: сначала пол, потом ножницы.</p>
+    <div class="ml-tree reveal" id="tree"></div>
+    <div class="ml-cw reveal">
+      <div class="ml-cw-cube" id="cwCube" aria-label="Блок медной шерсти">
+        <div class="ml-cube" id="cube"><i class="f1"></i><i class="f2"></i><i class="f3"></i><i class="f4"></i><i class="f5"></i><i class="f6"></i></div>
+      </div>
+      <div class="ml-cw-txt">
         <h3>Медная шерсть</h3>
-        <p class="mk-small">Блок-шерсть с Джокером на всех гранях. Тяни куб, чтобы покрутить.</p>
+        <p class="ml-p">Блок, как обычная шерсть: ломается так же быстро, звучит тканью, на карте оранжевый. На всех шести гранях одна и та же ухмылка. Есть в творческой вкладке мода, а в выживании нужна для двух вещей: скрафтить испанские сапоги и чинить их на наковальне.</p>
+        <dl class="k-dl" id="cwDl"></dl>
       </div>
-      <div class="mk-craft">
-        <h3>Верстак</h3>
-        <div id="craftBox"></div>
-        <p class="mk-small" id="craftNote">Нужно 4 медной шерсти. Добыть: выгон → ножницы по быку → меч.</p>
-        <button type="button" class="btn-ghost" id="giveWool">+ 4 медной шерсти (креатив)</button>
-        <dl class="k-dl mk-dl" id="woolDl"></dl>
-      </div>
-      <div class="mk-boots">
-        <div class="mk-boots-view"><canvas id="boots3d" aria-label="3D-модель испанских сапог"></canvas></div>
-        <div class="mk-tip" id="bootsTip"></div>
+      <div class="ml-sim">
+        <h3>Сколько коров на сапоги?</h3>
+        <p class="ml-p">Нужно 4 шерсти. Считаем без хитростей: каждую корову доим, если бык — стрижём, если медный — забиваем.</p>
+        <div class="ml-sim-out" id="simOut"><b>—</b><span>коров в среднем</span></div>
+        <div class="ml-sim-bars" id="simBars"></div>
+        <button type="button" class="k-btn" id="simRun">Прогнать 10 000 ферм</button>
       </div>
     </div>
-    <div class="mk-wear reveal">
-      <div class="mk-wear-sim">
-        <div class="mk-run" id="run"><div class="mk-run-track" id="runTrack"></div><div class="mk-runner" id="runner"><svg viewBox="0 0 8 32" shape-rendering="crispEdges" aria-hidden="true">
-            <g class="lg b"><rect x="2" y="20" width="4" height="12" fill="#3b3b9c"/><rect x="2" y="29" width="4" height="3" fill="#5a3a22"/></g>
-            <g class="ar b"><rect x="2" y="8" width="4" height="12" fill="#b88a6a"/><rect x="2" y="8" width="4" height="4" fill="#2aa3a3"/></g>
-            <rect x="2" y="8" width="4" height="12" fill="#2aa3a3"/>
-            <g class="lg f"><rect x="2" y="20" width="4" height="12" fill="#46469e"/><rect class="bt" x="2" y="28" width="4" height="4" fill="#5a3a22"/></g>
-            <g class="ar f"><rect x="2" y="8" width="4" height="12" fill="#c69c7a"/><rect x="2" y="8" width="4" height="4" fill="#33b5b5"/></g>
-            <rect x="0" y="0" width="8" height="8" fill="#b88a6a"/><rect x="0" y="0" width="8" height="2" fill="#3a2716"/><rect x="0" y="2" width="2" height="2" fill="#3a2716"/><rect x="6" y="4" width="1" height="1" fill="#fff"/><rect x="7" y="4" width="1" height="1" fill="#4a3aa0"/><rect x="5" y="6" width="3" height="1" fill="#6b4630"/>
-          </svg></div></div>
-        <div class="mk-wear-hud">
-          <div class="mk-hearts" id="wHearts"></div>
-          <div class="mk-dura"><span>Прочность</span><div><i id="wDura"></i></div><b id="wDuraT">450/450</b></div>
-          <div class="mk-effects mk-effects-s" id="wEff"></div>
-        </div>
-        <div class="mk-wear-btns">
-          <button type="button" class="k-btn" id="wear">Надеть сапоги</button>
-          <button type="button" class="k-btn2" id="wHit">Получить удар</button>
-          <button type="button" class="k-btn2" id="wBow">Натянуть лук</button>
-          <button type="button" class="k-btn2" id="wAnvil">На наковальню</button>
-        </div>
-        <p class="mk-small" id="wNote">Сапоги не надеты: обычная скорость, обычный обзор.</p>
+  </section>
+
+  <!-- ============ 05 САПОГИ ============ -->
+  <section class="sec" id="boots">
+    <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">zitraksmode:spanish_boots</span><h2>Испанские сапоги</h2></div><span class="sec-q">скорость ×2 · кровь</span></header>
+    <div class="ml-bt reveal">
+      <div class="ml-bt-a">
+        <div id="btCraft"></div>
+        <div class="ml-tip" id="btTip"></div>
       </div>
-      <dl class="k-dl mk-dl" id="bootsDl"></dl>
+      <div class="ml-bt-b">
+        <div class="ml-run" id="run">
+          <canvas id="runCv" aria-label="Забег: без сапог и в сапогах"></canvas>
+          <div class="ml-run-hud"><div class="ml-hearts" id="hearts"></div><span id="runT">0,0 с</span></div>
+        </div>
+        <div class="ml-run-ui">
+          <button type="button" class="k-btn" id="runGo">Забег на минуту</button>
+          <label class="ml-sw"><input type="checkbox" id="runFast"> в реальном времени (иначе ×5)</label>
+        </div>
+        <p class="ml-p ml-run-note" id="runNote">Верхняя дорожка — обычный спринт, нижняя — в сапогах. Сердца сверху — того, кто в сапогах.</p>
+      </div>
+    </div>
+    <div class="ml-bt2 reveal">
+      <div class="ml-anvil">
+        <h3>Ремонт на наковальне</h3>
+        <div class="ml-anv" id="anvil"></div>
+        <div class="ml-anv-ui"><button type="button" class="k-btn2 sm" id="anvWear">Потрепать в бою</button><button type="button" class="k-btn sm" id="anvFix">Починить шерстью</button></div>
+        <p class="ml-p" id="anvNote">Одна медная шерсть = четверть прочности (112 из 450) за 1 уровень. Медный слиток тоже чинит, по обычным правилам наковальни.</p>
+      </div>
+      <dl class="k-dl" id="btDl"></dl>
     </div>
   </section>
 
   <!-- ============ 06 ТОНКОСТИ ============ -->
-  <section class="sec" id="notes">
-    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">edge cases</span><h2>Тонкости</h2></div><span class="sec-q">то, что видно только в коде</span></header>
-    <div class="mk-notes reveal" id="notesBox"></div>
+  <section class="sec" id="facts">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">details</span><h2>Тонкости</h2></div></header>
+    <div class="ml-facts reveal" id="factsBox"></div>
   </section>
 
-  <!-- ============ 07 АЧИВКИ ============ -->
+  <!-- ============ 07 ТВОРЧЕСКИЙ ============ -->
+  <section class="sec" id="creative">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">creative</span><h2>Предметы</h2></div><span class="sec-q">наведи — подсказка как в игре</span></header>
+    <div class="ml-cr reveal">
+      <div class="ml-cr-win">
+        <div class="ml-cr-tabs" id="crTabs"></div>
+        <div class="ml-cr-g" id="crGrid"></div>
+      </div>
+      <div class="ml-cr-info" id="crInfo"></div>
+    </div>
+  </section>
+
+  <!-- ============ 08 АЧИВКИ ============ -->
+
+  <!-- ============ 09 ВЕРСИИ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
       <div class="adv-detail" id="advDetail"></div>
@@ -217,24 +203,20 @@
     <div class="adv-list reveal" id="advList"></div>
   </section>
 
-  <!-- ============ 08 ВЕРСИИ ============ -->
-  <section class="sec" id="hist">
-    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
-    <div class="k-tl reveal" id="tl"></div>
-  </section>
-
   <section class="finale" id="finale">
-    <p class="fin-q">Сначала ведро.<br><em>Потом разберёмся, кто это был</em></p>
+    <button type="button" class="ml-fin-b" id="finB" aria-label="Ведро"><img class="px" src="../../assets/textures/p22/i/bucket.png" alt=""></button>
+    <p class="fin-q">Молоко, сперма или медь.<br><em>Ведро узнает первым</em></p>
     <nav class="fin-nav" id="finNav"></nav>
   </section>
 </main>
+<div class="ml-log" id="log" aria-live="polite"></div>
 <script src="../../shared/core.js"></script>
 <script src="../../shared/points.js"></script>
 <script src="../../shared/kit.js"></script>
 <script src="../../shared/geo3d.js"></script>
 <script src="../../data/p22_geo.js"></script>
-<script src="../../data/p22_tex.js"></script>
 <script src="../../data/p22_adv.js"></script>
 <script src="app.js"></script>
+<script src="../../data/hub_adv.js"></script>
 </body>
 </html>

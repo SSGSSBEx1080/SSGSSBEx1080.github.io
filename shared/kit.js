@@ -52,6 +52,9 @@
     const pick = (e) => { const n = e.target.closest("[data-k]"); if (!n) return; sel = n.dataset.k; render(); };
     $("#advChain").addEventListener("click", pick); $("#advList").addEventListener("click", pick);
     $("#advReset").addEventListener("click", () => { got = []; ZM.store.set(store, got); sel = null; render(); });
+    const refresh = () => { got = ZM.store.get(store, []).filter((k) => list.some((a) => a.key === k)); render(); };
+    addEventListener("storage", (e) => { if (e.key === `zm:${store}`) refresh(); });
+    addEventListener("pageshow", (e) => { if (e.persisted) refresh(); });
     render();
     return { grant, has: (k) => got.includes(k), render };
   }

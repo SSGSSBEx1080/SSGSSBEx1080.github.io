@@ -49,7 +49,7 @@ const ICON = {
   20: (a) => first(`assets/textures/p20/i/${a.icon}.png`),
   21: (a) => first(`assets/textures/p21/i/${a.icon}.png`),
   22: (a) => first(`assets/textures/p22/i/${a.icon}.png`),
-  23: (a) => first(`assets/textures/p23/${a.icon}.svg`),
+  23: (a) => first(`assets/textures/p23/i/${a.icon}.png`, `assets/textures/p23/${a.icon}.svg`),
   24: (a) => first(`assets/textures/p24/${a.icon}.svg`),
 };
 const DIRS = { 23: "23_max", 24: "24_scooter", 1: "01_numbers", 2: "02_tnt_armor", 3: "03_sniper", 4: "04_miner", 5: "05_adun", 6: "p06", 7: "p07", 8: "p08", 9: "09_dildo", 10: "10_creeper", 11: "11_jbl", 12: "12_katana" };

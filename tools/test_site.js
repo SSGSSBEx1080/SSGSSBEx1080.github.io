@@ -42,6 +42,27 @@ assert.equal(POINTS.find(p => p.n === 23).page, 'pages/23-max/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 23).adv.length, 4);
 assert.equal(POINTS.find(p => p.n === 24).page, 'pages/24-scooter/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 24).adv.length, 3);
+// Every builtin printer blueprint must retain the exact blockstate, not just
+// the base block ID: hinges, wooden axes and tripwire connections matter.
+vm.runInNewContext(fs.readFileSync(path.join(root, 'data/p13_vox.js'), 'utf8'), ctx);
+const atlas = ctx.ZM.VOX_ATLAS, built = ctx.ZM.P13_BUILT;
+assert.ok(atlas.blocks.length >= 237, 'Printer atlas must include shaped state variants');
+for (const [name, recipe] of Object.entries(built.recipes)) {
+  assert.equal(recipe.palette.length, recipe.vox.length, `${name}: palette-to-atlas length`);
+  for (let i = 0; i < recipe.palette.length; i++) {
+    assert.equal(atlas.blocks[recipe.vox[i]]?.key, recipe.palette[i], `${name}: ${recipe.palette[i]}`);
+  }
+}
+for (const b of atlas.blocks.filter(b => b?.key?.startsWith('minecraft:tripwire'))) {
+  assert.ok(b.bx?.length, `${b.key}: visible non-cubic geometry`);
+}
+// The preferred #22 is the original herd/ravager experience, not the later pen rewrite.
+const milk = fs.readFileSync(path.join(root, 'pages/22-milk/app.js'), 'utf8');
+assert.match(milk, /herdUI\(/);
+assert.match(milk, /#heroSw/);
+assert.match(milk, /#factsBox/);
+assert.doesNotMatch(milk, /penView/);
+assert.match(fs.readFileSync(path.join(root, 'shared/geo3d.js'), 'utf8'), /setBoneRot\(n, r\)/, 'Original #22 bone animations require this renderer API');
 for (const name of ['head', 'hat']) {
   const faces = P20M.gazan.elements.find(e => e.name === name).faces;
   assert.ok(faces.east.uv[0] > faces.east.uv[2], `East face of ${name} must be mirrored`);
