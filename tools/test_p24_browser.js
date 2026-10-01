@@ -13,10 +13,35 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       page.on('pageerror', e => errors.push(e.message));
       page.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); });
       await page.goto(url);
+      await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}' });
+      await page.locator('#scene.world-ready').waitFor({ timeout: 20000 });
       assert.ok(await page.locator('.sc-rider img').evaluate(img => img.complete && img.naturalWidth > 500));
       assert.ok(await page.locator('#adv').evaluate(el => el.compareDocumentPosition(document.querySelector('#garage')) & Node.DOCUMENT_POSITION_PRECEDING));
       await page.locator('#getScooter').click();
       assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p24.adv'))), ['scooter_craft']);
+      await page.locator('#worldCam').click();
+      assert.equal(await page.locator('#worldCrosshair').isVisible(), true);
+      await page.locator('#worldCam').click();
+      assert.equal(await page.locator('#worldCrosshair').isVisible(), false);
+      if (width === 1440) {
+        await page.locator('#track h2').click();
+        await page.keyboard.down('w');
+        await page.waitForFunction(() => Number(document.querySelector('#worldProgress').textContent.charAt(0)) >= 1, null, { timeout: 18000 });
+        assert.match(await page.locator('#worldCoords').textContent(), /XYZ/);
+        await page.waitForFunction(() => Number(document.querySelector('#healthN').textContent.split(' / ')[0]) < 500, null, { timeout: 12000 });
+        await page.keyboard.up('w');
+        assert.match(await page.locator('#collisionNote').textContent(), /КАМЕНЬ/);
+      } else {
+        const button = page.locator('#touchGo');
+        await button.scrollIntoViewIfNeeded();
+        const r = await button.boundingBox();
+        await page.mouse.move(r.x + r.width / 2, r.y + r.height / 2);
+        await page.mouse.down();
+        await page.waitForFunction(() => Number(document.querySelector('#worldCoords').textContent.split('·')[1]) < 26, null, { timeout: 9000 });
+        await page.mouse.up();
+      }
+      await page.locator('#worldReset').click();
+      assert.match(await page.locator('#worldCoords').textContent(), /0 · 28/);
       await page.locator('#surfaceList [data-surface=honey]').click();
       assert.equal(await page.locator('#surfaceTag').textContent(), 'ПОКРЫТИЕ / МЁД');
       assert.equal(await page.locator('#surfaceList [data-surface=honey]').getAttribute('aria-pressed'), 'true');
@@ -31,7 +56,16 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       await page.locator('#testWall').click();
       assert.match(await page.locator('#collisionNote').textContent(), /СЛИЗЬ: отскок/);
       assert.equal(await page.locator('#getScooter').isDisabled(), true);
-      await page.locator('#testObsidian').click();
+      await page.locator('#worldReset').click();
+      await page.locator('#track h2').click();
+      await page.keyboard.down('w');
+      // Trigger the instant lab action in the same frame as the speed reading:
+      // steering and collisions continue while the page is being scrolled.
+      await page.waitForFunction(() => {
+        if (Number(document.querySelector('#speed').textContent) < 85) return false;
+        document.querySelector('#testObsidian').click(); return true;
+      }, null, { timeout: 15000 });
+      await page.keyboard.up('w');
       assert.match(await page.locator('#collisionNote').textContent(), /разрушен/);
       assert.equal(await page.locator('#healthN').textContent(), '0 / 500');
       await page.locator('#getScooter').click();
@@ -39,6 +73,7 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       await page.locator('#grade').selectOption('flat');
       await page.locator('#surfaceList [data-surface=asphalt]').click();
       await page.locator('#quickRide').click();
+      assert.match(await page.locator('#worldDistance').textContent(), /РАДИУСЕ/);
       assert.ok(Number((await page.locator('#meters').textContent()).replace(/\D/g, '')) >= 1500);
       assert.equal(await page.locator('#chargeN').textContent(), '90%');
       await page.locator('#getPort').click();
@@ -55,7 +90,7 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
       assert.deepEqual(errors, []);
       await context.close();
-      console.log(`Scooter browser test: ${width}px, original model, 5 surfaces, collisions, 3/3 awards, charging, fold, no overflow/errors`);
+      console.log(`Scooter browser test: ${width}px, 3D block world, steering/touch, checkpoints, collisions, 5 surfaces, 3/3 awards, charge/fold, no errors`);
     }
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

@@ -75,6 +75,14 @@ assert.match(maxApp, /class="mx-note"/, 'MAX notes should be interactive disclos
 assert.equal(POINTS.find(p => p.n === 24).page, 'pages/24-scooter/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 24).adv.length, 3);
 const scooterHtml = fs.readFileSync(path.join(root, 'pages/24-scooter/index.html'), 'utf8');
+assert.match(scooterHtml, /ride3d\.js/, 'Playable voxel world must be loaded');
+assert.match(scooterHtml, /id="touchGo"/, 'Phone controls must remain available while viewing the world');
+assert.match(scooterHtml, /id="worldCam"/, 'The rider must be able to toggle first-person view');
+const rideWorld = fs.readFileSync(path.join(root, 'pages/24-scooter/ride3d.js'), 'utf8');
+assert.match(rideWorld, /P24G/, 'The ride must use the source scooter geometry');
+assert.match(rideWorld, /scooters\.png/, 'The ride must use the source scooter texture');
+assert.ok(fs.existsSync(path.join(root, 'shared/vendor/three/LICENSE')), 'Bundled Three.js license missing');
+assert.ok(fs.existsSync(path.join(root, 'shared/vendor/three/three.module.js')), 'Offline 3D engine missing');
 const scooterApp = fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8');
 for (const id of ['hero3d', 'surfaceList', 'testWall', 'testObsidian', 'quickRide', 'charge', 'pack', 'rideFeed']) {
   assert.ok(scooterHtml.includes(`id="${id}"`), `Scooter interactive control ${id} missing`);
