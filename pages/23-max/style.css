@@ -431,3 +431,106 @@ code{font-family:var(--f-mono,monospace);font-size:.9em;background:rgba(60,137,2
   .mx-search{width:54px}
   .mx-head{gap:6px;padding:6px}
 }
+
+/* №23: вместо большой статичной иконки — живая миниатюра серверного чата. */
+.mx-hero-art{width:100%;min-width:0;max-width:520px;margin-inline:auto;gap:12px}
+.mx-terminal{position:relative;width:100%;background:#111923;border:1px solid #395175;border-radius:20px;padding:14px;box-shadow:0 28px 70px rgba(0,0,0,.52),0 0 0 5px rgba(60,108,255,.08);overflow:visible}
+.mx-terminal::before{content:"";position:absolute;inset:0;border-radius:20px;pointer-events:none;background:linear-gradient(140deg,rgba(60,108,255,.09),transparent 48%,rgba(138,61,255,.07))}
+.mx-terminal>*,.mx-terminal .mx-term-profile{position:relative}
+.mx-term-top{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #25354b;padding:0 2px 12px;color:#a7bce1;font:14px/1.2 var(--f-px);letter-spacing:.07em}
+.mx-term-top span:first-child i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#6be69d;box-shadow:0 0 12px #6be69d;margin-right:5px}
+.mx-term-top span:last-child b{color:#6be69d}
+.mx-term-profile{display:flex;gap:13px;align-items:center;padding:16px 2px 14px}
+.mx-term-profile>div:not(.mx-notif){display:grid;gap:3px;min-width:0}
+.mx-term-profile b{font:900 30px/1 var(--f-l);color:#fff}
+.mx-term-profile span{font-size:12px;color:#9cb2c9}
+.mx-term-icon{display:grid;place-items:center;width:60px;height:60px;border:1px solid #49659e;border-radius:13px;background:#141d35;padding:4px;cursor:pointer;flex:none;transition:transform .16s,box-shadow .16s}
+.mx-term-icon:hover,.mx-term-icon:focus-visible{transform:translateY(-3px);box-shadow:0 0 0 2px #3c89ff;outline:none}
+.mx-term-icon .mx-icon,.mx-term-icon img{width:100%;height:100%;object-fit:contain;animation:none;filter:none;image-rendering:pixelated}
+.mx-terminal .mx-notif{right:-10px;top:-16px;min-width:135px;z-index:3;padding:5px 8px}
+.mx-term-chat{display:grid;gap:10px;padding:16px;background:#0b111a;border:1px solid #233247;border-radius:13px;min-height:273px}
+.mx-term-msg{max-width:85%;padding:10px 12px;min-width:0;border-radius:13px 13px 13px 3px;background:#283342;box-shadow:0 4px 12px rgba(0,0,0,.16)}
+.mx-term-msg.outgoing{justify-self:end;background:#2b6ee6;border-radius:13px 13px 3px 13px}
+.mx-term-msg.received{background:#182b43;border:1px solid #3c89ff;border-radius:13px 13px 13px 3px}
+.mx-term-msg small{display:block;color:#9fc8ff;font:12px var(--f-px);letter-spacing:.07em}
+.mx-term-msg.incoming small{color:#bbc9d9}
+.mx-term-msg p{margin:5px 0 0;color:#fff;font:500 14px/1.45 var(--f-t);overflow-wrap:anywhere}
+.mx-term-msg mark{background:#ffe477;color:#17202d;padding:0 2px;border-radius:2px}
+.mx-term-pipe{display:flex;align-items:center;gap:9px;margin:0 auto;color:#88abdc;font:13px var(--f-px);letter-spacing:.08em}
+.mx-term-pipe span{color:#7b66ff}
+.mx-term-draft{display:flex;align-items:center;gap:8px;background:#152233;border:1px solid #315275;padding:8px 10px;margin-top:12px;border-radius:9px;min-width:0}
+.mx-term-draft:focus-within{border-color:#73b2ff;box-shadow:0 0 0 2px rgba(60,137,255,.17)}
+.mx-term-draft span{font:12px var(--f-px);color:#9dc5fa;white-space:nowrap}
+.mx-term-draft input{flex:1;min-width:0;background:transparent;border:0;outline:none;color:#fff;font:14px var(--f-t);padding:4px 0}
+.mx-term-draft b{color:#a5c9f2;font-size:18px}
+.mx-term-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;color:#9babc4;font:12px/1.3 var(--f-px)}
+.mx-term-bottom button{border:1px solid #5285d5;background:#2b6ee6;color:#fff;border-radius:5px;padding:8px 10px;cursor:pointer;font:14px var(--f-px);white-space:nowrap}
+.mx-term-bottom button:hover,.mx-term-bottom button:focus-visible{background:#3c89ff;outline:2px solid #b5d6ff;outline-offset:2px}
+.mx-hero-cap{font-size:12px}
+
+/* Увеличенный клиент MAX: та же DOM-модель, никакой второй заглушки. */
+.mx-focusbar{grid-column:1/-1;display:flex;align-items:center;gap:12px;justify-content:space-between;padding:8px 12px;background:#152238;border:1px solid #284064;border-left:4px solid #3c89ff;border-radius:8px;color:#e9f4ff}
+.mx-focusbar span{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.mx-focusbar b{font:16px var(--f-px);letter-spacing:.06em}
+.mx-focusbar small{color:#9db1cb;font-size:12px}
+.mx-focusbar button{flex:none;background:#2b6ee6;border:1px solid #497fd2;border-radius:5px;color:#fff;font:14px var(--f-px);padding:8px 12px;cursor:pointer}
+.mx-focusbar button:hover,.mx-focusbar button:focus-visible{background:#3c89ff;outline:2px solid #b5d6ff;outline-offset:2px}
+.mx-focusbar button[hidden]{display:none}
+body.mx-focus-open{overflow:hidden!important}
+.mx-app-wrap.focused{position:fixed!important;inset:0!important;z-index:160!important;display:grid;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr);align-items:stretch;gap:10px;padding:12px max(12px,calc((100vw - 1420px)/2));margin:0;background:linear-gradient(140deg,#070c13,#10203c);opacity:1!important;transform:none!important}
+.mx-app-wrap.focused .mx-focusbar{grid-column:1;max-width:1380px;width:100%;margin-inline:auto}
+.mx-app-wrap.focused .mx-screen{grid-column:1;grid-row:2;width:100%;max-width:1380px;height:100%;min-height:0;margin-inline:auto;box-sizing:border-box;box-shadow:0 0 0 1px #4d7ccb,0 30px 70px #000}
+.mx-app-wrap.focused .mx-app-side{display:none!important}
+
+/* Маршрут выполняется действиями в клиенте, а не перелистыванием текста. */
+.mx-quests{padding:11px;background:#132032;border:1px solid #2e4e7e;border-radius:12px}
+.mx-quests-head{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#d9e9ff}
+.mx-quests-head small{font:12px var(--f-px);letter-spacing:.04em}
+.mx-quests-head b{color:#89beff;font:14px var(--f-px);white-space:nowrap}
+.mx-quest-list{display:grid;gap:3px;margin:9px 0}
+.mx-quest-list button{width:100%;display:flex;align-items:center;gap:8px;text-align:left;padding:7px 5px;border:1px solid transparent;background:transparent;color:#e1e9f6;cursor:pointer;min-width:0}
+.mx-quest-list button:hover,.mx-quest-list button:focus-visible{background:#223653;border-color:#4d81cf;outline:none}
+.mx-quest-list button i{font:14px var(--f-px);color:#83aee2;flex:none;width:22px;font-style:normal}
+.mx-quest-list button.done i{color:#7be8ab}
+.mx-quest-list button span{display:grid;gap:1px;flex:1;min-width:0}
+.mx-quest-list button b{font:600 12px/1.25 var(--f-t);white-space:normal}
+.mx-quest-list button small{color:#8499b1;font:11px/1.25 var(--f-t)}
+.mx-quest-list button em{color:#7fa9e2;font-style:normal}
+.mx-quest-meter{height:5px;background:#0d1522;border-radius:9px;overflow:hidden}
+.mx-quest-meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3c89ff,#7be8ab);transition:width .3s}
+
+/* Тонкости оформлены как раскрывающиеся сообщения, а не стеной текста. */
+.mx-note{padding:0;min-height:66px;overflow:hidden}
+.mx-note summary{display:flex;align-items:center;gap:10px;min-height:64px;padding:13px 16px;cursor:pointer;list-style:none}
+.mx-note summary::-webkit-details-marker{display:none}
+.mx-note summary:focus-visible{outline:2px solid #bcdfff;outline-offset:-4px}
+.mx-note summary span{display:grid;place-items:center;flex:none;min-width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.25);font:13px var(--f-px)}
+.mx-note summary b{font:700 15px/1.3 var(--f-l);flex:1}
+.mx-note summary i{font:24px/1 var(--f-px);font-style:normal;color:#b7d0ff;transition:transform .2s}
+.mx-note[open] summary i{transform:rotate(45deg)}
+.mx-note-body{border-top:1px solid rgba(255,255,255,.16);padding:12px 16px 24px}
+.mx-note-body p{margin:0 0 12px;font-size:14px;line-height:1.65}
+.mx-note-body em{right:16px;bottom:9px}
+.mx-notes-toggle{background:#223349;border:1px solid #456693;border-radius:10px;color:#dbeaff;padding:8px 14px;cursor:pointer;font:12px var(--f-t)}
+.mx-notes-toggle:hover,.mx-notes-toggle:focus-visible{border-color:#9ac9ff;outline:2px solid #9ac9ff;outline-offset:2px}
+@media(max-width:1100px){.mx-quests{grid-column:1/-1}.mx-quest-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.mx-hero-art{order:-1;max-width:570px}.mx-hero{gap:22px}}
+@media(max-width:640px){
+  .mx-terminal{padding:10px;border-radius:15px}
+  .mx-term-chat{padding:10px;min-height:245px}
+  .mx-term-msg{max-width:92%}
+  .mx-term-top{font-size:11px}
+  .mx-term-draft{flex-wrap:wrap}
+  .mx-term-draft span{flex:0 0 100%}
+  .mx-term-bottom{font-size:11px}
+  .mx-focusbar{padding:7px 8px}
+  .mx-focusbar small{display:none}
+  .mx-app-wrap.focused{padding:8px 4px max(6px,env(safe-area-inset-bottom));gap:6px}
+  .mx-quest-list{grid-template-columns:1fr}
+  .mx-notes-toggle{margin-left:0}
+}
+/* Main forms its own stacking context; lift it above the fixed site bar. */
+body.mx-focus-open main{z-index:200}
+/* The notification has its own compact typography, not the huge MAX wordmark. */
+.mx-terminal .mx-notif b{font:400 14px/1.1 var(--f-px);white-space:nowrap}
+.mx-terminal .mx-notif span{font:400 12px/1.1 var(--f-px)}

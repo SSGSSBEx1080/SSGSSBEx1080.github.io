@@ -91,8 +91,19 @@
     const n = $("#heroNotif"), lines = [["Nagibator3000", "Салам"], ["Ksyusha_mc", "Иди нахуй, я строю"], ["Oleg_Pro", "Подарок"], ["Dimon", "Как хуй?"], ["Избранное", "заметки"]];
     let i = 0;
     const tick = () => { const [a, b] = lines[i++ % lines.length]; n.innerHTML = `<b>${esc(a)}</b><span>${esc(b)}</span><i>${i}</i>`; n.classList.remove("on"); void n.offsetWidth; n.classList.add("on"); };
-    tick(); setInterval(() => { if (motion()) tick(); }, 3200);
-    $("#heroIcon").addEventListener("click", () => { snd("pling", 0.5, 1.2); document.getElementById("app").scrollIntoView({ behavior: motion() ? "smooth" : "auto" }); });
+    tick(); setInterval(() => { if (motion() && !document.hidden) tick(); }, 3200);
+    const draft = $("#heroDraft");
+    const process = () => {
+      const text = draft.value.slice(0, 160), result = censor(text);
+      $("#heroBefore").textContent = text || "…";
+      $("#heroAfter").innerHTML = censorHtml(result) || "…";
+      $("#heroHits").textContent = result.hits.length ? `${result.hits.length} заменено на сервере` : "Нет замен · попробуй «Привет, как дела?»";
+    };
+    draft.addEventListener("input", process); process();
+    const launch = (e) => { if (e) e.preventDefault(); snd("pling", 0.5, 1.2); openFocus(e?.currentTarget); };
+    $("#heroIcon").addEventListener("click", launch);
+    $("#heroOpen").addEventListener("click", launch);
+    $("#heroLaunch").addEventListener("click", launch);
     const tk = ["иди сюда → иди нахуй", "привет → салам", "люблю → ненавижу", "хорошо → плохо", "как дела → как хуй", "окей → хуй побрей", "спс → иди нахуй", "тут ↔ там", "рай ↔ ад", "правда ↔ ложь", "котлеты → ёжики", "пиво → вода", "мне → мне похуй", "я думаю → я знаю", "мне кажется → я уверен", "имба → говно"];
     $("#ticker").innerHTML = (tk.map((t) => `<span>${esc(t)}</span>`).join("<i>●</i>") + "<i>●</i>").repeat(2);
   })();
@@ -158,13 +169,83 @@
   };
   let S; try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
   if (!S || !S.me || !S.msgs || !S.me.inv) S = seed();
-  const files = {}; // вложения этой сессии: id → File (для «↓»)
+  const files = {}; // байты в памяти вкладки; файлы до 20 МБ дополнительно сохраняются локально
+  let fileDb;
+  const db = () => fileDb ||= new Promise((resolve) => {
+    if (!window.indexedDB) return resolve(null);
+    try {
+      const r = indexedDB.open("zm-max-demo-files", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("files");
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => resolve(null);
+    } catch (_) { resolve(null); }
+  });
+  async function cacheFile(key, file) {
+    if (!file || file.size > 20 * 1024 * 1024) return false;
+    const conn = await db(); if (!conn) return false;
+    return new Promise((resolve) => {
+      try {
+        const tx = conn.transaction("files", "readwrite");
+        tx.objectStore("files").put({ data: file, name: file.name }, key);
+        tx.oncomplete = () => resolve(true); tx.onerror = tx.onabort = () => resolve(false);
+      } catch (_) { resolve(false); }
+    });
+  }
+  async function cachedFile(key) {
+    if (files[key]) return files[key];
+    const conn = await db(); if (!conn) return null;
+    return new Promise((resolve) => {
+      try {
+        const r = conn.transaction("files").objectStore("files").get(key);
+        r.onsuccess = () => { const v = r.result; resolve(v ? (files[key] = new File([v.data], v.name, { type: v.data.type })) : null); };
+        r.onerror = () => resolve(null);
+      } catch (_) { resolve(null); }
+    });
+  }
+  async function clearCachedFiles() {
+    const conn = await db(); if (!conn) return;
+    return new Promise((resolve) => {
+      try {
+        const tx = conn.transaction("files", "readwrite"); tx.objectStore("files").clear();
+        tx.oncomplete = tx.onerror = tx.onabort = () => resolve();
+      } catch (_) { resolve(); }
+    });
+  }
   const save = () => { try { const c = JSON.parse(JSON.stringify(S)); c.msgs.forEach((m) => { if (m.att) delete m.att.preview; }); localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} };
   const user = (id) => id === "me" ? S.me : S.users.find((u) => u.id === id);
   const dname = (u) => (u.name || u.base || "Player").slice(0, 24);
   const trim = (t, n) => (t = String(t || ""), t.length > n ? t.slice(0, n) + "…" : t);
-  const mx = $("#mx");
-  const V = { sel: null, reply: 0, edit: 0, fwd: 0, att: null, search: "", res: [], ri: -1, status: "", menu: null, modal: null, attachMenu: false, draft: "", giftSlots: [], stick: true };
+  const mx = $("#mx"), stage = $("#mxStage");
+  let focusReturn = null;
+  function openFocus(trigger) {
+    focusReturn = trigger || document.activeElement;
+    stage.classList.add("focused", "in");
+    document.body.classList.add("mx-focus-open");
+    $("#mxFocus").setAttribute("aria-pressed", "true");
+    $("#mxFocus").hidden = true;
+    $("#mxClose").hidden = false;
+    $("#mxClose").focus({ preventScroll: true });
+  }
+  function closeFocus() {
+    stage.classList.remove("focused");
+    document.body.classList.remove("mx-focus-open");
+    $("#mxFocus").hidden = false;
+    $("#mxFocus").setAttribute("aria-pressed", "false");
+    $("#mxClose").hidden = true;
+    if (focusReturn?.isConnected) focusReturn.focus({ preventScroll: true });
+  }
+  $("#mxFocus").addEventListener("click", (e) => openFocus(e.currentTarget));
+  $("#mxClose").addEventListener("click", closeFocus);
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !stage.classList.contains("focused")) return;
+    if (e.target.closest(".mx-input") && (V.edit || V.reply || V.att || V.fwd)) return;
+    if (V.menu || V.attachMenu) { V.menu = null; V.attachMenu = false; render(); }
+    else if (V.modal && V.modal !== "register") { V.modal = null; render(); }
+    else if (!V.modal) closeFocus();
+    e.preventDefault();
+  });
+  // После регистрации показываем реальный демо-диалог, а не пустую панель.
+  const V = { sel: S.me.reg ? "b1" : null, reply: 0, edit: 0, fwd: 0, att: null, search: "", res: [], ri: -1, status: "", menu: null, modal: null, attachMenu: false, draft: "", giftSlots: [], stick: true };
   let statusT = 0;
   const status = (t) => { V.status = t; const el = $(".mx-status", mx); if (el) el.textContent = t; clearTimeout(statusT); statusT = setTimeout(() => { V.status = ""; const e2 = $(".mx-status", mx); if (e2) e2.textContent = ""; }, 3500); };
   const counters = () => {
@@ -216,7 +297,42 @@
     const gid = "g" + S.next; S.gifts[gid] = { from: b.id, to: "me", stacks, state: "PENDING" };
     serverSend(b.id, "me", pick(["лови", "держи братан", "это тебе", "подарок, не благодари", "спс за вчера", ""]), { type: "GIFT", gift: gid, read: V.sel === b.id });
     snd("pling", 0.5, 1.1); status(`${dname(b)}: подарок`); render();
+    return b.id;
   }
+
+  const QUESTS = [
+    ["register", "Создай профиль", "Ник, аватар и трофей"],
+    ["favorite", "Запиши себе", "Чат «Избранное»"],
+    ["chat", "Проверь антицензуру", "Отправь сообщение игроку"],
+    ["gift", "Прими или отвергни", "Подарок от собеседника"],
+    ["file", "Приложи файл", "Куски по 30 КБ"],
+  ];
+  function renderQuest() {
+    const passed = [
+      !!S.me.reg,
+      S.msgs.some((m) => m.from === "me" && m.to === "me" && m.type === "TEXT" && !m.deleted),
+      S.msgs.some((m) => m.from === "me" && m.to !== "me" && m.type === "TEXT" && !m.fwd),
+      Object.values(S.gifts).some((g) => g.to === "me" && (g.state === "ACCEPTED" || g.state === "REJECTED")),
+      S.msgs.some((m) => m.from === "me" && m.type === "FILE"),
+    ];
+    $("#mxQuestList").innerHTML = QUESTS.map(([key, title, hint], i) =>
+      `<button type="button" data-q="${key}" class="${passed[i] ? "done" : ""}" aria-label="${esc(title)}: ${passed[i] ? "сделано" : "попробовать"}"><i>${passed[i] ? "✓" : String(i + 1).padStart(2, "0")}</i><span><b>${esc(title)}</b><small>${esc(hint)}</small></span><em>↗</em></button>`).join("");
+    const n = passed.filter(Boolean).length;
+    $("#mxQuestCount").textContent = `${n} / ${QUESTS.length}`;
+    $("#mxQuestBar").style.width = `${n / QUESTS.length * 100}%`;
+  }
+  $("#mxQuestList").addEventListener("click", (e) => {
+    const q = e.target.closest("[data-q]"); if (!q) return;
+    openFocus(q);
+    if (!S.me.reg) { status("Сначала создай профиль MAX"); return; }
+    const key = q.dataset.q;
+    if (key === "register") { V.modal = "profile:me"; render(); return; }
+    if (key === "favorite") { openChat("me"); setDraft("Заметка для себя: "); }
+    if (key === "chat") { openChat("b1"); setDraft("Привет, как дела?"); }
+    if (key === "gift") { const id = botGift(); openChat(id); }
+    if (key === "file") { openChat("me"); fileIn.click(); }
+    const input = $(".mx-input", mx); if (input && key !== "gift") input.focus();
+  });
 
   /* --- рендер экрана --- */
   function contacts() {
@@ -241,11 +357,12 @@
     const cl = $(".mx-contacts", side);
     contacts().forEach((c) => {
       const row = document.createElement("button"); row.type = "button"; row.className = "mx-row" + (V.sel === c.id ? " on" : "") + (V.fwd ? " fwd" : "");
+      row.setAttribute("aria-label", `${c.name}${c.un ? `, непрочитанных: ${c.un}` : ""}`);
       row.appendChild(ava(c.ava, 40, c.on, true));
       row.insertAdjacentHTML("beforeend", `<span class="mx-row-t"><b>${esc(trim(c.name, 16))}</b><i class="${c.fav ? "fav" : ""}">${esc(trim(c.prev, 18))}</i></span>${c.un ? `<em>${c.un > 9 ? "9+" : c.un}</em>` : ""}`);
       row.addEventListener("click", () => openChat(c.id)); cl.appendChild(row);
     });
-    const self = document.createElement("button"); self.type = "button"; self.className = "mx-self";
+    const self = document.createElement("button"); self.type = "button"; self.className = "mx-self"; self.setAttribute("aria-label", `Мой профиль: ${dname(S.me)}`);
     self.appendChild(ava(S.me.ava, 40, true, true));
     self.insertAdjacentHTML("beforeend", `<span class="mx-row-t"><b>${esc(trim(dname(S.me), 12))}</b><i>${esc(trim(S.me.desc || "профиль", 14))}</i></span>`);
     self.addEventListener("click", () => { V.modal = "profile:me"; snd("click", 0.4); render(); });
@@ -310,7 +427,7 @@
     const stl = document.createElement("div"); stl.className = "mx-status"; stl.textContent = V.status; mx.appendChild(stl);
     if (V.menu) mx.appendChild(menuEl());
     if (V.modal) mx.appendChild(modalEl());
-    counters();
+    counters(); renderQuest();
   }
   const setDraft = (v) => { V.draft = v; const i = $(".mx-input", mx); if (i) i.value = v; };
   const autoH = (t) => { t.style.height = "auto"; t.style.height = Math.min(120, t.scrollHeight) + "px"; };
@@ -348,11 +465,12 @@
     let lp = 0; bub.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") lp = setTimeout(() => openMenu(m, e), 480); });
     ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => bub.addEventListener(ev, () => clearTimeout(lp)));
     $$("[data-g]", w).forEach((b) => b.addEventListener("click", () => giftRespond(S.gifts[m.gift], b.dataset.g === "1", "me")));
-    const dl = $(".mx-fdl", w); if (dl) dl.addEventListener("click", () => {
-      const f = files[dl.dataset.dl]; snd("click", 0.4);
-      if (!f) return status("Скачиваю файл..."), setTimeout(() => status("Ошибка: файл не найден на сервере"), 900);
+    const dl = $(".mx-fdl", w); if (dl) dl.addEventListener("click", async () => {
+      snd("click", 0.4); status("Получаю файл из хранилища браузера...");
+      const f = await cachedFile(dl.dataset.dl);
+      if (!f) return status("Файл недоступен: хранился только до закрытия вкладки");
       const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-      status("Файл сохранён в Downloads/MAX");
+      status("Файл загружен на устройство");
     });
     const im = $(".mx-prev", w); if (im) im.addEventListener("click", () => { V.modal = "img:" + m.id; render(); });
     return w;
@@ -400,7 +518,11 @@
     }
     if (V.att) {
       const a = V.att, rep = V.reply; V.att = null; V.reply = 0; setDraft("");
-      upload(a, () => { serverSend("me", V.sel, t.slice(0, 4000), { type: "FILE", att: a, reply: rep }); status("Файл отправлен"); snd("pop", 0.5); render(); botAct(V.sel); });
+      upload(a, () => {
+        serverSend("me", V.sel, t.slice(0, 4000), { type: "FILE", att: a, reply: rep });
+        status("Файл отправлен · сохраняю локально"); snd("pop", 0.5); render(); botAct(V.sel);
+        cacheFile(a.key, files[a.key]).then((ok) => status(ok ? "Файл сохранён в браузере" : "Файл доступен только до закрытия вкладки"));
+      });
       render(); return;
     }
     if (!t) return;
@@ -423,13 +545,13 @@
     const fr = new FileReader(); fr.onload = () => { const im = new Image(); im.onload = () => {
       const sc = Math.min(160 / im.width, 120 / im.height), w = Math.max(1, Math.round(im.width * sc)), h = Math.max(1, Math.round(im.height * sc));
       const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(im, 0, 0, w, h); cb({ url: c.toDataURL("image/png"), w, h });
-    }; im.onerror = () => cb(null); im.src = fr.result; }; fr.readAsDataURL(file);
+    }; im.onerror = () => cb(null); im.src = fr.result; }; fr.onerror = () => cb(null); fr.readAsDataURL(file);
   }
   function takeFile(file) {
     if (!file) return; if (!file.size) return status("Пустой файл");
     status("Обрабатываю файл...");
     makePreview(file, (p) => {
-      const key = "f" + Date.now(); files[key] = file;
+      const key = "f" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); files[key] = file;
       V.att = { key, name: file.name, size: file.size, kind: kindOf(file.name, file.type), preview: p && p.url, pw: p && p.w, ph: p && p.h };
       status("Файл прикреплён"); snd("paper", 0.5); render();
     });
@@ -477,7 +599,7 @@
       box.querySelector('[data-x="save"]').addEventListener("click", () => {
         const norm = (v, n, fb) => { v = String(v || "").trim().replace(/\s+/g, " ").slice(0, n); return v || fb; };
         S.me.name = norm(F.name, 24, S.me.base); S.me.desc = norm(F.desc, 120, ""); S.me.ava = F.ava; S.me.show = F.show; S.me.reg = true; V.form = null; V.modal = null;
-        save(); status("Профиль сохранён"); snd("levelup", 0.3, 1.6); if (!V.sel) V.sel = null; render();
+        save(); status("Профиль сохранён"); snd("levelup", 0.3, 1.6); if (!V.sel) V.sel = "b1"; render();
       });
       const bk = box.querySelector('[data-x="back"]'); if (bk) bk.addEventListener("click", () => { V.form = null; V.modal = null; render(); });
     } else if (kind === "crop") {
@@ -566,8 +688,22 @@
   document.addEventListener("pointerdown", (e) => { if (V.menu && !e.target.closest(".mx-menu")) { V.menu = null; render(); } if (V.attachMenu && !e.target.closest(".mx-amenu,.mx-plus")) { V.attachMenu = false; render(); } });
   $("#botGift").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); botGift(); });
   $("#spam").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); const to = V.sel || "me"; for (let i = 0; i < 10; i++) serverSend("me", to, pick(["ок", "привет", "спс", "хз", "круто", "норм", "пока", "окей"])); snd("pop", 0.5); if (!V.sel) V.sel = to; V.stick = true; render(); });
-  $("#mxReset").addEventListener("click", () => { S = seed(); V.sel = null; V.modal = null; V.form = null; save(); snd("no", 0.4); render(); });
+  $("#mxReset").addEventListener("click", async () => {
+    await clearCachedFiles();
+    S = seed(); V.sel = null; V.modal = null; V.form = null; V.att = null;
+    Object.keys(files).forEach((k) => delete files[k]);
+    save(); snd("no", 0.4); render();
+  });
   render();
+  // Миниатюры в localStorage не пишем: после перезагрузки собираем их из локальных файлов.
+  const missingImages = S.msgs.filter((m) => m.att?.kind === "IMAGE" && m.att.key && !m.att.preview).slice(-30);
+  Promise.all(missingImages.map(async (m) => {
+    const f = await cachedFile(m.att.key); if (!f) return;
+    await new Promise((resolve) => makePreview(f, (p) => {
+      if (p && S.msgs.includes(m)) { m.att.preview = p.url; m.att.pw = p.w; m.att.ph = p.h; }
+      resolve();
+    }));
+  })).then(() => { if (missingImages.length) render(); });
   setInterval(() => { if (Math.random() < 0.35 && S.me.reg && document.visibilityState === "visible" && isVis(mx)) { const b = pick(S.users.filter((u) => u.online)); serverSend(b.id, "me", pick(["привет", "ты тут?", "го на спавн", "кто взорвал мой дом", "окей", "хорошо", "иди сюда"]), { read: V.sel === b.id }); snd("pling", 0.35, 1.2); render(); } }, 20000);
   function isVis(el) { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }
 
@@ -724,7 +860,20 @@
     ["Поиск только по тексту", "Поиск в шапке ищет по сырому тексту текстовых сообщений, начинает с самого нижнего, ↑ и ↓ ходят по кругу. Файлы, подарки и удалённое не ищутся."],
     ["Все игроки сервера", "Список чатов — это все, кто хоть раз заходил на сервер, по алфавиту. Писать можно и тем, кто не в сети: сообщение просто подождёт."],
   ];
-  $("#notesBox").innerHTML = NOTES.map(([t, d], i) => `<article class="mx-note"><header><span>${i + 1}</span><b>${esc(t)}</b></header><p>${esc(d)}</p><em>${time(now - (NOTES.length - i) * 7 * 60e3)} ✓✓</em></article>`).join("");
+  $("#notesBox").innerHTML = NOTES.map(([t, d], i) =>
+    `<details class="mx-note"><summary><span>${String(i + 1).padStart(2, "0")}</span><b>${esc(t)}</b><i aria-hidden="true">+</i></summary><div class="mx-note-body"><p>${esc(d)}</p><em>${time(now - (NOTES.length - i) * 7 * 60e3)} ✓✓</em></div></details>`).join("");
+  const notes = $("#notesBox"), noteButton = $("#mxNotesToggle");
+  const noteCount = () => {
+    const open = notes.querySelectorAll("details[open]").length;
+    $("#mxNoteCount").textContent = `${open} / ${NOTES.length} раскрыто`;
+    noteButton.textContent = open === NOTES.length ? "Свернуть всё" : "Раскрыть всё";
+  };
+  notes.addEventListener("toggle", noteCount, true);
+  noteButton.addEventListener("click", () => {
+    const open = notes.querySelectorAll("details[open]").length < NOTES.length;
+    notes.querySelectorAll("details").forEach((d) => { d.open = open; }); noteCount();
+  });
+  noteCount();
 
   /* ================= 08–09: ачивки, версии, финал ================= */
   adv = K.adv({ list: ZM.P23.advancements, store: "p23.adv", icon: (a) => I(a.icon), chatSel: "#log", intro: "Четыре скрытых: от первого входа до пятого отказа.", onGrant: () => setTimeout(got, 50) });
@@ -736,6 +885,10 @@
     { date: "18.07.2026", ver: "1.1.1", t: "Ветка ачивок", d: "Четыре скрытых достижения: вход, сотое сообщение, пять сделок и пять отказов.", c: "#8a3dff" },
   ]);
   K.finNav(23, $("#finNav"));
+  // Без наблюдателя .reveal остаётся opacity:0: весь MAX ниже обложки
+  // выглядел пустым шаблоном, хотя симуляторы уже созданы в DOM.
+  if (ZM.reveal) ZM.reveal();
+  else $$(".reveal").forEach((el) => el.classList.add("in"));
 
   /* ================= фон: всплывающие пузыри ================= */
   (function bg() {

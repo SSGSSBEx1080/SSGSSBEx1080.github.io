@@ -21,7 +21,7 @@
       <div class="mx-tag"><span>№23</span>18.07.2026<i></i>версия 1.1.1<i></i>предмет · интерфейс</div>
       <h1 class="mx-logo"><span class="mx-l1">MAX</span><span class="mx-l2">мессенджер, который не заблокируют</span></h1>
       <p class="mx-sub">Правый клик — и поверх мира открывается полноценный мессенджер: личка с любым игроком сервера, «Избранное» для заметок, файлы прямо с компьютера, подарки из инвентаря с возвратом и антицензура, которая переписывает каждое сообщение. Причём исключительно в худшую сторону.</p>
-      <div class="mx-cta"><a class="k-btn" href="#app">Открыть MAX</a><a class="k-btn2" href="#censor">Антицензура</a><a class="k-btn2" href="#gifts">Подарки</a></div>
+      <div class="mx-cta"><a class="k-btn" href="#app" id="heroLaunch">Открыть MAX ↗</a><a class="k-btn2" href="#censor">Антицензура</a><a class="k-btn2" href="#gifts">Подарки</a></div>
       <div class="mx-stats">
         <a href="#app"><b>4000</b><span>символов в сообщении</span></a>
         <a href="#gifts"><b>4</b><span>слота в подарке</span></a>
@@ -30,9 +30,21 @@
       </div>
     </div>
     <div class="mx-hero-art">
-      <div class="mx-icon-wrap" id="iconWrap">
-        <img src="../../assets/textures/p23/i/max_messenger.png" alt="Иконка MAX" class="mx-icon" id="heroIcon">
-        <div class="mx-notif" id="heroNotif" aria-live="polite"></div>
+      <div class="mx-terminal" aria-label="Живая демонстрация MAX">
+        <div class="mx-term-top"><span><i></i> СЕРВЕР // 1.19.2</span><span>ONLINE <b>●</b></span></div>
+        <div class="mx-term-profile">
+          <button type="button" class="mx-term-icon" id="heroIcon" aria-label="Открыть MAX"><img src="../../assets/textures/p23/i/max_messenger.png" alt=""></button>
+          <div><b>MAX</b><span>переписка · мир ZitraksMode</span></div>
+          <div class="mx-notif" id="heroNotif" aria-live="polite"></div>
+        </div>
+        <div class="mx-term-chat">
+          <div class="mx-term-msg incoming"><small>Собеседник</small><p>Напиши что-нибудь — сервер сам перепишет твой текст.</p></div>
+          <div class="mx-term-msg outgoing"><small>ТЫ ПИШЕШЬ</small><p id="heroBefore">Привет, как дела?</p></div>
+          <div class="mx-term-pipe"><span>→</span> MAX_ANTI_CENSOR <span>→</span></div>
+          <div class="mx-term-msg received"><small>В ЧАТ ПРИШЛО</small><p id="heroAfter" aria-live="polite">Салам, как хуй?</p></div>
+        </div>
+        <label class="mx-term-draft" for="heroDraft"><span>ТВОЙ ТЕКСТ</span><input id="heroDraft" type="text" value="Привет, как дела?" maxlength="160" autocomplete="off" spellcheck="false" aria-describedby="heroHits"><b>↵</b></label>
+        <div class="mx-term-bottom"><span id="heroHits">Сервер переписывает сообщения</span><button type="button" id="heroOpen">Открыть экран ↗</button></div>
       </div>
       <div class="mx-hero-cap">MAX · <code>zitraksmode:max_messenger</code> · стак 1</div>
     </div>
@@ -68,8 +80,9 @@
   <!-- ============ 02 СИМУЛЯТОР ============ -->
   <section class="sec mx-app-sec" id="app">
     <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">max_messenger_screen</span><h2>MAX изнутри</h2></div><span class="sec-q">всё кликается, как в игре</span></header>
-    <p class="sec-p reveal">Это экран мода один в один: те же цвета, те же подписи, та же логика. Зарегистрируйся, напиши кому-нибудь, пошли подарок, перетащи файл, нажми на сообщение <b>правой кнопкой</b> (на телефоне — долгим тапом). Enter отправляет, Shift+Enter — новая строка. Всё, что уходит на «сервер», сначала проходит через антицензуру.</p>
-    <div class="mx-app-wrap reveal">
+    <p class="sec-p reveal">Зарегистрируйся и попробуй настоящий сценарий: <b>напиши в чат, отправь предмет или файл</b>, а затем проверь, что сделал с текстом сервер. ПКМ по сообщению открывает меню; на телефоне — долгий тап. Enter отправляет, Shift+Enter переносит строку. Данные демонстрации остаются в твоём браузере.</p>
+    <div class="mx-app-wrap reveal" id="mxStage">
+      <div class="mx-focusbar"><span><b>MAX / ЖИВОЙ ЭКРАН</b><small>чат · файлы · подарки</small></span><button type="button" id="mxFocus" aria-pressed="false">⛶ На весь экран</button><button type="button" id="mxClose" hidden aria-label="Закрыть полноэкранный MAX">✕ Закрыть</button></div>
       <div class="mx-screen" id="mx" tabindex="-1"></div>
       <aside class="mx-app-side">
         <div class="mx-counter"><b id="cntMsg">0</b><span>/ 100 сообщений</span><i><em id="cntBar"></em></i></div>
@@ -78,7 +91,12 @@
         <button type="button" class="btn-ghost" id="botGift">🎁 бот шлёт подарок</button>
         <button type="button" class="btn-ghost" id="spam">+10 сообщений (для ачивки)</button>
         <button type="button" class="btn-ghost" id="mxReset">↺ стереть данные MAX</button>
-        <p class="mx-small">Сохраняется в браузере, как SavedData <code>zitraksmode_max_messenger</code> в мире.</p>
+        <div class="mx-quests" id="mxQuests" aria-label="Маршрут по мессенджеру">
+          <div class="mx-quests-head"><small>МАРШРУТ / ПЯТЬ ШАГОВ</small><b id="mxQuestCount">0 / 5</b></div>
+          <div class="mx-quest-list" id="mxQuestList"></div>
+          <div class="mx-quest-meter"><i id="mxQuestBar"></i></div>
+        </div>
+        <p class="mx-small">Локальная реконструкция: на сервер игры ничего не уходит. Переписка и файлы до 20 МБ сохраняются в браузере (если есть место); файлы больше — лишь до закрытия вкладки.</p>
       </aside>
     </div>
   </section>
@@ -166,7 +184,7 @@
 
   <!-- ============ 07 ТОНКОСТИ ============ -->
   <section class="sec" id="notes">
-    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">edge cases</span><h2>Тонкости</h2></div><span class="sec-q">то, что видно только в коде</span></header>
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">edge cases</span><h2>Тонкости</h2></div><span class="sec-q" id="mxNoteCount">15 секретов из кода</span><button type="button" class="mx-notes-toggle" id="mxNotesToggle" aria-controls="notesBox">Раскрыть всё</button></header>
     <div class="mx-notes reveal" id="notesBox"></div>
   </section>
 
