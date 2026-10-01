@@ -652,3 +652,15 @@ body.mx-focus-open main{z-index:200}
 @media(prefers-reduced-motion:reduce){.mx-icon-orbit,.mx-icon-stage::before,.mx-icon-launch .mx-icon{animation:none}}
 @media(max-width:900px){.mx-hero-art{order:-1}.mx-icon-stage{width:min(100%,390px)}}
 @media(max-width:640px){.mx-icon-stage{width:min(100%,310px)}.mx-hero{padding-top:75px}}
+
+/* Five conversational entry points: prepared drafts, never auto-sent. */
+.mx-prompts{border:1px solid rgba(168,201,223,.22);background:#101e28;padding:16px;margin:20px 0}
+.mx-prompts-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:12px;color:#d7f5fe;font:700 12px/1.4 monospace;letter-spacing:.06em}
+.mx-prompts-head span{font:12px/1.45 sans-serif;letter-spacing:0;color:#a5bac8}
+.mx-prompts-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.mx-prompts-grid button{min-width:0;text-align:left;cursor:pointer;color:#e6f4f8;background:#1b3040;border:1px solid #41627a;padding:10px;font:700 12px/1.35 sans-serif;transition:background .18s,transform .18s}
+.mx-prompts-grid button span{display:block;color:#b5cfd9;font-weight:400;margin:5px 0;min-height:34px}
+.mx-prompts-grid button:hover,.mx-prompts-grid button:focus-visible{background:#274b62;transform:translateY(-2px);outline:1px solid #70c9e5}
+@media(max-width:900px){.mx-prompts-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.mx-prompts-head{display:block}.mx-prompts-head span{display:block;margin-top:5px}.mx-prompts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:350px){.mx-prompts-grid{grid-template-columns:1fr}.mx-prompts-grid button span{min-height:0}}

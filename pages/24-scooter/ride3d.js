@@ -24,7 +24,8 @@ const COLORS = {
   obsidian: material('#242038', 7, 'brick'), leaves: material('#447e47', 8, 'grass'),
   trunk: material('#735343', 9, 'brick'), hay: material('#c6a64b', 10, 'grass'),
   honey: material('#ce9332', 11, 'plain'), water: material('#55a8c0', 12, 'plain', { transparent: true, opacity: .82 }),
-  slime: material('#6eb85f', 13, 'plain'), glow: new T.MeshBasicMaterial({ color: 0xd7f839 }),
+  slime: material('#6eb85f', 13, 'plain'), cow: material('#ded8c1', 18, 'plain'), cowDark: material('#6a5948', 19, 'plain'),
+  cowFace: material('#c8979a', 20, 'plain'), glow: new T.MeshBasicMaterial({ color: 0xd7f839 }),
   white: new T.MeshBasicMaterial({ color: 0xf1ebbf }), charge: new T.MeshBasicMaterial({ color: 0x83f5e8 })
 };
 const blockGeo = new T.BoxGeometry(1, 1, 1);
@@ -91,7 +92,20 @@ function rider() {
   return p;
 }
 
-function create({ canvas, getState, onCollision, onCheckpoint }) {
+function cow() {
+  const group = new T.Group();
+  box(group, 0, .78, 0, .8, .65, 1.12, COLORS.cow);
+  box(group, -.22, .95, -.23, .3, .31, .37, COLORS.cowDark);
+  box(group, .23, .68, .18, .26, .24, .38, COLORS.cowDark);
+  box(group, 0, .97, -.73, .58, .52, .55, COLORS.cow);
+  box(group, 0, .82, -1.06, .44, .24, .18, COLORS.cowFace);
+  box(group, -.22, 1.34, -.8, .13, .28, .13, COLORS.cowDark);
+  box(group, .22, 1.34, -.8, .13, .28, .13, COLORS.cowDark);
+  for (const x of [-.27, .27]) for (const z of [-.39, .39]) box(group, x, .23, z, .19, .45, .2, COLORS.cowDark);
+  return group;
+}
+
+function create({ canvas, getState, onCollision, onCheckpoint, onBoard }) {
   let renderer;
   try { renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: 'low-power' }); }
   catch (err) { console.warn('Block world unavailable; keeping 2D track', err); return null; }
@@ -118,7 +132,7 @@ function create({ canvas, getState, onCollision, onCheckpoint }) {
   const scooter = sourceScooter(window.ZM.P24G, '../../assets/textures/p24/scooters.png'); player.add(scooter.root);
   const crew = new T.Group(); player.add(crew);
   const avatar = [0, 1, 2, 3, 4].map((_, i) => {
-    const p = rider(); p.scale.setScalar(i > 2 ? .62 : .72);
+    const p = i ? cow() : rider(); p.scale.setScalar(i > 2 ? .5 : .62);
     p.position.set(i % 2 ? .26 : -.26, .48, -.82 + i * .58);
     crew.add(p); return p;
   });
@@ -140,7 +154,7 @@ function create({ canvas, getState, onCollision, onCheckpoint }) {
     hay: COLORS.hay, slime: COLORS.slime
   };
   const markers = [];
-  const stations = [], obstacle = [];
+  const stations = [], obstacle = [], mobMarkers = [];
   function tree(x, z, tall = 0) {
     const g = new T.Group(); g.position.set(x, 0, z); decorations.add(g);
     const h = 2.5 + tall; box(g, 0, h / 2, 0, .65, h, .65, COLORS.trunk);
@@ -163,12 +177,30 @@ function create({ canvas, getState, onCollision, onCheckpoint }) {
   });
   function wall(x, z, kind, size = 1) {
     const g = new T.Group(); g.position.set(x, 0, z); decorations.add(g);
-    const mat = kind === 'obsidian' ? COLORS.obsidian : kind === 'slime' ? COLORS.slime : COLORS.stone;
+    const mat = kind === 'obsidian' ? COLORS.obsidian : kind === 'slime' ? COLORS.slime : kind === 'dirt' ? COLORS.dirt : COLORS.stone;
     for (let y = 0; y < (kind === 'stone' ? 2 : 3); y++) for (let dx = -size; dx <= size; dx++)
       box(g, dx * 1.2, y * 1.2 + .6, 0, 1.19, 1.19, 1.2, mat);
-    markers.push({ object: g, x, z, lift: 0 }); obstacle.push({ x, z, kind, width: size * 1.2 + .8 });
+    markers.push({ object: g, x, z, lift: 0 }); obstacle.push({ x, z, kind, width: size * 1.2 + .8, object: g, active: true });
   }
-  wall(0, -32, 'stone', 1); wall(5, -62, 'slime', 0); wall(-4, -78, 'obsidian', 1);
+  wall(0, -32, 'stone', 1); wall(0, -45, 'dirt', 1);
+  wall(5, -62, 'slime', 0); wall(-4, -78, 'obsidian', 1);
+  // Source mechanic: nearby animals mount at low speed, to a maximum of five.
+  for (const [x, z] of [[4, 23], [-4, 5], [4, -11], [-4, -57]]) {
+    const animal = cow(); animal.position.set(x, 0, z); decorations.add(animal);
+    markers.push({ object: animal, x, z, lift: 0 });
+    mobMarkers.push({ object: animal, x, z, boarded: false });
+  }
+  // Different Minecraft blocks on the route are physical patches, not just a
+  // page-level colour switch. They apply the same coefficients as the lab.
+  const patches = [
+    { kind: 'honey', lo: -40, hi: -37, x: -3 },
+    { kind: 'water', lo: -56, hi: -52, x: 2 },
+    { kind: 'hay', lo: -72, hi: -68, x: -2 },
+  ];
+  for (const patch of patches) for (let z = patch.lo; z <= patch.hi; z += 2) {
+    const tile = box(road, patch.x, .14, z, 4, .13, 2, COLORS[patch.kind]);
+    markers.push({ object: tile, x: patch.x, z, lift: .14 });
+  }
   // Physical charging station: park within 2 X/Z blocks and stop moving.
   const charger = new T.Group(); charger.position.set(8, 0, 14); decorations.add(charger);
   box(charger, 0, .55, 0, 2.4, 1.1, 2.4, COLORS.obsidian);
@@ -216,7 +248,15 @@ function create({ canvas, getState, onCollision, onCheckpoint }) {
     return { mesh: p, life: 0, age: 0, vx: 0, vy: 0, vz: 0 };
   });
   function park() { loc.x = 8; loc.z = 16; loc.heading = 0; loc.cooldown = .6; }
-  function reset() { loc.x = 0; loc.z = 28; loc.heading = 0; loc.checkpoint = 0; loc.cooldown = .5; }
+  function reset() {
+    loc.x = 0; loc.z = 28; loc.heading = 0; loc.checkpoint = 0; loc.cooldown = .5;
+    for (const mob of mobMarkers) { mob.boarded = false; mob.object.visible = true; mob.object.position.x = mob.x; mob.object.position.z = mob.z; }
+    for (const block of obstacle) { block.active = true; block.object.visible = true; }
+  }
+  function floorAt() {
+    if (loc.surface !== 'asphalt') return loc.surface;
+    return patches.find(p => loc.z >= p.lo - 1 && loc.z <= p.hi + 1 && Math.abs(loc.x - p.x) <= 2)?.kind || 'asphalt';
+  }
   function tick(state, dt = .05) {
     if (state.grade !== loc.grade || state.surface !== loc.surface) rebuild(state.grade, state.surface);
     loc.cooldown = Math.max(0, loc.cooldown - dt);
@@ -234,13 +274,26 @@ function create({ canvas, getState, onCollision, onCheckpoint }) {
         if (!loc.cooldown) { loc.cooldown = 1; onCollision({ kind: 'border', speed: Math.abs(state.speed * 72) }); }
       }
       if (!loc.cooldown) for (const o of obstacle) {
+        if (!o.active) continue;
         if (Math.abs(loc.x - o.x) < o.width + .35 && Math.abs(loc.z - o.z) < 1.1) {
           const impactSpeed = Math.abs(state.speed * 72);
-          if (o.kind === 'slime') { loc.heading += Math.PI; loc.z += 2; }
+          const plow = o.kind === 'dirt' && (impactSpeed >= 70 || (state.passengers >= 3 && impactSpeed >= 25));
+          if (plow) { o.active = false; o.object.visible = false; state.speed *= .7; }
+          else if (o.kind === 'slime') { loc.heading += Math.PI; loc.z += 2; }
           else { loc.z += speed > 0 ? 1.4 : -1.4; state.speed *= .22; }
           loc.cooldown = 1.1;
-          onCollision({ kind: o.kind, speed: impactSpeed }); break;
+          onCollision({ kind: plow ? 'plow' : o.kind, speed: impactSpeed }); break;
         }
+      }
+      if (!loc.cooldown && state.passengers < 5) for (const mob of mobMarkers) {
+        if (mob.boarded || Math.abs(loc.x - mob.object.position.x) > 1.1 || Math.abs(loc.z - mob.object.position.z) > 1.45) continue;
+        if (Math.abs(state.speed) <= .35) {
+          mob.boarded = true; mob.object.visible = false; onBoard(); break;
+        }
+        // Source handleMobCollisions: speed > .12 hurts the body and knocks
+        // the animal away instead of silently adding it as a passenger.
+        mob.object.position.x += loc.x < mob.x ? 2.3 : -2.3;
+        loc.cooldown = .8; onCollision({ kind: 'mob', speed: Math.abs(state.speed * 72) }); break;
       }
       const reached = finish.findIndex((z, i) => loc.z < z && loc.checkpoint === i);
       if (reached >= 0) { loc.checkpoint = reached + 1; onCheckpoint(reached + 1); }
@@ -252,7 +305,7 @@ function create({ canvas, getState, onCollision, onCheckpoint }) {
     avatar.forEach((p, i) => { p.visible = state.owned && state.passengers > i && loc.mode === 'chase'; });
     scooter.root.visible = loc.mode === 'chase';
     loc.nearPort = Math.abs(loc.x - 8) <= 2 && Math.abs(loc.z - 14) <= 2;
-    return { x: loc.x, z: loc.z, nearPort: loc.nearPort, heading: loc.heading, checkpoint: loc.checkpoint };
+    return { x: loc.x, z: loc.z, nearPort: loc.nearPort, heading: loc.heading, checkpoint: loc.checkpoint, floor: floorAt() };
   }
   let last = 0, frame = 0, visible = true;
   const observer = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; }, { threshold: .01 });
@@ -298,7 +351,7 @@ function create({ canvas, getState, onCollision, onCheckpoint }) {
   }
   requestAnimationFrame(render);
   return {
-    tick, park, reset, get location() { return { ...loc }; },
+    tick, park, reset, floorAt, get location() { return { ...loc, floor: floorAt() }; },
     setCameraMode(mode) { loc.mode = mode === 'first' ? 'first' : 'chase'; },
     get cameraMode() { return loc.mode; },
     supported: true

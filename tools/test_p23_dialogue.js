@@ -32,5 +32,37 @@ for (const id of ['p5', 'pd', 'pc', 'pv', 'pm']) {
 }
 assert.match(answer('pm', 'Да', answer('pm', 'Что на ужин?').memory).text, /суп|ужин/i);
 assert.match(answer('pc', 'Нет', answer('pc', 'Давай мир').memory).text, /мир|pvp|арен/i);
+const semantic = [
+  ['pm', 'Я уже поел', /поел|посуду|ужин/i, 'ate'],
+  ['pm', 'Я не голоден, не хочу есть', /не заставлю|сейчас не ешь/i, 'noFood'],
+  ['pm', 'Я сделал домашку', /молодец|умница/i, 'doneHomework'],
+  ['pm', 'Я не сделал уроки', /помогу|разберем/i, 'lateHomework'],
+  ['pd', 'Я еще не слушал твою песню', /не слушал|не слышал/i, 'notHeard'],
+  ['pd', 'Я уже послушал трек', /паслушал|даслушал/i, 'heard'],
+  ['pd', 'Мне не нравится твой трек', /не зашло|не панравил/i, 'critic'],
+  ['pc', 'У меня нет алмазов', /алмаз|нашел/i, 'noDiamonds'],
+  ['pc', 'Перемирие отменяется', /перемир|мир/i, 'endPeace'],
+  ['pv', 'На стриме не работает микрофон', /лагает|микрофон|не видно/i, 'streamProblem'],
+  ['pv', 'Не хочу смотреть стрим', /не хочешь|стрим не навязываю/i, 'noStream'],
+  ['p5', 'А ты?', /42.*стар|стар.*42/i, 'andYou'],
+];
+for (const [id, input, expected, topic] of semantic) {
+  const result = answer(id, input);
+  assert.equal(result.topic, topic, `${id}: wrong intent on ${input}`);
+  assert.match(result.text, expected, `${id}: contradicts ${input}`);
+}
+let peace = answer('pc', 'Давай перемирие');
+assert.equal(peace.memory.flags.truce, true);
+assert.match(answer('pc', 'Что с моей базой?', peace.memory).text, /договорились|не тронем/i);
+assert.match(answer('pc', 'Почему?', peace.memory).text, /перемирие|ремонт/i);
+assert.equal(answer('pc', 'Нет', peace.memory).memory.flags.truce, false);
+peace = answer('pc', 'Перемирие отменяется', peace.memory);
+assert.equal(peace.memory.flags.truce, false);
+let homework = answer('pm', 'Я сделал уроки');
+assert.match(answer('pm', 'Что с домашкой?', homework.memory).text, /уже сказал|сделал уроки/i);
+let song = answer('pd', 'Я уже послушал трек');
+assert.match(answer('pd', 'Как твоя музыка?', song.memory).text, /отзыв|паслушал/i);
+let stream = answer('pv', 'Не хочу смотреть стрим');
+assert.match(answer('pv', 'Что на стриме?', stream.memory).text, /не хочешь|не зову/i);
 assert.equal(answer('removed_bot', 'Привет'), null);
-console.log('MAX dialogue: 5 characters, 11 topic cases, context, six-turn flow, fallback, no obsolete bot: OK');
+console.log('MAX dialogue: 5 characters, 23 semantic cases, contradiction memory, six-turn flow, fallback, no obsolete bot: OK');

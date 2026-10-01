@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p23-64.png">
 <link rel="stylesheet" href="../../shared/core.css">
 <link rel="stylesheet" href="../../shared/kit.css">
-<link rel="stylesheet" href="style.css?v=20261001-logo3">
+<link rel="stylesheet" href="style.css?v=20261001-logo4">
 </head>
 <body>
 <canvas class="mx-bg" id="bg" aria-hidden="true"></canvas>
@@ -74,6 +74,16 @@
   <section class="sec mx-app-sec" id="app">
     <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">max_messenger_screen</span><h2>MAX изнутри</h2></div><span class="sec-q">всё кликается, как в игре</span></header>
     <p class="sec-p reveal">Зарегистрируйся: тебе один за другим напишут <b>5opka, Диор Армани, игровой клан «Чеченцы», няша-витуберша и мама</b>. У каждого свой голос, портрет и профиль. Отвечай им, отправляй подарки и файлы — сервер всё равно перепишет твой текст. ПКМ по сообщению открывает меню; на телефоне — долгий тап. Enter отправляет, Shift+Enter переносит строку. Это вымышленная демо-переписка: ответы учитывают тему и предыдущие реплики, работают локально без ИИ-сервера. Всё остаётся в браузере.</p>
+    <div class="mx-prompts reveal" id="mxPrompts" aria-label="Примеры вопросов персонажам">
+      <div class="mx-prompts-head"><b>ПРОВЕРЬ ДИАЛОГ</b><span>Нажми, чтобы открыть чат с готовым вопросом. Отправлять не обязательно.</span></div>
+      <div class="mx-prompts-grid">
+        <button type="button" data-bot="p5" data-prompt="Тебе правда 42 года?">5opka <span>Тебе правда 42 года?</span> ↗</button>
+        <button type="button" data-bot="pd" data-prompt="Я еще не слушал твою песню">Диор Армани <span>Я ещё не слушал твою песню</span> ↗</button>
+        <button type="button" data-bot="pc" data-prompt="Давай заключим перемирие в Minecraft">Клан «Чеченцы» <span>Давай заключим перемирие</span> ↗</button>
+        <button type="button" data-bot="pv" data-prompt="На стриме не работает микрофон">Витуберша <span>На стриме не работает микрофон</span> ↗</button>
+        <button type="button" data-bot="pm" data-prompt="Я уже сделал домашку">Мама <span>Я уже сделал домашку</span> ↗</button>
+      </div>
+    </div>
     <div class="mx-app-wrap reveal" id="mxStage">
       <div class="mx-focusbar"><span><b>MAX / ЖИВОЙ ЭКРАН</b><small>чат · файлы · подарки</small></span><button type="button" id="mxStoryNext">✉ Далее 0/5</button><button type="button" id="mxFocus" aria-pressed="false">⛶ На весь экран</button><button type="button" id="mxClose" hidden aria-label="Закрыть полноэкранный MAX">✕ Закрыть</button></div>
       <div class="mx-screen" id="mx" tabindex="-1"></div>
@@ -218,8 +228,8 @@
 <script src="../../shared/kit.js"></script>
 <script src="../../data/p23_adv.js"></script>
 <script src="../../data/p23_dict.js"></script>
-<script src="dialogue.js?v=20261001-logo3"></script>
-<script src="app.js?v=20261001-logo3"></script>
+<script src="dialogue.js?v=20261001-logo4"></script>
+<script src="app.js?v=20261001-logo4"></script>
 <script src="../../data/hub_adv.js"></script>
 </body>
 </html>

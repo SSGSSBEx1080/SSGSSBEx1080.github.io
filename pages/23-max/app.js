@@ -448,6 +448,14 @@
     $("#mxQuestCount").textContent = `${n} / ${QUESTS.length}`;
     $("#mxQuestBar").style.width = `${n / QUESTS.length * 100}%`;
   }
+  $("#mxPrompts").addEventListener("click", (e) => {
+    const prompt = e.target.closest("[data-bot]"); if (!prompt) return;
+    const { bot, prompt: message } = prompt.dataset;
+    if (!S.users.some(u => u.id === bot)) return;
+    openFocus(prompt);
+    if (S.me.reg) { openChat(bot); setDraft(message); $(".mx-input", mx)?.focus(); }
+    else { V.sel = bot; coverDraft = message; render(); status("Создай профиль — вопрос останется в черновике"); }
+  });
   $("#mxQuestList").addEventListener("click", (e) => {
     const q = e.target.closest("[data-q]"); if (!q) return;
     openFocus(q);

@@ -71,3 +71,24 @@ body{font-family:var(--f-t);background:var(--bg);color:var(--tx)}main{overflow-x
    scrolls the game window flush to the top of its viewport. */
 .sc-game-tools{top:90px}.sc-game-side{top:78px}
 @media(max-width:600px){.sc-game-tools{top:91px}.sc-game-side{top:76px}.sc-scene.world-ready .sc-surface-tag{top:144px}}
+/* №24 v4 · in-world hotbar, route clock and navigable X/Z map. */
+.sc-game-hotbar{max-width:calc(100% - 12px);overflow-x:auto;scrollbar-width:none;pointer-events:auto}
+.sc-game-hotbar::-webkit-scrollbar{display:none}
+.sc-game-hotbar button{position:relative;flex:none;display:grid;place-items:center;width:36px;height:38px;padding:0;border:2px solid #c7d4bc65;background:#31392cdb;color:#c5f5d7;font:24px/1 var(--f-mono);cursor:pointer;touch-action:manipulation}
+.sc-game-hotbar button:hover,.sc-game-hotbar button:focus-visible{border-color:#e8ff99;outline:none;transform:translateY(-3px)}
+.sc-game-hotbar button.active{border:3px solid #e9f6a9;background:#586745;box-shadow:0 0 12px #d1ff5980}
+.sc-game-hotbar button.owned:not(.active){color:#88ffbd;border-color:#75e5a586}
+.sc-game-hotbar button img{display:block;width:34px;height:30px;object-fit:contain}
+.sc-game-hotbar button:after{content:attr(data-slot);position:absolute;right:1px;bottom:-1px;color:#fff6d6;text-shadow:1px 1px #000;font:700 9px var(--f-mono)}
+.sc-mini-map{position:absolute;z-index:5;right:13px;top:146px;display:grid;padding:5px;border:1px solid #d1f695aa;background:#11231adb;color:#c7e0b5;text-align:center;pointer-events:none}
+.sc-mini-map canvas{width:126px;height:126px;image-rendering:pixelated}
+.sc-mini-map span{font:700 10px var(--f-mono);padding-top:3px;letter-spacing:.05em}
+.sc-game-timer{position:absolute;z-index:5;left:15px;bottom:14px;background:#122419e6;border-left:3px solid #d1f934;padding:9px;color:#b8d5b2;font:10px var(--f-mono);pointer-events:none}
+.sc-game-timer b{color:#f9ffd5;font-size:13px;font-variant-numeric:tabular-nums}
+.sc-game-timer[hidden],.sc-mini-map[hidden]{display:none!important}
+.sc-scene.world-ready .sc-surface-tag{bottom:64px;right:14px;left:auto}
+@media(max-width:950px){.sc-game-tools{top:89px}.sc-game-timer{bottom:116px;left:8px;font-size:9px;padding:6px}.sc-game-timer b{font-size:11px}}
+@media(max-width:600px){.sc-game-tools{top:85px;gap:3px}.sc-game-tools button{width:27px;height:29px;padding:0;font-size:0}.sc-game-tools button:after{font-size:15px}.sc-game-tools #worldGrade:after{content:'↘'}.sc-game-tools #worldCam:after{content:'◉'}.sc-game-tools #worldReset{font-size:14px}.sc-game-tools #worldExpand{font-size:14px}.sc-game-side{max-width:48%;top:71px}.sc-game-hotbar{bottom:4px;padding:2px;gap:1px}.sc-game-hotbar button{width:30px;height:32px;font-size:18px}.sc-game-hotbar button img{width:28px;height:27px}.sc-mini-map{top:142px;right:8px;padding:3px}.sc-mini-map canvas{width:77px;height:77px}.sc-mini-map span{font-size:7px}.sc-scene.world-ready .sc-surface-tag{top:254px;bottom:auto;right:8px;max-width:32%;font-size:7px}.sc-game-timer{bottom:110px;left:8px;max-width:65%}}
+@media(max-width:350px){.sc-game-hotbar button{width:27px;height:30px;font-size:16px}.sc-game-hotbar button img{width:25px;height:24px}.sc-game-hotbar button:after{font-size:8px}}
+
+@media(max-width:600px){.sc-game-tools #worldGrade[data-grade=flat]:after{content:'→'}.sc-game-tools #worldGrade[data-grade=down]:after{content:'↘'}.sc-game-tools #worldGrade[data-grade=up]:after{content:'↗'}}

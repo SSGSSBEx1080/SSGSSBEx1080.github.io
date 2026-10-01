@@ -7,7 +7,7 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
 (async () => {
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--enable-unsafe-swiftshader'] });
   try {
-    for (const width of [1440, 390]) {
+    for (const width of [1440, 390, 320]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
       const page = await context.newPage(), errors = [];
       page.on('pageerror', e => errors.push(e.message));
@@ -17,17 +17,26 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       await page.locator('#scene.world-ready').waitFor({ timeout: 20000 });
       assert.ok(await page.locator('.sc-rider img').evaluate(img => img.complete && img.naturalWidth > 500));
       assert.ok(await page.locator('#adv').evaluate(el => el.compareDocumentPosition(document.querySelector('#garage')) & Node.DOCUMENT_POSITION_PRECEDING));
-      await page.locator('#getScooter').click();
+      assert.equal(await page.locator('#gameHotbar button').count(), 9);
+      const hotbarFits = await page.locator('#gameHotbar').evaluate(el => {
+        const end = el.querySelector('[data-slot="9"]').getBoundingClientRect().right;
+        return end <= el.getBoundingClientRect().right;
+      });
+      assert.ok(hotbarFits, `all nine slots should be visible at ${width}px`);
+      assert.equal(await page.locator('#miniMap').count(), 1);
+      await page.locator('#gameHotbar [data-slot="1"]').click();
       assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('zm:p24.adv'))), ['scooter_craft']);
+      assert.equal(await page.locator('#getScooter').isDisabled(), true);
       await page.locator('#worldCam').click();
       assert.equal(await page.locator('#worldCrosshair').isVisible(), true);
-      await page.locator('#worldCam').click();
+      await page.locator('#gameHotbar [data-slot="9"]').click();
       assert.equal(await page.locator('#worldCrosshair').isVisible(), false);
       if (width === 1440) {
         await page.locator('#track h2').click();
         await page.keyboard.down('w');
         await page.waitForFunction(() => Number(document.querySelector('#worldProgress').textContent.charAt(0)) >= 1, null, { timeout: 18000 });
         assert.match(await page.locator('#worldCoords').textContent(), /XYZ/);
+        assert.match(await page.locator('#timerValue').textContent(), /00:/);
         await page.waitForFunction(() => Number(document.querySelector('#healthN').textContent.split(' / ')[0]) < 500, null, { timeout: 12000 });
         await page.keyboard.up('w');
         assert.match(await page.locator('#collisionNote').textContent(), /КАМЕНЬ/);
@@ -42,11 +51,23 @@ const url = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8080').replace(/\
       }
       await page.locator('#worldReset').click();
       assert.match(await page.locator('#worldCoords').textContent(), /0 · 28/);
-      await page.locator('#surfaceList [data-surface=honey]').click();
-      assert.equal(await page.locator('#surfaceTag').textContent(), 'ПОКРЫТИЕ / МЁД');
+      await page.keyboard.press('5');
+      assert.equal(await page.locator('#surfaceTag').textContent(), 'ПОД КОЛЁСАМИ / МЁД');
       assert.equal(await page.locator('#surfaceList [data-surface=honey]').getAttribute('aria-pressed'), 'true');
+      await page.locator('#gameHotbar [data-slot="4"]').click();
+      const beforeWater = Number((await page.locator('#healthN').textContent()).split(' / ')[0]);
+      await page.waitForFunction(old => Number(document.querySelector('#healthN').textContent.split(' / ')[0]) < old, beforeWater, { timeout: 10000 });
       await page.locator('#surfaceList [data-surface=slime]').click();
       await page.locator('#grade').selectOption('down');
+      await page.locator('#grade').focus();
+      await page.keyboard.down('w');
+      await page.waitForFunction(() => Number(document.querySelector('#speed').textContent) > 3, null, { timeout: 7000 });
+      await page.keyboard.up('w');
+      await page.keyboard.press('g');
+      assert.equal(await page.locator('#worldGrade').getAttribute('data-grade'), 'up');
+      await page.keyboard.press('g'); await page.keyboard.press('g');
+      assert.equal(await page.locator('#worldGrade').getAttribute('data-grade'), 'down');
+      await page.locator('#worldReset').click();
       await page.locator('#track h2').click();
       await page.keyboard.down('w');
       await page.waitForFunction(() => Number(document.querySelector('#speed').textContent) >= 101, { timeout: 15000 });
