@@ -96,7 +96,8 @@
     const board = target.querySelector(".adv-board");
     const panel = document.createElement("div"); panel.className = "zm-branch-sync";
     panel.innerHTML = `<div class="zm-branch-mark"><img src="${ZM.url(pt.icon)}" alt=""></div><div class="zm-branch-copy"><strong>Ветка №${m[1]} · ${ZM.esc(pt.title)}</strong><span>Тот же прогресс, что в общем древе. Достижения сохраняются в активном профиле.</span></div><b class="zm-branch-count" aria-live="polite"></b><a href="${treeUrl}">Открыть в главном древе ↗</a>`;
-    if (board) target.insertBefore(panel, board); else target.appendChild(panel);
+    // A point can wrap the advancement board in its own thematic frame.
+    if (board) board.before(panel); else target.appendChild(panel);
     const map = document.createElement("div"); map.className = "zm-branch-map"; map.setAttribute("aria-label", "Ветка достижений пункта в главном древе");
     panel.appendChild(map);
     const refresh = () => {

@@ -36,7 +36,7 @@ for (const p of live) {
   assert.match(html, /data\/hub_adv\.js/, `Page #${p.n} must load the shared branch`);
   assert.match(html, /shared\/core\.js/, `Page #${p.n} must load progress sync`);
   const anchor = p.n === 1 ? 'id="tree"' : 'id="adv"';
-  const treeAt = html.indexOf(`<section class="${p.n === 1 ? 'block-sec' : (p.n === 6 ? 'lb-sec' : 'sec')}" ${anchor}`);
+  const treeAt = html.search(new RegExp(`<section\\b[^>]*${anchor}`));
   assert.ok(treeAt >= 0, `Missing achievement section on #${p.n}`);
   const endAt = html.indexOf(p.n === 1 ? '<footer class="page-foot"' : 'id="finale"', treeAt);
   assert.ok(endAt > treeAt, `Achievements must be at the bottom on #${p.n}`);
@@ -78,10 +78,10 @@ assert.equal(HUB_ADV.find(p => p.n === 24).adv.map(a => a.icon).join('|'), [
   'assets/textures/p3/vanilla/item_barrier.png'
 ].join('|'), 'Bottom and home advancement icons must follow the real in-game items');
 const scooterHtml = fs.readFileSync(path.join(root, 'pages/24-scooter/index.html'), 'utf8');
-assert.match(scooterHtml, /id="rideCanvas"/, '2D simulator canvas must exist');
+assert.match(scooterHtml, /id="journey"/, 'New night route canvas must exist');
 assert.doesNotMatch(scooterHtml, /ride3d\.js|hero3d|worldCam/, 'Rejected 3D track must not be loaded');
-for (const id of ['stationGrid', 'stationMap', 'crewRows', 'getScooter', 'cruise', 'go', 'brake', 'stationCharge', 'getPort', 'quickTrip']) {
-  assert.ok(scooterHtml.includes(`id="${id}"`), `Scooter interactive control ${id} missing`);
+for (const id of ['stationFacade', 'roster', 'takeScooter', 'drive', 'stop', 'chargeHere', 'takePort', 'skipRoute']) {
+  assert.ok(scooterHtml.includes(`id="${id}"`), `New night route control ${id} missing`);
 }
 vm.runInNewContext(fs.readFileSync(path.join(root, 'data/p24_station.js'), 'utf8'), ctx);
 const station = ctx.ZM.P24ST;
@@ -90,7 +90,7 @@ assert.equal(station.blocks.filter(([x,y,z,i]) => station.palette[i] === 'zitrak
   '2,1,3|2,1,5|2,1,7', 'All 3 source station ports must be present');
 assert.equal(station.blocks.length, 198, 'Preserve every non-air template block');
 assert.ok(fs.existsSync(path.join(root, 'mod-src/structures/scooter_station.nbt')));
-assert.match(fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8'), /mass - 1\) \/ 24/, 'Simulator must use source mass formula');
+assert.match(fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8'), /totalMass\(\) - 1\) \/ 24/, 'New night route must use source mass formula');
 assert.match(fs.readFileSync(path.join(root, 'mod-src/java/p24/ScooterMassHelper.java'), 'utf8'), /IRON_GOLEM\) return 8\.0D/, 'Authentic mass helper missing');
 // The original Google Drive mod resources, not re-created art, must power №24.
 for (const name of ['charging_port_front.png', 'charging_port_side.png',

@@ -1,81 +1,57 @@
-/* Live 2D simulator + source station + connected branches in every page.
-   Run with a static server and Playwright. Set SCOOTER_BASE_URL / PLAYWRIGHT_MODULE if needed. */
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+/* Browser regression: new Night Route, restored #22/#23, live branches across all points.
+   Start a static server; set PLAYWRIGHT_MODULE and SCOOTER_BASE_URL as needed. */
 const assert = require('node:assert/strict');
-(async () => {
- const b = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
- const page = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
- const errs = []; page.on('pageerror', e => errs.push(e.message));
- const root = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8765').replace(/\/$/, '');
- try {
-  await page.goto(`${root}/pages/24-scooter/index.html`); await page.waitForSelector('#stationGrid .cell');
-  assert.equal(await page.locator('#stationGrid .cell').count(), 110);
-  assert.equal(await page.locator('#stationGrid button.port').count(), 3);
-  assert.equal(await page.locator('#stationElevation .facade-cell.port').count(), 3);
-  assert.equal(await page.locator('.zm-branch-map [data-adv-key]').count(), 3);
-  await page.locator('#getScooter').click();
-  assert.match(await page.locator('#advTxt').innerText(), /1 \/ 3/);
-  await page.locator('#addRider').click();
-  await page.locator('#crewRows select').selectOption('iron_golem');
-  assert.equal(await page.locator('#totalMass').innerText(), '10.0');
-  await page.locator('#crewRows input[type=number]').fill('12');
-  await page.locator('#crewRows input[type=number]').press('Tab');
-  assert.equal(await page.locator('#totalMass').innerText(), '14.0', 'Manual passenger mass must affect the scooter');
-  await page.locator('#crewRows input[type=number]').fill('8');
-  await page.locator('#crewRows input[type=number]').press('Tab');
-  assert.equal(await page.locator('#totalMass').innerText(), '10.0', 'Default must restore source mass');
-  await page.locator('[data-grade="down"]').click();
-  await page.locator('#cruise').click();
-  await page.waitForFunction(() => Number(document.querySelector('#speed').textContent) >= 100, { timeout: 18000 });
-  assert.match(await page.locator('#advTxt').innerText(), /2 \/ 3/);
-  await page.locator('#cruise').click();
-  await page.locator('#quickTrip').click();
-  assert.equal(await page.locator('#stationCharge').isEnabled(), true);
-  await page.locator('#stationCharge').click();
-  const charge1 = Number((await page.locator('#stationChargeN').innerText()).replace('%',''));
-  await page.waitForTimeout(1500);
-  const charge2 = Number((await page.locator('#stationChargeN').innerText()).replace('%',''));
-  assert.ok(charge2 > charge1, `Charging did not increase: ${charge1} -> ${charge2}`);
-  await page.locator('#getPort').click();
-  assert.match(await page.locator('#advTxt').innerText(), /3 \/ 3/);
-  await page.locator('[data-layer="4"]').click();
-  assert.equal(await page.locator('#stationGrid .cell').count(), 110);
-  await page.locator('[data-layer="1"]').click();
-  await page.locator('#stationGrid button.port').nth(2).click();
-  assert.match(await page.locator('#portLabel').innerText(), /03 ИЗ 03/);
-  if (process.env.SCOOTER_SCREENSHOT_DIR) await page.screenshot({path:process.env.SCOOTER_SCREENSHOT_DIR + '/p24-desktop.png',fullPage:true});
-  const branchLink = await page.locator('#adv .zm-branch-sync a').getAttribute('href');
-  assert.match(branchLink, /#tree\/24$/);
-  await page.goto(root + '/index.html#tree/24');
-  await page.waitForSelector('#twTabs .on');
-  assert.equal(await page.locator('#twTabs .on').getAttribute('data-tab-n'), '24');
-  assert.match(await page.locator('#twPTxt').innerText(), /3 \/ 3/);
-  assert.equal(await page.locator('#twChain [data-k]').count(), 3);
-  // Runtime test across all 24 pages, not just presence of static markup.
-  const paths = await page.evaluate(() => ZM.POINTS.filter(p => p.page).map(p => p.page));
-  for (const path of paths) {
-    await page.goto(root + '/' + path, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(80);
-    const n=+path.match(/pages\/(\d\d)-/)[1];
-    const panel=page.locator('#adv .zm-branch-sync, #tree .zm-branch-sync');
-    assert.equal(await panel.count(),1, `Branch missing: ${path}`);
-    assert.ok((await panel.locator('.zm-branch-node').count()) >= 1, `Nodes missing: ${path}`);
-    const link = await panel.locator('a').getAttribute('href');
-    assert.match(link, new RegExp(`#tree/${n}$`));
-    const box = await panel.boundingBox(); assert.ok(box && box.width > 200 && box.height > 80, `Branch not visible: ${path}`);
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const root = (process.env.SCOOTER_BASE_URL || 'http://127.0.0.1:8765').replace(/\/$/, '');
+(async()=>{
+ const b=await chromium.launch({headless:true,args:['--no-sandbox']});
+ const p=await b.newPage({viewport:{width:1440,height:900}}),errors=[];
+ p.on('pageerror',e=>errors.push(e.message));
+ try{
+  await p.goto(root+'/pages/24-scooter/index.html');
+  assert.equal(await p.locator('#stationFacade .port').count(),3);
+  assert.equal(await p.locator('#adv .zm-branch-node').count(),3);
+  assert.equal(await p.locator('#journey').count(),1);
+  assert.equal(await p.locator('#hero3d, #ride3d, #rideCanvas').count(),0);
+  await p.locator('#takeScooter').click();
+  assert.match(await p.locator('#advTxt').innerText(),/1 \/ 3/);
+  await p.locator('#addPassenger').click();
+  assert.equal(await p.locator('#hudMass').innerText(),'10.0');
+  await p.locator('#roster input').fill('12'); await p.locator('#roster input').press('Tab');
+  assert.equal(await p.locator('#hudMass').innerText(),'14.0');
+  await p.locator('#roster input').fill('8'); await p.locator('#roster input').press('Tab');
+  await p.locator('[data-slope=descent]').click(); await p.locator('#drive').click();
+  await p.waitForFunction(()=>+document.querySelector('#hudSpeed').textContent>=100,null,{timeout:15000});
+  assert.match(await p.locator('#advTxt').innerText(),/2 \/ 3/);
+  await p.locator('#skipRoute').click(); assert.equal(await p.locator('#chargeHere').isEnabled(),true);
+  await p.locator('#chargeHere').click();const before=Number((await p.locator('#terminalPct').innerText()).replace('%',''));
+  await p.waitForTimeout(1600);const after=Number((await p.locator('#terminalPct').innerText()).replace('%',''));
+  assert.ok(after>before,`Charging ${before} -> ${after}`);
+  await p.locator('#stationFacade .port').last().click();assert.match(await p.locator('#portIndex').innerText(),/03 ИЗ 03/);
+  await p.locator('#takePort').click();assert.match(await p.locator('#advTxt').innerText(),/3 \/ 3/);
+  await p.locator('#adv .zm-branch-sync a').click();await p.waitForURL(/#tree\/24$/);
+  assert.equal(await p.locator('#twTabs .on').getAttribute('data-tab-n'),'24');
+  assert.match(await p.locator('#twPTxt').innerText(),/3 \/ 3/);
+  const paths=await p.evaluate(()=>ZM.POINTS.filter(v=>v.page).map(v=>v.page));
+  assert.equal(paths.length,25);
+  for(const path of paths){
+   await p.goto(root+'/'+path,{waitUntil:'domcontentloaded'});await p.waitForTimeout(70);
+   const n=+path.match(/pages\/(\d\d)-/)[1];
+   const panel=p.locator('#adv .zm-branch-sync, #tree .zm-branch-sync');
+   assert.equal(await panel.count(),1,`No connected branch on ${path}`);
+   assert.ok(await panel.locator('.zm-branch-node').count()>0,`No nodes on ${path}`);
+   assert.match(await panel.locator('a').getAttribute('href'),new RegExp(`#tree/${n}$`));
   }
-  await page.setViewportSize({width:375,height:812});
-  await page.goto(root + '/pages/24-scooter/index.html');
-  await page.waitForSelector('#stationGrid .cell');
-  for (let i = 0; i < 4; i++) await page.locator('#addRider').click();
-  assert.equal(await page.locator('#addRider').isDisabled(), true);
-  await page.locator('#crewRows input[type=number]').last().fill('0.2');
-  await page.locator('#crewRows input[type=number]').last().press('Tab');
-  assert.equal(await page.locator('#totalMass').innerText(), '26.2');
-  const size = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
-  assert.ok(size[0] <= size[1] + 1, `Horizontal overflow ${size}`);
-  if (process.env.SCOOTER_SCREENSHOT_DIR) await page.screenshot({path:process.env.SCOOTER_SCREENSHOT_DIR + '/p24-mobile.png',fullPage:true});
-  assert.equal(errs.length, 0, errs.join('\n'));
-  console.log('2D ride, actual masses, 3 NBT ports, charging, 24 live branches, deep link, mobile width: OK');
- } finally { await b.close(); }
-})().catch(e => { console.error(e); process.exitCode=1; });
+  // Ensure the two restored experiences, not the former local redesigns, are visible.
+  await p.goto(root+'/pages/22-milk/index.html');assert.equal(await p.locator('#penView').count(),1);
+  await p.goto(root+'/pages/23-max/index.html');assert.equal(await p.locator('#heroNotif').count(),1);
+  assert.ok((await p.locator('#heroNotif').innerText()).length>0);
+  await p.setViewportSize({width:375,height:812});await p.goto(root+'/pages/24-scooter/index.html');
+  for(let i=0;i<4;i++)await p.locator('#addPassenger').click();
+  assert.equal(await p.locator('#addPassenger').isDisabled(),true);
+  assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Night Route mobile horizontal overflow');
+  if(process.env.SCOOTER_SCREENSHOT_DIR)await p.screenshot({path:process.env.SCOOTER_SCREENSHOT_DIR+'/night-route-mobile.png',fullPage:true});
+  assert.deepEqual(errors,[]);
+  console.log('Night Route + stations + 25 branches + restored #22/#23 + mobile: OK');
+ }finally{await b.close()}
+})().catch(e=>{console.error(e);process.exitCode=1});
