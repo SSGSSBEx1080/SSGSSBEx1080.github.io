@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p23-64.png">
 <link rel="stylesheet" href="../../shared/core.css">
 <link rel="stylesheet" href="../../shared/kit.css">
-<link rel="stylesheet" href="style.css?v=20261001-logo4">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <canvas class="mx-bg" id="bg" aria-hidden="true"></canvas>
@@ -21,7 +21,7 @@
       <div class="mx-tag"><span>№23</span>18.07.2026<i></i>версия 1.1.1<i></i>предмет · интерфейс</div>
       <h1 class="mx-logo"><span class="mx-l1">MAX</span><span class="mx-l2">мессенджер, который не заблокируют</span></h1>
       <p class="mx-sub">Правый клик — и поверх мира открывается полноценный мессенджер: личка с любым игроком сервера, «Избранное» для заметок, файлы прямо с компьютера, подарки из инвентаря с возвратом и антицензура, которая переписывает каждое сообщение. Причём исключительно в худшую сторону.</p>
-      <div class="mx-cta"><a class="k-btn" href="#app" id="heroLaunch">Открыть MAX ↗</a><a class="k-btn2" href="#censor">Антицензура</a><a class="k-btn2" href="#gifts">Подарки</a></div>
+      <div class="mx-cta"><a class="k-btn" href="#app">Открыть MAX</a><a class="k-btn2" href="#censor">Антицензура</a><a class="k-btn2" href="#gifts">Подарки</a></div>
       <div class="mx-stats">
         <a href="#app"><b>4000</b><span>символов в сообщении</span></a>
         <a href="#gifts"><b>4</b><span>слота в подарке</span></a>
@@ -30,16 +30,11 @@
       </div>
     </div>
     <div class="mx-hero-art">
-      <div class="mx-icon-stage">
-        <div class="mx-icon-orbit orbit-one" aria-hidden="true"></div>
-        <div class="mx-icon-orbit orbit-two" aria-hidden="true"></div>
-        <span class="mx-icon-code" aria-hidden="true">01 / OPEN WORLD</span>
-        <button type="button" class="mx-icon-launch" id="heroIcon" aria-label="Открыть мессенджер MAX">
-          <img class="mx-icon" src="../../assets/textures/p23/i/max_messenger.png" alt="">
-        </button>
-        <span class="mx-icon-corner" aria-hidden="true">ПКМ<br>↗</span>
+      <div class="mx-icon-wrap" id="iconWrap">
+        <img src="../../assets/textures/p23/i/max_messenger.png" alt="Иконка MAX" class="mx-icon" id="heroIcon">
+        <div class="mx-notif" id="heroNotif" aria-live="polite"></div>
       </div>
-      <div class="mx-hero-cap"><b>MAX / ОРИГИНАЛЬНАЯ ИКОНКА ПРЕДМЕТА</b><span>zitraksmode:max_messenger · нажми, чтобы открыть</span></div>
+      <div class="mx-hero-cap">MAX · <code>zitraksmode:max_messenger</code> · стак 1</div>
     </div>
   </section>
 
@@ -73,19 +68,8 @@
   <!-- ============ 02 СИМУЛЯТОР ============ -->
   <section class="sec mx-app-sec" id="app">
     <header class="sec-head reveal"><span class="sec-n">02</span><div class="sec-t"><span class="sec-k">max_messenger_screen</span><h2>MAX изнутри</h2></div><span class="sec-q">всё кликается, как в игре</span></header>
-    <p class="sec-p reveal">Зарегистрируйся: тебе один за другим напишут <b>5opka, Диор Армани, игровой клан «Чеченцы», няша-витуберша и мама</b>. У каждого свой голос, портрет и профиль. Отвечай им, отправляй подарки и файлы — сервер всё равно перепишет твой текст. ПКМ по сообщению открывает меню; на телефоне — долгий тап. Enter отправляет, Shift+Enter переносит строку. Это вымышленная демо-переписка: ответы учитывают тему и предыдущие реплики, работают локально без ИИ-сервера. Всё остаётся в браузере.</p>
-    <div class="mx-prompts reveal" id="mxPrompts" aria-label="Примеры вопросов персонажам">
-      <div class="mx-prompts-head"><b>ПРОВЕРЬ ДИАЛОГ</b><span>Нажми, чтобы открыть чат с готовым вопросом. Отправлять не обязательно.</span></div>
-      <div class="mx-prompts-grid">
-        <button type="button" data-bot="p5" data-prompt="Тебе правда 42 года?">5opka <span>Тебе правда 42 года?</span> ↗</button>
-        <button type="button" data-bot="pd" data-prompt="Я еще не слушал твою песню">Диор Армани <span>Я ещё не слушал твою песню</span> ↗</button>
-        <button type="button" data-bot="pc" data-prompt="Давай заключим перемирие в Minecraft">Клан «Чеченцы» <span>Давай заключим перемирие</span> ↗</button>
-        <button type="button" data-bot="pv" data-prompt="На стриме не работает микрофон">Витуберша <span>На стриме не работает микрофон</span> ↗</button>
-        <button type="button" data-bot="pm" data-prompt="Я уже сделал домашку">Мама <span>Я уже сделал домашку</span> ↗</button>
-      </div>
-    </div>
-    <div class="mx-app-wrap reveal" id="mxStage">
-      <div class="mx-focusbar"><span><b>MAX / ЖИВОЙ ЭКРАН</b><small>чат · файлы · подарки</small></span><button type="button" id="mxStoryNext">✉ Далее 0/5</button><button type="button" id="mxFocus" aria-pressed="false">⛶ На весь экран</button><button type="button" id="mxClose" hidden aria-label="Закрыть полноэкранный MAX">✕ Закрыть</button></div>
+    <p class="sec-p reveal">Это экран мода один в один: те же цвета, те же подписи, та же логика. Зарегистрируйся, напиши кому-нибудь, пошли подарок, перетащи файл, нажми на сообщение <b>правой кнопкой</b> (на телефоне — долгим тапом). Enter отправляет, Shift+Enter — новая строка. Всё, что уходит на «сервер», сначала проходит через антицензуру.</p>
+    <div class="mx-app-wrap reveal">
       <div class="mx-screen" id="mx" tabindex="-1"></div>
       <aside class="mx-app-side">
         <div class="mx-counter"><b id="cntMsg">0</b><span>/ 100 сообщений</span><i><em id="cntBar"></em></i></div>
@@ -94,19 +78,7 @@
         <button type="button" class="btn-ghost" id="botGift">🎁 бот шлёт подарок</button>
         <button type="button" class="btn-ghost" id="spam">+10 сообщений (для ачивки)</button>
         <button type="button" class="btn-ghost" id="mxReset">↺ стереть данные MAX</button>
-        <div class="mx-inbox" id="mxInbox" aria-label="Входящие от персонажей">
-          <div class="mx-inbox-top"><span>СЮЖЕТ / ВХОДЯЩИЕ</span><b id="mxInboxCount">0 / 5</b></div>
-          <p>Они напишут по очереди. Открой любой профиль и ответь — каждый говорит по-своему.</p>
-          <div class="mx-inbox-list" id="mxInboxPeople"></div>
-          <button type="button" id="mxInboxNext">Следующий собеседник →</button>
-          <small>Вымышленные игровые диалоги, не реальные аккаунты.</small>
-        </div>
-        <div class="mx-quests" id="mxQuests" aria-label="Маршрут по мессенджеру">
-          <div class="mx-quests-head"><small>МАРШРУТ / ПЯТЬ ШАГОВ</small><b id="mxQuestCount">0 / 5</b></div>
-          <div class="mx-quest-list" id="mxQuestList"></div>
-          <div class="mx-quest-meter"><i id="mxQuestBar"></i></div>
-        </div>
-        <p class="mx-small">Локальная реконструкция: на сервер игры ничего не уходит. Переписка и файлы до 20 МБ сохраняются в браузере (если есть место); файлы больше — лишь до закрытия вкладки.</p>
+        <p class="mx-small">Сохраняется в браузере, как SavedData <code>zitraksmode_max_messenger</code> в мире.</p>
       </aside>
     </div>
   </section>
@@ -123,7 +95,6 @@
         <div class="mx-cz-lbl">Получатель видит</div>
         <div class="mx-cz-out" id="czOut" aria-live="polite"></div>
         <div class="mx-cz-steps" id="czSteps"></div>
-        <button type="button" class="k-btn mx-cz-send" id="czToChat">Отправить этот текст через MAX ↗</button>
       </div>
       <div class="mx-cz-dict">
         <div class="mx-cz-tabs" id="czTabs" role="tablist"></div>
@@ -195,26 +166,25 @@
 
   <!-- ============ 07 ТОНКОСТИ ============ -->
   <section class="sec" id="notes">
-    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">edge cases</span><h2>Тонкости</h2></div><span class="sec-q" id="mxNoteCount">15 секретов из кода</span><button type="button" class="mx-notes-toggle" id="mxNotesToggle" aria-controls="notesBox">Раскрыть всё</button></header>
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">edge cases</span><h2>Тонкости</h2></div><span class="sec-q">то, что видно только в коде</span></header>
     <div class="mx-notes reveal" id="notesBox"></div>
   </section>
 
   <!-- ============ 08 АЧИВКИ ============ -->
-
-  <!-- ============ 09 ВЕРСИИ ============ -->
-  <section class="sec" id="hist">
-    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
-    <div class="k-tl reveal" id="tl"></div>
-  </section>
-
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
       <div class="adv-detail" id="advDetail"></div>
       <div class="adv-foot"><div class="adv-prog"><i id="advBar"></i></div><span id="advTxt">0 / 0</span><button class="btn-ghost" id="advReset" type="button">↺ сбросить прогресс</button></div>
     </div>
     <div class="adv-list reveal" id="advList"></div>
+  </section>
+
+  <!-- ============ 09 ВЕРСИИ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <div class="k-tl reveal" id="tl"></div>
   </section>
 
   <section class="finale" id="finale">
@@ -228,8 +198,7 @@
 <script src="../../shared/kit.js"></script>
 <script src="../../data/p23_adv.js"></script>
 <script src="../../data/p23_dict.js"></script>
-<script src="dialogue.js?v=20261001-logo4"></script>
-<script src="app.js?v=20261001-logo4"></script>
+<script src="app.js"></script>
 <script src="../../data/hub_adv.js"></script>
 </body>
 </html>

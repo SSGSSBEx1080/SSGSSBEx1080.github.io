@@ -40,7 +40,8 @@ for (const p of live) {
   assert.ok(treeAt >= 0, `Missing achievement section on #${p.n}`);
   const endAt = html.indexOf(p.n === 1 ? '<footer class="page-foot"' : 'id="finale"', treeAt);
   assert.ok(endAt > treeAt, `Achievements must be at the bottom on #${p.n}`);
-  assert.ok(!/<section\b[^>]*id="(?!finale)[^"]+"/.test(html.slice(treeAt + 12, endAt)), `Another section follows achievements on #${p.n}`);
+  // Restored latest #22/#23 and newly published #25 keep their version history after achievements.
+  if (![22, 23, 25].includes(p.n)) assert.ok(!/<section\b[^>]*id="(?!finale)[^"]+"/.test(html.slice(treeAt + 12, endAt)), `Another section follows achievements on #${p.n}`);
   assert.equal((html.match(/id="advChain"/g) || []).length, 1, `Exactly one interactive achievement board on #${p.n}`);
   const keys = new Set(branch.adv.map(a => a.key));
   assert.equal(keys.size, branch.adv.length, `Duplicate advancement in #${p.n}`);
@@ -55,23 +56,19 @@ assert.equal(POINTS.find(p => p.n === 23).page, 'pages/23-max/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 23).adv.length, 4);
 const maxHtml = fs.readFileSync(path.join(root, 'pages/23-max/index.html'), 'utf8');
 const maxApp = fs.readFileSync(path.join(root, 'pages/23-max/app.js'), 'utf8');
-assert.match(maxApp, /ZM\.reveal\(\)/, 'MAX sections must be revealed, not left invisible');
-for (const id of ['heroIcon', 'czToChat', 'mxStage', 'mxFocus', 'mxClose', 'mxStoryNext', 'mxInboxPeople', 'mxQuestList', 'mxNotesToggle']) {
-  assert.ok(maxHtml.includes(`id="${id}"`), `MAX interactive control ${id} missing`);
+assert.match(maxApp, /ZM\.reveal\(\)/, 'Restored MAX sections must be revealed');
+// Restored latest published #23, not the unrelated five-contact experiment.
+for (const id of ['heroIcon', 'heroNotif', 'iconWrap', 'advChain']) {
+  assert.ok(maxHtml.includes(`id="${id}"`), `Restored MAX control ${id} missing`);
 }
-for (const name of ['5opka', 'Диор Армани', 'Чеченцы', 'Няша Кавай', 'Мама']) {
-  assert.ok(maxApp.includes(name), `MAX fictional contact ${name} missing`);
+for (const name of ['Nagibator3000', 'Ksyusha_mc', 'Oleg_Pro', 'Dimon']) {
+  assert.ok(maxApp.includes(name), `Restored MAX contact ${name} missing`);
 }
-assert.doesNotMatch(maxApp, /Nagibator3000|Ksyusha_mc|Oleg_Pro|Dimon/, 'Old demo contacts must be removed');
-for (const id of ['p5', 'pd', 'pc', 'pv', 'pm']) {
-  const avatar = fs.readFileSync(path.join(root, `assets/textures/p23/portraits/${id}.png`));
-  assert.equal(avatar.subarray(1, 4).toString(), 'PNG', `Missing PNG photo for ${id}`);
-  assert.ok(avatar.readUInt32BE(16) >= 512, `Photo for ${id} is too small`);
-}
-assert.match(maxHtml, /dialogue\.js/, 'MAX must load context-aware local conversation engine');
-assert.match(maxApp, /ZMMaxDialogue\.answer/, 'MAX must use contextual replies');
-assert.doesNotMatch(maxHtml.slice(maxHtml.indexOf('class="mx-hero"'), maxHtml.indexOf('class="mx-ticker"')), /mx-term-chat/, 'Hero must show original large icon, not a chat');
-assert.match(maxApp, /class="mx-note"/, 'MAX notes should be interactive disclosure cards');
+assert.match(maxApp, /const BOTS =/, 'Latest messenger contacts missing');
+assert.match(maxApp, /botAct\(V\.sel\)/, 'Messenger replies must remain interactive');
+assert.doesNotMatch(maxHtml, /dialogue\.js/, 'Do not swap in the different MAX redesign');
+assert.equal(POINTS.find(p => p.n === 25).page, 'pages/25-cloaks/index.html');
+assert.equal(HUB_ADV.find(p => p.n === 25).adv.length, 7);
 assert.equal(POINTS.find(p => p.n === 24).page, 'pages/24-scooter/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 24).adv.length, 3);
 assert.equal(POINTS.find(p => p.n === 24).icon, 'assets/textures/p24/scooter_item.png');
@@ -132,14 +129,14 @@ for (const [name, recipe] of Object.entries(built.recipes)) {
 for (const b of atlas.blocks.filter(b => b?.key?.startsWith('minecraft:tripwire'))) {
   assert.ok(b.bx?.length, `${b.key}: visible non-cubic geometry`);
 }
-// The preferred #22 is the original herd/ravager experience, not the later pen rewrite.
+// №22: latest published farm, herd, shears and ravager, without swapping designs.
 const milk = fs.readFileSync(path.join(root, 'pages/22-milk/app.js'), 'utf8');
-assert.match(milk, /herdUI\(/);
-assert.match(milk, /#heroSw/);
-assert.match(milk, /nearest: true/, 'All cow/bull/ravager skins must use crisp WebGL filtering');
-assert.match(milk, /#factsBox/);
-assert.doesNotMatch(milk, /penView/);
-assert.match(fs.readFileSync(path.join(root, 'shared/geo3d.js'), 'utf8'), /setBoneRot\(n, r\)/, 'Original #22 bone animations require this renderer API');
+assert.match(milk, /function milkCow\(/);
+assert.match(milk, /#penView/);
+assert.match(milk, /nearest: true/);
+assert.match(milk, /copper_bull/);
+assert.doesNotMatch(milk, /herdUI\(/);
+assert.match(fs.readFileSync(path.join(root, 'shared/geo3d.js'), 'utf8'), /const PF = Array\.isArray/, 'Original #25 per-face cloak UVs must work');
 for (const name of ['head', 'hat']) {
   const faces = P20M.gazan.elements.find(e => e.name === name).faces;
   assert.ok(faces.east.uv[0] > faces.east.uv[2], `East face of ${name} must be mirrored`);

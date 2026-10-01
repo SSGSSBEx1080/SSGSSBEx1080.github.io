@@ -30,7 +30,7 @@ ZM.POINTS = [
   { n: 22, title: "Дойка быка и разорителя", date: "18.05.2026", confirmed: true, page: "pages/22-milk/index.html", tone: "#f2f2f2", icon: "assets/textures/p22/i/sperm_bucket.png" },
   { n: 23, title: "Мессенджер MAX",        date: "18.07.2026", confirmed: true, page: "pages/23-max/index.html", tone: "#6c5cff", icon: "assets/textures/p23/i/max_messenger.png" },
   { n: 24, title: "Электросамокат",        date: "28.07.2026", confirmed: true, page: "pages/24-scooter/index.html", icon: "assets/textures/p24/scooter_item.png", tone: "#00e0a0" },
-  { n: 25, title: "Плащи Логии",           date: "04.08.2026", confirmed: true, page: null, tone: "#ff8800" },
+  { n: 25, title: "Плащи Логии",           date: "04.08.2026", confirmed: true, page: "pages/25-cloaks/index.html", tone: "#ff8800", icon: "assets/textures/p25/i/cloak_akainu.png" },
   { n: 26, title: "Пылесос",               date: "07.08.2026", confirmed: true,  page: null, tone: "#6ec8ff" },
   { n: 27, title: "???",                   date: "",           confirmed: false, page: null, tone: "#666" },
   { n: 28, title: "Медуза",                date: "17.08.2026", confirmed: true,  page: null, tone: "#7dff9a" },

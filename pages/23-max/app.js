@@ -58,7 +58,6 @@
   /* ================= аватарки: drawAvatarSquare и стоковые лица из экрана ================= */
   const STYLE = { stock_steve: ["steve", 0xFF6D4C41], stock_alex: ["alex", 0xFFBF6D32], stock_smile: ["smile", 0xFFF4C542], stock_cat: ["cat", 0xFFE88BC8, 0xFFFFFFFF], stock_skull: ["skull", 0xFF8A8F98], favorite_flag: ["favorite_flag", 0xFF2673F2, 0xFFFFFFFF] };
   const imgCache = {};
-  const PORTRAITS = { persona_5: "p5", persona_dior: "pd", persona_clan: "pc", persona_vtuber: "pv", persona_mom: "pm" };
   function drawAva(cv, id, size, online, status) {
     cv.width = cv.height = size; const g = cv.getContext("2d"); g.imageSmoothingEnabled = false;
     const f = (x1, y1, x2, y2, c) => { g.fillStyle = typeof c === "number" ? hex(c) : c; g.fillRect(Math.floor(x1), Math.floor(y1), Math.floor(x2) - Math.floor(x1), Math.floor(y2) - Math.floor(y1)); };
@@ -69,15 +68,6 @@
       f(2, 2, size - 2, size - 2, 0xFF1D2630);
       let im = imgCache[id]; if (!im) { im = imgCache[id] = new Image(); im.src = "data:image/png;base64," + id.slice(6); }
       const put = () => { g.imageSmoothingEnabled = true; g.drawImage(im, 2, 2, s, s); if (status) f(size - 6, size - 6, size - 2, size - 2, online ? 0xFF2ECC71 : 0xFF7B8794); };
-      if (im.complete && im.naturalWidth) put(); else im.addEventListener("load", put, { once: true });
-      return cv;
-    }
-    if (PORTRAITS[id]) {
-      f(2, 2, size - 2, size - 2, 0xFF182235);
-      let im = imgCache[id];
-      if (!im) { im = imgCache[id] = new Image(); im.src = U(`assets/textures/p23/portraits/${PORTRAITS[id]}.png`); }
-      const put = () => { g.imageSmoothingEnabled = true; g.drawImage(im, 2, 2, s, s);
-        if (status) f(size - 6, size - 6, size - 2, size - 2, online ? 0xFF2ECC71 : 0xFF7B8794); };
       if (im.complete && im.naturalWidth) put(); else im.addEventListener("load", put, { once: true });
       return cv;
     }
@@ -94,42 +84,15 @@
     if (status) f(size - 6, size - 6, size - 2, size - 2, online ? 0xFF2ECC71 : 0xFF7B8794);
     return cv;
   }
-  const ava = (id, size, online, status, cls = "") => { const c = document.createElement("canvas"); c.className = "mx-ava " + cls + (PORTRAITS[id] ? " photo" : ""); drawAva(c, id, size, online, status); return c; };
+  const ava = (id, size, online, status, cls = "") => { const c = document.createElement("canvas"); c.className = "mx-ava " + cls; drawAva(c, id, size, online, status); return c; };
 
-  /* Вымышленная сцена для сайта: это не реальные аккаунты и не персонажи мода. */
-  const PERSONAS = [
-    { id: "p5", name: "5opka", base: "5opka_demo", ava: "persona_5", color: "#ff8b37", dark: "#7435bc", badge: "В ЭФИРЕ", mark: "42", mood: "42 / старость / стрим", desc: "Уже 42. Считает себя древним артефактом и говорит об этом в каждом сообщении.", quote: "МНЕ 42. Я СТАРЫЙ. ГДЕ МОИ ОЧКИ?", tags: ["42", "старый", "чат"], show: "tnt", online: true,
-      intro: ["ЧАТ, МНЕ 42. Я СТАРЫЙ. ЭТО MAX ИЛИ ТЕЛЕФОН С КНОПКАМИ?", "мне 42, а я опять потерял очки. они на мне. Я СТАРЫЙ", "ты тут? ответь деду 42 лет, пока я не забыл, зачем написал"],
-      reply: ["спасибо, молодой человек. мне 42 и я старый, так что повтори погромче", "ЧАТ, МНЕ ОТВЕТИЛИ! в мои 42 это уже событие года", "я старый, мне 42, а этот MAX шрифт ещё мельче сделал?!"] },
-    { id: "pd", name: "Диор Армани", base: "dior_armani", ava: "persona_dior", color: "#f4c76b", dark: "#442c60", badge: "ЕДИНСТВЕННЫЙ ХИТ", mark: "DA", mood: "музыкант / опечатки", desc: "Один трек, сто опечаток, ни одной мысли записать второй.", quote: "АЙ ЛОВ ДИКС ЭНД КОКС, АЙ ФАКИН САКИНГ БОЛС", tags: ["1 трек", "рэп", "опечатки"], show: "gold_ingot", online: true,
-      intro: ["йо паслушый мой единствиный трек. другово нет", "АЙ ЛОВ ДИКС ЭНД КОКС, АЙ ФАКИН САКИНГ БОЛС!!! ЭТО ПРИПЕФ", "паставь лойк пж. я над етим трекам три года пыстел"],
-      reply: ["ты паслушыл трек? ай лов дикс энд кокс, ай факин сакинг болс!", "мне гаварят записать фтарой. зачем, если первый идеален??", "спосиба за рицензию! мой единствиный хит опять на репите"] },
-    { id: "pc", name: "Чеченцы · клан", base: "clan_arena", ava: "persona_clan", color: "#66d9ac", dark: "#134d50", badge: "КЛАН / АРЕНА", mark: "КЛ", mood: "рейды / PvP", desc: "Вымышленный клан сервера. Суровые угрозы — только базе и алмазам в Minecraft.", quote: "Мы знаем, где твой сундук. В игре, конечно.", tags: ["клан", "рейд", "алмазы"], show: "diamond", online: true,
-      intro: ["Слушай сюда. Мы нашли твою базу. Координаты даже маме твоей скинем.", "До заката отдай алмазы, или от твоего дома останется один верстак. В Майнкрафте.", "Это последнее предупреждение. Не заставляй нас копать 64 блока вниз."],
-      reply: ["Дерзишь? Тогда первой пострадает твоя ферма куриц. PvP-рейд, без обид.", "У тебя десять минут. Потом мы ставим табличку «НАШЕ» на твоём сундуке.", "Ладно, мир. Но алмазы всё равно пересчитаем."] },
-    { id: "pv", name: "Няша Кавай ☆", base: "kawaii_neko_live", ava: "persona_vtuber", color: "#ff9fe2", dark: "#8356dc", badge: "VTUBER LIVE", mark: "NY", mood: "ня / стрим / косплей", desc: "Взрослая витуберша с аниме-пропорциями на максималках и костюмом, который еле влезает в кадр.", quote: "Бубсы на максимум, лаги на минимум, ня~", tags: ["стрим", "косплей", "ня~"], show: "golden_apple", online: true,
-      intro: ["ня~ меня видно? у меня опять бубсы в кадр не помещаются ♡", "чатик просит повернуться, а я пытаюсь не уронить микрофон", "ты пришёл на стрим или опять на мои пропорции смотришь? ✦"],
-      reply: ["ня~ спасибо! только глазами выше, у меня тут ещё и контент есть ♡", "я не виновата, что костюм шили по меркам куклы, а бубсы по меркам босса", "ой, чатик опять спорит, что больше: мои пропорции или пинг сервера 🎀"] },
-    { id: "pm", name: "Мама", base: "mama_home", ava: "persona_mom", color: "#ffd39b", dark: "#9d5865", badge: "СЕМЬЯ / ТРЕВОГА", mark: "МА", mood: "ругается / кормит", desc: "Знает, что ты онлайн. Уже третий раз зовёт ужинать и сейчас заберёт роутер.", quote: "Я тебе не автосообщение! ИДИ ЕШЬ!", tags: ["ужин", "вайфай", "шапка"], show: "apple", online: true,
-      intro: ["Я ТЕБЯ ТРИ РАЗА ЗВАЛА! Ты чего в этом MAX торчишь, ужин остыл!", "Что за мужик пишет тебе про 42? И певца этого с его песней выключи, стыдоба!", "Клан грозит снести базу?! Сейчас я им сама базу снесу. А ты жрать иди, блин.", "Я сама этому клану напишу, пусть только попробуют"],
-      reply: ["Не «сейчас», а СЕЙЧАС. Суп на плите, телефон на столе!", "Ещё одно сообщение — и роутер поедет жить ко мне в комнату.", "Всё, хватит про самокат и бубсы! Домашку сделал? Шапку надел?"] },
-  ];
-  const PERSONA_BY_ID = Object.fromEntries(PERSONAS.map((p) => [p.id, p]));
-
-  /* ================= HERO: original item icon, not a chat preview ================= */
-  let coverDraft = null;
+  /* ================= HERO: иконка + уведомления ================= */
   (function hero() {
-    const launch = (event) => {
-      if (event) event.preventDefault();
-      if (event?.currentTarget?.id === "czToChat") {
-        coverDraft = $("#czIn").value.trim();
-        if (S?.me?.reg && !V.draft) setDraft(coverDraft);
-      }
-      snd("pling", 0.5, 1.2); openFocus(event?.currentTarget);
-    };
-    $("#heroIcon").addEventListener("click", launch);
-    $("#heroLaunch").addEventListener("click", launch);
-    $("#czToChat").addEventListener("click", launch);
+    const n = $("#heroNotif"), lines = [["Nagibator3000", "Салам"], ["Ksyusha_mc", "Иди нахуй, я строю"], ["Oleg_Pro", "Подарок"], ["Dimon", "Как хуй?"], ["Избранное", "заметки"]];
+    let i = 0;
+    const tick = () => { const [a, b] = lines[i++ % lines.length]; n.innerHTML = `<b>${esc(a)}</b><span>${esc(b)}</span><i>${i}</i>`; n.classList.remove("on"); void n.offsetWidth; n.classList.add("on"); };
+    tick(); setInterval(() => { if (motion()) tick(); }, 3200);
+    $("#heroIcon").addEventListener("click", () => { snd("pling", 0.5, 1.2); document.getElementById("app").scrollIntoView({ behavior: motion() ? "smooth" : "auto" }); });
     const tk = ["иди сюда → иди нахуй", "привет → салам", "люблю → ненавижу", "хорошо → плохо", "как дела → как хуй", "окей → хуй побрей", "спс → иди нахуй", "тут ↔ там", "рай ↔ ад", "правда ↔ ложь", "котлеты → ёжики", "пиво → вода", "мне → мне похуй", "я думаю → я знаю", "мне кажется → я уверен", "имба → говно"];
     $("#ticker").innerHTML = (tk.map((t) => `<span>${esc(t)}</span>`).join("<i>●</i>") + "<i>●</i>").repeat(2);
   })();
@@ -174,128 +137,34 @@
 
   /* ================= 02 СИМУЛЯТОР ================= */
   const KEY = "zm:p23.max";
-  const now = Date.now();
-  const personaProfile = ({ intro, reply, ...profile }) => ({ ...profile, trades: 0 });
-  const seed = () => ({
-    me: { id: "me", base: (ZM.profile && ZM.profile.me().nick) || "Player", name: "", desc: "", ava: "stock_steve", show: "", reg: false, sent: 0, trades: 0, rejects: 0,
-      inv: { diamond: 3, bread: 16, iron_ingot: 10, cobblestone: 64, oak_log: 20, apple: 5, ender_pearl: 4, gold_ingot: 6 } },
-    users: PERSONAS.map(personaProfile), msgs: [], gifts: {}, dialogue: {}, next: 1, inboxWave: 0, sceneVersion: 2,
-  });
+  const now = Date.now(), H = 3600e3;
+  const BOTS = [
+    { id: "b1", name: "Nagibator3000", base: "Nagibator3000", desc: "", ava: "stock_skull", online: true },
+    { id: "b2", name: "Ksyusha_mc", base: "Ksyusha_mc", desc: "строю замки, не пишите", ava: "stock_cat", online: true },
+    { id: "b3", name: "Oleg_Pro", base: "OlegPro2009", desc: "", ava: "stock_alex", online: false },
+    { id: "b4", name: "Dimon", base: "dimon_minecraft", desc: "продаю алмазы недорого", ava: "stock_smile", online: true },
+  ];
+  const seed = () => {
+    const S = { me: { id: "me", base: (ZM.profile && ZM.profile.me().nick) || "Player", name: "", desc: "", ava: "stock_steve", show: "", reg: false, sent: 0, trades: 0, rejects: 0,
+        inv: { diamond: 3, bread: 16, iron_ingot: 10, cobblestone: 64, oak_log: 20, apple: 5, ender_pearl: 4, gold_ingot: 6 } },
+      users: BOTS.map((b) => Object.assign({ trades: 0 }, b)), msgs: [], gifts: {}, next: 1 };
+    const add = (from, to, text, t, o = {}) => S.msgs.push(Object.assign({ id: S.next++, from, to, text, t, read: true, type: "TEXT" }, o));
+    add("b1", "me", "Салам", now - 26 * H); add("b1", "me", "есть железо?", now - 26 * H + 60e3);
+    add("b2", "me", "Иди нахуй, я строю", now - 25 * H);
+    add("b2", "me", "координаты базы: 1250 64 -830", now - 25 * H + 30e3, { deleted: true, hr: false });
+    add("b2", "me", "ой не туда", now - 25 * H + 40e3);
+    add("b4", "me", "Стой сука, есть дело", now - 2 * H, { read: false }); add("b4", "me", "продаю алмазы, 1 алмаз = 3 железа", now - 2 * H + 20e3, { read: false });
+    return S;
+  };
   let S; try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
-  if (!S || !S.me || !S.msgs || !S.me.inv || !Array.isArray(S.users)) S = seed();
-  // Удаляем старые четыре чата и их переписку даже из сохранений, оставляя
-  // профиль игрока, своё «Избранное», пять новых диалогов и счётчики достижений.
-  const allowed = new Set(["me", ...PERSONAS.map((p) => p.id)]);
-  S.gifts ||= {};
-  S.dialogue ||= {};
-  for (const id of Object.keys(S.dialogue)) if (!PERSONA_BY_ID[id]) delete S.dialogue[id];
-  Object.entries(S.gifts).forEach(([id, gift]) => {
-    if (allowed.has(gift.from) && allowed.has(gift.to)) return;
-    if (gift.from === "me" && gift.state === "PENDING")
-      gift.stacks.forEach(({ id: item, n }) => { S.me.inv[item] = (S.me.inv[item] || 0) + n; });
-    delete S.gifts[id];
-  });
-  S.msgs = S.msgs.filter((m) => allowed.has(m.from) && allowed.has(m.to));
-  S.users = PERSONAS.map((p) => ({ ...personaProfile(p), trades: S.users.find((u) => u.id === p.id)?.trades || 0 }));
-  if (S.sceneVersion !== 2) {
-    S.msgs = S.msgs.filter((m) => m.scene !== "intro" && m.scene !== "reply");
-    S.inboxWave = 0; S.sceneVersion = 2;
-  }
-  if (!Number.isInteger(S.inboxWave)) S.inboxWave = 0;
-  S.inboxWave = clamp(S.inboxWave, 0, PERSONAS.length);
-  const files = {}; // байты в памяти вкладки; файлы до 20 МБ дополнительно сохраняются локально
-  let fileDb;
-  const db = () => fileDb ||= new Promise((resolve) => {
-    if (!window.indexedDB) return resolve(null);
-    try {
-      const r = indexedDB.open("zm-max-demo-files", 1);
-      r.onupgradeneeded = () => r.result.createObjectStore("files");
-      r.onsuccess = () => resolve(r.result);
-      r.onerror = () => resolve(null);
-    } catch (_) { resolve(null); }
-  });
-  async function cacheFile(key, file) {
-    if (!file || file.size > 20 * 1024 * 1024) return false;
-    const conn = await db(); if (!conn) return false;
-    return new Promise((resolve) => {
-      try {
-        const tx = conn.transaction("files", "readwrite");
-        tx.objectStore("files").put({ data: file, name: file.name }, key);
-        tx.oncomplete = () => resolve(true); tx.onerror = tx.onabort = () => resolve(false);
-      } catch (_) { resolve(false); }
-    });
-  }
-  async function cachedFile(key) {
-    if (files[key]) return files[key];
-    const conn = await db(); if (!conn) return null;
-    return new Promise((resolve) => {
-      try {
-        const r = conn.transaction("files").objectStore("files").get(key);
-        r.onsuccess = () => { const v = r.result; resolve(v ? (files[key] = new File([v.data], v.name, { type: v.data.type })) : null); };
-        r.onerror = () => resolve(null);
-      } catch (_) { resolve(null); }
-    });
-  }
-  async function clearCachedFiles() {
-    const conn = await db(); if (!conn) return;
-    return new Promise((resolve) => {
-      try {
-        const tx = conn.transaction("files", "readwrite"); tx.objectStore("files").clear();
-        tx.oncomplete = tx.onerror = tx.onabort = () => resolve();
-      } catch (_) { resolve(); }
-    });
-  }
+  if (!S || !S.me || !S.msgs || !S.me.inv) S = seed();
+  const files = {}; // вложения этой сессии: id → File (для «↓»)
   const save = () => { try { const c = JSON.parse(JSON.stringify(S)); c.msgs.forEach((m) => { if (m.att) delete m.att.preview; }); localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} };
   const user = (id) => id === "me" ? S.me : S.users.find((u) => u.id === id);
   const dname = (u) => (u.name || u.base || "Player").slice(0, 24);
   const trim = (t, n) => (t = String(t || ""), t.length > n ? t.slice(0, n) + "…" : t);
-  const mx = $("#mx"), stage = $("#mxStage");
-  let focusReturn = null;
-  function openFocus(trigger) {
-    focusReturn = trigger || document.activeElement;
-    stage.classList.add("focused", "in");
-    stage.setAttribute("role", "dialog"); stage.setAttribute("aria-modal", "true"); stage.setAttribute("aria-label", "Экран мессенджера MAX");
-    document.body.classList.add("mx-focus-open");
-    $("#mxFocus").setAttribute("aria-pressed", "true");
-    $("#mxFocus").hidden = true;
-    $("#mxClose").hidden = false;
-    (stage.querySelector(".mx-dim input, .mx-dim button") || $("#mxClose")).focus({ preventScroll: true });
-    if (S.me.reg && !waveTimer) scheduleWave(850);
-  }
-  function closeFocus() {
-    stage.classList.remove("focused");
-    stage.removeAttribute("role"); stage.removeAttribute("aria-modal"); stage.removeAttribute("aria-label");
-    document.body.classList.remove("mx-focus-open");
-    $("#mxFocus").hidden = false;
-    $("#mxFocus").setAttribute("aria-pressed", "false");
-    $("#mxClose").hidden = true;
-    (focusReturn?.isConnected ? focusReturn : $("#mxFocus")).focus({ preventScroll: true });
-  }
-  $("#mxFocus").addEventListener("click", (e) => openFocus(e.currentTarget));
-  $("#mxClose").addEventListener("click", closeFocus);
-  document.addEventListener("keydown", (e) => {
-    if (!stage.classList.contains("focused")) return;
-    if (e.key === "Tab") {
-      const scope = stage.querySelector(".mx-dim") || stage;
-      const focusable = Array.from(scope.querySelectorAll('button:not([disabled]):not([hidden]), input:not([disabled]), textarea:not([disabled]), [tabindex="0"]'))
-        .filter((el) => el.getClientRects().length && getComputedStyle(el).visibility !== "hidden");
-      const first = focusable[0], last = focusable[focusable.length - 1];
-      if (!first) { e.preventDefault(); $("#mxClose").focus(); }
-      else if (e.shiftKey && (document.activeElement === first || !scope.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && (document.activeElement === last || !scope.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
-      return;
-    }
-    if (e.key !== "Escape") return;
-    if (V.menu || V.attachMenu) { V.menu = null; V.attachMenu = false; render(); }
-    else if (V.modal === "crop") { V.modal = V.crop.back; V.crop = null; render(); }
-    else if (V.modal === "picker") { V.modal = V.back; render(); }
-    else if (V.modal && V.modal !== "register") { V.modal = null; render(); }
-    else if (!V.modal) closeFocus();
-    e.preventDefault();
-  });
-  // После регистрации показываем реальный демо-диалог, а не пустую панель.
-  const V = { sel: S.me.reg ? "p5" : null, reply: 0, edit: 0, fwd: 0, att: null, search: "", res: [], ri: -1, status: "", menu: null, modal: null, attachMenu: false, draft: "", giftSlots: [], stick: true, typing: null, pendingReply: {} };
-  let session = 0; // инвалидация отложенных ответов, загрузок и подарков при сбросе MAX
+  const mx = $("#mx");
+  const V = { sel: null, reply: 0, edit: 0, fwd: 0, att: null, search: "", res: [], ri: -1, status: "", menu: null, modal: null, attachMenu: false, draft: "", giftSlots: [], stick: true };
   let statusT = 0;
   const status = (t) => { V.status = t; const el = $(".mx-status", mx); if (el) el.textContent = t; clearTimeout(statusT); statusT = setTimeout(() => { V.status = ""; const e2 = $(".mx-status", mx); if (e2) e2.textContent = ""; }, 3500); };
   const counters = () => {
@@ -318,29 +187,16 @@
     if (o.raw) { m.text = text; delete m.raw; }
     S.msgs.push(m); if (from === "me" && !o.fwd) countSent(); save(); return m;
   }
-  function botAct(to, rawText) {
+  function botAct(to) {
     const b = user(to); if (!b || to === "me" || !b.online) return;
-    const turn = session;
-    const own = conv("me", to).filter((m) => m.from === "me" && !m.deleted).at(-1);
-    const text = String(rawText || own?.text || "Привет").slice(0, 500);
-    // Debounce several rapid messages into one coherent reply to the latest one.
-    const pending = V.pendingReply[to] || (V.pendingReply[to] = { text, timer: 0 });
-    pending.text = text;
-    clearTimeout(pending.timer);
-    V.typing = to; if (V.sel === to) render();
-    pending.timer = setTimeout(() => {
-      if (turn !== session || V.pendingReply[to] !== pending) return;
-      delete V.pendingReply[to]; V.typing = null;
-      conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; });
-      const result = window.ZMMaxDialogue.answer(to, pending.text, S.dialogue[to] || {});
-      if (!result) return;
-      S.dialogue[to] = result.memory;
-      serverSend(to, "me", result.text, { read: V.sel === to, scene: "reply" });
-      snd(V.sel === to ? "hat" : "pling", 0.46, 1.23); render();
-    }, 1400 + Math.random() * 400);
+    setTimeout(() => { conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; }); save(); render(); }, 900 + Math.random() * 700);
+    if (Math.random() < 0.75) setTimeout(() => {
+      const t = pick(["ок", "привет", "как дела", "я думаю да", "пока", "хз", "спс", "короче норм", "круто", "интересно", "подожди", "мне кажется это имба", "окей", "братан ты лучший", "погоди, я иду", "ну типа хорошо", "не знаю", "люблю этот сервер"]);
+      serverSend(to, "me", t, { read: V.sel === to }); snd(V.sel === to ? "hat" : "pling", 0.45, 1.3); render();
+    }, 2200 + Math.random() * 1800);
   }
   function giftRespond(g, accept, actor) {
-    if (!g || (g.state !== "PENDING" && g.state !== "FAILED")) return;
+    if (g.state !== "PENDING" && g.state !== "FAILED") return;
     if (!accept) {
       g.state = "REJECTED";
       if (g.from === "me") S.me.inv = addInv(S.me.inv, g.stacks);
@@ -358,125 +214,15 @@
     const pool = [["diamond", 3], ["bread", 12], ["rotten_flesh", 20], ["dirt", 64], ["emerald", 5], ["cookie", 8], ["totem_of_undying", 1], ["golden_apple", 2], ["tnt", 4], ["bone", 10], ["netherite_ingot", 1], ["name_tag", 1]];
     const stacks = pool.sort(() => Math.random() - 0.5).slice(0, n).map(([id, c]) => ({ id, n: c }));
     const gid = "g" + S.next; S.gifts[gid] = { from: b.id, to: "me", stacks, state: "PENDING" };
-    const giftsFrom = {
-      p5: "мне 42, я старый, поэтому дарю то, что в инвентаре нашёл",
-      pd: "эта вищь идёт бонусам к моему единствиному треку",
-      pc: "дарим тебе это. Но алмазы всё ещё ждём.",
-      pv: "ня~ подарочек от чатика, бубсы не прилагаются ♡",
-      pm: "На, возьми. И на ужин не опаздывай, блин.",
-    };
-    serverSend(b.id, "me", giftsFrom[b.id], { type: "GIFT", gift: gid, read: V.sel === b.id });
+    serverSend(b.id, "me", pick(["лови", "держи братан", "это тебе", "подарок, не благодари", "спс за вчера", ""]), { type: "GIFT", gift: gid, read: V.sel === b.id });
     snd("pling", 0.5, 1.1); status(`${dname(b)}: подарок`); render();
-    return b.id;
   }
-
-  /* Пять входящих идут в заданном порядке; состояние хранится вместе с MAX. */
-  let waveTimer = 0;
-  function scheduleWave(delay = 900) {
-    if (!S.me.reg || S.inboxWave >= PERSONAS.length) return;
-    clearTimeout(waveTimer);
-    const turn = session;
-    waveTimer = setTimeout(() => {
-      waveTimer = 0;
-      if (turn !== session || !S.me.reg) return;
-      if (document.hidden) return scheduleWave(1200);
-      deliverPersona();
-    }, delay);
-  }
-  function deliverPersona() {
-    if (!S.me.reg || S.inboxWave >= PERSONAS.length) return;
-    const p = PERSONAS[S.inboxWave++], base = Date.now();
-    p.intro.forEach((text, i) => serverSend(p.id, "me", text, { read: V.sel === p.id, scene: "intro", t: base + i * 24,
-      ...(p.id === "pm" && i === p.intro.length - 1 ? { deleted: true, hr: false } : {}) }));
-    V.stick = V.sel === p.id; render();
-    snd("pling", 0.55, 1.08); status(`${p.name} написал(а) в MAX`);
-    if (!V.modal) {
-      const ping = document.createElement("button"); ping.type = "button"; ping.className = "mx-scene-ping";
-      ping.style.setProperty("--pc", p.color);
-      ping.appendChild(ava(p.ava, 42, true, false));
-      ping.insertAdjacentHTML("beforeend", `<span><b>${esc(p.name)}</b><small>${esc(trim(censor(p.intro[0]).text, 38))}</small></span><em>↗</em>`);
-      ping.addEventListener("click", () => openChat(p.id)); mx.appendChild(ping);
-      setTimeout(() => ping.remove(), 3200);
-    }
-    scheduleWave(3800);
-  }
-  function nextPersona() {
-    if (!S.me.reg) { openFocus($("#mxStoryNext")); status("Сначала зарегистрируйся в MAX"); return; }
-    if (S.inboxWave >= PERSONAS.length) { S.inboxWave = 0; save(); renderInbox(); scheduleWave(350); return; }
-    clearTimeout(waveTimer); waveTimer = 0; deliverPersona();
-  }
-  $("#mxStoryNext").addEventListener("click", nextPersona);
-  $("#mxInboxNext").addEventListener("click", nextPersona);
-  function renderInbox() {
-    const count = S.inboxWave;
-    $("#mxInboxCount").textContent = `${count} / ${PERSONAS.length}`;
-    $("#mxStoryNext").textContent = count < PERSONAS.length ? `✉ Далее ${count}/5` : "↺ Входящие";
-    $("#mxInboxNext").textContent = count < PERSONAS.length ? "Следующий собеседник →" : "↺ Повторить входящие";
-    const box = $("#mxInboxPeople"); box.innerHTML = "";
-    PERSONAS.forEach((p, i) => {
-      const row = document.createElement("button"); row.type = "button"; row.className = "mx-inbox-person" + (i < count ? " arrived" : "") + (i === count ? " next" : "");
-      row.style.setProperty("--pc", p.color); row.setAttribute("aria-label", `${p.name}: ${i < count ? "уже написал" : "ещё не написал"}. Открыть чат`);
-      row.appendChild(ava(p.ava, 34, true, false));
-      row.insertAdjacentHTML("beforeend", `<span><b>${esc(p.name)}</b><small>${i < count ? "сообщение получено" : i === count ? "следующий" : "ожидается"}</small></span><i>${i < count ? "✓" : String(i + 1).padStart(2, "0")}</i>`);
-      row.addEventListener("click", () => {
-        openFocus(row);
-        if (!S.me.reg) return;
-        openChat(p.id);
-        if (!count && !waveTimer) scheduleWave(650);
-      }); box.appendChild(row);
-    });
-  }
-
-  const QUESTS = [
-    ["register", "Создай профиль", "Ник, аватар и трофей"],
-    ["favorite", "Запиши себе", "Чат «Избранное»"],
-    ["chat", "Проверь антицензуру", "Отправь сообщение игроку"],
-    ["gift", "Прими или отвергни", "Подарок от собеседника"],
-    ["file", "Приложи файл", "Куски по 30 КБ"],
-  ];
-  function renderQuest() {
-    const passed = [
-      !!S.me.reg,
-      S.msgs.some((m) => m.from === "me" && m.to === "me" && m.type === "TEXT" && !m.deleted),
-      S.msgs.some((m) => m.from === "me" && m.to !== "me" && m.type === "TEXT" && !m.fwd),
-      Object.values(S.gifts).some((g) => g.to === "me" && (g.state === "ACCEPTED" || g.state === "REJECTED")),
-      S.msgs.some((m) => m.from === "me" && m.type === "FILE"),
-    ];
-    $("#mxQuestList").innerHTML = QUESTS.map(([key, title, hint], i) =>
-      `<button type="button" data-q="${key}" class="${passed[i] ? "done" : ""}" aria-label="${esc(title)}: ${passed[i] ? "сделано" : "попробовать"}"><i>${passed[i] ? "✓" : String(i + 1).padStart(2, "0")}</i><span><b>${esc(title)}</b><small>${esc(hint)}</small></span><em>↗</em></button>`).join("");
-    const n = passed.filter(Boolean).length;
-    $("#mxQuestCount").textContent = `${n} / ${QUESTS.length}`;
-    $("#mxQuestBar").style.width = `${n / QUESTS.length * 100}%`;
-  }
-  $("#mxPrompts").addEventListener("click", (e) => {
-    const prompt = e.target.closest("[data-bot]"); if (!prompt) return;
-    const { bot, prompt: message } = prompt.dataset;
-    if (!S.users.some(u => u.id === bot)) return;
-    openFocus(prompt);
-    if (S.me.reg) { openChat(bot); setDraft(message); $(".mx-input", mx)?.focus(); }
-    else { V.sel = bot; coverDraft = message; render(); status("Создай профиль — вопрос останется в черновике"); }
-  });
-  $("#mxQuestList").addEventListener("click", (e) => {
-    const q = e.target.closest("[data-q]"); if (!q) return;
-    openFocus(q);
-    if (!S.me.reg) { status("Сначала создай профиль MAX"); return; }
-    const key = q.dataset.q;
-    if (key === "register") { V.modal = "profile:me"; render(); return; }
-    if (key === "favorite") { openChat("me"); setDraft("Заметка для себя: "); }
-    if (key === "chat") { openChat("p5"); setDraft("Привет, как дела?"); }
-    if (key === "gift") { const id = botGift(); openChat(id); }
-    if (key === "file") { openChat("me"); fileIn.click(); }
-    const input = $(".mx-input", mx); if (input && key !== "gift") input.focus();
-  });
 
   /* --- рендер экрана --- */
   function contacts() {
     const r = [{ id: "me", name: "Избранное", ava: "favorite_flag", prev: preview("me") || "заметки", un: 0, on: true, fav: true }];
-    // Сначала пятёрка сюжета в очереди появления, затем прежние игроки мода.
-    S.users.slice().sort((a, b) => {
-      const ia = PERSONAS.findIndex((p) => p.id === a.id), ib = PERSONAS.findIndex((p) => p.id === b.id);
-      return ia >= 0 && ib >= 0 ? ia - ib : ia >= 0 ? -1 : ib >= 0 ? 1 : dname(a).localeCompare(dname(b), "ru", { sensitivity: "base" });
-    }).forEach((u) => r.push({ id: u.id, name: dname(u), ava: u.ava, prev: preview(u.id) || u.desc || "пусто", un: unread(u.id), on: u.online, persona: PERSONA_BY_ID[u.id] }));
+    S.users.slice().sort((a, b) => dname(a).localeCompare(dname(b), "ru", { sensitivity: "base" })).forEach((u) =>
+      r.push({ id: u.id, name: dname(u), ava: u.ava, prev: preview(u.id) || u.desc || "пусто", un: unread(u.id), on: u.online }));
     return r;
   }
   const time = (t) => new Date(t).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
@@ -494,14 +240,12 @@
     side.innerHTML = `<div class="mx-brand"><b>MAX</b><span>Чаты</span></div><div class="mx-contacts"></div>`;
     const cl = $(".mx-contacts", side);
     contacts().forEach((c) => {
-      const row = document.createElement("button"); row.type = "button"; row.className = "mx-row" + (V.sel === c.id ? " on" : "") + (V.fwd ? " fwd" : "") + (c.persona ? " persona" : "");
-      if (c.persona) row.style.setProperty("--pc", c.persona.color);
-      row.setAttribute("aria-label", `${c.name}${c.un ? `, непрочитанных: ${c.un}` : ""}`);
+      const row = document.createElement("button"); row.type = "button"; row.className = "mx-row" + (V.sel === c.id ? " on" : "") + (V.fwd ? " fwd" : "");
       row.appendChild(ava(c.ava, 40, c.on, true));
       row.insertAdjacentHTML("beforeend", `<span class="mx-row-t"><b>${esc(trim(c.name, 16))}</b><i class="${c.fav ? "fav" : ""}">${esc(trim(c.prev, 18))}</i></span>${c.un ? `<em>${c.un > 9 ? "9+" : c.un}</em>` : ""}`);
       row.addEventListener("click", () => openChat(c.id)); cl.appendChild(row);
     });
-    const self = document.createElement("button"); self.type = "button"; self.className = "mx-self"; self.setAttribute("aria-label", `Мой профиль: ${dname(S.me)}`);
+    const self = document.createElement("button"); self.type = "button"; self.className = "mx-self";
     self.appendChild(ava(S.me.ava, 40, true, true));
     self.insertAdjacentHTML("beforeend", `<span class="mx-row-t"><b>${esc(trim(dname(S.me), 12))}</b><i>${esc(trim(S.me.desc || "профиль", 14))}</i></span>`);
     self.addEventListener("click", () => { V.modal = "profile:me"; snd("click", 0.4); render(); });
@@ -510,12 +254,11 @@
     const main = document.createElement("div"); main.className = "mx-main"; mx.appendChild(main);
     if (!V.sel) { main.innerHTML = `<div class="mx-empty">Выбери чат</div>`; }
     else {
-      const fav = V.sel === "me", u = user(V.sel), persona = PERSONA_BY_ID[V.sel];
-      if (persona) { main.classList.add("mx-persona-chat"); main.style.setProperty("--pc", persona.color); }
+      const fav = V.sel === "me", u = user(V.sel);
       const hd = document.createElement("div"); hd.className = "mx-head";
       const who = document.createElement("button"); who.type = "button"; who.className = "mx-who";
       who.appendChild(ava(fav ? "favorite_flag" : u.ava, 36, fav || u.online, true));
-      const sub = fav ? "самому себе" : V.typing === V.sel ? "печатает…" : persona ? `${persona.badge} · ${persona.mood}` : u.desc ? trim(u.desc, 28) : u.online ? "в сети" : "не в сети";
+      const sub = fav ? "самому себе" : u.desc ? trim(u.desc, 28) : u.online ? "в сети" : "не в сети";
       who.insertAdjacentHTML("beforeend", `<span><b>${esc(fav ? "Избранное" : dname(u))}</b><i class="${fav ? "fav" : ""}">${esc(sub)}</i></span>`);
       who.addEventListener("click", () => { V.modal = "profile:" + V.sel; snd("click", 0.4); render(); });
       hd.appendChild(who);
@@ -548,12 +291,7 @@
       main.appendChild(cp);
       const inp = $(".mx-input", cp); inp.value = draft; autoH(inp);
       inp.addEventListener("input", () => { V.draft = inp.value; autoH(inp); });
-      inp.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-        else if (e.key === "Escape" && (V.edit || V.reply || V.att || V.fwd || V.attachMenu)) {
-          e.stopPropagation(); cancelBars();
-        } else if (e.key === "Escape" && !stage.classList.contains("focused")) cancelBars();
-      });
+      inp.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } else if (e.key === "Escape") cancelBars(); });
       $(".mx-send", cp).addEventListener("click", send);
       $(".mx-plus", cp).addEventListener("click", () => { V.attachMenu = !V.attachMenu; snd("click", 0.4); render(); });
       const bx = $(".mx-bar-x", cp); if (bx) bx.addEventListener("click", cancelBars);
@@ -572,7 +310,7 @@
     const stl = document.createElement("div"); stl.className = "mx-status"; stl.textContent = V.status; mx.appendChild(stl);
     if (V.menu) mx.appendChild(menuEl());
     if (V.modal) mx.appendChild(modalEl());
-    counters(); renderQuest(); renderInbox();
+    counters();
   }
   const setDraft = (v) => { V.draft = v; const i = $(".mx-input", mx); if (i) i.value = v; };
   const autoH = (t) => { t.style.height = "auto"; t.style.height = Math.min(120, t.scrollHeight) + "px"; };
@@ -610,12 +348,11 @@
     let lp = 0; bub.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") lp = setTimeout(() => openMenu(m, e), 480); });
     ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => bub.addEventListener(ev, () => clearTimeout(lp)));
     $$("[data-g]", w).forEach((b) => b.addEventListener("click", () => giftRespond(S.gifts[m.gift], b.dataset.g === "1", "me")));
-    const dl = $(".mx-fdl", w); if (dl) dl.addEventListener("click", async () => {
-      snd("click", 0.4); status("Получаю файл из хранилища браузера...");
-      const f = await cachedFile(dl.dataset.dl);
-      if (!f) return status("Файл недоступен: хранился только до закрытия вкладки");
+    const dl = $(".mx-fdl", w); if (dl) dl.addEventListener("click", () => {
+      const f = files[dl.dataset.dl]; snd("click", 0.4);
+      if (!f) return status("Скачиваю файл..."), setTimeout(() => status("Ошибка: файл не найден на сервере"), 900);
       const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-      status("Файл загружен на устройство");
+      status("Файл сохранён в Downloads/MAX");
     });
     const im = $(".mx-prev", w); if (im) im.addEventListener("click", () => { V.modal = "img:" + m.id; render(); });
     return w;
@@ -645,11 +382,11 @@
     }
     render(); const inp = $(".mx-input", mx); if (inp && a !== "FORWARD") inp.focus();
   }
-  function cancelBars() { if (V.edit) setDraft(""); V.reply = 0; V.edit = 0; V.fwd = 0; V.att = null; V.attachMenu = false; render(); }
+  function cancelBars() { if (V.edit) setDraft(""); V.reply = 0; V.edit = 0; V.fwd = 0; V.att = null; render(); }
   function openChat(id) {
     if (V.fwd) { // пересылка: сырой текст, тип, вложение и подарок копируются
       const src = S.msgs.find((x) => x.id === V.fwd); V.fwd = 0;
-      if (src) { serverSend("me", id, src.text, { raw: true, fwd: true, fwdName: dname(user(src.from)), type: src.type, att: src.att ? Object.assign({}, src.att) : undefined, gift: src.gift }); status("Сообщение переслано"); snd("pop", 0.5); botAct(id, src.text); }
+      if (src) { serverSend("me", id, src.text, { raw: true, fwd: true, fwdName: dname(user(src.from)), type: src.type, att: src.att ? Object.assign({}, src.att) : undefined, gift: src.gift }); status("Сообщение переслано"); snd("pop", 0.5); botAct(id); }
     }
     V.sel = id; V.search = ""; V.res = []; V.ri = -1; V.menu = null; V.stick = true;
     S.msgs.forEach((m) => { if (m.from === id && m.to === "me") m.read = true; }); save(); snd("click", 0.4); render();
@@ -663,15 +400,11 @@
     }
     if (V.att) {
       const a = V.att, rep = V.reply; V.att = null; V.reply = 0; setDraft("");
-      upload(a, () => {
-        serverSend("me", V.sel, t.slice(0, 4000), { type: "FILE", att: a, reply: rep });
-        status("Файл отправлен · сохраняю локально"); snd("pop", 0.5); render(); botAct(V.sel, t || `Файл ${a.name}`);
-        cacheFile(a.key, files[a.key]).then((ok) => status(ok ? "Файл сохранён в браузере" : "Файл доступен только до закрытия вкладки"));
-      });
+      upload(a, () => { serverSend("me", V.sel, t.slice(0, 4000), { type: "FILE", att: a, reply: rep }); status("Файл отправлен"); snd("pop", 0.5); render(); botAct(V.sel); });
       render(); return;
     }
     if (!t) return;
-    serverSend("me", V.sel, raw.trim().slice(0, 4000), { reply: V.reply }); V.reply = 0; setDraft(""); snd("pop", 0.45, 1.1); render(); botAct(V.sel, raw.trim());
+    serverSend("me", V.sel, raw.trim().slice(0, 4000), { reply: V.reply }); V.reply = 0; setDraft(""); snd("pop", 0.45, 1.1); render(); botAct(V.sel);
   }
   function doSearch() {
     V.res = []; V.ri = -1; if (!V.search || !V.sel) return;
@@ -690,13 +423,13 @@
     const fr = new FileReader(); fr.onload = () => { const im = new Image(); im.onload = () => {
       const sc = Math.min(160 / im.width, 120 / im.height), w = Math.max(1, Math.round(im.width * sc)), h = Math.max(1, Math.round(im.height * sc));
       const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(im, 0, 0, w, h); cb({ url: c.toDataURL("image/png"), w, h });
-    }; im.onerror = () => cb(null); im.src = fr.result; }; fr.onerror = () => cb(null); fr.readAsDataURL(file);
+    }; im.onerror = () => cb(null); im.src = fr.result; }; fr.readAsDataURL(file);
   }
   function takeFile(file) {
     if (!file) return; if (!file.size) return status("Пустой файл");
     status("Обрабатываю файл...");
     makePreview(file, (p) => {
-      const key = "f" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); files[key] = file;
+      const key = "f" + Date.now(); files[key] = file;
       V.att = { key, name: file.name, size: file.size, kind: kindOf(file.name, file.type), preview: p && p.url, pw: p && p.w, ph: p && p.h };
       status("Файл прикреплён"); snd("paper", 0.5); render();
     });
@@ -709,10 +442,9 @@
     if (V.modal === "register" || V.modal === "profile-edit") avatarFile(f); else if (V.sel) takeFile(f); else status("Выбери чат"); });
   function upload(a, done) {
     const box = document.createElement("div"); box.className = "mx-xfer"; mx.appendChild(box);
-    const chunks = Math.max(1, Math.ceil(a.size / (30 * 1024))); let i = 0; const step = Math.max(1, Math.ceil(chunks / 40)), turn = session;
+    const chunks = Math.max(1, Math.ceil(a.size / (30 * 1024))); let i = 0; const step = Math.max(1, Math.ceil(chunks / 40));
     status("Файл отправляется...");
     const iv = setInterval(() => {
-      if (turn !== session) { clearInterval(iv); box.remove(); return; }
       i = Math.min(chunks, i + step); const p = Math.round(i / chunks * 100);
       box.innerHTML = `<b>Отправка файла</b><span>${p}%</span><i><em style="width:${p}%"></em></i><small>${esc(trim(a.name, 22))} · чанк ${i}/${chunks}</small>`;
       if (i >= chunks) { clearInterval(iv); box.classList.add("ok"); setTimeout(() => box.remove(), 900); done(); }
@@ -745,10 +477,7 @@
       box.querySelector('[data-x="save"]').addEventListener("click", () => {
         const norm = (v, n, fb) => { v = String(v || "").trim().replace(/\s+/g, " ").slice(0, n); return v || fb; };
         S.me.name = norm(F.name, 24, S.me.base); S.me.desc = norm(F.desc, 120, ""); S.me.ava = F.ava; S.me.show = F.show; S.me.reg = true; V.form = null; V.modal = null;
-        save(); status("Профиль сохранён"); snd("levelup", 0.3, 1.6); if (!V.sel) V.sel = "p5"; render();
-        if (coverDraft && !V.draft) setDraft(coverDraft);
-        scheduleWave(700);
-        coverDraft = null;
+        save(); status("Профиль сохранён"); snd("levelup", 0.3, 1.6); if (!V.sel) V.sel = null; render();
       });
       const bk = box.querySelector('[data-x="back"]'); if (bk) bk.addEventListener("click", () => { V.form = null; V.modal = null; render(); });
     } else if (kind === "crop") {
@@ -782,26 +511,13 @@
       });
       box.querySelector('[data-x="clr"]').addEventListener("click", () => { V.form.show = ""; V.modal = V.back; status("Трофей очищен"); render(); });
       box.querySelector('[data-x="back"]').addEventListener("click", () => { V.modal = V.back; render(); });
-    } else if (kind.startsWith("profile:") && PERSONA_BY_ID[kind.slice(8)]) {
-      const p = PERSONA_BY_ID[kind.slice(8)], unreadCount = unread(p.id);
-      box.classList.add("persona"); box.style.setProperty("--pc", p.color); box.style.setProperty("--pd", p.dark);
-      box.innerHTML = `<div class="mx-p-cover mx-p-cover-${p.id}"><span>MAX / ЛИЧНЫЙ ПРОФИЛЬ</span><b aria-hidden="true">${esc(p.mark)}</b><em>${esc(p.badge)}</em></div>
-        <div class="mx-p-id"><div class="mx-p-portrait"></div><div><small>${esc(p.mood)} · ${p.online ? "● В СЕТИ" : "○ НЕ В СЕТИ"}</small><h3>${esc(p.name)}</h3><span>@${esc(p.base)}</span></div></div>
-        <p class="mx-p-desc">${esc(p.desc)}</p>
-        <div class="mx-p-quote"><small>ЗАКРЕПЛЕНО</small><p>«${esc(p.quote)}»</p></div>
-        <div class="mx-p-tags">${p.tags.map((t) => `<span>#${esc(t)}</span>`).join("")}</div>
-        <div class="mx-p-foot"><div class="mx-p-item"><img src="${I(p.show)}" alt="${esc(ITEMS[p.show])}"><span><small>ВИТРИНА</small><b>${esc(ITEMS[p.show])}</b></span></div><span class="mx-p-count">${unreadCount ? `${unreadCount} новых` : "ЧАТ ОТКРЫТ"}</span></div>
-        <div class="mx-mf"><button type="button" class="mx-b ok" data-x="chat">Написать ↗</button><button type="button" class="mx-b" data-x="back">Назад</button></div>`;
-      $(".mx-p-portrait", box).appendChild(ava(p.ava, 116, true, false));
-      box.querySelector('[data-x="chat"]').addEventListener("click", () => { V.modal = null; openChat(p.id); });
-      box.querySelector('[data-x="back"]').addEventListener("click", () => { V.modal = null; render(); });
     } else if (kind.startsWith("profile:")) {
       const id = kind.slice(8), p = user(id) || S.me, self = id === "me";
       box.classList.add("prof");
       box.innerHTML = `<div class="mx-mh"><b>Профиль</b><span>${self ? "это ты" : p.online ? "в сети" : "не в сети"}</span></div><div class="mx-pv"><div class="mx-pv-a"></div><div class="mx-pv-t">
         <div class="mx-lbl2">Ник</div><div>${esc(dname(p))}</div><div class="mx-lbl2">Логин</div><div>${esc(trim(p.base, 24))}</div><div class="mx-lbl2">Описание</div><div class="mx-pv-d">${esc(p.desc || "Описание пока пустое")}</div></div></div>
         <div class="mx-lbl2 pad">Витрина</div><div class="mx-pv-show"><span class="mx-slotbox">${p.show ? `<img src="${I(p.show)}" alt="">` : ""}</span>${esc(p.show ? ITEMS[p.show] : "Пусто")}</div>
-        <div class="mx-lbl2 pad">UUID <span class="mx-uuid">${self ? "3f2a…c91e" : "…"}</span></div>
+        <div class="mx-lbl2 pad">UUID <span class="mx-uuid">${self ? "3f2a…c91e" : { b1: "9b1d…04aa", b2: "c7e0…5f12", b3: "12ab…e77d", b4: "e4f3…0b9c" }[id] || "…"}</span></div>
         <div class="mx-mf">${self ? `<button type="button" class="mx-b ok" data-x="edit">Изменить</button>` : ""}<button type="button" class="mx-b" data-x="back">Назад</button></div>`;
       $(".mx-pv-a", box).appendChild(ava(self ? S.me.ava : p.ava, 108, self || p.online, false));
       const ed = box.querySelector('[data-x="edit"]'); if (ed) ed.addEventListener("click", () => { V.modal = "profile-edit"; V.form = null; render(); });
@@ -822,9 +538,8 @@
         const stacks = V.giftSlots.slice(); stacks.forEach((s) => { S.me.inv[s.id] -= s.n; if (S.me.inv[s.id] <= 0) delete S.me.inv[s.id]; });
         const gid = "g" + S.next, to = V.sel; S.gifts[gid] = { from: "me", to, stacks, state: "PENDING" };
         const t = (V.draft || "").trim(); setDraft(""); serverSend("me", to, t, { type: "GIFT", gift: gid, reply: V.reply }); V.reply = 0; V.modal = null; V.giftSlots = [];
-        status("Подарок отправлен"); snd("echest", 0.4); render(); botAct(to, t || "Отправил подарок");
-        const b = user(to), turn = session;
-        if (to !== "me" && b.online) setTimeout(() => { if (turn === session) giftRespond(S.gifts[gid], Math.random() < 0.7, to); }, 3000);
+        status("Подарок отправлен"); snd("echest", 0.4); render(); botAct(to);
+        const b = user(to); if (to !== "me" && b.online) setTimeout(() => giftRespond(S.gifts[gid], Math.random() < 0.7, to), 3000);
       });
       box.querySelector('[data-x="cancel"]').addEventListener("click", () => { V.modal = null; render(); });
     } else if (kind.startsWith("img:")) {
@@ -851,35 +566,9 @@
   document.addEventListener("pointerdown", (e) => { if (V.menu && !e.target.closest(".mx-menu")) { V.menu = null; render(); } if (V.attachMenu && !e.target.closest(".mx-amenu,.mx-plus")) { V.attachMenu = false; render(); } });
   $("#botGift").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); botGift(); });
   $("#spam").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); const to = V.sel || "me"; for (let i = 0; i < 10; i++) serverSend("me", to, pick(["ок", "привет", "спс", "хз", "круто", "норм", "пока", "окей"])); snd("pop", 0.5); if (!V.sel) V.sel = to; V.stick = true; render(); });
-  $("#mxReset").addEventListener("click", async () => {
-    session++; clearTimeout(waveTimer); waveTimer = 0;
-    await clearCachedFiles();
-    S = seed();
-    V.sel = null; V.modal = null; V.form = null; V.att = null; V.typing = null; V.pendingReply = {}; coverDraft = null;
-    Object.keys(files).forEach((k) => delete files[k]);
-    save(); snd("no", 0.4); render();
-  });
-  render(); save(); // зафиксировать миграцию и удаление старых чатов сразу при открытии
-  if (window.IntersectionObserver) {
-    const storyObserver = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && S.me.reg && S.inboxWave < PERSONAS.length && !waveTimer) scheduleWave(850);
-    }, { threshold: 0.18 });
-    storyObserver.observe(stage);
-  }
-  // Миниатюры в localStorage не пишем: после перезагрузки собираем их из локальных файлов.
-  const missingImages = S.msgs.filter((m) => m.att?.kind === "IMAGE" && m.att.key && !m.att.preview).slice(-30);
-  Promise.all(missingImages.map(async (m) => {
-    const f = await cachedFile(m.att.key); if (!f) return;
-    await new Promise((resolve) => makePreview(f, (p) => {
-      if (p && S.msgs.includes(m)) { m.att.preview = p.url; m.att.pw = p.w; m.att.ph = p.h; }
-      resolve();
-    }));
-  })).then(() => { if (missingImages.length) render(); });
-  setInterval(() => { if (Math.random() < 0.35 && S.me.reg && document.visibilityState === "visible" && isVis(mx)) {
-    const b = pick(S.users.filter((u) => u.online));
-    serverSend(b.id, "me", pick(PERSONA_BY_ID[b.id].reply), { read: V.sel === b.id, scene: "ambient" });
-    snd("pling", 0.35, 1.2); render();
-  } }, 20000);
+  $("#mxReset").addEventListener("click", () => { S = seed(); V.sel = null; V.modal = null; V.form = null; save(); snd("no", 0.4); render(); });
+  render();
+  setInterval(() => { if (Math.random() < 0.35 && S.me.reg && document.visibilityState === "visible" && isVis(mx)) { const b = pick(S.users.filter((u) => u.online)); serverSend(b.id, "me", pick(["привет", "ты тут?", "го на спавн", "кто взорвал мой дом", "окей", "хорошо", "иди сюда"]), { read: V.sel === b.id }); snd("pling", 0.35, 1.2); render(); } }, 20000);
   function isVis(el) { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }
 
   /* ================= 03 АНТИЦЕНЗУРА: переводчик и словарь ================= */
@@ -1019,7 +708,7 @@
 
   /* ================= 07 ТОНКОСТИ ================= */
   const NOTES = [
-    ["Удалённое можно воскресить", "У получателя удалённое сообщение превращается в «Сообщение удалено», но сырой текст на сервере остаётся. «Переслать» в меню есть всегда и берёт именно сырой текст: перешли удалёнку себе в «Избранное» и прочитай. В симуляторе у Мамы такое лежит."],
+    ["Удалённое можно воскресить", "У получателя удалённое сообщение превращается в «Сообщение удалено», но сырой текст на сервере остаётся. «Переслать» в меню есть всегда и берёт именно сырой текст: перешли удалёнку себе в «Избранное» и прочитай. В симуляторе у Ksyusha_mc такое лежит."],
     ["Удалить — значит спрятать у себя", "Удаление прячет сообщение только у отправителя. Полностью текст стирается лишь в «Избранном», где отправитель и получатель — один человек."],
     ["Пересылка без цензуры и счётчика", "Пересланное не проходит антицензуру второй раз и не идёт в зачёт ста сообщений. Зато оно копирует вложение и даже id подарка."],
     ["Подарок, который нельзя принять", "Если переслать чужой подарок, у нового получателя будет пузырь с вещами и статусом, но без кнопок: подарок адресован не ему."],
@@ -1035,20 +724,7 @@
     ["Поиск только по тексту", "Поиск в шапке ищет по сырому тексту текстовых сообщений, начинает с самого нижнего, ↑ и ↓ ходят по кругу. Файлы, подарки и удалённое не ищутся."],
     ["Все игроки сервера", "Список чатов — это все, кто хоть раз заходил на сервер, по алфавиту. Писать можно и тем, кто не в сети: сообщение просто подождёт."],
   ];
-  $("#notesBox").innerHTML = NOTES.map(([t, d], i) =>
-    `<details class="mx-note"><summary><span>${String(i + 1).padStart(2, "0")}</span><b>${esc(t)}</b><i aria-hidden="true">+</i></summary><div class="mx-note-body"><p>${esc(d)}</p><em>${time(now - (NOTES.length - i) * 7 * 60e3)} ✓✓</em></div></details>`).join("");
-  const notes = $("#notesBox"), noteButton = $("#mxNotesToggle");
-  const noteCount = () => {
-    const open = notes.querySelectorAll("details[open]").length;
-    $("#mxNoteCount").textContent = `${open} / ${NOTES.length} раскрыто`;
-    noteButton.textContent = open === NOTES.length ? "Свернуть всё" : "Раскрыть всё";
-  };
-  notes.addEventListener("toggle", noteCount, true);
-  noteButton.addEventListener("click", () => {
-    const open = notes.querySelectorAll("details[open]").length < NOTES.length;
-    notes.querySelectorAll("details").forEach((d) => { d.open = open; }); noteCount();
-  });
-  noteCount();
+  $("#notesBox").innerHTML = NOTES.map(([t, d], i) => `<article class="mx-note"><header><span>${i + 1}</span><b>${esc(t)}</b></header><p>${esc(d)}</p><em>${time(now - (NOTES.length - i) * 7 * 60e3)} ✓✓</em></article>`).join("");
 
   /* ================= 08–09: ачивки, версии, финал ================= */
   adv = K.adv({ list: ZM.P23.advancements, store: "p23.adv", icon: (a) => I(a.icon), chatSel: "#log", intro: "Четыре скрытых: от первого входа до пятого отказа.", onGrant: () => setTimeout(got, 50) });
@@ -1060,10 +736,6 @@
     { date: "18.07.2026", ver: "1.1.1", t: "Ветка ачивок", d: "Четыре скрытых достижения: вход, сотое сообщение, пять сделок и пять отказов.", c: "#8a3dff" },
   ]);
   K.finNav(23, $("#finNav"));
-  // Без наблюдателя .reveal остаётся opacity:0: весь MAX ниже обложки
-  // выглядел пустым шаблоном, хотя симуляторы уже созданы в DOM.
-  if (ZM.reveal) ZM.reveal();
-  else $$(".reveal").forEach((el) => el.classList.add("in"));
 
   /* ================= фон: всплывающие пузыри ================= */
   (function bg() {
@@ -1079,4 +751,5 @@
         for (let k = 6; k < b.w - 10; k += 10 + ((k * 7) % 9)) g.fillRect(b.x + k, b.y + b.h / 2 - 1, 6, 2); });
       g.globalAlpha = 1; })(last);
   })();
+  ZM.reveal();
 })();

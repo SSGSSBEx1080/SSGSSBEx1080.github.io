@@ -75,11 +75,13 @@
         const a = [-(ox + sx) - inf, oy - inf, oz - inf], bb = [-ox + inf, oy + sy + inf, oz + sz + inf];
         let cm = M.id();
         if (c.rotation) { const cp = [-(c.pivot || [0, 0, 0])[0], (c.pivot || [0, 0, 0])[1], (c.pivot || [0, 0, 0])[2]]; cm = M.mul(M.t(cp[0], cp[1], cp[2]), M.mul(M.euler(c.rotation), M.t(-cp[0], -cp[1], -cp[2]))); }
-        const Q = faceQuads(a, bb), U = boxUV(c.uv[0], c.uv[1], Math.floor(sx + 1e-6), Math.floor(sy + 1e-6), Math.floor(sz + 1e-6)), mir = c.mirror ?? b.mirror;
+        // New cloak models use per-face UV objects; older models use box UV arrays.
+        const PF = Array.isArray(c.uv) ? null : c.uv || {};
+        const Q = faceQuads(a, bb), U = PF ? null : boxUV(c.uv[0], c.uv[1], Math.floor(sx + 1e-6), Math.floor(sy + 1e-6), Math.floor(sz + 1e-6)), mir = c.mirror ?? b.mirror;
         for (const f of Object.keys(Q)) {
-          let face = f;
-          let [u1, v1, u2, v2] = U[face];
-          if (mir) { if (f === "east") [u1, v1, u2, v2] = U.west; else if (f === "west") [u1, v1, u2, v2] = U.east; [u1, u2] = [u2, u1]; }
+          if (PF && !PF[f]) continue;
+          let [u1, v1, u2, v2] = PF ? [PF[f].uv[0], PF[f].uv[1], PF[f].uv[0] + PF[f].uv_size[0], PF[f].uv[1] + PF[f].uv_size[1]] : U[f];
+          if (!PF && mir) { if (f === "east") [u1, v1, u2, v2] = U.west; else if (f === "west") [u1, v1, u2, v2] = U.east; [u1, u2] = [u2, u1]; }
           const q = Q[f].map((p) => M.ap(cm, p)), base = pos.length / 3;
           const cu = [[u1, v1], [u2, v1], [u2, v2], [u1, v2]];
           q.forEach((p, i) => { pos.push(...p); uvs.push(cu[i][0] / TW, cu[i][1] / TH); shd.push(SH[f]); });
