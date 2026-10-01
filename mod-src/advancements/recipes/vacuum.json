@@ -1,0 +1,40 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_dropper": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [ { "items": [ "minecraft:dropper" ] } ]
+      }
+    },
+    "has_bamboo": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [ { "items": [ "minecraft:bamboo" ] } ]
+      }
+    },
+    "has_chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [ { "items": [ "minecraft:chest" ] } ]
+      }
+    },
+    "has_hopper": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [ { "items": [ "minecraft:hopper" ] } ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_dropper",
+      "has_bamboo",
+      "has_chest",
+      "has_hopper"
+    ]
+  ],
+  "rewards": {
+    "recipes": [ "zitraksmode:vacuum" ]
+  }
+}

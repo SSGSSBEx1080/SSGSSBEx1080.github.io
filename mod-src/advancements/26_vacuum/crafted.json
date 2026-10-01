@@ -1,0 +1,23 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": { "item": "zitraksmode:vacuum" },
+    "title": "§b§lХуесос",
+    "description": "§7не суй туда хуй свой бля, оторвёт фимозик",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true,
+    "x": 15,
+    "y": 8
+  },
+  "criteria": {
+    "has_vacuum": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [ { "items": [ "zitraksmode:vacuum" ] } ]
+      }
+    }
+  },
+  "rewards": { "experience": 10 }
+}

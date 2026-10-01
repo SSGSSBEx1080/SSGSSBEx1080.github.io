@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TB ",
+    " C ",
+    " BV"
+  ],
+  "key": {
+    "T": { "item": "minecraft:dropper" },
+    "B": { "item": "minecraft:bamboo" },
+    "C": { "item": "minecraft:chest" },
+    "V": { "item": "minecraft:hopper" }
+  },
+  "result": { "item": "zitraksmode:vacuum" }
+}

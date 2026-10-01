@@ -1,0 +1,45 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.vacuum.idle": {
+			"loop": true,
+			"animation_length": 2,
+			"bones": {
+				"root": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"1.0": [1.5, 0, 0],
+						"2.0": [0, 0, 0]
+					}
+				},
+				"fan": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"1.0": [0, 0, -4.75],
+						"2.0": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.vacuum.suck": {
+			"loop": true,
+			"animation_length": 0.25,
+			"bones": {
+				"root": {
+					"rotation": {
+						"0.0": [8.2, 0, 0],
+						"0.125": [6.2, 0, 0],
+						"0.25": [8.2, 0, 0]
+					}
+				},
+				"fan": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.125": [0, 0, 360],
+						"0.25": [0, 0, 720]
+					}
+				}
+			}
+		}
+	}
+}
