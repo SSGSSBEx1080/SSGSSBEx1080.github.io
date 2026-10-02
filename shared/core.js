@@ -95,7 +95,7 @@
     const store = `p${m[1]}.adv`, treeUrl = ZM.url(`index.html#tree/${n}`);
     const board = target.querySelector(".adv-board");
     const panel = document.createElement("div"); panel.className = "zm-branch-sync";
-    panel.innerHTML = `<div class="zm-branch-mark"><img src="${ZM.url(pt.icon)}" alt=""></div><div class="zm-branch-copy"><strong>Ветка №${m[1]} · ${ZM.esc(pt.title)}</strong><span>Тот же прогресс, что в общем древе. Достижения сохраняются в активном профиле.</span></div><b class="zm-branch-count" aria-live="polite"></b><a href="${treeUrl}">Открыть в главном древе ↗</a>`;
+    panel.innerHTML = `<div class="zm-branch-mark"><img src="${ZM.url(pt.icon)}" alt=""></div><div class="zm-branch-copy"><strong>Ветка №${m[1]} · ${ZM.esc(pt.title)}</strong><span>Тот же прогресс, что в общем древе. Достижения сохраняются в активном профиле.</span></div><b class="zm-branch-count" aria-live="polite"></b><a href="${treeUrl}">Открыть в главном древе${n >= 23 ? "" : " ↗"}</a>`;
     // A point can wrap the advancement board in its own thematic frame.
     if (board) board.before(panel); else target.appendChild(panel);
     const map = document.createElement("div"); map.className = "zm-branch-map"; map.setAttribute("aria-label", "Ветка достижений пункта в главном древе");
@@ -141,7 +141,7 @@
     if (sections.length > 2) {
       const first = main.querySelector("section"), route = document.createElement("nav");
       route.className = "zm-route"; route.setAttribute("aria-label", "Маршрут по пункту");
-      route.innerHTML = `<div class="zm-route-intro"><span>ПУТЕВОДИТЕЛЬ / №${m[1]}</span><b>Выбери, что попробовать</b></div><div class="zm-route-links">${sections.map((sec, i) => `<a href="#${encodeURIComponent(sec.id)}"><small>${String(i + 1).padStart(2, "0")}</small>${ZM.esc(sec.querySelector("h2").textContent.trim())}<span aria-hidden="true">↗</span></a>`).join("")}</div>`;
+      route.innerHTML = `<div class="zm-route-intro"><span>ПУТЕВОДИТЕЛЬ / №${m[1]}</span><b>Выбери, что попробовать</b></div><div class="zm-route-links">${sections.map((sec, i) => `<a href="#${encodeURIComponent(sec.id)}"><small>${String(i + 1).padStart(2, "0")}</small>${ZM.esc(sec.querySelector("h2").textContent.trim())}${n >= 23 ? "" : '<span aria-hidden="true">↗</span>'}</a>`).join("")}</div>`;
       if (first) first.after(route);
     }
     main.querySelectorAll("section > p").forEach((p) => {
@@ -275,9 +275,10 @@
   ZM.topbar = ({ crumb = "", prev, next } = {}) => {
     const bar = document.createElement("header");
     bar.className = "zm-topbar";
-    const link = (p, label, arrowFirst) => p ? `<a href="${ZM.url(p.href)}" title="${ZM.esc(p.title)}">${arrowFirst ? "←" : ""} <span>№${String(p.n).padStart(2, "0")}</span> ${arrowFirst ? "" : "→"}</a>` : `<a class="off">${label}</a>`;
+    const cleanNav = +(crumb.match(/№(\d+)/)?.[1] || 0) >= 23;
+    const link = (p, label, arrowFirst) => p ? `<a href="${ZM.url(p.href)}" title="${ZM.esc(p.title)}">${cleanNav ? "" : arrowFirst ? "←" : ""} <span>№${String(p.n).padStart(2, "0")}</span> ${cleanNav || arrowFirst ? "" : "→"}</a>` : `<a class="off">${cleanNav ? "" : label}</a>`;
     const me = ZM.profile.me();
-    bar.innerHTML = `<a class="zm-home" href="${ZM.url("index.html")}"><i>←</i> <span class="zm-full">ZITRAKSMODE</span><span class="zm-short">ZM</span></a><span class="zm-sep">/</span><span class="zm-crumb">${crumb}</span>
+    bar.innerHTML = `<a class="zm-home" href="${ZM.url("index.html")}">${cleanNav ? "" : "<i>←</i>"} <span class="zm-full">ZITRAKSMODE</span><span class="zm-short">ZM</span></a><span class="zm-sep">/</span><span class="zm-crumb">${crumb}</span>
       <nav class="zm-nav">${link(prev, "←", true)}${link(next, "→", false)}</nav>
       <a class="zm-me" href="${ZM.url("index.html#profile")}" title="Профиль: прогресс и сохранения"><img src="${ZM.profile.avatarUrl(me.avatar)}" alt=""><span class="zm-me-n">${ZM.esc(me.nick)}</span><b>★ ${ZM.profile.gotCount()}</b></a>`;
     document.body.prepend(bar);

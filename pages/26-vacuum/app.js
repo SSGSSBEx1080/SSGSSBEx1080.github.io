@@ -39,7 +39,7 @@
   };
   const log=(text)=>{$('#labLog').textContent='> '+text;};
   const fmt=n=>String(n).padStart(2,'0');
-  const adv=K.adv({list:ZM.P26.advancements,store:'p26.adv',icon:a=>icon(a.icon),intro:'Сначала получи пылесос. Следующие достижения откроются за удержание максимальной мощности и чары «Айрухан» III.'});
+  const adv=K.adv({list:ZM.P26.advancements,store:'p26.adv',icon:a=>icon(a.icon),intro:'Сначала получи пылесос. Следующие достижения откроются за удержание максимальной мощности и чары «Воздухан» III.'});
   K.finNav(26,$('#finNav'));
   function renderStats(){
     $('#powerNumber').textContent=fmt(S.power);$('#powerRange').value=S.power;$('#powerRange').style.setProperty('--fill',((S.power-1)/9*100)+'%');
@@ -55,6 +55,7 @@
     $('#stageStatus').textContent=S.active?`ПОТОК АКТИВЕН / ${MODES.find(m=>m[0]===S.mode)[1].toUpperCase()} / R=${range()}`:'ОЖИДАНИЕ / МОЖНО ВКЛЮЧАТЬ ПОТОК';
     $('#suckLabel').textContent=S.active?'ОСТАНОВИТЬ ПОТОК':'ВКЛЮЧИТЬ ПОТОК';$('#suckBtn').classList.toggle('on',S.active);$('#suckBtn').setAttribute('aria-pressed',String(S.active));
     $('#jetTarget').style.left=(S.active?Math.max(4,14-S.enchant*3):14)+'%';$('#jetTarget').parentElement.classList.toggle('working',S.active);
+    updateFacts();
   }
   function renderFilters(){
     $('#filters').innerHTML=MODES.map(([id,title,glyph])=>`<button type="button" class="filter-btn ${S.mode===id?'active':''}" data-mode="${id}" aria-pressed="${S.mode===id}"><i>${glyph}</i><span>${title}</span>${id==='misc'?'<small class="asterisk">* JAVA</small>':''}</button>`).join('');
@@ -81,7 +82,7 @@
   $('#suckBtn').addEventListener('click',()=>toggleSuction());$('#soundOn').addEventListener('change',syncAudio);
   $('#spawnBtn').addEventListener('click',()=>{window.P26CHAMBER?.spawn(18);log('В камеру добавлена смешанная партия предметов.');});
   function resetTimer(){S.maxSecs=0;renderTimer();}
-  function renderTimer(){const t=S.maxSecs;$('#timerReadout').innerHTML=`${fmt(Math.floor(t/60))}:${fmt(Math.floor(t%60))} <small>/ 01:00</small>`;$('#timerBar').style.width=Math.min(100,t/60*100)+'%';}
+  function renderTimer(){const t=S.maxSecs;$('#factTimer').textContent=fmt(Math.floor(t));$('#factTimerRing').style.setProperty('--progress',(Math.min(t,60)/60*100)+'%');$('#timerReadout').innerHTML=`${fmt(Math.floor(t/60))}:${fmt(Math.floor(t%60))} <small>/ 01:00</small>`;$('#timerBar').style.width=Math.min(100,t/60*100)+'%';}
   let last=performance.now();setInterval(()=>{const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;if(S.active&&S.power===10&&document.visibilityState==='visible'&&!adv.has('max_power_60s')){S.maxSecs=Math.min(60,S.maxSecs+dt);renderTimer();if(S.maxSecs>=60){adv.grant('max_power_60s');log('60 секунд непрерывно! Достижение «Сосёт как твоя ****» получено.');}}},100);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&S.active)toggleSuction(false);});
   // Хранилище: стеки сливаются до 64, затем свободная ячейка. Сортировка — по ID;
@@ -110,7 +111,7 @@
 
   let transferTimer=null;
   $('#transferBtn').addEventListener('click',()=>{if(transferTimer)return;if(!S.inventory.length){log('Хранилище пусто. Засыпь предметы в лаборатории.');return;}const total=S.inventory.length;let done=0;$('#transferBtn').disabled=true;$('#transferBtn').textContent='ПЕРЕНОС...';
-    transferTimer=setInterval(()=>{if(!S.inventory.length){clearInterval(transferTimer);transferTimer=null;$('#transferBtn').disabled=false;$('#transferBtn').textContent='ЗАБРАТЬ ВСЁ ↗';$('#transferBar').style.width='0';log(`Перенесено ${done} стаков в инвентарь игрока. Один слот за тик.`);persist();renderStats();return;}
+    transferTimer=setInterval(()=>{if(!S.inventory.length){clearInterval(transferTimer);transferTimer=null;$('#transferBtn').disabled=false;$('#transferBtn').textContent='ЗАБРАТЬ ВСЁ';$('#transferBar').style.width='0';log(`Перенесено ${done} стаков в инвентарь игрока. Один слот за тик.`);persist();renderStats();return;}
       const stack=S.inventory.shift();S.playerCount+=stack.n;done++;$('#transferBar').style.width=(done/total*100)+'%';persist();renderStorage();renderStats();},50);
   });
   // Рецепт фигурный: TB / C / BV. Грид редактируется отдельно от книги рецептов.
@@ -126,13 +127,35 @@
   $('#autoRecipe').onclick=()=>{[...recipe].forEach((c,i)=>grid[i]=c===' '?'':c);renderRecipe();};
   $('#clearRecipe').onclick=()=>{grid.fill('');renderRecipe();};
   $('#craftBtn').onclick=()=>{if(!grid.every((c,i)=>c===(recipe[i]===' '?'':recipe[i]))){$('#recipeStatus').textContent='СНАЧАЛА СОБЕРИ РЕЦЕПТ';return;}S.crafted=true;persist();adv.grant('crafted');$('#recipeStatus').textContent='ГОТОВО / ПЫЛЕСОС ПОЛУЧЕН';log('Пылесос собран: +10 XP, достижение открыто.');};
-  $('#enchantButtons').addEventListener('click',e=>{const b=e.target.closest('[data-level]');if(!b)return;S.enchant=+b.dataset.level;persist();renderEnchantment();renderStats();if(S.enchant===3){adv.grant('airuhan_3');}log(`«Айрухан» ${S.enchant?['','I','II','III'][S.enchant]:'снят'}: дальность ${range()}, задний поток ${S.enchant?S.enchant+1:1}× базы.`);});
+  $('#enchantButtons').addEventListener('click',e=>{const b=e.target.closest('[data-level]');if(!b)return;S.enchant=+b.dataset.level;persist();renderEnchantment();renderStats();if(S.enchant===3){adv.grant('airuhan_3');}log(`«Воздухан» ${S.enchant?['','I','II','III'][S.enchant]:'снят'}: дальность ${range()}, задний поток ${S.enchant?S.enchant+1:1}× базы.`);});
   function renderEnchantment(){$('#enchantButtons').innerHTML=[0,1,2,3].map(i=>`<button type="button" data-level="${i}" class="${S.enchant===i?'active':''}" aria-pressed="${S.enchant===i}">${['—','I','II','III'][i]}</button>`).join('');}
   const plants=Array(12).fill(true);
   function renderFarm(){const ripe=plants.filter(Boolean).length;$('#cropCounter').textContent=`${ripe} / 12 ЗРЕЛЫХ`;$('#farmGrid').innerHTML=plants.map((on,i)=>`<div class="crop ${on?'':'sprout'}" title="${on?'Зрелая пшеница':'Молодой росток'}" aria-label="Растение ${i+1}: ${on?'зрелое':'молодое'}">${on?'<img src="'+icon('wheat')+'" alt="">':''}</div>`).join('');}
   $('#harvestBtn').onclick=()=>{if(S.mode!=='food'||!S.active){$('#farmMessage').textContent='Сначала включи поток и выбери режим «Еда» в лаборатории.';log('Урожай собирается только активным пылесосом с фильтром «Еда».');return;}
     const amount=plants.filter(Boolean).length;if(!amount){$('#farmMessage').textContent='Грядка уже срезана. Ростки подрастут автоматически.';return;}plants.fill(false);renderFarm();const collected=insert('wheat',amount);$('#farmMessage').textContent=`Срезано ${amount} зрелых растений, восстановлен начальный рост. Пшеница в хранилище: +${collected}.`;log(`Собрано ${amount} растений. Молодые ростки посажены заново.`);setTimeout(()=>{plants.fill(true);renderFarm();},7500);
   };
+  // Шесть опытов используют ТО ЖЕ состояние предмета и те же кнопки, что лаборатория.
+  const factLoot=['diamond','bread','feather','stone','wheat'];
+  function updateFacts(){
+    const accepted=factLoot.filter(id=>matches(byId(id)));
+    $('#factLoot').innerHTML=factLoot.map(id=>`<span class="${accepted.includes(id)?'pass':'reject'}" title="${esc(byId(id).name)}"><img src="${icon(id)}" alt="${esc(byId(id).name)}"></span>`).join('');
+    $('#factLootResult').textContent=`Фильтр «${MODES.find(m=>m[0]===S.mode)[1]}»: ${accepted.map(id=>byId(id).name.toLowerCase()).join(', ')||'ничего из показанного'}.`;
+    $('#factCapacity').textContent=capacity();$('#factChestResult').textContent=S.upgrades>=15?'Предел: 15 сундуков, 177 ячеек.':`Улучшений: ${S.upgrades}/15 · свободных ячеек: ${free()}.`;
+    $('#factAddChest').disabled=S.upgrades===15;
+    $('#factAirScene').classList.toggle('blasting',S.active&&S.enchant>0);
+    $('#factSpecResult').textContent=`Экземпляр ${S.exemplar==='A'?'А':'Б'}: ${used()} занятых ячеек · сила ${S.power}/10.`;
+    document.querySelectorAll('[data-fact-specimen]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.factSpecimen===S.exemplar)));
+    document.querySelectorAll('[data-fact-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.factFilter===S.mode)));
+    $('#factStartTimer').textContent=S.active&&S.power===10?'ИСПЫТАНИЕ ИДЁТ':'НАЧАТЬ ИСПЫТАНИЕ';
+  }
+  $('#notes').addEventListener('click',e=>{
+    const filter=e.target.closest('[data-fact-filter]');if(filter){$('#filters [data-mode="'+filter.dataset.factFilter+'"]').click();return;}
+    const wheat=e.target.closest('[data-fact-wheat]');if(wheat){$('#filters [data-mode="'+wheat.dataset.factWheat+'"]').click();$('#factWheatResult').textContent=`Да! В режиме «${wheat.dataset.factWheat==='food'?'Еда':'Прочее'}» пшеница тоже попадает внутрь.`;document.querySelectorAll('[data-fact-wheat]').forEach(b=>b.setAttribute('aria-pressed',String(b===wheat)));return;}
+    const specimen=e.target.closest('[data-fact-specimen]');if(specimen){document.querySelector('.specimen-switch [data-specimen="'+specimen.dataset.factSpecimen+'"]').click();updateFacts();return;}
+  });
+  $('#factAddChest').onclick=()=>$('#upgradeBtn').click();
+  $('#factBlast').onclick=()=>{if(!S.enchant)$('#enchantButtons [data-level="1"]').click();if(!S.active)toggleSuction(true);$('#factBlastResult').textContent=`Воздухан ${['','I','II','III'][S.enchant]}: радиус ${range()} блоков · струя отталкивает зомби.`;updateFacts();};
+  $('#factStartTimer').onclick=()=>{if(S.power!==10)setPower(10);if(!S.active)toggleSuction(true);$('#factTimerResult').textContent='Сила 10 · поток включён. Держи его 60 секунд без остановки.';};
   // Публичный мост для независимой WebGL-камеры: без симуляции серверных пакетов.
   window.P26APP={state:S,items:ITEMS,byId,matches,range,capacity,free,insert,log,renderStats};
   renderFilters();renderRecipe();renderFarm();renderEnchantment();renderStats();renderStorage();renderTimer();
@@ -152,7 +175,7 @@
     try{const cv=$('#heroModel'), g=ZMGeo.create(cv,{geo:ZM.P26G.geo,anim:ZM.P26G.anim,tex:T+'vacuum.png',cam:{yaw:33,pitch:19,dist:39,target:[0,4,0],fov:41},nearest:true,lit:.65,idle:'idle',exclusive:true});
       if(g){$('#heroVisual').classList.add('model-ready');const turn=K.spinner(cv,{ry:0,rx:0},55);let was=performance.now(),visible=true;new IntersectionObserver(entries=>{visible=entries[0].isIntersecting}).observe($('#heroVisual'));
         function frame(now){requestAnimationFrame(frame);if(!visible){was=now;return;}let dt=Math.min((now-was)/1000,.07);was=now;g.tick(dt);g.setExtra(g.M.euler([turn.rx,turn.ry+(turn.idle()?Math.sin(now/2800)*5:0),0]));g.render();}requestAnimationFrame(frame);
-        $('#heroSpin').onclick=()=>{if(g.st.act){g.stop();$('#heroSpin').textContent='▶ АНИМИРОВАТЬ';$('#heroSpin').setAttribute('aria-pressed','false');}else{g.play('suck');$('#heroSpin').textContent='■ ОСТАНОВИТЬ';$('#heroSpin').setAttribute('aria-pressed','true');}};
+        $('#heroSpin').onclick=()=>{if(g.st.act){g.stop();$('#heroSpin').textContent='АНИМАЦИЯ: ВЫКЛ';$('#heroVisual').classList.remove('model-pumping');$('#heroSpin').setAttribute('aria-pressed','false');}else{g.play('suck');$('#heroSpin').textContent='АНИМАЦИЯ: ВКЛ';$('#heroVisual').classList.add('model-pumping');$('#heroSpin').setAttribute('aria-pressed','true');}};
       }
     }catch(e){console.warn('[P26] fallback hero',e);}
   }

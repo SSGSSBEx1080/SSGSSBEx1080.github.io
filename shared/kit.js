@@ -66,7 +66,7 @@
     r.addEventListener("click", () => { r.classList.remove("got"); void r.offsetWidth; r.classList.add("got"); ZM.sfx("pop", 0.5, 1.2); onTake && onTake(); });
   }
   function timeline(el, items) { el.style.setProperty("--n", items.length); el.innerHTML = items.map((h) => `<div style="--c:${h.c || ""}"><div class="d"><i></i></div><div class="b"><span class="v">${h.ver ? "v" + esc(h.ver) : "релиз"}</span><span class="dt">${esc(h.date)}</span><b>${esc(h.t)}</b><p>${esc(h.d)}</p></div></div>`).join(""); }
-  function finNav(n, el) { const nav = ZM.pointNav(n); el.innerHTML = [nav.prev && `<a href="${U(nav.prev.href)}">← №${pad2(nav.prev.n)} ${esc(nav.prev.title)}</a>`, `<a href="${U("index.html")}">Все пункты</a>`, nav.next && `<a href="${U(nav.next.href)}">№${pad2(nav.next.n)} ${esc(nav.next.title)} →</a>`].filter(Boolean).join(""); }
+  function finNav(n, el) { const nav = ZM.pointNav(n), clean = n >= 23; el.innerHTML = [nav.prev && `<a href="${U(nav.prev.href)}">${clean ? "" : "← "}№${pad2(nav.prev.n)} ${esc(nav.prev.title)}</a>`, `<a href="${U("index.html")}">Все пункты</a>`, nav.next && `<a href="${U(nav.next.href)}">№${pad2(nav.next.n)} ${esc(nav.next.title)}${clean ? "" : " →"}</a>`].filter(Boolean).join(""); }
   function dl(el, rows) { el.innerHTML = rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join(""); }
   // вращение мышью/пальцем для canvas-моделей
   function spinner(el, st = { ry: 20, rx: 0 }, lim = 60) {

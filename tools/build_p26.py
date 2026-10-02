@@ -22,7 +22,7 @@ for full, spec in raw_anim.items():
 geo = {'tw':model['description']['texture_width'], 'th':model['description']['texture_height'], 'bones':model['bones']}
 (R/'data/p26_geo.js').write_text('/* Оригинальные vacuum.geo.json + vacuum.animation.json; сборка: python3 tools/build_p26.py */\nwindow.ZM=window.ZM||{};ZM.P26G='+json.dumps({'geo':geo,'anim':anim},ensure_ascii=False,separators=(',',':'))+';\n',encoding='utf-8')
 
-entries = [('crafted',10,'vacuum_icon','task','Получи пылесос: собери рецепт в верстаке или подбери готовый предмет. В игре проверяется наличие в инвентаре.'),('max_power_60s',50,'vacuum_icon','goal','Держи ЛКМ при силе 10 без перерывов 60 секунд (1200 игровых тиков). Если отпустить или уменьшить силу, счётчик обнуляется.'),('airuhan_3',100,'enchanted_book','challenge','Получи пылесос с зачарованием «Айрухан» III. Только этот предмет принимает чары, максимум III.')]
+entries = [('crafted',10,'vacuum_icon','task','Получи пылесос: собери рецепт в верстаке или подбери готовый предмет. В игре проверяется наличие в инвентаре.'),('max_power_60s',50,'vacuum_icon','goal','Держи ЛКМ при силе 10 без перерывов 60 секунд (1200 игровых тиков). Если отпустить или уменьшить силу, счётчик обнуляется.'),('airuhan_3',100,'enchanted_book','challenge','Получи пылесос с зачарованием «Воздухан» III. Только этот предмет принимает чары, максимум III.')]
 adv=[]
 colors={'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','a':'a','b':'b','c':'c','d':'d','e':'e','f':'f'}
 for key,xp,icon,frame,how in entries:
