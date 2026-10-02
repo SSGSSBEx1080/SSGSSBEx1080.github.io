@@ -2,36 +2,42 @@
    ChigurCoinItem, ChigurBedHandler; пользовательские эксперименты без боевого насилия. */
 (() => {
   const { $, $$ } = ZM, K = ZM.kit, U = ZM.url;
+  ZM.topbar({crumb:'№27 · Антон Чигур', ...ZM.pointNav(27)});
   const snd = K.sounds('p27');
   const tex = name => U(`assets/textures/p27/${name}.png`);
   const adv = K.adv({list: ZM.P27.advancements, store:'p27.adv', icon:a=>tex(a.icon), intro:'Пять достижений скрыты, как в игре. Подойди к незнакомцу на пять блоков.'});
   K.finNav(27,$('#finNav'));
   let g = null;
-  function pose(name){if(g)g.play(`animation.chigur.${name}`,()=>{$('#stageState').textContent='НАБЛЮДАЕТ';});$('#stageState').textContent=({shoot:'СТРЕЛЯЕТ',coin:'БРОСАЕТ МОНЕТУ',kill:'ФИНАЛЬНАЯ СЦЕНА',vanish:'ИСЧЕЗАЕТ'})[name]||'НАБЛЮДАЕТ';}
+  function pose(name){if(g)g.play(`animation.chigur.${name}`,()=>{$('#stageState').textContent='НАБЛЮДАЕТ';});$('#stageState').textContent=({shoot:'СТРЕЛЯЕТ',coin:'БРОСАЕТ МОНЕТУ',kill:'ФИНАЛЬНАЯ СЦЕНА',vanish:'ИСЧЕЗАЕТ',stalk:'ОХОТИТСЯ',walk:'ПРИБЛИЖАЕТСЯ'})[name]||'НАБЛЮДАЕТ';}
   if(window.ZMGeo?.supported()){
     try {
       const cv=$('#character3d');
-      g=ZMGeo.create(cv,{geo:ZM.P27G.geo,anim:ZM.P27G.anim,tex:tex('anton_chigur'),idle:'animation.chigur.idle',cam:{yaw:195,pitch:7,dist:77,target:[0,16,0],fov:41},lit:.45,mip:true});
+      g=ZMGeo.create(cv,{geo:ZM.P27G.geo,anim:ZM.P27G.anim,tex:tex('anton_chigur'),idle:'animation.chigur.idle',cam:{yaw:195,pitch:7,dist:61,target:[0,16,0],fov:41},lit:.45,mip:true});
       if(g){$('#stage').classList.add('model-ready');const rotation=K.spinner(cv,{rx:0,ry:0},45);let old=performance.now(),seen=true;
         new IntersectionObserver(entries=>{seen=entries[0].isIntersecting}).observe($('#stage'));
         function frame(t){requestAnimationFrame(frame);if(!seen){old=t;return;}g.tick(Math.min(.06,(t-old)/1000));old=t;g.setExtra(g.M.euler([rotation.rx,rotation.ry+(rotation.idle()?Math.sin(t/2500)*3:0),0]));g.render();}requestAnimationFrame(frame);
       }
     } catch(e){console.warn('3D-фигура недоступна, остаётся оригинальный портрет.',e);g=null;}
   }
+  // Как у персонажей на первых страницах: клик по самой модели начинает встречу.
+  {const cv=$('#character3d');let down=null;cv.addEventListener('pointerdown',e=>down={x:e.clientX,y:e.clientY});cv.addEventListener('pointerup',e=>{if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(d>7)return;$('#meetBtn').click();$('#encounter').scrollIntoView({behavior:'smooth'});pose('stalk');});cv.addEventListener('pointercancel',()=>down=null);}
   const poses=['animation.chigur.idle','animation.chigur.walk','animation.chigur.stalk'];let poseIndex=0;
   $('#poseBtn').onclick=()=>{poseIndex=(poseIndex+1)%poses.length;if(g)g.st.idle=poses[poseIndex];$('#poseBtn').textContent=['ПОЗА: СПОКОЕН','ПОЗА: ИДЁТ','ПОЗА: СЛЕДИТ'][poseIndex];};
 
   // Порядок ChigurSpawnHandler: stored=20, migration=>40; failure stored=50, next migration=>100.
   const night={index:1,chance:40,found:false};
-  function renderNight(){ $('#nightIndex').textContent=String(night.index).padStart(2,'0');$('#nightChance').textContent=night.chance;$('#chanceBar').style.width=night.chance+'%';$('#nightRoll').disabled=night.found; }
+  function renderNight(){ $('#nightIndex').textContent=String(night.index).padStart(2,'0');$('#nightChance').textContent=night.chance;$('#chanceBar').style.width=night.chance+'%';$('#nightRoll').disabled=night.found;$('#approachControl').hidden=!night.found; }
   $('#nightRoll').onclick=()=>{
     if(night.found)return;
     const roll=Math.random()*100|0,success=roll<night.chance;
-    if(success){night.found=true;$('#hunterDistance').textContent=(12+Math.random()*9|0)+' БЛОКОВ';$('#hunterMarker').classList.add('visible');$('#nightSignal').textContent='ФИГУРА ОБНАРУЖЕНА';$('#nightResult').textContent=`Бросок ${roll} < ${night.chance}: Чигур появился в 12–20 блоках. Подойди, чтобы получить достижение.`;snd('chigur_vanish',.35);}
+    if(success){night.found=true;$('#hunterDistance').textContent=(12+Math.random()*9|0)+' БЛОКОВ';$('#hunterMarker').classList.add('visible');$('#nightSignal').textContent='ФИГУРА ОБНАРУЖЕНА';$('#nightRoadnote').textContent='ПОДОЙДИ К НЕМУ';$('#approachRange').value='20';updateApproach();$('#nightResult').textContent=`Бросок ${roll} < ${night.chance}: Чигур появился в 12–20 блоках. Подойди, чтобы получить достижение.`;snd('chigur_vanish',.35);}
     else{$('#nightResult').textContent=`Бросок ${roll} ≥ ${night.chance}: никого нет. Следующей ночью шанс станет 100%.`;night.index++;night.chance=100;$('#nightSignal').textContent='ТИШИНА · СЛЕДУЮЩАЯ НОЧЬ';}
     renderNight();
   };
-  $('#nightReset').onclick=()=>{night.index=1;night.chance=40;night.found=false;$('#nightResult').textContent='Новый прогон. Сначала проверь ночь.';$('#nightSignal').textContent='СИГНАЛ НЕ ОБНАРУЖЕН';$('#hunterMarker').classList.remove('visible');renderNight();};renderNight();
+  $('#nightReset').onclick=()=>{night.index=1;night.chance=40;night.found=false;$('#nightResult').textContent='Новый прогон. Сначала проверь ночь.';$('#nightSignal').textContent='СИГНАЛ НЕ ОБНАРУЖЕН';$('#hunterMarker').classList.remove('visible');$('#nightRoadnote').textContent='ПРИСМОТРИСЬ К ОБОЧИНЕ';renderNight();};renderNight();
+
+  function updateApproach(){const d=Number($('#approachRange').value);$('#nightDistance').textContent=d+' БЛОКОВ';$('#hunterDistance').textContent=d+' БЛОКОВ';const sprite=$('#hunterMarker');sprite.style.setProperty('--near-scale',String(.48+(20-d)*.05));sprite.style.right=(19+(20-d)*1.4)+'%';$('#nightApproachMessage').textContent=d<=5?'Пять блоков. Он видит тебя. «Первая встреча» открыта.':`До знакомства ещё ${d-5} блоков.`;if(d<=5&&night.found&&!adv.has('first_meeting')){$('#meetBtn').click();$('#nightRoadnote').textContent='ОН ВИДИТ ТЕБЯ';}}
+  $('#approachRange').addEventListener('input',updateApproach);
 
   const scene={met:false,anger:0,hunt:false,ended:false};
   function dialogue(){
@@ -41,16 +47,16 @@
     $('#meetBtn').disabled=scene.met&&!scene.ended;
   }
   $('#meetBtn').onclick=()=>{if(scene.ended)resetDialogue();scene.met=true;$('#dialogueLine').textContent='Он замер. Пора задать вопрос — или промолчать.';adv.grant('first_meeting');dialogue();};
-  function resetDialogue(){scene.met=false;scene.anger=0;scene.hunt=false;scene.ended=false;$('#dialogueLine').textContent='Он остановился рядом и смотрит на тебя. Подойди, чтобы заговорить.';$('#bedVisual').classList.remove('broken');$('#bedStamp').textContent='НЕ БЕЗОПАСНО';$('#sleepResult').textContent='Сперва запусти охоту диалогом выше.';dialogue();}
+  function resetDialogue(){scene.met=false;scene.anger=0;scene.hunt=false;scene.ended=false;document.body.classList.remove('hunt-active');$('#dialogueLine').textContent='Он остановился рядом и смотрит на тебя. Подойди, чтобы заговорить.';$('#bedVisual').classList.remove('broken');$('#bedStamp').textContent='НЕ БЕЗОПАСНО';$('#sleepResult').textContent='Сперва запусти охоту диалогом выше.';dialogue();}
   $('#dialogueReset').onclick=resetDialogue;
   $('#dialogueChoices').onclick=e=>{const btn=e.target.closest('[data-choice]');if(!btn||btn.disabled)return;const choice=+btn.dataset.choice;
-    if(choice===0){scene.hunt=true;$('#dialogueLine').textContent='«Откуда ты?» — пять секунд лицом к лицу. Затем он исчезает из вида и начинает тихую охоту.';snd('chigur_speech_1',.55);adv.grant('dialogue_mistake');pose('stalk');}
-    else if(choice===1){scene.anger=Math.min(100,scene.anger+34);if(scene.anger>=100){scene.hunt=true;$('#dialogueLine').textContent='Третье молчание. 34 + 34 + 34 = 102. Шкала достигла предела — началась охота.';pose('stalk');}else $('#dialogueLine').textContent=`Он не получил ответа. Настороженность: ${scene.anger}/100. Ещё одно «...» поднимет её на 34.`;}
+    if(choice===0){scene.hunt=true;document.body.classList.add('hunt-active');$('#dialogueLine').textContent='«Откуда ты?» — пять секунд лицом к лицу. Затем он исчезает из вида и начинает тихую охоту.';snd('chigur_speech_1',.55);adv.grant('dialogue_mistake');pose('stalk');}
+    else if(choice===1){scene.anger=Math.min(100,scene.anger+34);if(scene.anger>=100){scene.hunt=true;document.body.classList.add('hunt-active');$('#dialogueLine').textContent='Третье молчание. 34 + 34 + 34 = 102. Шкала достигла предела — началась охота.';pose('stalk');}else $('#dialogueLine').textContent=`Он не получил ответа. Настороженность: ${scene.anger}/100. Ещё одно «...» поднимет её на 34.`;}
     else{scene.ended=true;$('#dialogueLine').textContent='«Извините, обознался». Он не преследует тебя. На этот раз.';snd('chigur_vanish',.35);}
     dialogue();
   };dialogue();
   $('#sleepBtn').onclick=()=>{if(!scene.hunt){$('#sleepResult').textContent='Сцена начинается только во время личной ночной охоты. Начни с «Откуда ты?».';return;}
-    $('#bedVisual').classList.add('broken');$('#bedStamp').textContent='КРОВАТЬ СЛОМАНА';$('#sleepResult').textContent='Он ломает кровать, появляется перед игроком и исчезает после финальной сцены.';scene.hunt=false;scene.ended=true;dialogue();pose('kill');snd('chigur_airgun',.55);adv.grant('night_visit');};
+    $('#bedVisual').classList.add('broken');$('#bedStamp').textContent='КРОВАТЬ СЛОМАНА';$('#sleepResult').textContent='Он ломает кровать, появляется перед игроком и исчезает после финальной сцены.';scene.hunt=false;scene.ended=true;document.body.classList.remove('hunt-active');dialogue();pose('kill');snd('chigur_airgun',.55);adv.grant('night_visit');};
 
   let refusals=0,witnessDone=false;
   $('#refuseBtn').onclick=()=>{if(witnessDone)return;refusals++;if(refusals<=2)snd('chigur_speech_'+(refusals+4),.34);$('#refusalNum').textContent=refusals+' / 3';$('#witnessResult').textContent=refusals<3?`Отказ №${refusals}. Он отступил и спросит снова.`:'Третий отказ: он молча отступает, прекращает охоту и уходит.';if(refusals===3){witnessDone=true;$('#refuseBtn').disabled=true;$('#tellBtn').disabled=true;snd('chigur_vanish',.4);}};
@@ -84,13 +90,25 @@
   };
   $('#repairBtn').onclick=()=>{if(reloadTimer)clearInterval(reloadTimer);reloadTimer=null;gun.ammo=6;gun.reload=0;gun.hp=80;gun.pump=false;gun.dur=300;$('#rangeTarget').classList.remove('defeated');$('#weaponFeedback').textContent='Новая мишень и полностью отремонтированный учебный дробовик.';gunRender();};gunRender();
 
+  // Six case-file tabs reveal different original pieces of evidence instead of identical cards.
+  const evidence=[
+    {image:'anton_full',desc:'Не достаточно увидеть силуэт: первые пять блоков открывают знакомство.'},
+    {image:'anton_portrait',desc:'Молчание считается. Три раза по 34 — охота начинается.'},
+    {image:'coin_face',desc:'Монета настоящая: орёл и решка взяты из оригинального атласа.'},
+    {image:'chigur_shotgun_render',desc:'Барабан опустел — охотник ждёт следующей ночи.'},
+    {image:'anton_full',desc:'Потеряешь его из вида — он не исчезнет сразу. Нужно 120 секунд.'},
+    {image:'anton_portrait',desc:'Три отказа свидетеля разрывают охоту без выдачи друга.'}
+  ];
+  const allFacts=$$('.fact');function showEvidence(i){allFacts.forEach((el,n)=>el.classList.toggle('active',n===i));const x=evidence[i];$('#evidenceImg').src=tex(x.image);$('#evidenceImg').alt=allFacts[i].querySelector('h3').textContent;$('#evidenceImg').classList.toggle('is-vanished',i===4&&$('#factVanishImg').parentElement.classList.contains('faded'));$('#evidenceImg').classList.remove('changed');void $('#evidenceImg').offsetWidth;$('#evidenceImg').classList.add('changed');$('#evidenceIndex').textContent=String(i+1).padStart(2,'0')+' / 06';$('#evidenceTitle').textContent=allFacts[i].querySelector('h3').textContent;$('#evidenceDescription').textContent=x.desc;}
+  allFacts.forEach((el,i)=>{el.tabIndex=0;el.addEventListener('click',()=>showEvidence(i));el.addEventListener('keydown',e=>{if(e.target===el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();showEvidence(i);}})});
+  showEvidence(0);
   let factAnger=0,factAmmo=6,factRefusal=0,rad=0;
   $$('.fact [data-fact]').forEach(btn=>btn.onclick=()=>{switch(btn.dataset.fact){
     case 'meet':$('#meetBtn').click();$('#factMeet').textContent='Теперь проверь ветку достижений: «Первая встреча» открыта.';break;
     case 'anger':factAnger=(factAnger+34)%136;$('#factAnger').textContent=factAnger+' / 100';$('#factMeter i').style.width=Math.min(100,factAnger)+'%';$('#factAngerText').textContent=factAnger>100?'102: после трёх ответов начинается охота.':'Молчание добавляет 34, предел — 100.';break;
     case 'radius':rad=(rad+1)%7;$('#factRadius').textContent=rad+' / 5';$('#factRadiusText').textContent=rad<=5?`Игроков в пределах ${rad} бл. услышат результат.`:'На 6 блоках оповещения уже нет.';snd('chigur_coin',.22);break;
     case 'ammo':factAmmo--;if(factAmmo<0)factAmmo=6;$('#factAmmoArt').textContent=Array.from({length:6},(_,i)=>i<factAmmo?'●':'○').join(' ');$('#factAmmoText').textContent=factAmmo?'Осталось '+factAmmo+'/6.':'Пусто. Чигур пополнит барабан только следующей игровой ночью.';snd('chigur_shot',.15);break;
-    case 'vanish':$('#factVanishImg').parentElement.classList.toggle('faded');$('#factVanishText').textContent=$('#factVanishImg').parentElement.classList.contains('faded')?'Никто не видит его 120 секунд — он исчез.':'Он снова в поле зрения: отсчёт сброшен.';snd('chigur_vanish',.22);break;
+    case 'vanish':$('#factVanishImg').parentElement.classList.toggle('faded');$('#evidenceImg').classList.toggle('is-vanished',$('#factVanishImg').parentElement.classList.contains('faded'));$('#factVanishText').textContent=$('#factVanishImg').parentElement.classList.contains('faded')?'Никто не видит его 120 секунд — он исчез.':'Он снова в поле зрения: отсчёт сброшен.';snd('chigur_vanish',.22);break;
     case 'refuse':factRefusal=(factRefusal+1)%4;$('#factRefusals').textContent='НЕ СКАЖУ '.repeat(factRefusal)||'НЕТ · НЕТ · НЕТ';$('#factRefuseText').textContent=factRefusal===3?'Третий отказ: он уходит без новых вопросов.':`Отказов: ${factRefusal}/3.`;break;
   }});
   if(window.ZM?.reveal)ZM.reveal();
