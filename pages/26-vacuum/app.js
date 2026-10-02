@@ -179,5 +179,22 @@
       }
     }catch(e){console.warn('[P26] fallback hero',e);}
   }
+  // «Финальное всасывание»: чистая 2D-анимация, не меняет инвентарь и ачивки.
+  (()=>{const canvas=$('#outroCanvas'),ctx=canvas.getContext('2d'),button=$('#implosionBtn');
+    const ids=['diamond','apple','wheat','stone','emerald','feather','coal'];
+    const imgs=ids.map(id=>{const im=new Image();im.src=icon(id);return im;});let running=false;
+    button.onclick=()=>{if(running)return;if(matchMedia('(prefers-reduced-motion: reduce)').matches){$('#outroStatus').textContent='Всё внутри. Эффект выключен из-за настройки уменьшения анимации.';return;}
+      running=true;button.disabled=true;button.textContent='ИДЁТ ВСАСЫВАНИЕ';
+      const d=Math.min(devicePixelRatio||1,2),w=innerWidth,h=innerHeight;canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(d,0,0,d,0,0);canvas.classList.add('visible');
+      const r=$('.outro-core img').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+      const particles=Array.from({length:105},(_,i)=>{const side=i%4;return{sx:side===0?-30:side===1?w+30:Math.random()*w,sy:side===2?-30:side===3?h+30:Math.random()*h,phase:Math.random()*6.28,twist:(Math.random()-.5)*280,image:imgs[i%imgs.length],size:14+Math.random()*21}});
+      const begin=performance.now();function frame(now){const t=Math.min(1,(now-begin)/2100),ease=1-Math.pow(1-t,2.6);ctx.clearRect(0,0,w,h);
+        const glow=ctx.createRadialGradient(cx,cy,2,cx,cy,180*(1-t)+24);glow.addColorStop(0,'rgba(165,239,216,.45)');glow.addColorStop(1,'rgba(165,239,216,0)');ctx.fillStyle=glow;ctx.fillRect(cx-200,cy-200,400,400);
+        ctx.strokeStyle=`rgba(165,239,216,${.6*(1-t)})`;ctx.lineWidth=2;for(let k=0;k<3;k++){ctx.beginPath();ctx.arc(cx,cy,35+(1-t)*145+k*36,0,Math.PI*2);ctx.stroke();}
+        for(const p of particles){if(!p.image.complete||!p.image.naturalWidth)continue;const swirl=Math.sin(t*Math.PI)*(p.twist)*Math.pow(1-t,.3),x=p.sx+(cx-p.sx)*ease+swirl,y=p.sy+(cy-p.sy)*ease+Math.cos(t*9+p.phase)*swirl*.25,sz=p.size*(1-t*.87);ctx.globalAlpha=Math.min(1,t*5)*(1-t*.85);ctx.save();ctx.translate(x,y);ctx.rotate(t*12+p.phase);ctx.imageSmoothingEnabled=false;ctx.drawImage(p.image,-sz/2,-sz/2,sz,sz);ctx.restore();}
+        ctx.globalAlpha=1;if(t<1){requestAnimationFrame(frame);}else{ctx.clearRect(0,0,w,h);canvas.classList.remove('visible');running=false;button.disabled=false;button.textContent='ЗАПУСТИТЬ ЕЩЁ РАЗ';$('#outroStatus').textContent='Всё на месте. Это только визуальный вихрь.';}}
+      requestAnimationFrame(frame);
+    };
+  })();
   if(window.ZM?.reveal)ZM.reveal();
 })();

@@ -3,7 +3,7 @@
   const $=s=>document.querySelector(s);
   const n=v=>Number(v).toLocaleString('ru-RU');
   const modeText={level:'Ровно: предел 80 на HUD.',climb:'Подъём: тяжёлый экипаж теряет разгон.',descent:'Спуск: ограничение 80 снимается.'};
-  function road(mode){$('#factRoad').dataset.slope=mode;$('#factRoadText').textContent=modeText[mode];document.querySelectorAll('[data-rf-slope]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rfSlope===mode)));}
+  function road(mode){$('#factRoad').dataset.grade=mode;$('#factRoadText').textContent=modeText[mode];document.querySelectorAll('[data-rf-slope]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rfSlope===mode)));}
   document.querySelectorAll('[data-rf-slope]').forEach(b=>b.addEventListener('click',()=>{$(`[data-slope="${b.dataset.rfSlope}"]`).click();road(b.dataset.rfSlope)}));road('level');
   const crew=()=>{const riders=document.querySelectorAll('#roster .es-rider').length,count=riders+1;$('#factCrewPeople').textContent='● '.repeat(count);$('#factCrewText').textContent=`${count} из 5 мест занято · масса ${$('#hudMass').textContent}.`;$('#factAddRider').disabled=count>=5;};
   $('#factAddRider').onclick=()=>{$('#addPassenger').click();crew();};new MutationObserver(crew).observe($('#roster'),{childList:true,subtree:true});crew();

@@ -10,7 +10,7 @@
 @font-face{font-family:'LG Text';font-weight:300 900;font-display:swap;src:url(../../assets/fonts/Rubik-var-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
 @font-face{font-family:'LG Px';font-display:swap;src:url(../../assets/fonts/Tiny5-400-cyrillic.woff2) format('woff2');unicode-range:U+0400-045F}
 @font-face{font-family:'LG Px';font-display:swap;src:url(../../assets/fonts/Tiny5-400-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F}
-@font-face{font-family:'LG JP';font-weight:900;font-display:swap;src:url(../../assets/fonts/NotoSerifJP-900-p25.woff2) format('woff2')}
+@font-face{font-family:'LG JP';font-weight:900;font-display:swap;src:url(../../assets/fonts/NotoSerifJP-900-sub.woff2) format('woff2')}
 :root{--bg:#08111f;--pn:#0e1a2c;--pn2:#13223a;--ln:#1f3150;--tx:#eef3fb;--dim:#93a3bd;--or:#ff8800;--wh:#eef1f6;--c:#ff8800;--c2:#ffd39a;
   --f-t:'LG Text',system-ui,sans-serif;--f-h:'LG Head','LG Text',sans-serif;--f-c:'LG Cond','LG Text',sans-serif;--f-px:'LG Px',monospace;
   --topbar-bg:rgba(8,17,31,.86);--topbar-line:#1a2a44;--topbar-fg:#eef3fb}
