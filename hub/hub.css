@@ -457,3 +457,4 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc-25 .pc-bg::before{content:"正義";position:absolute;right:7%;top:12%;font:900 34px/1 serif;color:rgba(255,255,255,.16);letter-spacing:2px;animation:pc25Sway 3.2s ease-in-out infinite}
 @keyframes pc25Sway{50%{transform:translateY(-4px) skewX(-4deg)}}
 .lg-c[data-s="25"]{font-family:'LG Dela';color:#f2f5fb;--d:#ff8800;text-shadow:3px 3px 0 #ff8800,6px 6px 0 rgba(0,0,0,.5)}
+.guests a{color:inherit;text-decoration:none}.guests a:hover,.guests a:focus-visible{color:var(--ac)}

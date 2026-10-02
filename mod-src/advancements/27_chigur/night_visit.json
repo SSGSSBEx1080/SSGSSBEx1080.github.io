@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:27_chigur/dialogue_mistake",
+  "display": {
+    "icon": {
+      "item": "minecraft:red_bed"
+    },
+    "title": "Казнь",
+    "description": "Антон Чигур следил за тобой всё это время, ты чё думал спрятаться?",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

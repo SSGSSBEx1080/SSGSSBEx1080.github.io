@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:27_chigur/coin_luck",
+  "display": {
+    "icon": {
+      "item": "zitraksmode:chigur_shotgun"
+    },
+    "title": "Череда случайностей",
+    "description": "Антонам Чигурам тут не место / No country for Anton Chigur",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

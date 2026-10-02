@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:27_chigur/night_visit",
+  "display": {
+    "icon": {
+      "item": "zitraksmode:chigur_coin"
+    },
+    "title": "Сын заправщика",
+    "description": "Вот сука гад везучий. Вот как щас.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

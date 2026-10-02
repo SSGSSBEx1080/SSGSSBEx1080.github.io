@@ -1,0 +1,19 @@
+{
+  "parent": "zitraksmode:root",
+  "display": {
+    "icon": {
+      "item": "zitraksmode:anton_chigur_spawn_egg"
+    },
+    "title": "Первая встреча",
+    "description": "Ещё что впаришь?",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

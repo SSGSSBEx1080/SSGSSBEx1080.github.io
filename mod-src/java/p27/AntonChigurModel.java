@@ -1,0 +1,3 @@
+package com.example.zitraksmode.client;
+import com.example.zitraksmode.ZitraksMode; import com.example.zitraksmode.entities.AntonChigurEntity; import net.minecraft.resources.ResourceLocation; import software.bernie.geckolib3.model.AnimatedGeoModel;
+public class AntonChigurModel extends AnimatedGeoModel<AntonChigurEntity>{public ResourceLocation getModelResource(AntonChigurEntity e){return new ResourceLocation(ZitraksMode.MODID,"geo/anton_chigur.geo.json");}public ResourceLocation getTextureResource(AntonChigurEntity e){return new ResourceLocation(ZitraksMode.MODID,"textures/entity/anton_chigur.png");}public ResourceLocation getAnimationResource(AntonChigurEntity e){return new ResourceLocation(ZitraksMode.MODID,"animations/anton_chigur.animation.json");}}

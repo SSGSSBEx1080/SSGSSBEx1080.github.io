@@ -1,0 +1,108 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.zitraksmode.anton_chigur",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 4,
+				"visible_bounds_height": 5.3,
+				"visible_bounds_offset": [0, 2.35, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 17.075, 0]
+				},
+				{
+					"name": "body",
+					"parent": "root",
+					"pivot": [0, 18.35, 0],
+					"cubes": [
+						{"origin": [-4, 12, -2], "size": [8, 12, 4], "uv": [0, 16]}
+					]
+				},
+				{
+					"name": "head",
+					"parent": "root",
+					"pivot": [0, 24, 0],
+					"cubes": [
+						{"origin": [-4, 24, -4], "size": [8, 8, 8], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "right_arm",
+					"parent": "root",
+					"pivot": [-4.4, 23.25, 0],
+					"cubes": [
+						{"origin": [-8, 12, -2], "size": [4, 12, 4], "uv": [24, 16]}
+					]
+				},
+				{
+					"name": "shotgun",
+					"parent": "right_arm",
+					"pivot": [-6.6, 8.675, -3.2],
+					"rotation": [-93, 0, 0],
+					"cubes": [
+						{"origin": [-8.2, 7.39447, -8.90312], "size": [3, 2.075, 7.175], "uv": [32, 32]},
+						{"origin": [-7.275, 8.51947, -5.25312], "size": [1.15, 1.5, 3.2], "uv": [0, 48]},
+						{"origin": [-8.45, 7.14447, -1.77812], "size": [3.5, 2.575, 6.675], "uv": [32, 41]},
+						{"origin": [-8, 7.71947, -10.40312], "size": [2.525, 3.75, 1.525], "pivot": [-6.45, 9.59447, -9.27812], "rotation": [45, 0, 0], "uv": [48, 0]},
+						{"origin": [-7.85, 10.11947, -11.45312], "size": [2.125, 2.225, 1.4], "pivot": [-6.45, 11.99447, -10.45312], "rotation": [12, 0, 0], "uv": [48, 7]},
+						{"origin": [-6.65, 9.44447, -7.70312], "size": [0, 1.475, 2.175], "uv": [8, 48]}
+					]
+				},
+				{
+					"name": "stvolyara",
+					"parent": "right_arm",
+					"pivot": [-5.675, 18.825, -0.75],
+					"cubes": [
+						{"origin": [-6.375, 18.975, -5.725], "size": [0.75, 0.75, 6.625], "pivot": [-5.675, 18.825, 0.6], "rotation": [90, 0, 0], "uv": [44, 13]}
+					]
+				},
+				{
+					"name": "air_gun_hand",
+					"parent": "right_arm",
+					"pivot": [-6, 19.35, -0.025],
+					"rotation": [90.75, 0, 0],
+					"cubes": [
+						{"origin": [-7, 18.35, -6.45], "size": [2, 2, 7], "uv": [40, 16]}
+					]
+				},
+				{
+					"name": "left_arm",
+					"parent": "root",
+					"pivot": [5, 22, 0],
+					"cubes": [
+						{"origin": [4, 12, -2], "size": [4, 12, 4], "uv": [0, 32]}
+					]
+				},
+				{
+					"name": "coin_hand",
+					"parent": "left_arm",
+					"pivot": [6, 15, -2],
+					"cubes": [
+						{"origin": [4.275, 12.625, -1.925], "size": [3.275, 3.75, 0], "uv": [48, 4]}
+					]
+				},
+				{
+					"name": "right_leg",
+					"parent": "root",
+					"pivot": [-2, 12, 0],
+					"cubes": [
+						{"origin": [-4, 0, -2], "size": [4, 12, 4], "uv": [32, 0]}
+					]
+				},
+				{
+					"name": "left_leg",
+					"parent": "root",
+					"pivot": [2, 12, 0],
+					"cubes": [
+						{"origin": [0, 0, -2], "size": [4, 12, 4], "uv": [16, 32]}
+					]
+				}
+			]
+		}
+	]
+}

@@ -408,7 +408,7 @@
   $("#twRows").addEventListener("click", (e) => { const a = e.target.closest("a"); if (!a || e.ctrlKey || e.metaKey) return; const n = +a.dataset.n; if (!n) return; e.preventDefault(); setTab(n); $("#tw").scrollIntoView({ behavior: "smooth", block: "center" }); });
 
   /* ================= гости, история ================= */
-  $("#guests").innerHTML = ZM.GUEST_POINTS.map((g) => `<div>${esc(g.title)}<small>${esc(g.from)}</small></div>`).join("");
+  $("#guests").innerHTML = ZM.GUEST_POINTS.map((g) => `<div>${g.page ? `<a href="${U(g.page)}">${esc(g.title)}</a>` : esc(g.title)}<small>${esc(g.from)}</small></div>`).join("");
   const H = (ZM.HISTORY || []).slice().reverse(); let all = false;
   const tl = () => {
     $("#tl").innerHTML = (all ? H : H.slice(0, 8)).map((h) => { const p = ZM.POINTS.find((x) => x.page && x.date === h.date);

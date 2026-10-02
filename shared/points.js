@@ -32,7 +32,7 @@ ZM.POINTS = [
   { n: 24, title: "Электросамокат",        date: "28.07.2026", confirmed: true, page: "pages/24-scooter/index.html", icon: "assets/textures/p24/scooter_item.png", tone: "#00e0a0" },
   { n: 25, title: "Плащи Логии",           date: "04.08.2026", confirmed: true, page: "pages/25-cloaks/index.html", tone: "#ff8800", icon: "assets/textures/p25/i/cloak_akainu.png" },
   { n: 26, title: "Пылесос",               date: "07.08.2026", confirmed: true,  page: "pages/26-vacuum/index.html", icon: "assets/textures/p26/vacuum_icon.png", tone: "#a5efd8" },
-  { n: 27, title: "???",                   date: "",           confirmed: false, page: null, tone: "#666" },
+  { n: 27, title: "Антон Чигур",          date: "15.08.2026", confirmed: true, page: "pages/27-chigur/index.html", icon: "assets/textures/p27/anton_portrait.png", tone: "#e5bc79" },
   { n: 28, title: "Медуза",                date: "17.08.2026", confirmed: true,  page: null, tone: "#7dff9a" },
   { n: 29, title: "Секретный пункт",       date: "05.09.2026", confirmed: true, page: null, tone: "#aa00aa" },
 ];

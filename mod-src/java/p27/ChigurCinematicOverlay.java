@@ -1,0 +1,4 @@
+package com.example.zitraksmode.client;
+import com.example.zitraksmode.ZitraksMode; import com.mojang.blaze3d.vertex.PoseStack; import net.minecraft.client.Minecraft; import net.minecraftforge.api.distmarker.Dist; import net.minecraftforge.client.event.RenderGuiOverlayEvent; import net.minecraftforge.eventbus.api.SubscribeEvent; import net.minecraftforge.fml.common.Mod;
+@Mod.EventBusSubscriber(modid=ZitraksMode.MODID,bus=Mod.EventBusSubscriber.Bus.FORGE,value=Dist.CLIENT)
+public final class ChigurCinematicOverlay {private static int ticks;public static void start(int t){ticks=t;}@SubscribeEvent public static void render(RenderGuiOverlayEvent.Post e){if(ticks<=0)return;ticks--;PoseStack p=e.getPoseStack();int w=e.getWindow().getGuiScaledWidth(),h=e.getWindow().getGuiScaledHeight();net.minecraft.client.gui.GuiComponent.fill(p,0,0,w,h,0xA0000000);Minecraft.getInstance().font.drawShadow(p,"Тихие шаги приближаются...",w/2f-70,h/2f,0xFFE0E0E0);}}
