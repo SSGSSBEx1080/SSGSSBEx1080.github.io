@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p15-64.png">
 <link rel="stylesheet" href="../../shared/core.css">
 <link rel="stylesheet" href="../../shared/kit.css">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261002-facts15">
 </head>
 <body>
 <div class="hb-gate" id="gate" hidden>
@@ -96,22 +96,21 @@
     </div>
   </section>
 
-    <!-- ============ 04 МЕЛКИЙ ШРИФТ ============ -->
-  <section class="sec" id="fine">
-    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · details</span><h2>Тонкости</h2></div><span class="sec-q">то, что видно только в коде</span></header>
-    <div class="hb-server reveal pnl">
-      <div class="hb-srv-cubes" id="srvCubes"></div>
-      <div>
-        <b>На сервере блок скучнее</b>
-        <p>Списки картинок собираются из ресурсов игры, а их читает только клиент. В одиночной игре всё работает. На выделенном сервере списки пустые, и каждая грань выпадает запасной: <b>порно №1</b> или <b>хентай №1</b>, по три штуки. Мемов там нет совсем, так что «Смехуятинку» на сервере не получить.</p>
-      </div>
+  <!-- ============ 04 НЕОБЫЧНЫЕ ФАКТЫ ============ -->
+  <section class="sec hb-facts-section" id="fine">
+    <header class="sec-head reveal"><span class="sec-n">04</span><div class="sec-t"><span class="sec-k">IV · шесть мини-экспериментов</span><h2>За кадром: 6 фактов</h2></div><span class="sec-q">без скучной теории — жми на кнопки</span></header>
+    <p class="sec-p reveal">Блок умеет больше, чем просто сменить картинку. Открой его странности сам: меняй живой куб и играй с наглядными схемами. Взрослые изображения по-прежнему зацензурены.</p>
+    <div class="hb-fact-grid reveal" id="hbFactLab">
+      <article class="hb-fact-card hb-fact-roll"><div class="hb-fact-head"><span>01 / ГЕНЕРАТОР СЛУЧАЙНОСТЕЙ</span><b>5%</b></div><div class="hb-fact-visual"><div class="hb-fact-six" id="factFaces" aria-label="Шесть граней блока"></div></div><div class="hb-fact-body"><h3>Мем может выпасть на любой грани</h3><p>У каждой из шести граней — свой шанс 5%. Попробуй поймать мем.</p><button type="button" id="factRoll">ПОСТАВИТЬ БЛОК ЗАНОВО</button><div class="hb-fact-result" id="factRollResult" aria-live="polite">Кубик ещё не брошен.</div></div></article>
+      <article class="hb-fact-card hb-fact-locked"><div class="hb-fact-head"><span>02 / ПОНРАВИЛОСЬ — ОСТАВЬ</span><b>🔒</b></div><div class="hb-fact-visual"><div class="hb-fact-pinned"><img src="../../assets/textures/p15/i/hentai_block.png" alt="Иконка блока"><span id="factLockIcon">◇</span></div></div><div class="hb-fact-body"><h3>Грань можно закрепить</h3><p>ПКМ сохраняет любимую грань. Повторная установка поменяет лишь остальные.</p><button type="button" id="factPin">ЗАКРЕПИТЬ ГРАНЬ</button><div class="hb-fact-result" id="factPinResult" aria-live="polite">Пока ни одна грань не выбрана.</div></div></article>
+      <article class="hb-fact-card hb-fact-chance"><div class="hb-fact-head"><span>03 / ОХОТА ЗА ПАРОЙ МЕМОВ</span><b>×7</b></div><div class="hb-fact-visual"><div class="hb-fact-prob"><div><small>БЕЗ ЗАКРЕПЛЕНИЯ</small><span>3,3%</span><i></i></div><div><small>ЕСЛИ ОДИН УЖЕ ЕСТЬ</small><span>22,6%</span><i></i></div></div></div><div class="hb-fact-body"><h3>Один мем помогает поймать второй</h3><p>Оставь мем на месте — шанс собрать пару резко вырастет.</p><button type="button" id="factChance" aria-pressed="false">СРАВНИТЬ ШАНСЫ</button><div class="hb-fact-result" id="factChanceResult" aria-live="polite">Нажми — увидишь разницу.</div></div></article>
+      <article class="hb-fact-card hb-fact-split"><div class="hb-fact-head"><span>04 / СЧЁТ ПЯТИ ГРАНЕЙ</span><b>2 + 3</b></div><div class="hb-fact-visual"><div class="hb-fact-five"><span title="Одна сохранённая грань">🔒</span><div id="factSplitTiles"></div></div></div><div class="hb-fact-body"><h3>Пятая грань достаётся хентаю</h3><p>Закрепи одну: оставшиеся пять делятся на 2 оранжевые и 3 розовые.</p><button type="button" id="factShuffle">ПЕРЕМЕШАТЬ ПЯТЁРКУ</button><div class="hb-fact-result" id="factSplitResult" aria-live="polite">До возможной подмены мемом.</div></div></article>
+      <article class="hb-fact-card hb-fact-memory"><div class="hb-fact-head"><span>05 / КАРМАННЫЙ СНИМОК</span><b>♢</b></div><div class="hb-fact-visual"><div class="hb-fact-souvenir"><img src="../../assets/textures/p15/i/hentai_block.png" alt="Блок с сохранённой гранью"><span>🔒</span><img src="../../assets/textures/p15/i/hentai_block.png" alt="Тот же блок после установки"></div></div><div class="hb-fact-body"><h3>Сломал — не потерял</h3><p>Закреплённая грань останется в предмете и вернётся при установке.</p><button type="button" id="factRemember">ПРОВЕРИТЬ ПАМЯТЬ БЛОКА</button><div class="hb-fact-result" id="factRememberResult" aria-live="polite">Поставь опыт: сломай и верни.</div></div></article>
+      <article class="hb-fact-card hb-fact-gaze"><div class="hb-fact-head"><span>06 / НЕ МОРГАЙ</span><b>◉</b></div><div class="hb-fact-visual"><div class="hb-fact-eye"><i>◉</i><small>ДО 5 БЛОКОВ</small></div></div><div class="hb-fact-body"><h3>За тобой наблюдают</h3><p>Смотри на грань без перерыва — около 15 секунд, и получишь достижение.</p><button type="button" id="factLook">ПОПРОБОВАТЬ С КУБОМ</button><div class="hb-fact-result" id="factLookResult" aria-live="polite">Не отворачивайся и не прокручивай страницу.</div></div></article>
     </div>
-    <div class="hb-fine reveal" id="fineBox"></div>
   </section>
 
-<!-- ============ 03 АЧИВКИ ============ -->
-
-  <!-- ============ 04 ИСТОРИЯ ============ -->
+<!-- ============ 05 ИСТОРИЯ ============ -->
   <section class="sec" id="hist">
     <header class="sec-head reveal"><span class="sec-n">05</span><div class="sec-t"><span class="sec-k">VI · changelog</span><h2>Версии</h2></div></header>
     <div class="k-tl reveal" id="tl"></div>
@@ -139,7 +138,7 @@
 <script src="../../shared/kit.js"></script>
 <script src="../../data/p15_list.js"></script>
 <script src="../../data/p15_adv.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=20261002-facts15"></script>
 <script src="../../data/hub_adv.js"></script>
 </body>
 </html>

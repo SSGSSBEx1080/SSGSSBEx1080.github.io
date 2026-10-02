@@ -63,6 +63,7 @@
     FACES.forEach((f) => { const el = big.querySelector(`[data-f=${f}]`); el.innerHTML = faceHtml(B.tex[f], B.lock[f]); el.classList.toggle("locked", B.lock[f]); el.classList.toggle("meme", B.tex[f].startsWith("meme/")); });
     $("#faceList").innerHTML = FACES.map((f) => { const cat = B.tex[f].split("/")[0]; return `<button type="button" data-f="${f}" class="${B.lock[f] ? "on" : ""}"><i>${FRU[f]}</i><span class="c-${cat}">${esc(faceName(B.tex[f]))}</span><em>${B.lock[f] ? "🔒" : ""}</em></button>`; }).join("");
     odds();
+    refreshFactFaces();
   }
   // мини-куб в hero: крутится и сам перебрасывает грани
   function renderMini() { const P = pool("pron"), H = pool("hentai"), M = pool("meme"); FACES.forEach((f, i) => { const k = Math.random() < 0.18 ? "meme/" + M.pick() : i % 2 ? "pron/" + P.pick() : "hentai/" + H.pick(); mini.querySelector(`[data-f=${f}]`).innerHTML = faceHtml(k, false).replace(/<span class="lb[^]*?<\/span>/, ""); }); }
@@ -158,22 +159,82 @@
   renderColl();
   setInterval(() => { if (collDirty) { collDirty = false; saveSeen(); renderColl(); } }, 400);
 
-  /* ================= тонкости ================= */
-  (function fine() {
-    $("#srvCubes").innerHTML = [0, 1].map(() => `<div class="hb-srv">${FACES.slice(0, 3).map((f, i) => `<i class="s${i}">${faceHtml(i === 1 ? "hentai/1" : "pron/1", false).replace(/<span class="lb[^]*?<\/span>/, "")}</i>`).join("")}</div>`).join("");
-    const F = [
-      ["15 секунд вместо 30", "В коде ачивке за взгляд нужно 600 отсчётов, и это похоже на 30 секунд. Но обработчик срабатывает дважды за тик, в начале и в конце, поэтому на деле хватает 15. Счётчик выше считает так же."],
-      ["Смотреть можно издалека", "Взгляд ловится на расстоянии до 5 блоков, на любую грань. Отвёл прицел хоть на тик — счёт с нуля. Игроки в режиме наблюдателя не считаются."],
-      ["Закреплённый мем тоже в счёт", "«Смехуятинка» считает мемы на всех шести гранях, и закреплённые тоже. Выпал мем — закрепи и переставляй: шанс поймать второй поднимается с 3,3% до 22,6% за установку."],
-      ["Ачивку получит ближайший", "Два мема засчитываются не тому, кто поставил, а ближайшему игроку в радиусе 8 блоков. Друг стоит ближе — ачивка уходит ему."],
-      ["Пять граней делятся нечестно", "Если одна грань закреплена, пять оставшихся делятся на 2 порно и 3 хентая: лишняя грань всегда достаётся хентаю."],
-      ["Всё закрепил — ничего не меняется", "Если закреплены все шесть граней, постановка ничего не перебрасывает. Блок можно носить в инвентаре как готовую композицию."],
-      ["Колёсико копирует композицию", "В творческом режиме средняя кнопка мыши по блоку даёт копию вместе с закреплёнными гранями. Незакреплённые в предмет не пишутся и выпадут заново."],
-      ["Свои картинки через ресурспак", "Списки собираются по папкам pron, hentai и meme в textures/block из всех включённых ресурспаков. Положи свои PNG, и они попадут в пул. Читаются списки один раз при запуске игры, так что после смены пака нужен перезапуск."],
-      ["Ачивки без верстака", "«Хроники AD-блока» и «Адский дрочила» проверяют инвентарь, а не крафт. Достаточно получить блок любым способом, хоть из сундука. Для второй нужен полный стак в одной ячейке."],
-    ];
-    $("#fineBox").innerHTML = F.map(([t, d], i) => `<article class="pnl"><span>${String(i + 1).padStart(2, "0")}</span><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join("");
-  })();
+  /* ================= 04 / факты, которые можно проверить ================= */
+  // Миниатюры обновляются при каждом изменении большого куба. Взрослые грани — только мозаика.
+  function refreshFactFaces() {
+    const el = $("#factFaces");
+    if (!el) return;
+    el.innerHTML = FACES.map((f, i) => {
+      const key = B.tex[f], cat = key.split("/")[0];
+      const picture = cat === "meme"
+        ? `<img src="${T("meme/001", "webp")}" alt="Мем, пример из оригинальных ресурсов">`
+        : `<img src="${mosaic(cat, i + 1)}" alt="Цензурная мозаика">`;
+      return `<span class="hb-fact-face c-${cat}" title="${esc(FRU[f])}: ${esc(faceName(key))}${B.lock[f] ? " · закреплена" : ""}">${picture}${B.lock[f] ? "<b>🔒</b>" : ""}</span>`;
+    }).join("");
+    $("#factLockIcon").textContent = B.lock.south ? "🔒" : "◇";
+    $("#factPin").textContent = B.lock.south ? "ОТКРЕПИТЬ ГРАНЬ" : "ЗАКРЕПИТЬ ГРАНЬ";
+  }
+
+  $("#factRoll").addEventListener("click", () => {
+    place();
+    const n = FACES.filter((f) => B.tex[f].startsWith("meme/")).length;
+    $("#factRollResult").textContent = n ? `Мемов на кубе: ${n} из 6!` : "Пока без мемов. Попробуй ещё раз!";
+  });
+  $("#factPin").addEventListener("click", () => {
+    if (!B.placed) place();
+    toggle("south");
+    $("#factPinResult").textContent = B.lock.south
+      ? "Готово: эта грань переживёт перестановку."
+      : "Грань снова случайная при следующей установке.";
+  });
+  let chanceOn = false;
+  $("#factChance").addEventListener("click", () => {
+    chanceOn = !chanceOn;
+    $("#factChance").setAttribute("aria-pressed", String(chanceOn));
+    $(".hb-fact-prob").classList.toggle("active", chanceOn);
+    $("#factChanceResult").textContent = chanceOn
+      ? "С одним сохранённым мемом шанс ещё одного — около 22,6% за установку."
+      : "Без сохранённого мема шанс сразу двух — около 3,3%.";
+  });
+
+  // Схема состава пяти свободных граней, не меняющая реальный блок.
+  let shuffles = 0;
+  function splitPreview() {
+    const cats = ["pron", "pron", "hentai", "hentai", "hentai"];
+    for (let i = cats.length - 1; i > 0; i--) {
+      const j = (Math.random() * (i + 1)) | 0;
+      [cats[i], cats[j]] = [cats[j], cats[i]];
+    }
+    $("#factSplitTiles").innerHTML = cats.map((cat, i) => {
+      const label = cat === "pron" ? "Оранжевая мозаика" : "Розовая мозаика";
+      return `<span class="${cat}" title="${label}"><img src="${mosaic(cat, 20 + shuffles * 5 + i)}" alt="${label}"></span>`;
+    }).join("");
+  }
+  splitPreview();
+  $("#factShuffle").addEventListener("click", () => {
+    shuffles++;
+    splitPreview();
+    $("#factSplitResult").textContent = `Перемешано ${shuffles} раз. Состав неизменен: 2 оранжевые, 3 розовые.`;
+  });
+  $("#factRemember").addEventListener("click", () => {
+    if (!B.placed) place();
+    if (!B.lock.south) toggle("south");
+    const saved = B.tex.south;
+    $("#break").click();
+    $("#place").click();
+    const okay = B.lock.south && B.tex.south === saved;
+    $("#factRememberResult").textContent = okay
+      ? "Да! Сохранённая грань вернулась из предмета."
+      : "Повтори опыт: закрепи грань и попробуй снова.";
+  });
+  $("#factLook").addEventListener("click", () => {
+    if (!B.placed) place();
+    $("#cube").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("#factLookResult").textContent = touch
+      ? "Куб поставлен: оставь его на экране и не прокручивай страницу около 15 секунд."
+      : "Куб поставлен: наведи указатель на грань и не отводи его около 15 секунд.";
+  });
+  refreshFactFaces();
 
   /* ================= поп-апы в hero (Хроники AD-блока) ================= */
   const POPS = [
