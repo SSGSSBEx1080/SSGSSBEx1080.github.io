@@ -264,6 +264,7 @@
     g.globalAlpha = 1;
     if (S.b.up) { g.font = '700 10px "JetBrains Mono",monospace'; g.fillStyle = '#ff8f6a'; g.textAlign = 'center'; g.fillText('NO AI · XROT 180°', S.b.x * CELL, S.b.z * CELL + 34); }
     g.restore();
+    if (window.__g2sim3d) window.__g2sim3d(S);   /* 3D-портрет на hero: та же механика */
   }
   requestAnimationFrame(frame);
 

@@ -4,7 +4,7 @@
 <title>Гость П · Соль, нож и редиска — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера П: нож с ударом в спину ×2, солевой фитиль с сигналом 15, редиска с восемью стадиями и борщ, который возвращает миску. Механики из исходников ZitraksMode.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g4-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g4-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests6"><link rel="stylesheet" href="style.css?v=g4-6">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests6"><link rel="stylesheet" href="style.css?v=g4-7">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -78,13 +78,13 @@
         <div class="g-panel stab-wrap">
           <h3 class="panel-title">СТЕНД: ОТКУДА БЬЁШЬ</h3>
           <div class="stab-arena" id="stabArena">
-            <div class="stab-zone" id="stabZone" aria-hidden="true"></div>
+            <div class="stab-zone" id="stabZone" aria-hidden="true"><b class="zl zl-back">×2 СПИНА</b><b class="zl zl-side l">×1.5 БОК</b><b class="zl zl-front">×1 ЛИЦО</b><b class="zl zl-side r">×1.5 БОК</b></div>
             <div class="stab-dummy" aria-hidden="true"><span class="d-head"></span><span class="d-torso"><i class="d-arm"></i><i class="d-body"></i><i class="d-arm"></i></span><span class="d-legs"><i></i><i></i></span></div>
             <div class="stab-facing" id="stabFacing" aria-hidden="true"></div>
             <div class="stab-attacker"><img src="../../assets/textures/guest/nina_knife.png" alt="Нож гостя"><small>ТЫ</small></div>
             <div class="stab-readout"><span>НАПРАВЛЕНИЕ ВЗГЛЯДА ЦЕЛИ: <b id="stabDeg">0°</b></span><span>СКАЛЯРНОЕ ПРОИЗВЕДЕНИЕ: <b id="stabDot">−1.00</b></span></div>
             <b class="stab-mult" id="stabMult">×2</b>
-            <span class="stab-hint">Красный сектор — спина цели (×2), жёлтый — бок (×1.5), серый — лоб (×1).</span>
+            <span class="stab-hint">Скаляр ≤ −0.5 — красный сектор, спина (×2) · |скаляр| &lt; 0.5 — янтарные бока (×1.5) · остальное — лицо (×1). Подсвечивается сектор, в который бьёшь.</span>
           </div>
           <div class="stab-controls">
             <label>КУДА СМОТРИТ ЦЕЛЬ · <b id="stabDeg2">0°</b><input type="range" id="stabRange" min="0" max="360" step="5" value="0"></label>
@@ -149,6 +149,7 @@
           <button type="button" class="mine-block" id="mineBlock" aria-label="Соляная руда: зажми и держи, чтобы добыть киркой">
             <img src="../../assets/textures/guest/salt_ore.png" alt="" aria-hidden="true">
             <canvas id="mineCrack" width="16" height="16" aria-hidden="true"></canvas>
+            <svg class="mine-ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="bg" cx="18" cy="18" r="16.5"></circle><circle class="fg" id="mineRing" cx="18" cy="18" r="16.5" pathLength="1"></circle></svg>
             <span class="mine-y" aria-hidden="true">Y 48–128</span>
             <span class="mine-hint" aria-hidden="true">ЗАЖМИ И ДЕРЖИ</span>
           </button>
@@ -331,6 +332,6 @@
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g4-6"></script><script src="../../shared/guest.js?v=guests1"></script>
-<script type="module" src="scene3d.js?v=g4-1"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g4-7"></script><script src="../../shared/guest.js?v=guests1"></script>
+<script type="module" src="scene3d.js?v=g4-2"></script>
 </body></html>
