@@ -80,3 +80,12 @@ clinical timers and outcomes continue unchanged. The header uses an explicit-UV
 copy only to stabilize zero-width native box-UV samples at texel boundaries; raw
 geometry/texture files remain unchanged. Source Java is preserved semantically;
 trailing whitespace is normalized for repository hygiene.
+
+## Expanded visual layer
+
+`neon-city.jpg` is AI-generated decorative anime-city artwork commissioned for
+this wiki redesign, not an original mod screenshot, a new biome or an additional
+installation location. `fx.js`, rain, circuit paths, activation streaks, emissive
+windows and additive afterimage bloom are presentation effects only. They respect
+the effects toggle/reduced motion and do not alter P29Core, native trail capture,
+freeze bounds, timings, damage, recipes or advancement conditions.
