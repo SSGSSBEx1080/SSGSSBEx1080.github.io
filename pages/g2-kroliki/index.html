@@ -4,7 +4,7 @@
 <title>Гость К · Размножение кроликов — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера К: размножение кроликов в ZitraksMode. Поза «паровозик» на 3 секунды, тряска заднего кролика, отлёт ровно на 2 блока и оглушение вверх ногами на 5–10 секунд.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g2-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g2-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests4"><link rel="stylesheet" href="style.css?v=g2-4">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests5"><link rel="stylesheet" href="style.css?v=g2-5">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -23,9 +23,10 @@
           <span><b>0.45</b><small>БЛОКА МЕЖДУ ПАРОЙ</small></span>
         </div>
       </div>
-      <figure class="g-art">
-        <img src="../../assets/textures/guest/rabbit.png" alt="Пиксельный кролик — иконка гостевого пункта" width="256" height="256" style="image-rendering:pixelated">
-        <figcaption>КРОЛИК · ИКОНКА ГОСТЕВОЙ ВЕТКИ</figcaption>
+      <figure class="g-art art-hop" id="hopArt">
+        <canvas id="hop3d" aria-label="Два кролика на ночной поляне — объёмная сцена. Перетащи, чтобы повернуть"></canvas>
+        <img class="art-fallback" src="../../assets/textures/guest/rabbit.png" alt="Кролик — иконка гостевого пункта" width="256" height="256" style="image-rendering:pixelated">
+        <figcaption>ДВОЕ НА ПОЛЯНЕ · ТЯНИ, ЧТОБЫ КРУТИТЬ</figcaption>
       </figure>
       <span class="g-stamp" aria-hidden="true">ГОСТЕВОЙ ПУНКТ</span>
     </div>
@@ -118,8 +119,10 @@
       <h3>Размножение кроликов</h3>
       <p>Гостевой пункт №2 из 4. Все дистанции, тики и фазы — из RabbitRecoilHandler исходников мода; стенд показывает правила, а не игровую сессию.</p>
     </div>
+    <div class="g-branch gb-none" aria-label="У гостя К нет ветки ачивок"><span class="gb-label">ВЕТКА ГОСТЯ</span><span class="gb-empty">У Мистера К нет ветки ачивок — его пункт про поведение мира. Ачивки тут были бы ложью.</span></div>
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
 <script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="app.js?v=g2-2"></script>
+<script type="module" src="scene3d.js?v=g2-1"></script>
 </body></html>

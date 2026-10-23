@@ -202,3 +202,21 @@
 .g-adv .adv-row .x{font-size:12px}
 .g-adv .adv-more{font-size:15px}
 .g-adv .adv-empty{font-size:14px}
+
+/* ---------- мини-ветка ачивок в футере (как у основной линейки) ---------- */
+.g-branch{grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  border:1px dashed var(--g-line2);background:color-mix(in srgb,var(--tone) 5%,var(--g-panel));
+  padding:12px 16px;margin-top:4px;position:relative}
+.g-branch::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,#0000 0 6px,color-mix(in srgb,var(--tone) 6%,#0000) 6px 7px)}
+.g-branch .gb-label{font:11.5px var(--f-mono);letter-spacing:.18em;color:var(--tone);white-space:nowrap;position:relative}
+.g-branch .gb-label b{color:#fff}
+.g-branch .gb-chain{display:flex;align-items:center;flex:1;min-width:220px;overflow-x:auto;position:relative;scrollbar-width:thin}
+.g-branch .adv-node{width:40px;height:40px;background:var(--g-panel2);border:1px solid var(--g-line2);flex:none}
+.g-branch .adv-node:hover{border-color:var(--tone)}
+.g-branch .adv-node .ic{width:26px;height:26px}
+.g-branch .adv-node .q{font-size:15px}
+.g-branch .adv-link{width:22px;height:3px;background:var(--g-line2);box-shadow:none}
+.g-branch .adv-link.on{background:var(--tone);box-shadow:0 0 8px color-mix(in srgb,var(--tone) 60%,#0000)}
+.g-branch .gb-empty{font:12.5px/1.7 var(--f-mono);color:var(--g-dim);position:relative}
+@media(max-width:600px){.g-branch{gap:10px;padding:10px 12px}}

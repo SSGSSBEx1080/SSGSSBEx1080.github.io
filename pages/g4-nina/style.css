@@ -180,3 +180,54 @@
 .stab-arena{box-shadow:inset 0 0 40px #000a}
 .craft-row{clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%)}
 .craft-result .g-islot{box-shadow:0 0 22px #ffb02e33}
+
+/* =====================================================================
+   ПКМ-СТЕНД: все функции ножа правой кнопкой — сталь и янтарь
+   ===================================================================== */
+.rcm-row{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(16px,2.4vw,28px);margin-top:16px;align-items:start}
+.rcm-stand{border-left-color:#ffb02e80}
+.rcm-main{display:flex;gap:22px;align-items:stretch}
+.rcm-mouse{flex:none;width:88px;position:relative;display:grid;place-items:center;
+  border:3px solid #c9d4da;border-radius:44px 44px 34px 34px;height:132px;
+  background:linear-gradient(180deg,#1a222b,#12161c);
+  box-shadow:0 12px 28px -14px #000d,inset 0 2px 0 #ffffff2b}
+.rcm-mouse:before{content:'';position:absolute;top:-3px;bottom:46%;left:50%;width:3px;margin-left:-1.5px;background:#c9d4da}
+.rcm-mouse:after{content:'';position:absolute;top:34%;left:50%;width:7px;height:12px;margin-left:-3.5px;border-radius:50%;background:#0a0f15;box-shadow:0 0 0 2px #c9d4da40}
+.rcm-mouse i{position:absolute;top:-3px;right:-3px;width:50%;height:44%;border-radius:0 40px 40% 55%;
+  background:linear-gradient(180deg,#ffc95e,#ffb02e);box-shadow:0 0 24px #ffb02eb0,inset 0 2px 0 #ffe1a355;
+  animation:rcm-breathe 2.4s ease-in-out infinite}
+@keyframes rcm-breathe{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+.rcm-mouse.click i{animation:rcm-press .35s}
+@keyframes rcm-press{30%{filter:brightness(2.2);box-shadow:0 0 44px #ffd76e}}
+.rcm-mouse span{position:absolute;bottom:9px;left:-8px;right:-8px;text-align:center;
+  font:700 9.5px/1.4 var(--f-mono);letter-spacing:.12em;color:#8fa3ad}
+.rcm-game{display:flex;flex-direction:column;gap:12px;min-width:0;flex:1}
+.rcm-targets{display:flex;gap:8px;flex-wrap:wrap}
+.rcm-targets button{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--g-line);
+  background:#0b1119;color:var(--g-dim);padding:8px 12px;font:700 12px var(--f-head);letter-spacing:.06em;cursor:pointer;
+  clip-path:polygon(0 0,100% 0,100% 70%,90% 100%,0 100%);transition:.15s}
+.rcm-targets button img{width:20px;height:20px;image-rendering:pixelated;object-fit:contain}
+.rcm-targets button:hover{border-color:#ffb02e80;color:var(--g-txt)}
+.rcm-targets button.on{border-color:#ffb02e;color:#ffd76e;background:color-mix(in srgb,#ffb02e 14%,#0b1119);box-shadow:0 0 18px #ffb02e2e}
+.rcm-scene{position:relative;height:170px;display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(70% 85% at 50% 40%,#1c2833,#0b1119 78%);border:1px solid var(--g-line)}
+.rcm-scene:before{content:'';position:absolute;inset:8px;border:1px dashed #ffb02e30;pointer-events:none}
+.rcm-scene img{width:104px;height:104px;image-rendering:pixelated;object-fit:contain;
+  filter:drop-shadow(0 16px 18px #000a);transition:filter .3s;animation:rcm-idle 3.6s ease-in-out infinite}
+@keyframes rcm-idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.rcm-scene img.rcm-dim{filter:brightness(1.12) saturate(.45) drop-shadow(0 16px 18px #000a)}
+.rcm-scene img.rcm-strip{filter:none}
+.rcm-cap{position:absolute;top:9px;left:11px;font:700 10.5px var(--f-mono);letter-spacing:.14em;color:#ffd76e;text-shadow:0 2px 4px #000}
+.rcm-drop{position:absolute;right:11px;bottom:9px;display:flex;gap:7px}
+.rcm-drop .g-islot{animation:rcm-drop .45s cubic-bezier(.2,.7,.3,1.2)}
+@keyframes rcm-drop{from{transform:translateY(-46px);opacity:0}to{transform:none;opacity:1}}
+.rcm-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.rcm-use{background:#ffb02e;border-color:#ffd76e;color:#2a1a05;box-shadow:0 0 26px #ffb02e40}
+.rcm-dur{display:flex;gap:10px;align-items:center;font:11.5px var(--f-mono);letter-spacing:.1em;color:var(--g-faint)}
+.rcm-dur b{color:#ffd76e;font-weight:400}
+.rcm-dur i{width:110px;height:5px;background:#0a0f15;border:1px solid var(--g-line)}
+.rcm-dur em{display:block;height:100%;background:linear-gradient(90deg,#ffd76e,#ffb02e);width:100%}
+.rcm-log{min-height:64px;max-height:130px}
+@media(max-width:900px){.rcm-row{grid-template-columns:1fr}.rcm-main{flex-direction:column}
+  .rcm-mouse{align-self:center}.rcm-scene{height:150px}}
+@media(prefers-reduced-motion:reduce){.rcm-scene img,.rcm-mouse i{animation:none}}

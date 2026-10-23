@@ -4,7 +4,7 @@
 <title>Гость П · Соль, нож и редиска — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера П: нож с ударом в спину ×2, солевой фитиль с сигналом 15, редиска с восемью стадиями и борщ, который возвращает миску. Механики из исходников ZitraksMode.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g4-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g4-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests4"><link rel="stylesheet" href="style.css?v=g4-4">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests5"><link rel="stylesheet" href="style.css?v=g4-5">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -93,7 +93,37 @@
           </div>
           <div class="no-knock"><img src="../../assets/textures/guest/nina_knife.png" alt="" width="26" height="26" style="image-rendering:pixelated"><span>Цель <b>не сдвинется ни на пиксель</b>: даже спринт-отбрасывание отменяется вместе с обычным.</span></div>
         </div>
-        <div class="g-panel" style="margin-top:16px">
+      </div>
+    </div>
+    <!-- ===== ПКМ-стенд: все функции ножа правой кнопкой ===== -->
+    <div class="rcm-row">
+      <div class="g-panel rcm-stand">
+        <h3 class="panel-title">ПКМ · ВСЕ ФУНКЦИИ НОЖА</h3>
+        <div class="rcm-main">
+          <div class="rcm-mouse" id="rcmMouse" aria-hidden="true"><i></i><span>ПРАВАЯ<br>КНОПКА</span></div>
+          <div class="rcm-game">
+            <div class="rcm-targets" id="rcmTargets" role="tablist" aria-label="Цель для правой кнопки">
+              <button type="button" class="on" data-t="sheep"><img src="../../assets/textures/guest/sheep.png" alt="">ОВЦА</button>
+              <button type="button" data-t="bull"><img src="../../assets/textures/p22/cow_bull.png" alt="">БЫК</button>
+              <button type="button" data-t="berries"><img src="../../assets/textures/p21/i/sweet_berries.png" alt="">ЯГОДЫ</button>
+              <button type="button" data-t="log"><img src="../../assets/textures/mc/p2/block_oak_log.png" alt="">БРЕВНО</button>
+            </div>
+            <div class="rcm-scene" id="rcmScene">
+              <img id="rcmImg" src="../../assets/textures/guest/sheep.png" alt="Цель для ножа">
+              <b class="rcm-cap" id="rcmCap">ОВЦА · ЖДЁТ</b>
+              <div class="rcm-drop" id="rcmDrop" aria-hidden="true"></div>
+            </div>
+            <div class="rcm-controls">
+              <button type="button" class="g-btn rcm-use" id="rcmUse">ПРИМЕНИТЬ ПКМ</button>
+              <button type="button" class="g-btn ghost small" id="rcmReset">ВОССТАНОВИТЬ ЦЕЛЬ ↺</button>
+            </div>
+            <div class="rcm-dur">ПРОЧНОСТЬ НОЖА <b id="rcmDur">500 / 500</b><i><em id="rcmDurBar"></em></i></div>
+            <div class="g-log rcm-log" id="rcmLog" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+        <p class="g-note" style="margin-top:14px">Ещё ПКМ: стрижёт грибных коров и вырезает тыквы. Медный бык открывает достижение <b>№22 «Медный бык»</b> в родной ветке дойки. Стрижка работает только на обычном быке.</p>
+      </div>
+              <div class="g-panel" style="margin-top:16px">
           <h3 class="panel-title">ЧЕМ ЕЩЁ ПОЛЕЗЕН</h3>
           <ul class="actions-list">
             <li><img src="../../assets/textures/guest/sheep.png" alt=""><span><b>Стрижёт овец</b> и грибных коров — как ножницами, с уроном прочности</span></li>
@@ -102,22 +132,8 @@
             <li><img src="../../assets/textures/p26/v/carrot.png" alt=""><span><b>Собирает ягоды</b> и вырезает тыквы, снимает кору как топор</span></li>
           </ul>
         </div>
-      </div>
     </div>
-    <div class="g-panel" style="margin-top:16px">
-      <div class="bull-demo">
-        <div class="bull-stage"><img src="../../assets/textures/p22/cow_bull.png" alt="Бык" id="bullImg"></div>
-        <div>
-          <h3 class="panel-title">СТРИЖКА БЫКА · 50 / 50</h3>
-          <div class="g-btn-row" style="display:flex;gap:10px;flex-wrap:wrap">
-            <button type="button" class="g-btn" id="bullShear"><img src="../../assets/textures/p22/i/shears.png" alt=""> ПОДОЙТИ С НОЖОМ</button>
-            <button type="button" class="g-btn ghost small" id="bullReset">НОВЫЙ БЫК ↺</button>
-          </div>
-          <div class="bull-out" id="bullOut" style="margin-top:12px"></div>
-          <p class="g-note" style="margin-top:10px">Медный бык открывает достижение <b>№22 «Медный бык»</b> в родной ветке дойки. Стрижка работает только на обычном варианте быка.</p>
-        </div>
-      </div>
-    </div>
+
   </section>
 
   <!-- ======================= СОЛЬ ======================= -->
@@ -291,8 +307,9 @@
       <h3>Соль, нож и редиска</h3>
       <p>Гостевой пункт №4 из 4. Механики, текстуры и числа — из исходников мода (SaltTrailBlock, SaltOreBlock, RadishCropBlock, NinaKnifeItem и обработчики). Стенды иллюстрируют правила, не заменяя игру.</p>
     </div>
+    <div class="g-branch" id="gBranch" aria-label="Мини-ветка ачивок гостя"></div>
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g4-3"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g4-5"></script>
 </body></html>

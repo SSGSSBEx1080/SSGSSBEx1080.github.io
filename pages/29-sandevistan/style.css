@@ -93,3 +93,16 @@
 .no-sandy-effects .hero-copy h1 strong:before,.no-sandy-effects .v-button:after,.no-sandy-effects .hero-link:after,
 .no-sandy-effects .city-neon:before,.no-sandy-effects .city-neon:after{display:none}
 @media(max-width:580px){.city-neon{width:70%;height:24%;bottom:9%}.speed-trails i:nth-child(4),.speed-trails i:nth-child(6){display:none}}
+
+/* ---------- ЗАПИСЬ ПРОГОНА: видеоплеер канонического сценария ---------- */
+.rec-bar{position:absolute;left:12px;right:12px;bottom:34px;z-index:6;display:flex;align-items:center;gap:12px;
+  padding:10px 13px;background:#04131cd9;border:1px solid #2a6a63;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%)}
+.rec-bar>i{position:absolute;left:0;top:0;height:2px;width:0;background:var(--cyan);box-shadow:0 0 9px #39e9da}
+.rec-dot{flex:none;width:9px;height:9px;border-radius:50%;background:#f54d62;box-shadow:0 0 10px #f54d62;animation:rec-blink 1.1s steps(1) infinite}
+@keyframes rec-blink{50%{opacity:.25}}
+.rec-bar span{flex:1;min-width:0;font:11.5px/1.5 var(--mono);letter-spacing:.03em;color:#bfe6da}
+.rec-bar b{flex:none;font:11.5px var(--mono);color:#6fcabd}
+#recPlay[aria-pressed=true]{color:#ffd76e;border-color:#ffb02e}
+@media(max-width:580px){.rec-bar{bottom:30px;left:9px;right:9px;padding:8px 10px}.rec-bar span{font-size:9.5px}.rec-bar b{font-size:9.5px}}
+@media(prefers-reduced-motion:reduce){.rec-dot{animation:none}}

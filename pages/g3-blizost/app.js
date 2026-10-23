@@ -301,4 +301,22 @@
   say('§8Чат-полигон гостя В. Ты играешь за обоих: ачивки обеих сторон — твои.');
   say('§8Команды: /sex <цель> · /blowjob <цель> · /yes · /no. Радиус 2 блока, сессия 10 с.');
   stats(); hud();
+
+  /* ---------- мини-ветка гостя в футере, как у основной линейки ---------- */
+  (() => {
+    const el = $('#gBranch'); if (!el || !G) return;
+    const renderBranch = () => {
+      const got = ZM.store.get(G.store, []);
+      const chain = G.adv.map((a, i) => {
+        const has = got.includes(a.key), prev = i && got.includes(G.adv[i - 1].key);
+        const node = `<a class="adv-node${has ? '' : ' no'}" href="#adv" aria-label="${esc(has ? a.t : 'Скрытая ачивка')}"><span class="adv-frame ${a.frame}${has ? '' : ' locked'}"></span>${has ? `<span class="ic"><img src="${U(a.icon)}" alt=""></span>` : '<span class="q">?</span>'}</a>`;
+        return (i ? `<div class="adv-link${has && prev ? ' on' : ''}"></div>` : '') + node;
+      }).join('');
+      el.innerHTML = `<span class="gb-label">ВЕТКА ГОСТЯ · <b>${got.length}/${G.adv.length}</b></span><div class="gb-chain">${chain}</div>`;
+    };
+    renderBranch();
+    if (adv) { const grant0 = adv.grant; adv.grant = (k) => { const r = grant0(k); renderBranch(); return r; }; }
+    $('#advReset')?.addEventListener('click', () => setTimeout(renderBranch, 0));
+    addEventListener('storage', (e) => { if (e.key === 'zm:' + G.store) renderBranch(); });
+  })();
 })();

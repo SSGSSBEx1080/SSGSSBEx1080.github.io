@@ -211,7 +211,7 @@
     }).join("");
     const guestHtml = glist.map((g) => {
       const ga = (ZM.GUEST_ADV || []).find((x) => x.page === g.page), p = ga && st.per[ga.n];
-      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/guest/rabbit.png", "В": "assets/textures/mc/p2/entity_steve.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
+      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/hub/av/rabbit.png", "В": "assets/textures/mc/p2/entity_steve.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
       return `<a class="pc live guest ${p && p.got === p.all ? "full" : ""}" href="${g.page}" style="--tone:${g.tone || "#8b8b95"}">
         <span class="pc-n">${esc(g.letter || "?")}</span>${ic ? `<img class="pc-ic" src="${ic}" alt="">` : ""}
         <span class="pc-t">${esc(g.title)}</span><span class="pc-d">ГОСТЕВОЙ ПУНКТ${g.soon ? " · НЕТ СИГНАЛА" : ""}</span>
