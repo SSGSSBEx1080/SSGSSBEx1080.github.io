@@ -282,10 +282,10 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
   border-color:var(--gtone);box-shadow:0 8px 22px -12px var(--gtone)}
 .gc-letter{flex:none;display:grid;justify-items:center;gap:2px;width:52px;padding:10px 0;border:1px dashed color-mix(in srgb,var(--gtone) 55%,transparent);
   border-radius:10px;font:900 24px/1 var(--f-head);color:var(--gtone);background:color-mix(in srgb,var(--gtone) 9%,transparent)}
-.gc-letter small{font:400 8px var(--f-mono);letter-spacing:.14em;color:var(--dim)}
+.gc-letter small{font:400 9.5px var(--f-mono);letter-spacing:.14em;color:var(--dim)}
 .gc-body{min-width:0;display:grid;gap:3px}
 .gc-body b{font:800 15px/1.25 var(--f-head);color:#eee}
-.gc-body small{color:var(--dim);font-size:11.5px}
+.gc-body small{color:var(--dim);font-size:12.5px}
 .gc-icon{margin-left:auto;width:46px;height:46px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 3px 8px #0009)}
 .gc-soon{position:absolute;right:-34px;top:16px;transform:rotate(38deg);padding:3px 38px;
   font:400 9px var(--f-mono);letter-spacing:.3em;color:#c7d3dd;background:color-mix(in srgb,var(--gtone) 26%,#0e1116cc);

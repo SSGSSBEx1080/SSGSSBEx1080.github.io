@@ -4,7 +4,7 @@
 <title>Гость П · Соль, нож и редиска — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера П: нож с ударом в спину ×2, солевой фитиль с сигналом 15, редиска с восемью стадиями и борщ, который возвращает миску. Механики из исходников ZitraksMode.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g4-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g4-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests2"><link rel="stylesheet" href="style.css?v=g4-2">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests3"><link rel="stylesheet" href="style.css?v=g4-3">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -30,7 +30,7 @@
       </figure>
       <span class="g-stamp" aria-hidden="true">ГОСТЕВОЙ ПУНКТ</span>
     </div>
-    <div class="g-sign"><span>с уважением, <span class="g-hand">Мистер <i>П</i></span></span><span class="g-barcode" aria-hidden="true"></span><span style="font:9px var(--f-mono);color:var(--g-faint)">ПОДПИСЬ ГОСТЯ</span></div>
+    <div class="g-sign"><span>с уважением, <span class="g-hand">Мистер <i>П</i></span></span><span class="g-barcode" aria-hidden="true"></span><span style="font:10.5px var(--f-mono);color:var(--g-faint)">ПОДПИСЬ ГОСТЯ</span></div>
   </section>
 
   <nav class="g-chapters" aria-label="Разделы гостевого пункта">
@@ -157,9 +157,9 @@
         <div class="g-panel" style="margin-top:16px">
           <div style="display:flex;gap:14px;align-items:center">
             <span class="g-islot" style="width:56px;height:56px"><img src="../../assets/textures/guest/salt_ore.png" alt="Соляная руда" style="width:40px;height:40px"></span>
-            <span style="font:8px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)">СОЛЯНАЯ РУДА<br>zitraksmode:salt_ore</span>
+            <span style="font:10px var(--f-mono);letter-spacing:.12em;color:var(--g-faint)">СОЛЯНАЯ РУДА<br>zitraksmode:salt_ore</span>
             <span class="g-islot" style="width:56px;height:56px;margin-left:auto"><img src="../../assets/textures/guest/salt.png" alt="Соль" style="width:40px;height:40px"></span>
-            <span style="font:8px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)">СОЛЬ<br>zitraksmode:salt</span>
+            <span style="font:10px var(--f-mono);letter-spacing:.12em;color:var(--g-faint)">СОЛЬ<br>zitraksmode:salt</span>
           </div>
           <div class="g-facts" style="margin-top:14px">
             <details><summary>Почему дроп «ровно четыре»</summary><p>Соль выпадает в onRemove — общем обработчике удаления блока, а не в таблице лута. Поэтому количество не зависит от инструмента, зачарований и того, кто именно убрал блок.</p></details>
