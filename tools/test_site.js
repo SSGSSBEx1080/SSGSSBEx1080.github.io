@@ -78,19 +78,20 @@ assert.equal(HUB_ADV.find(p => p.n === 24).adv.map(a => a.icon).join('|'), [
   'assets/textures/p3/vanilla/item_barrier.png'
 ].join('|'), 'Bottom and home advancement icons must follow the real in-game items');
 const scooterHtml = fs.readFileSync(path.join(root, 'pages/24-scooter/index.html'), 'utf8');
-assert.match(scooterHtml, /id="journey"/, 'New night route canvas must exist');
-assert.doesNotMatch(scooterHtml, /ride3d\.js|hero3d|worldCam/, 'Rejected 3D track must not be loaded');
-for (const id of ['stationFacade', 'roster', 'takeScooter', 'drive', 'stop', 'chargeHere', 'takePort', 'skipRoute']) {
-  assert.ok(scooterHtml.includes(`id="${id}"`), `New night route control ${id} missing`);
+assert.match(scooterHtml, /id="roadCanvas"/, 'The connected illustrated road must exist');
+assert.doesNotMatch(scooterHtml, /ride3d\.js|worldCam/, 'Do not load the old independent 3D track');
+assert.match(scooterHtml, /road\.js/, 'The road must observe the trip state');
+for (const id of ['station3d', 'roadCanvas', 'roster', 'takeScooter', 'drive', 'stop', 'chargeHere', 'takePort', 'skipRoute']) {
+  assert.ok(scooterHtml.includes(`id="${id}"`), `Scooter control ${id} missing`);
 }
 vm.runInNewContext(fs.readFileSync(path.join(root, 'data/p24_station.js'), 'utf8'), ctx);
 const station = ctx.ZM.P24ST;
 assert.equal(String(station.size), '10,6,11', 'Station plan must use real NBT dimensions');
-assert.equal(station.blocks.filter(([x,y,z,i]) => station.palette[i] === 'zitraksmode:charging_port').map(([x,y,z]) => `${x},${y},${z}`).join('|'),
+assert.equal(station.blocks.filter(([x,y,z,i]) => station.palette[i].name === 'zitraksmode:charging_port').map(([x,y,z]) => `${x},${y},${z}`).join('|'),
   '2,1,3|2,1,5|2,1,7', 'All 3 source station ports must be present');
 assert.equal(station.blocks.length, 198, 'Preserve every non-air template block');
 assert.ok(fs.existsSync(path.join(root, 'mod-src/structures/scooter_station.nbt')));
-assert.match(fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8'), /totalMass\(\) - 1\) \/ 24/, 'New night route must use source mass formula');
+assert.match(fs.readFileSync(path.join(root, 'pages/24-scooter/app.js'), 'utf8'), /clamp\(\(mass\(\)-1\)\/24/, 'The road must use the source mass formula');
 assert.match(fs.readFileSync(path.join(root, 'mod-src/java/p24/ScooterMassHelper.java'), 'utf8'), /IRON_GOLEM\) return 8\.0D/, 'Authentic mass helper missing');
 // The original Google Drive mod resources, not re-created art, must power №24.
 for (const name of ['charging_port_front.png', 'charging_port_side.png',
@@ -129,13 +130,13 @@ for (const [name, recipe] of Object.entries(built.recipes)) {
 for (const b of atlas.blocks.filter(b => b?.key?.startsWith('minecraft:tripwire'))) {
   assert.ok(b.bx?.length, `${b.key}: visible non-cubic geometry`);
 }
-// №22: latest published farm, herd, shears and ravager, without swapping designs.
+// Protected №22: the checked-in herd renderer, not a different milkCow/penView experiment.
 const milk = fs.readFileSync(path.join(root, 'pages/22-milk/app.js'), 'utf8');
-assert.match(milk, /function milkCow\(/);
-assert.match(milk, /#penView/);
+assert.match(milk, /function herdUI\(/);
+assert.match(milk, /#pen3d/);
 assert.match(milk, /nearest: true/);
 assert.match(milk, /copper_bull/);
-assert.doesNotMatch(milk, /herdUI\(/);
+assert.match(milk, /function beast\(/);
 assert.match(fs.readFileSync(path.join(root, 'shared/geo3d.js'), 'utf8'), /const PF = Array\.isArray/, 'Original #25 per-face cloak UVs must work');
 for (const name of ['head', 'hat']) {
   const faces = P20M.gazan.elements.find(e => e.name === name).faces;

@@ -159,6 +159,10 @@
   let S; try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
   if (!S || !S.me || !S.msgs || !S.me.inv) S = seed();
   const files = {}; // вложения этой сессии: id → File (для «↓»)
+  // Original inputs are transient, NOT alternate message bodies: forwards, search,
+  // editing and AntiCensor keep using the existing server-side text.
+  const intentions = new Map(), pendingBots = new Map(), giftTimers = new Map();
+  if (!S.talk || typeof S.talk !== "object" || Array.isArray(S.talk)) S.talk = {};
   const save = () => { try { const c = JSON.parse(JSON.stringify(S)); c.msgs.forEach((m) => { if (m.att) delete m.att.preview; }); localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} };
   const user = (id) => id === "me" ? S.me : S.users.find((u) => u.id === id);
   const dname = (u) => (u.name || u.base || "Player").slice(0, 24);
@@ -185,15 +189,66 @@
   function serverSend(from, to, text, o = {}) {
     const m = Object.assign({ id: S.next++, from, to, text: censor(text).text, t: Date.now(), read: from === to, type: "TEXT" }, o);
     if (o.raw) { m.text = text; delete m.raw; }
+    if (from === "me" && !o.fwd && m.type !== "GIFT") intentions.set(m.id, String(text));
     S.msgs.push(m); if (from === "me" && !o.fwd) countSent(); save(); return m;
   }
-  function botAct(to) {
-    const b = user(to); if (!b || to === "me" || !b.online) return;
-    setTimeout(() => { conv("me", to).forEach((m) => { if (m.from === "me") m.read = true; }); save(); render(); }, 900 + Math.random() * 700);
-    if (Math.random() < 0.75) setTimeout(() => {
-      const t = pick(["ок", "привет", "как дела", "я думаю да", "пока", "хз", "спс", "короче норм", "круто", "интересно", "подожди", "мне кажется это имба", "окей", "братан ты лучший", "погоди, я иду", "ну типа хорошо", "не знаю", "люблю этот сервер"]);
-      serverSend(to, "me", t, { read: V.sel === to }); snd(V.sel === to ? "hat" : "pling", 0.45, 1.3); render();
-    }, 2200 + Math.random() * 1800);
+  function cancelBotActivity() {
+    for (const q of pendingBots.values()) { clearTimeout(q.readTimer); clearTimeout(q.replyTimer); }
+    for (const timer of giftTimers.values()) clearTimeout(timer);
+    pendingBots.clear(); giftTimers.clear(); intentions.clear();
+  }
+  addEventListener("pagehide", cancelBotActivity);
+  function botAct(to, message) {
+    const b = user(to), brain = window.ZMMaxConversation;
+    if (!brain || !b || to === "me" || !b.online) return;
+    const submitted = message || conv("me", to).findLast(m => m.from === "me");
+    if (!submitted || submitted.type === "GIFT") return;
+    let q = pendingBots.get(to);
+    if (!q) { q = { ids: new Set(), state: S }; pendingBots.set(to, q); }
+    q.ids.add(submitted.id); clearTimeout(q.readTimer); clearTimeout(q.replyTimer);
+    q.readTimer = setTimeout(() => {
+      if (S !== q.state) return;
+      S.msgs.forEach(m => { if (q.ids.has(m.id)) m.read = true; }); save(); render();
+    }, 700);
+    q.replyTimer = setTimeout(() => {
+      pendingBots.delete(to);
+      if (S !== q.state || !S.me.reg || !user(to)?.online) return;
+      const input = S.msgs.filter(m => q.ids.has(m.id) && !m.deleted && !m.hs).map(m => {
+        const referenced = S.msgs.find(r => r.id === m.reply);
+        return { type:m.type, raw:intentions.get(m.id) ?? m.text, filename:m.att?.name,
+          forwarded:!!m.fwd, replyText:referenced && !referenced.deleted ? referenced.text : "" };
+      });
+      q.ids.forEach(id => intentions.delete(id));
+      if (!input.length) return;
+      const answer = brain.reply({ contact:user(to), me:S.me, memory:S.talk[to], input });
+      S.talk[to] = answer.memory;
+      if (answer.text) {
+        serverSend(to, "me", answer.text, { read:V.sel === to });
+        if (!document.hidden) snd(V.sel === to ? "hat" : "pling", 0.45, 1.3);
+      }
+      save(); render();
+    }, 1400 + Math.min(900, String(intentions.get(submitted.id) || submitted.text).length * 5));
+  }
+  function queueGift(gid) {
+    const g = S.gifts[gid], b = g && user(g.to), brain = window.ZMMaxConversation;
+    if (!brain || !g || g.from !== "me" || g.to === "me" || !b?.online || g.state !== "PENDING" || giftTimers.has(gid)) return;
+    const originalState = S;
+    giftTimers.set(gid, setTimeout(() => {
+      giftTimers.delete(gid);
+      if (S !== originalState || S.gifts[gid] !== g || g.state !== "PENDING" || !user(g.to)?.online) return;
+      if (pendingBots.has(b.id)) { queueGift(gid); return; }
+      const answer = brain.gift({ contact:b, memory:S.talk[b.id], stacks:g.stacks, items:ITEMS });
+      S.talk[b.id] = answer.memory;
+      S.msgs.forEach(m => { if (m.gift === gid && m.from === "me") m.read = true; });
+      giftRespond(g, answer.accept, b.id);
+      if (answer.accept && answer.offer.length) {
+        const offerId = "g" + S.next;
+        S.gifts[offerId] = { from:b.id, to:"me", stacks:answer.offer, state:"PENDING" };
+        serverSend(b.id, "me", answer.text, { type:"GIFT", gift:offerId, read:V.sel === b.id });
+      } else serverSend(b.id, "me", answer.text, { read:V.sel === b.id });
+      if (!document.hidden) snd("pling", 0.4, 1.1);
+      save(); render();
+    }, 3000));
   }
   function giftRespond(g, accept, actor) {
     if (g.state !== "PENDING" && g.state !== "FAILED") return;
@@ -395,12 +450,12 @@
     const inp = $(".mx-input", mx); const raw = (inp ? inp.value : V.draft).replace(/\r/g, ""); const t = raw.trim();
     if (V.edit) {
       const m = S.msgs.find((x) => x.id === V.edit);
-      if (t && m && !m.deleted && m.from === "me" && m.type === "TEXT") { m.text = censor(t).text.slice(0, 4000); m.edited = true; status("Сообщение изменено"); snd("pop", 0.4, 1.2); }
+      if (t && m && !m.deleted && m.from === "me" && m.type === "TEXT") { m.text = censor(t).text.slice(0, 4000); intentions.set(m.id, t.slice(0, 4000)); m.edited = true; status("Сообщение изменено"); snd("pop", 0.4, 1.2); }
       V.edit = 0; setDraft(""); save(); render(); return;
     }
     if (V.att) {
-      const a = V.att, rep = V.reply; V.att = null; V.reply = 0; setDraft("");
-      upload(a, () => { serverSend("me", V.sel, t.slice(0, 4000), { type: "FILE", att: a, reply: rep }); status("Файл отправлен"); snd("pop", 0.5); render(); botAct(V.sel); });
+      const a = V.att, rep = V.reply, to = V.sel, beforeUpload = S; V.att = null; V.reply = 0; setDraft("");
+      upload(a, () => { if(S !== beforeUpload)return; const message = serverSend("me", to, t.slice(0, 4000), { type: "FILE", att: a, reply: rep }); status("Файл отправлен"); snd("pop", 0.5); render(); botAct(to, message); });
       render(); return;
     }
     if (!t) return;
@@ -505,7 +560,7 @@
     } else if (kind === "picker") {
       box.innerHTML = `<div class="mx-mh"><b>Выбери трофей</b><span>кликни по слоту</span></div><div class="mx-pick"></div><div class="mx-mf"><button type="button" class="mx-b" data-x="clr">Очистить трофей</button><button type="button" class="mx-b" data-x="back">Назад</button></div>`;
       const pk = $(".mx-pick", box);
-      Object.keys(S.me.inv).concat(["max_messenger", "diamond", "totem_of_undying", "netherite_ingot", "golden_apple", "writable_book"]).filter((v, i, a) => a.indexOf(v) === i).forEach((id) => {
+      Object.keys(S.me.inv).filter(id => S.me.inv[id] > 0).concat(["max_messenger"]).filter((v, i, a) => a.indexOf(v) === i).forEach((id) => {
         const b = document.createElement("button"); b.type = "button"; b.className = "mx-pslot"; b.title = ITEMS[id] || id; b.innerHTML = `<img src="${I(id)}" alt="${esc(ITEMS[id] || id)}">`;
         b.addEventListener("click", () => { V.form.show = id; V.modal = V.back; status("Трофей выбран"); snd("click", 0.4); render(); }); pk.appendChild(b);
       });
@@ -514,14 +569,42 @@
     } else if (kind.startsWith("profile:")) {
       const id = kind.slice(8), p = user(id) || S.me, self = id === "me";
       box.classList.add("prof");
-      box.innerHTML = `<div class="mx-mh"><b>Профиль</b><span>${self ? "это ты" : p.online ? "в сети" : "не в сети"}</span></div><div class="mx-pv"><div class="mx-pv-a"></div><div class="mx-pv-t">
-        <div class="mx-lbl2">Ник</div><div>${esc(dname(p))}</div><div class="mx-lbl2">Логин</div><div>${esc(trim(p.base, 24))}</div><div class="mx-lbl2">Описание</div><div class="mx-pv-d">${esc(p.desc || "Описание пока пустое")}</div></div></div>
-        <div class="mx-lbl2 pad">Витрина</div><div class="mx-pv-show"><span class="mx-slotbox">${p.show ? `<img src="${I(p.show)}" alt="">` : ""}</span>${esc(p.show ? ITEMS[p.show] : "Пусто")}</div>
-        <div class="mx-lbl2 pad">UUID <span class="mx-uuid">${self ? "3f2a…c91e" : { b1: "9b1d…04aa", b2: "c7e0…5f12", b3: "12ab…e77d", b4: "e4f3…0b9c" }[id] || "…"}</span></div>
-        <div class="mx-mf">${self ? `<button type="button" class="mx-b ok" data-x="edit">Изменить</button>` : ""}<button type="button" class="mx-b" data-x="back">Назад</button></div>`;
-      $(".mx-pv-a", box).appendChild(ava(self ? S.me.ava : p.ava, 108, self || p.online, false));
-      const ed = box.querySelector('[data-x="edit"]'); if (ed) ed.addEventListener("click", () => { V.modal = "profile-edit"; V.form = null; render(); });
+      const theme = { stock_skull:"slate", stock_cat:"rose", stock_alex:"copper", stock_smile:"gold" }[p.ava] || "blue";
+      const showcase = ITEMS[p.show] ? p.show : "";
+      const sent = self ? S.me.sent : S.msgs.filter(m => m.from === id && !m.fwd).length;
+      const rejected = self ? S.me.rejects : Object.values(S.gifts).filter(g => g.to === id && g.state === "REJECTED").length;
+      const prompts = { b1:["Есть железо?", "Как отправить подарок?"], b2:["Строю башню", "Напомни координаты"], b4:["Куплю 2 алмаза", "Как работает подарок?"] }[id] || [];
+      box.dataset.theme = theme;
+      box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Профиль " + dname(p));
+      requestAnimationFrame(() => {
+        if (!box.isConnected) return;
+        const r = mx.getBoundingClientRect();
+        if (r.top < 65 || r.bottom > innerHeight) window.scrollBy({ top:r.top - 75, behavior:"instant" });
+        if (!box.contains(document.activeElement)) $("[data-x=back]", box)?.focus({ preventScroll:true });
+      });
+      box.addEventListener("keydown", event => {
+        if (event.key === "Escape") { event.preventDefault(); V.modal = null; render(); $(".mx-who, .mx-self", mx)?.focus({ preventScroll:true }); }
+        if (event.key !== "Tab") return;
+        const buttons = [...box.querySelectorAll("button:not([disabled])")], first = buttons[0], last = buttons[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      });
+      box.innerHTML = `<div class="mx-profile-cover"><span>MAX / ПРОФИЛЬ</span><button type="button" class="mx-profile-close" data-x="back" aria-label="Закрыть профиль">×</button><div class="mx-profile-pattern" aria-hidden="true">M</div></div>
+        <div class="mx-profile-body"><div class="mx-profile-face"></div><div class="mx-profile-online ${self || p.online ? "online" : ""}"><i></i>${self ? "Твой профиль" : p.online ? "В сети" : "Не в сети"}</div>
+        <h3>${esc(dname(p))}</h3><div class="mx-profile-login">@${esc(trim(p.base, 24))}</div>
+        <p class="mx-profile-about">${esc(p.desc || "Пока без описания. За тебя скажет витрина.")}</p>
+        <div class="mx-profile-showcase"><span class="mx-slotbox">${showcase ? `<img src="${I(showcase)}" alt="${esc(ITEMS[showcase])}">` : "<i>+</i>"}</span><div><small>НА ВИТРИНЕ</small><b>${esc(showcase ? ITEMS[showcase] : "Пока ничего")}</b><span>Один предмет. Просто напоказ.</span></div></div>
+        <div class="mx-profile-stats"><div><b>${sent || 0}</b><span>сообщений</span></div><div><b>${p.trades || 0}</b><span>сделок</span></div><div><b>${rejected || 0}</b><span>отклонено</span></div></div>
+        ${!self && prompts.length ? `<div class="mx-profile-prompts"><small>С ЧЕГО НАЧНЁМ?</small><div>${prompts.map((prompt,i) => `<button type="button" data-prompt="${i}">${esc(prompt)} ↗</button>`).join("")}</div></div>` : ""}
+        <div class="mx-profile-foot"><span>${self ? "Личный профиль" : "Демо-контакт"} · ${esc(id)}</span><span>${!self && !p.online ? "Офлайн — пока без ответов" : "Хранится в этом браузере"}</span></div>
+        <div class="mx-mf">${self ? `<button type="button" class="mx-b ok" data-x="edit">Изменить профиль</button>` : `<button type="button" class="mx-b ok" data-x="chat">Открыть переписку</button>`}</div></div>`;
+      $(".mx-profile-face", box).appendChild(ava(p.ava, 88, false, false));
       box.querySelector('[data-x="back"]').addEventListener("click", () => { V.modal = null; render(); });
+      const edit = box.querySelector('[data-x="edit"]'); if (edit) edit.addEventListener("click", () => { V.form = null; V.modal = "profile-edit"; render(); });
+      const chat = box.querySelector('[data-x="chat"]'); if (chat) chat.addEventListener("click", () => { V.modal = null; openChat(id); });
+      $$('[data-prompt]', box).forEach(button => button.addEventListener("click", () => {
+        V.modal = null; openChat(id); setDraft(prompts[+button.dataset.prompt]); $(".mx-input", mx)?.focus();
+      }));
     } else if (kind === "gift") {
       box.classList.add("gift");
       box.innerHTML = `<div class="mx-mh"><b>Отправить подарок</b><span>до 4 слотов · вещи уйдут на сервер сразу</span></div><div class="mx-g4"></div><div class="mx-ginv"></div>
@@ -538,8 +621,7 @@
         const stacks = V.giftSlots.slice(); stacks.forEach((s) => { S.me.inv[s.id] -= s.n; if (S.me.inv[s.id] <= 0) delete S.me.inv[s.id]; });
         const gid = "g" + S.next, to = V.sel; S.gifts[gid] = { from: "me", to, stacks, state: "PENDING" };
         const t = (V.draft || "").trim(); setDraft(""); serverSend("me", to, t, { type: "GIFT", gift: gid, reply: V.reply }); V.reply = 0; V.modal = null; V.giftSlots = [];
-        status("Подарок отправлен"); snd("echest", 0.4); render(); botAct(to);
-        const b = user(to); if (to !== "me" && b.online) setTimeout(() => giftRespond(S.gifts[gid], Math.random() < 0.7, to), 3000);
+        status("Подарок отправлен"); snd("echest", 0.4); render(); queueGift(gid);
       });
       box.querySelector('[data-x="cancel"]').addEventListener("click", () => { V.modal = null; render(); });
     } else if (kind.startsWith("img:")) {
@@ -566,9 +648,10 @@
   document.addEventListener("pointerdown", (e) => { if (V.menu && !e.target.closest(".mx-menu")) { V.menu = null; render(); } if (V.attachMenu && !e.target.closest(".mx-amenu,.mx-plus")) { V.attachMenu = false; render(); } });
   $("#botGift").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); botGift(); });
   $("#spam").addEventListener("click", () => { if (!S.me.reg) return K.say("Сначала зарегистрируйся в MAX", true); const to = V.sel || "me"; for (let i = 0; i < 10; i++) serverSend("me", to, pick(["ок", "привет", "спс", "хз", "круто", "норм", "пока", "окей"])); snd("pop", 0.5); if (!V.sel) V.sel = to; V.stick = true; render(); });
-  $("#mxReset").addEventListener("click", () => { S = seed(); V.sel = null; V.modal = null; V.form = null; save(); snd("no", 0.4); render(); });
+  $("#mxReset").addEventListener("click", () => { cancelBotActivity(); S = seed(); S.talk = {}; V.sel = null; V.modal = null; V.form = null; save(); snd("no", 0.4); render(); });
   render();
-  setInterval(() => { if (Math.random() < 0.35 && S.me.reg && document.visibilityState === "visible" && isVis(mx)) { const b = pick(S.users.filter((u) => u.online)); serverSend(b.id, "me", pick(["привет", "ты тут?", "го на спавн", "кто взорвал мой дом", "окей", "хорошо", "иди сюда"]), { read: V.sel === b.id }); snd("pling", 0.35, 1.2); render(); } }, 20000);
+  // No unrelated unsolicited chatter. Online contacts resume pending escrow on reload.
+  Object.keys(S.gifts).forEach(queueGift);
   function isVis(el) { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }
 
   /* ================= 03 АНТИЦЕНЗУРА: переводчик и словарь ================= */

@@ -7,6 +7,7 @@ import * as THREE from '../../shared/vendor/three/three.module.js';
 const host=document.querySelector('#stationView'),canvas=document.querySelector('#station3d');
 if(host&&canvas&&window.ZM?.P24ST){
  try{
+  if(!window.ZMGeo?.supported())throw new Error('WebGL недоступен');
   const source=ZM.P24ST,root='../../assets/textures/p24/station/';
   const loader=new THREE.TextureLoader();
   function texture(file){const t=loader.load(root+file+'.png');t.colorSpace=THREE.SRGBColorSpace;t.magFilter=THREE.NearestFilter;t.minFilter=THREE.NearestMipmapNearestFilter;return t;}
@@ -19,20 +20,20 @@ if(host&&canvas&&window.ZM?.P24ST){
   const portMat={side:new THREE.MeshStandardMaterial({map:modTexture('side'),roughness:.78}),front:new THREE.MeshStandardMaterial({map:modTexture('front'),roughness:.78}),top:new THREE.MeshStandardMaterial({map:modTexture('top'),roughness:.78}),bottom:new THREE.MeshStandardMaterial({map:modTexture('bottom'),roughness:.78})};
   // THREE.BoxGeometry face order is +x, -x, +y, -y, +z, -z. Minecraft east = +x.
   const portFaces={east:[portMat.front,portMat.side,portMat.top,portMat.bottom,portMat.side,portMat.side],west:[portMat.side,portMat.front,portMat.top,portMat.bottom,portMat.side,portMat.side],south:[portMat.side,portMat.side,portMat.top,portMat.bottom,portMat.front,portMat.side],north:[portMat.side,portMat.side,portMat.top,portMat.bottom,portMat.side,portMat.front]};
-  const scene=new THREE.Scene();scene.background=new THREE.Color(0x101e21);scene.fog=new THREE.FogExp2(0x101e21,.013);
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0xdfe4d7);scene.fog=new THREE.FogExp2(0xdfe4d7,.013);
   const camera=new THREE.PerspectiveCamera(38,1,.08,130);
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   scene.add(new THREE.HemisphereLight(0xcce3e0,0x405159,2.1));
   const sun=new THREE.DirectionalLight(0xffe9cb,2.45);sun.position.set(6,12,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-12;sun.shadow.camera.right=12;sun.shadow.camera.top=12;sun.shadow.camera.bottom=-12;sun.shadow.normalBias=.035;scene.add(sun);
-  const fill=new THREE.DirectionalLight(0x68d9c6,.52);fill.position.set(-7,4,-5);scene.add(fill);
+  const fill=new THREE.DirectionalLight(0xbacba0,.32);fill.position.set(-7,4,-5);scene.add(fill);
   const lanternLight=new THREE.PointLight(0xffb359,7,8,2);lanternLight.position.set(2.5,3.38,-3);scene.add(lanternLight);
   // Presentation base only: exact NBT starts at y = 0. The official tuff tile repeats once per block.
   const floorTex=texture('tuff');floorTex.wrapS=floorTex.wrapT=THREE.RepeatWrapping;floorTex.repeat.set(12,13);
   const floorMat=new THREE.MeshStandardMaterial({map:floorTex,roughness:1});
   const base=new THREE.Mesh(new THREE.BoxGeometry(12,.5,13),[materials.cobblestone,materials.cobblestone,floorMat,materials.cobblestone,materials.cobblestone,materials.cobblestone]);base.position.y=-.37;base.receiveShadow=true;scene.add(base);
-  const grid=new THREE.GridHelper(90,90,0x2e6562,0x244146);grid.position.y=-.107;grid.material.transparent=true;grid.material.opacity=.24;scene.add(grid);
+  const grid=new THREE.GridHelper(90,90,0xb8c2ac,0xcbd3c0);grid.position.y=-.107;grid.material.transparent=true;grid.material.opacity=.14;scene.add(grid);
   const cached=new Map(),instanced=new Map(),ports=[],signBoards=[];
   function form(bounds){const key=bounds.join('/');if(cached.has(key))return cached.get(key);
    const [x0,y0,z0,x1,y1,z1]=bounds;
@@ -140,8 +141,8 @@ if(host&&canvas&&window.ZM?.P24ST){
   // Subtle electric dust, not part of the NBT building.
   const stars=[];for(let i=0;i<32;i++)stars.push((Math.sin(i*121.1)*56)%15,(i*5.93)%7+.3,(Math.sin(i*41.4)*64)%16);
   const dustG=new THREE.BufferGeometry();dustG.setAttribute('position',new THREE.Float32BufferAttribute(stars,3));
-  const dust=new THREE.Points(dustG,new THREE.PointsMaterial({color:0x96d9bb,size:.055,transparent:true,opacity:.35,depthWrite:false}));scene.add(dust);
-  const selected=new THREE.BoxHelper(ports[0],0x9affc9);selected.material.transparent=true;scene.add(selected);
+  const dust=new THREE.Points(dustG,new THREE.PointsMaterial({color:0x9ca88d,size:.055,transparent:true,opacity:.35,depthWrite:false}));scene.add(dust);
+  const selected=new THREE.BoxHelper(ports[0],0xc75e37);selected.material.transparent=true;scene.add(selected);
   let chosen=0;
   function pick(i){chosen=Math.max(0,Math.min(ports.length-1,i));selected.setFromObject(ports[chosen]);window.dispatchEvent(new CustomEvent('p24-port',{detail:chosen}));}
   window.P24Station={select:pick,count:ports.length,blocks:source.blocks.length,signs:source.signs.length};
@@ -163,7 +164,7 @@ if(host&&canvas&&window.ZM?.P24ST){
   canvas.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){focus=null;cam.yaw+=e.key==='ArrowLeft'?.2:-.2;lastTouch=performance.now();e.preventDefault();}if(e.key==='+'||e.key==='-'||e.key==='ArrowUp'||e.key==='ArrowDown'){focus=null;cam.dist=Math.max(1.25,Math.min(36,cam.dist+(e.key==='+'||e.key==='ArrowUp'?-1:1)));lastTouch=performance.now();e.preventDefault();}});
   const mq=matchMedia('(prefers-reduced-motion: reduce)');new IntersectionObserver(es=>visible=es[0].isIntersecting,{rootMargin:'180px'}).observe(host);
   let last=performance.now();
-  function frame(t){requestAnimationFrame(frame);const dt=Math.min(.25,(t-last)*.001);last=t;if(!visible||document.hidden)return;
+  function frame(t){requestAnimationFrame(frame);const dt=Math.min(.25,(t-last)*.001);last=t;if(!visible||document.hidden||t-(frame.lastDraw||0)<40)return;frame.lastDraw=t;
    const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
    const d=Math.min(devicePixelRatio||1,1.6);if(canvas.width!==Math.round(w*d)||canvas.height!==Math.round(h*d)){renderer.setPixelRatio(d);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
    if(focus){const k=mq.matches?1:1-Math.exp(-dt*3.8);cam.target.lerp(focus.target,k);let a=focus.yaw-cam.yaw;a=Math.atan2(Math.sin(a),Math.cos(a));cam.yaw+=a*k;cam.pitch+=(focus.pitch-cam.pitch)*k;cam.dist+=(focus.dist-cam.dist)*k;}
@@ -173,5 +174,5 @@ if(host&&canvas&&window.ZM?.P24ST){
    renderer.render(scene,camera);
   }
   requestAnimationFrame(frame);pick(0);
- }catch(err){console.error('Station 3D:',err);host.classList.add('station-fallback');const fail=host.querySelector('.station-fail');if(fail)fail.hidden=false;}
+ }catch(err){console.warn('Station image fallback:',err);host.classList.add('station-fallback');canvas.hidden=true;const tools=host.querySelector('.station-tools');if(tools)tools.hidden=true;const hint=host.querySelector('#stationFocus');if(hint)hint.hidden=true;const fail=host.querySelector('.station-fail');if(fail)fail.hidden=false;}
 }

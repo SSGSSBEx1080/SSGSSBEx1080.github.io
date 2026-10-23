@@ -1,115 +1,190 @@
-/* №27 — исходники: AntonChigurEntity, ChigurSpawnHandler, ChigurShotgunItem,
-   ChigurCoinItem, ChigurBedHandler; пользовательские эксперименты без боевого насилия. */
+/* №27 · A small cinematic state machine, not six independent fact demos.
+   Durations and outcomes follow the supplied AntonChigurEntity. Reset means a NEW
+   encounter/NPC. The coin is sampled once, before the visible toss, with no pity rule. */
 (() => {
-  const { $, $$ } = ZM, K = ZM.kit, U = ZM.url;
-  ZM.topbar({crumb:'№27 · Антон Чигур', ...ZM.pointNav(27)});
-  const snd = K.sounds('p27');
-  const tex = name => U(`assets/textures/p27/${name}.png`);
-  const adv = K.adv({list: ZM.P27.advancements, store:'p27.adv', icon:a=>tex(a.icon), intro:'Пять достижений скрыты, как в игре. Подойди к незнакомцу на пять блоков.'});
-  K.finNav(27,$('#finNav'));
-  let g = null;
-  function pose(name){if(g)g.play(`animation.chigur.${name}`,()=>{$('#stageState').textContent='НАБЛЮДАЕТ';});$('#stageState').textContent=({shoot:'СТРЕЛЯЕТ',coin:'БРОСАЕТ МОНЕТУ',kill:'ФИНАЛЬНАЯ СЦЕНА',vanish:'ИСЧЕЗАЕТ',stalk:'ОХОТИТСЯ',walk:'ПРИБЛИЖАЕТСЯ'})[name]||'НАБЛЮДАЕТ';}
-  if(window.ZMGeo?.supported()){
-    try {
-      const cv=$('#character3d');
-      g=ZMGeo.create(cv,{geo:ZM.P27G.geo,anim:ZM.P27G.anim,tex:tex('anton_chigur'),idle:'animation.chigur.idle',cam:{yaw:195,pitch:7,dist:61,target:[0,16,0],fov:41},lit:.45,mip:true});
-      if(g){$('#stage').classList.add('model-ready');const rotation=K.spinner(cv,{rx:0,ry:0},45);let old=performance.now(),seen=true;
-        new IntersectionObserver(entries=>{seen=entries[0].isIntersecting}).observe($('#stage'));
-        function frame(t){requestAnimationFrame(frame);if(!seen){old=t;return;}g.tick(Math.min(.06,(t-old)/1000));old=t;g.setExtra(g.M.euler([rotation.rx,rotation.ry+(rotation.idle()?Math.sin(t/2500)*3:0),0]));g.render();}requestAnimationFrame(frame);
+  'use strict';
+  const $=ZM.$,K=ZM.kit,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  ZM.topbar({crumb:'№27 · Антон Чигур',...ZM.pointNav(27)});K.finNav(27,$('#finNav'));
+  const help={first_meeting:'Подойти к живому Чигуру на пять блоков. Одного появления недостаточно.',dialogue_mistake:'Спросить «Откуда ты?». Начинается личная тихая охота.',night_visit:'Попытаться уснуть во время личной ночной охоты.',coin_luck:'Угадать сторону монеты. После броска дождаться окончания пятисекундной реплики.',hunter:'В моде — победить Чигура и забрать выпавший дробовик. Здесь — открыть отдельно обозначенный исход победы.'};
+  const adv=K.adv({list:ZM.P27.advancements.map(a=>({...a,how:help[a.key]})),store:'p27.adv',icon:a=>'../../assets/textures/p27/'+a.icon+'.png',intro:'Названия и описания — из мода; очки XP — за исследование вики.'});
+  const playSound=K.sounds('p27'),sounds=new Set();
+  function snd(name,volume=.45){const a=playSound('chigur_'+name,volume);if(a){sounds.add(a);a.addEventListener('ended',()=>sounds.delete(a),{once:true});}return a;}
+  function clearSound(){for(const a of sounds)a.pause();sounds.clear();}
+  document.addEventListener('visibilitychange',()=>{for(const a of sounds){if(document.hidden)a.pause();else if(ZM.sfx.on())a.play().catch(()=>{});}});
+  addEventListener('pagehide',clearSound);
+  let model=null,task=null,last=performance.now();
+  const s={phase:'far',mode:'meeting',distance:18,aggression:0,hunt:false,coinUsed:false,coinResult:null,refusals:0,questionSpoken:false,dead:false};
+  const refusalLines=['Извините, но мы не раскрываем информацию.','Я не знаю, о ком вы говорите.','Нет. Я не стану говорить, где он.'];
+  function pose(name,loop=false){if(!model)return;if(loop){model.stop();model.st.idle='animation.chigur.'+name;}else model.play('animation.chigur.'+name);}
+  function distance(n){s.distance=n;$('#sceneDistance').textContent=n>=10?Math.round(n):n.toFixed(1).replace('.0','');$('#character').classList.toggle('near',n<=5);$('#character').classList.toggle('distant',n>22);}
+  function title(first,second,atmosphere){$('#title').innerHTML=first+'<br><em>'+second+'</em>';$('#sceneAtmosphere').textContent=atmosphere;}
+  function show(phase,line,buttons=[],hint=''){
+    s.phase=phase;task=null;$('#sceneLine').textContent=line;$('#sceneProgress').style.width='0%';
+    $('#sceneState').textContent=({far:'НЕЗНАКОМЕЦ',approach:'БЛИЖЕ',close:'ЛИЦОМ К ЛИЦУ',dismissed:'РАЗГОВОР ОКОНЧЕН',silence:'МОЛЧАНИЕ',frozen:'НЕ ДВИГАТЬСЯ',hunt:'ЛИЧНАЯ ОХОТА',huntDelay:'ДЕРЖИТСЯ ВДАЛИ',waiting:'НЕПОДВИЖНО',coinApproach:'ОН ПОДХОДИТ',coinSpeech:'СЛУШАЙ',coinChoice:'ОРЁЛ ИЛИ РЕШКА',coinToss:'БРОСОК',coinReward:'ЕЩЁ ПЯТЬ СЕКУНД',coinLoss:'НЕ ТА СТОРОНА',coinExecution:'ВЫСТРЕЛ',bed:'КАЗНЬ',ended:'КОНЕЦ ЭПИЗОДА',witnessPause:'ТИШИНА',witnessSpeech:'ВОПРОС',witnessChoice:'СВИДЕТЕЛЬ',witnessRetreat:'ОТКАЗ',confessor:'СЛИШКОМ ПОЗДНО',targetDelay:'ЦЕЛЬ — СЛЕДУЮЩАЯ',targetExecution:'КОНЕЦ ОХОТЫ'})[phase]||'НОЧЬ';
+    $('#sceneActions').innerHTML=buttons.map(([act,label,quiet],i)=>`<button type="button" data-act="${act}" ${quiet?'class="quiet"':''}>${quiet?'':`<span class="choice-num">0${i+1}</span>`}${label}</button>`).join('');
+    $('#sceneHint').textContent=hint||'Модель, анимации и реплики — из мода. Это интерактивная постановка вики.';
+    $('#aggression').hidden=!['close','silence','hunt','huntDelay','frozen','dismissed'].includes(phase);$('#aggressionValue').textContent=s.aggression;$('#aggressionBar').style.width=s.aggression+'%';
+    $('#sceneChapter').textContent=s.mode==='witness'?'03 / ДРУГОЙ ИГРОК':s.mode==='coin'||phase.startsWith('coin')?'02 / МОНЕТА':'01 / У ОБОЧИНЫ';
+    $('#encounter').classList.toggle('hunting',s.hunt);$('#encounter').classList.toggle('ended',phase==='ended');
+    $('#encounter').classList.toggle('executing',['bed','confessor','targetExecution','coinExecution'].includes(phase));
+    $('#encounter').dataset.phase=phase;
+  }
+  function schedule(seconds,done,progress){task={duration:seconds,left:seconds,done,progress};}
+  function arrive(done){
+    const start=s.distance;pose('walk',true);show('approach','Ты подходишь. Он не отводит взгляд.');
+    schedule(1.7,()=>{distance(4.5);adv.grant('first_meeting');pose('idle',true);done();},p=>distance(start+(4.5-start)*p));
+  }
+  function far(){
+    pose('idle',true);show('far','На обочине кто-то стоит. Можно подойти. Можно просто остаться на месте.',[['approach','Подойти ближе'],['wait','Остаться на месте']]);
+  }
+  function conversation(){
+    if(s.hunt||s.dead)return;distance(4.5);title('Он смотрит','прямо на тебя.','До него меньше пяти блоков.');
+    show('close','Он ждёт. Что ты скажешь?',[['question','«Откуда ты?»'],['silent','«...»'],['dismiss','«Извините, обознался»']]);
+  }
+  function beginHunt(){
+    s.hunt=true;pose('stalk',true);
+    const buttons=[['sleep','Попробовать уснуть'],['witness','Увидеть роль свидетеля',true]];
+    if(s.questionSpoken){
+      distance(26);snd('vanish',.3);title('Он','не ушёл.','Просто теперь он стоит дальше.');
+      show('huntDelay','Он отступил примерно на 26 блоков. Шесть секунд держится вдали — затем снова может сближаться.',buttons,'Личная охота уже началась. Эти шесть секунд не защищают от казни у кровати; ноль на шкале тоже не спасает.');
+      schedule(6,()=>show('hunt','Шесть секунд прошли. Настороженность — ноль. Тихая охота продолжается и привязана именно к тебе.',buttons,'Он обычно держит дистанцию и лишь иногда сближается. Мы не подменяем эту охоту немедленным гарантированным выстрелом.'));
+    }else{
+      title('Молчание','закончилось.','Настороженность достигла ста.');
+      show('hunt','Третье молчание. Настороженность достигла 100. Теперь он охотится на тебя.',buttons,'Молчание не запускает пятисекундную реплику и отступление из первого вопроса.');
+    }
+  }
+  function ask(){
+    if(s.phase!=='close')return;adv.grant('dialogue_mistake');s.aggression=0;s.questionSpoken=true;pose('idle',true);title('Не стоило','спрашивать.','Пять секунд. Камера не слушается.');
+    show('frozen','«Откуда ты?» — вы стоите лицом к лицу. Пять секунд невозможно пошевелиться.');snd('speech_1',.55);schedule(5,beginHunt);
+  }
+  function silent(){
+    if(s.phase!=='close')return;s.aggression=clamp(s.aggression+34,0,100);
+    if(s.aggression===100){beginHunt();return;}
+    show('silence','Ты промолчал. Настороженность: '+s.aggression+'/100. Он всё ещё рядом.',[['talk','Заговорить снова'],['wait','Остаться молча'],['back','Отойти',true]],'Каждое «...» добавляет 34. Третье молчание — начало охоты.');
+  }
+  function dismiss(){
+    if(s.phase!=='close')return;show('dismissed','Ты закончил разговор. Он остался на месте.',[['back','Отойти к дороге'],['wait','Не двигаться'],['talk','Поговорить ещё',true]],'«Извините, обознался» закрывает окно диалога. Самого Чигура эта реплика не удаляет.');
+  }
+  function waitStill(){
+    if(s.coinUsed||s.hunt||s.dead)return;s.mode='coin';title('Десять секунд','ничего.','Не двигайся. Он сам подойдёт.');
+    show('waiting','Ты не вступаешь в разговор и стоишь неподвижно. В пределах 32 блоков этого достаточно.',[['move','Сдвинуться с места',true]],'Это не таймер появления. Чигур уже рядом; проверяется именно неподвижность игрока.');
+    schedule(10,()=>{
+      show('coinApproach','Он идёт к тебе. Теперь заговорит он.');pose('walk',true);const start=s.distance;
+      schedule(1.3,()=>{distance(2.5);adv.grant('first_meeting');pose('idle',true);show('coinSpeech','Сначала — его реплика. Выбор появится только после неё.');snd('speech_2',.55);schedule(5,coinChoice);},p=>distance(start+(2.5-start)*p));
+    });
+  }
+  function coinChoice(){
+    title('Ставка —','не монета.','Назови сторону. Один раз на этого Чигура.');$('#coinOverlay').hidden=false;$('#coinDisc').className='coin-disc';$('#coinCaption').textContent='50 / 50';
+    show('coinChoice','Орёл или решка?',[['heads','<img src="../../assets/textures/p27/coin_face.png" alt="">Орёл'],['tails','<img src="../../assets/textures/p27/coin_back.png" alt="">Решка']],'Честные 50/50. Никакой гарантированной победы после нескольких проигрышей.');
+  }
+  function toss(heads){
+    if(s.phase!=='coinChoice'||s.coinUsed)return;
+    s.coinUsed=true;
+    // A single unbiased bit. It is chosen BEFORE the animation, just like random.nextBoolean().
+    const random=new Uint32Array(1);if(window.crypto?.getRandomValues){crypto.getRandomValues(random);s.coinResult=(random[0]&1)===0;}else s.coinResult=Math.random()<.5;
+    const result=s.coinResult;$('#coinCaption').textContent='';$('#coinDisc').className='coin-disc tossing';
+    pose(result?'coin':'coin2');snd('coin',.4);show('coinToss','Монета уже в воздухе. Ответ изменить нельзя.');
+    schedule(2,()=>{
+      $('#coinDisc').className='coin-disc'+(result?'':' tails-up');$('#coinCaption').textContent=result?'ОРЁЛ':'РЕШКА';pose('idle',true);
+      if(result===heads){
+        show('coinReward','Ты угадал. Но он ещё не отдал монету. Нужно дослушать пять секунд.');snd('speech_3',.55);
+        schedule(5,()=>{adv.grant('coin_luck');title('Сегодня','тебе повезло.','Монета — у тебя. Он исчезает.');end('Он отдаёт монету. На этом эта встреча заканчивается.','Монета выдаётся только после реплики. Второй бросок возможен лишь в новой встрече.');});
+      }else{
+        title('Не та','сторона.','Он подождёт ещё две секунды.');show('coinLoss','Ответ не совпал. Две секунды тишины перед выстрелом.');
+        schedule(2,()=>{
+          show('coinExecution','Выстрел. Через восемь тиков — контрольный урон, если игрок ещё жив. Тотем не меняет исход.');pose('shoot');snd('shot',.4);
+          schedule(.4,()=>{s.dead=true;title('Вы','погибли.','Монета не знает, кто ты.');end('Он стреляет. Этот исход не спасает даже тотем.','Это конец конкретной встречи. Новая встреча создаёт другого Чигура, а не даёт переиграть ту же монету.');});
+        });
       }
-    } catch(e){console.warn('3D-фигура недоступна, остаётся оригинальный портрет.',e);g=null;}
+    });
   }
-  // Как у персонажей на первых страницах: клик по самой модели начинает встречу.
-  {const cv=$('#character3d');let down=null;cv.addEventListener('pointerdown',e=>down={x:e.clientX,y:e.clientY});cv.addEventListener('pointerup',e=>{if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(d>7)return;$('#meetBtn').click();$('#encounter').scrollIntoView({behavior:'smooth'});pose('stalk');});cv.addEventListener('pointercancel',()=>down=null);}
-  const poses=['animation.chigur.idle','animation.chigur.walk','animation.chigur.stalk'];let poseIndex=0;
-  $('#poseBtn').onclick=()=>{poseIndex=(poseIndex+1)%poses.length;if(g)g.st.idle=poses[poseIndex];$('#poseBtn').textContent=['ПОЗА: СПОКОЕН','ПОЗА: ИДЁТ','ПОЗА: СЛЕДИТ'][poseIndex];};
-
-  // Порядок ChigurSpawnHandler: stored=20, migration=>40; failure stored=50, next migration=>100.
-  const night={index:1,chance:40,found:false};
-  function renderNight(){ $('#nightIndex').textContent=String(night.index).padStart(2,'0');$('#nightChance').textContent=night.chance;$('#chanceBar').style.width=night.chance+'%';$('#nightRoll').disabled=night.found;$('#approachControl').hidden=!night.found; }
-  $('#nightRoll').onclick=()=>{
-    if(night.found)return;
-    const roll=Math.random()*100|0,success=roll<night.chance;
-    if(success){night.found=true;$('#hunterDistance').textContent=(12+Math.random()*9|0)+' БЛОКОВ';$('#hunterMarker').classList.add('visible');$('#nightSignal').textContent='ФИГУРА ОБНАРУЖЕНА';$('#nightRoadnote').textContent='ПОДОЙДИ К НЕМУ';$('#approachRange').value='20';updateApproach();$('#nightResult').textContent=`Бросок ${roll} < ${night.chance}: Чигур появился в 12–20 блоках. Подойди, чтобы получить достижение.`;snd('chigur_vanish',.35);}
-    else{$('#nightResult').textContent=`Бросок ${roll} ≥ ${night.chance}: никого нет. Следующей ночью шанс станет 100%.`;night.index++;night.chance=100;$('#nightSignal').textContent='ТИШИНА · СЛЕДУЮЩАЯ НОЧЬ';}
-    renderNight();
-  };
-  $('#nightReset').onclick=()=>{night.index=1;night.chance=40;night.found=false;$('#nightResult').textContent='Новый прогон. Сначала проверь ночь.';$('#nightSignal').textContent='СИГНАЛ НЕ ОБНАРУЖЕН';$('#hunterMarker').classList.remove('visible');$('#nightRoadnote').textContent='ПРИСМОТРИСЬ К ОБОЧИНЕ';renderNight();};renderNight();
-
-  function updateApproach(){const d=Number($('#approachRange').value);$('#nightDistance').textContent=d+' БЛОКОВ';$('#hunterDistance').textContent=d+' БЛОКОВ';const sprite=$('#hunterMarker');sprite.style.setProperty('--near-scale',String(.48+(20-d)*.05));sprite.style.right=(19+(20-d)*1.4)+'%';$('#nightApproachMessage').textContent=d<=5?'Пять блоков. Он видит тебя. «Первая встреча» открыта.':`До знакомства ещё ${d-5} блоков.`;if(d<=5&&night.found&&!adv.has('first_meeting')){$('#meetBtn').click();$('#nightRoadnote').textContent='ОН ВИДИТ ТЕБЯ';}}
-  $('#approachRange').addEventListener('input',updateApproach);
-
-  const scene={met:false,anger:0,hunt:false,ended:false};
-  function dialogue(){
-    $('#aggressionValue').textContent=scene.anger+' / 100';$('#aggressionBar').style.width=scene.anger+'%';
-    $('#dialogueState').textContent=scene.hunt?'ОХОТА':scene.ended?'УШЁЛ':scene.met?'БЛИЗКО':'НЕЗНАКОМЕЦ';
-    $$('#dialogueChoices button').forEach(b=>b.disabled=!scene.met||scene.ended||scene.hunt);
-    $('#meetBtn').disabled=scene.met&&!scene.ended;
+  function end(line,hint){
+    pose('vanish');snd('vanish',.25);$('#character').classList.add('gone');show('ended',line,[['new','Другая встреча ↺']],hint);s.hunt=false;
   }
-  $('#meetBtn').onclick=()=>{if(scene.ended)resetDialogue();scene.met=true;$('#dialogueLine').textContent='Он замер. Пора задать вопрос — или промолчать.';adv.grant('first_meeting');dialogue();};
-  function resetDialogue(){scene.met=false;scene.anger=0;scene.hunt=false;scene.ended=false;document.body.classList.remove('hunt-active');$('#dialogueLine').textContent='Он остановился рядом и смотрит на тебя. Подойди, чтобы заговорить.';$('#bedVisual').classList.remove('broken');$('#bedStamp').textContent='НЕ БЕЗОПАСНО';$('#sleepResult').textContent='Сперва запусти охоту диалогом выше.';dialogue();}
-  $('#dialogueReset').onclick=resetDialogue;
-  $('#dialogueChoices').onclick=e=>{const btn=e.target.closest('[data-choice]');if(!btn||btn.disabled)return;const choice=+btn.dataset.choice;
-    if(choice===0){scene.hunt=true;document.body.classList.add('hunt-active');$('#dialogueLine').textContent='«Откуда ты?» — пять секунд лицом к лицу. Затем он исчезает из вида и начинает тихую охоту.';snd('chigur_speech_1',.55);adv.grant('dialogue_mistake');pose('stalk');}
-    else if(choice===1){scene.anger=Math.min(100,scene.anger+34);if(scene.anger>=100){scene.hunt=true;document.body.classList.add('hunt-active');$('#dialogueLine').textContent='Третье молчание. 34 + 34 + 34 = 102. Шкала достигла предела — началась охота.';pose('stalk');}else $('#dialogueLine').textContent=`Он не получил ответа. Настороженность: ${scene.anger}/100. Ещё одно «...» поднимет её на 34.`;}
-    else{scene.ended=true;$('#dialogueLine').textContent='«Извините, обознался». Он не преследует тебя. На этот раз.';snd('chigur_vanish',.35);}
-    dialogue();
-  };dialogue();
-  $('#sleepBtn').onclick=()=>{if(!scene.hunt){$('#sleepResult').textContent='Сцена начинается только во время личной ночной охоты. Начни с «Откуда ты?».';return;}
-    $('#bedVisual').classList.add('broken');$('#bedStamp').textContent='КРОВАТЬ СЛОМАНА';$('#sleepResult').textContent='Он ломает кровать, появляется перед игроком и исчезает после финальной сцены.';scene.hunt=false;scene.ended=true;document.body.classList.remove('hunt-active');dialogue();pose('kill');snd('chigur_airgun',.55);adv.grant('night_visit');};
+  function sleep(){
+    if(!s.hunt||!['hunt','huntDelay'].includes(s.phase))return;distance(1);adv.grant('night_visit');title('Спрятаться','не получилось.','Обе части кровати сломаны. Он перед тобой.');
+    show('bed','Ты пытаешься лечь. Кровать ломается. Одна секунда — и казнь завершится.');pose('kill');snd('airgun',.45);
+    schedule(1,()=>{s.dead=true;title('Вы','погибли.','Он следил всё это время.');snd('shot',.35);end('Ночная охота не заканчивается у кровати.','Сцена из ChigurBedHandler и AntonChigurEntity, без выдуманного способа спастись.');});
+  }
+  function witnessQuestion(){
+    if(s.questionSpoken){witnessChoice();return;}
+    show('witnessPause','Три секунды молчания. Он смотрит на тебя.');pose('idle',true);
+    schedule(3,()=>{
+      if(!s.questionSpoken){s.questionSpoken=true;show('witnessSpeech','Он спрашивает о другом игроке. Ты — свидетель, а не его цель.');snd('speech_4',.5);schedule(3,witnessChoice);}
+      else witnessChoice();
+    });
+  }
+  function witnessChoice(){
+    const refusal=refusalLines[Math.floor(Math.random()*refusalLines.length)];
+    show('witnessChoice',s.refusals?'Он всё ещё ждёт ответа. Отказов: '+s.refusals+'/3.':'Он хочет узнать, где другой игрок. Ты здесь ни при чём. Пока.',[['tell','Рассказать, где он'],['refuse',ZM.esc(refusal)]],'Тексты отказов выбраны из оригинальных трёх реплик интерфейса. Третий отказ он встречает молча.');
+  }
+  function refuse(){
+    if(s.phase!=='witnessChoice')return;s.refusals++;
+    show('witnessRetreat',s.refusals===3?'Третий отказ. Он молча отступает. Больше не спрашивает.':'Он делает небольшой шаг назад. Отказ '+s.refusals+'/3.');
+    if(s.refusals<3)snd('speech_'+(s.refusals===1?5:6),.5);
+    const start=s.distance;schedule(3,()=>{
+      if(s.refusals===3){title('Ты','не сказал.','Охота прекращена. Он уходит.');end('Три отказа. Охота на другого игрока закончилась, никто не выдал его местоположение.','За этот исход в моде нет отдельного достижения. Мы не придумываем ему награду.');}
+      else witnessQuestion();
+    },p=>distance(start+p*.8));
+  }
+  function tell(){
+    if(s.phase!=='witnessChoice')return;
+    title('Спасибо','не будет.','Сначала — свидетель. Потом — цель.');show('confessor','Ты рассказываешь. Он начинает казнь того, кто выдал другого игрока.');pose('kill');
+    schedule(1,()=>{
+      $('#witnessSelf').classList.add('dead');snd('shot',.35);s.dead=true;show('targetDelay','Свидетель погиб. Через пять секунд Чигур доберётся до цели.');
+      schedule(5,()=>{show('targetExecution','Он оказывается у цели и начинает вторую казнь.');pose('kill');schedule(1,()=>{$('#witnessTarget').classList.add('dead');snd('shot',.35);title('Сказал один.','Погибли двое.','Так закончилась эта охота.');end('Сначала погиб информатор, затем — игрок, которого он выдал.','В исходнике обе казни гарантированы. Здесь нет дополнительной «хорошей» ветки признания.');});});
+    });
+  }
+  function reset(mode='meeting'){
+    clearSound();task=null;Object.assign(s,{phase:'far',mode,distance:18,aggression:0,hunt:false,coinUsed:false,coinResult:null,refusals:0,questionSpoken:false,dead:false});
+    $('#character').classList.remove('gone','near','distant');$('#coinOverlay').hidden=true;$('#coinDisc').className='coin-disc';$('#witnessMarks').hidden=mode!=='witness';$('#witnessSelf').classList.remove('dead');$('#witnessTarget').classList.remove('dead');
+    distance(18);title('Вы его','не звали.','Он пока просто смотрит.');pose('idle',true);
+    if(mode==='coin')waitStill();else if(mode==='witness'){distance(3);adv.grant('first_meeting');title('Ты здесь','ни при чём.','Другой игрок стал целью. Чигур нашёл тебя.');witnessQuestion();}else far();
+  }
+  const actions={approach:()=>arrive(conversation),question:ask,silent,dismiss,talk:conversation,wait:waitStill,move:()=>{title('Ты','пошевелился.','Отсчёт неподвижности сброшен.');far();},back:()=>{distance(18);title('Он остался','на обочине.','Не исчез. Просто дальше от тебя.');far();},heads:()=>toss(true),tails:()=>toss(false),sleep,witness:()=>reset('witness'),refuse,tell,new:()=>reset()};
+  $('#sceneActions').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&!b.disabled)actions[b.dataset.act]?.();});
+  $('#sceneReset').addEventListener('click',()=>reset());
+  document.querySelectorAll('[data-episode]').forEach(b=>b.addEventListener('click',()=>{reset(b.dataset.episode);$('#encounter').scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});}));
+  $('#character3d').addEventListener('click',()=>{if(s.phase==='far')arrive(conversation);});$('#character3d').addEventListener('keydown',e=>{if(e.key==='Enter'&&s.phase==='far'){e.preventDefault();arrive(conversation);}});
 
-  let refusals=0,witnessDone=false;
-  $('#refuseBtn').onclick=()=>{if(witnessDone)return;refusals++;if(refusals<=2)snd('chigur_speech_'+(refusals+4),.34);$('#refusalNum').textContent=refusals+' / 3';$('#witnessResult').textContent=refusals<3?`Отказ №${refusals}. Он отступил и спросит снова.`:'Третий отказ: он молча отступает, прекращает охоту и уходит.';if(refusals===3){witnessDone=true;$('#refuseBtn').disabled=true;$('#tellBtn').disabled=true;snd('chigur_vanish',.4);}};
-  $('#tellBtn').onclick=()=>{if(witnessDone)return;witnessDone=true;$('#tellBtn').disabled=true;$('#refuseBtn').disabled=true;$('#witnessResult').textContent='Свидетель выдаёт друга. По сценарию Чигур сначала убивает свидетеля, затем спустя пять секунд возвращается за целью.';snd('chigur_shot',.32);};
-  $('#witnessReset').onclick=()=>{refusals=0;witnessDone=false;$('#refusalNum').textContent='0 / 3';$('#refuseBtn').disabled=false;$('#tellBtn').disabled=false;$('#witnessResult').textContent='Вообрази, что ты встретил его во время охоты за другом.';};
-
-  let stillTimer=null,waited=0,coinPhase='idle',coinTimer=[];
-  function clearCoinTimers(){if(stillTimer){clearInterval(stillTimer);stillTimer=null;}coinTimer.forEach(clearTimeout);coinTimer=[];}
-  function resetCoin(){clearCoinTimers();coinPhase='idle';waited=0;$('#stillProgress').style.width='0%';$('#stillText').textContent='10 СЕКУНД / ОЖИДАНИЕ';$('#coinTitle').textContent='Постой. Подожди.';$('#coinText').textContent='Ничего не делай десять секунд. Если не вступишь в разговор, Чигур подойдёт и предложит бросить монету.';$('#coinResult').textContent='Выигрыш — монета, которую затем можно подбрасывать у друзей.';$('#standBtn').disabled=false;$('#standBtn').textContent='СТОЯТЬ НЕПОДВИЖНО';$$('.coin-picks button').forEach(x=>x.disabled=true);$('#coinDisc').classList.remove('flip');$('#coinDisc img').src=tex('coin_face');}
-  $('#standBtn').onclick=()=>{if(coinPhase!=='idle')return;coinPhase='waiting';$('#standBtn').disabled=true;$('#coinTitle').textContent='Не двигайся.';$('#coinText').textContent='Счётчик ждёт десять секунд. После этого Чигур предложит назвать сторону монеты.';
-    const start=performance.now();stillTimer=setInterval(()=>{waited=Math.min(10,(performance.now()-start)/1000);$('#stillProgress').style.width=(waited*10)+'%';$('#stillText').textContent=`${(10-waited).toFixed(1)} СЕКУНД ДО ВОПРОСА`;if(waited<10)return;
-      clearInterval(stillTimer);stillTimer=null;coinPhase='pick';$('#stillText').textContent='ТЕПЕРЬ НАЗОВИ СТОРОНУ';$('#coinTitle').textContent='Орёл или решка?';snd('chigur_speech_2',.38);$('#coinText').textContent='Угадаешь — получишь монету после речи. Не угадаешь — у него свой ответ.';$$('.coin-picks button').forEach(x=>x.disabled=false);},80);
-  };
-  $$('.coin-picks button').forEach(btn=>btn.onclick=()=>{if(coinPhase!=='pick')return;coinPhase='toss';$$('.coin-picks button').forEach(x=>x.disabled=true);const heads=Math.random()<.5,choice=btn.dataset.side==='heads';$('#coinTitle').textContent='Монета в воздухе.';$('#coinResult').textContent='Бросок идёт две секунды...';$('#coinDisc').classList.remove('flip');void $('#coinDisc').offsetWidth;$('#coinDisc').classList.add('flip');snd('chigur_coin',.55);
-    coinTimer.push(setTimeout(()=>{if(coinPhase!=='toss')return;const win=heads===choice;$('#coinDisc img').src=tex(heads?'coin_face':'coin_back');$('#coinDisc img').alt=heads?'Оригинальная сторона монеты: орёл':'Оригинальная сторона монеты: решка';$('#coinTitle').textContent=heads?'Орёл.':'Решка.';$('#coinResult').textContent=win?'Угадал. Он произносит речь — через пять секунд монета будет твоей.':'Не угадал. После паузы сценарий заканчивается казнью игрока.';
-      if(win){coinPhase='reward';snd('chigur_speech_3',.4);coinTimer.push(setTimeout(()=>{if(coinPhase!=='reward')return;coinPhase='done';$('#coinResult').textContent='Монета получена! ПКМ объявит «Орёл» или «Решка» игрокам в радиусе 5 блоков.';snd('chigur_vanish',.4);adv.grant('coin_luck');},5000));}
-      else{coinPhase='done';snd('chigur_shot',.27);}
-    },2000));
-  });$('#coinReset').onclick=resetCoin;
-
-  const gun={ammo:6,dur:300,hp:80,reload:0,pump:false};let reloadTimer=null;
-  const damage=d=>7+60*Math.pow(1-Math.min(1,Math.max(0,(d-2)/8)),2);
-  function gunRender(){ $('#shells').innerHTML=Array.from({length:6},(_,i)=>`<span class="${i>=gun.ammo?'empty':''}"></span>`).join('');$('#targetHP').textContent=Math.ceil(gun.hp)+' / 80';$('#durability').textContent=gun.dur+' / 300';$('#damageValue').textContent=Math.round(damage(+$('input#distance').value));$('#distanceVal').textContent=$('input#distance').value;$('#fireBtn').disabled=gun.hp<=0||gun.reload>0||gun.pump||gun.dur<=0;$('#fireBtn').textContent=gun.reload>0?`ПЕРЕЗАРЯДКА: ${gun.reload} С`:gun.hp<=0?'МИШЕНЬ ПОРАЖЕНА':gun.pump?'ПЕРЕДЁРГИВАНИЕ':'ВЫСТРЕЛИТЬ';}
-  $('#distance').oninput=gunRender;
-  $('#fireBtn').onclick=()=>{if(gun.hp<=0||gun.reload||gun.pump||gun.dur<=0)return;
-    const d=+$('input#distance').value,hurt=damage(d);gun.ammo--;gun.dur--;gun.hp=Math.max(0,gun.hp-hurt);gun.pump=true;$('#rangeFlash').classList.remove('on');void $('#rangeFlash').offsetWidth;$('#rangeFlash').classList.add('on');snd('chigur_shot',.42);pose('shoot');
-    $('#weaponFeedback').textContent=`Дистанция ${d} бл. · урон ${hurt.toFixed(1).replace('.',',')} · патронов ${gun.ammo}/6.`;
-    if(gun.hp<=0){$('#rangeTarget').classList.add('defeated');$('#weaponFeedback').textContent+=' Тренировочная победа над Чигуром: он оставил дробовик.';adv.grant('hunter');snd('chigur_vanish',.3);}
-    if(gun.ammo===0&&gun.hp>0){gun.reload=10;$('#weaponFeedback').textContent+=' Барабан пуст — перезарядка 10 секунд.';snd('chigur_reload',.32);reloadTimer=setInterval(()=>{gun.reload--;if(gun.reload<=0){gun.reload=0;gun.ammo=6;clearInterval(reloadTimer);reloadTimer=null;$('#weaponFeedback').textContent='Шесть патронов на месте. Можно продолжать.';}gunRender();},1000);}
-    gunRender();setTimeout(()=>{gun.pump=false;gunRender();},400);
-  };
-  $('#repairBtn').onclick=()=>{if(reloadTimer)clearInterval(reloadTimer);reloadTimer=null;gun.ammo=6;gun.reload=0;gun.hp=80;gun.pump=false;gun.dur=300;$('#rangeTarget').classList.remove('defeated');$('#weaponFeedback').textContent='Новая мишень и полностью отремонтированный учебный дробовик.';gunRender();};gunRender();
-
-  // Six case-file tabs reveal different original pieces of evidence instead of identical cards.
-  const evidence=[
-    {image:'anton_full',desc:'Не достаточно увидеть силуэт: первые пять блоков открывают знакомство.'},
-    {image:'anton_portrait',desc:'Молчание считается. Три раза по 34 — охота начинается.'},
-    {image:'coin_face',desc:'Монета настоящая: орёл и решка взяты из оригинального атласа.'},
-    {image:'chigur_shotgun_render',desc:'Барабан опустел — охотник ждёт следующей ночи.'},
-    {image:'anton_full',desc:'Потеряешь его из вида — он не исчезнет сразу. Нужно 120 секунд.'},
-    {image:'anton_portrait',desc:'Три отказа свидетеля разрывают охоту без выдачи друга.'}
-  ];
-  const allFacts=$$('.fact');function showEvidence(i){allFacts.forEach((el,n)=>el.classList.toggle('active',n===i));const x=evidence[i];$('#evidenceImg').src=tex(x.image);$('#evidenceImg').alt=allFacts[i].querySelector('h3').textContent;$('#evidenceImg').classList.toggle('is-vanished',i===4&&$('#factVanishImg').parentElement.classList.contains('faded'));$('#evidenceImg').classList.remove('changed');void $('#evidenceImg').offsetWidth;$('#evidenceImg').classList.add('changed');$('#evidenceIndex').textContent=String(i+1).padStart(2,'0')+' / 06';$('#evidenceTitle').textContent=allFacts[i].querySelector('h3').textContent;$('#evidenceDescription').textContent=x.desc;}
-  allFacts.forEach((el,i)=>{el.tabIndex=0;el.addEventListener('click',()=>showEvidence(i));el.addEventListener('keydown',e=>{if(e.target===el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();showEvidence(i);}})});
-  showEvidence(0);
-  let factAnger=0,factAmmo=6,factRefusal=0,rad=0;
-  $$('.fact [data-fact]').forEach(btn=>btn.onclick=()=>{switch(btn.dataset.fact){
-    case 'meet':$('#meetBtn').click();$('#factMeet').textContent='Теперь проверь ветку достижений: «Первая встреча» открыта.';break;
-    case 'anger':factAnger=(factAnger+34)%136;$('#factAnger').textContent=factAnger+' / 100';$('#factMeter i').style.width=Math.min(100,factAnger)+'%';$('#factAngerText').textContent=factAnger>100?'102: после трёх ответов начинается охота.':'Молчание добавляет 34, предел — 100.';break;
-    case 'radius':rad=(rad+1)%7;$('#factRadius').textContent=rad+' / 5';$('#factRadiusText').textContent=rad<=5?`Игроков в пределах ${rad} бл. услышат результат.`:'На 6 блоках оповещения уже нет.';snd('chigur_coin',.22);break;
-    case 'ammo':factAmmo--;if(factAmmo<0)factAmmo=6;$('#factAmmoArt').textContent=Array.from({length:6},(_,i)=>i<factAmmo?'●':'○').join(' ');$('#factAmmoText').textContent=factAmmo?'Осталось '+factAmmo+'/6.':'Пусто. Чигур пополнит барабан только следующей игровой ночью.';snd('chigur_shot',.15);break;
-    case 'vanish':$('#factVanishImg').parentElement.classList.toggle('faded');$('#evidenceImg').classList.toggle('is-vanished',$('#factVanishImg').parentElement.classList.contains('faded'));$('#factVanishText').textContent=$('#factVanishImg').parentElement.classList.contains('faded')?'Никто не видит его 120 секунд — он исчез.':'Он снова в поле зрения: отсчёт сброшен.';snd('chigur_vanish',.22);break;
-    case 'refuse':factRefusal=(factRefusal+1)%4;$('#factRefusals').textContent='НЕ СКАЖУ '.repeat(factRefusal)||'НЕТ · НЕТ · НЕТ';$('#factRefuseText').textContent=factRefusal===3?'Третий отказ: он уходит без новых вопросов.':`Отказов: ${factRefusal}/3.`;break;
-  }});
-  if(window.ZM?.reveal)ZM.reveal();
+  // Trophy range. This is an unarmoured dummy, NOT a simulated victory over the NPC.
+  const gun={unlocked:false,ammo:6,life:300,reload:0,pump:0,hp:80};let recoilTimer=0;
+  const dist=()=>+$('#distance').value;
+  const damage=()=>dist()>10?0:7+60*Math.pow(1-clamp((dist()-2)/8,0,1),2);
+  const damageText=()=>damage().toLocaleString('ru-RU',{maximumFractionDigits:1});
+  function gunHUD(){
+    $('#distanceVal').textContent=dist().toLocaleString('ru-RU');$('#damageHint').textContent=dist()>10?'За пределами 10 блоков трофей не находит цель.':'В манекен без брони: '+damageText()+' урона.';
+    $('#paperTarget').style.setProperty('--target-scale',String(1.15-(dist()-2)/12*.52));$('#paperTarget').classList.toggle('down',gun.hp<=0);$('#targetHP').textContent=Math.max(0,gun.hp).toLocaleString('ru-RU',{maximumFractionDigits:1});
+    $('#shells').innerHTML=Array.from({length:6},(_,i)=>`<i ${i>=gun.ammo?'class="spent"':''}></i>`).join('');$('#shells').setAttribute('aria-label',gun.ammo+' патронов из шести');
+    $('#ammoLabel').textContent=gun.reload>0?'ПЕРЕЗАРЯДКА '+Math.ceil(gun.reload)+' с':gun.ammo+' / 6';$('#durability').textContent=gun.life;
+    $('#fireBtn').disabled=!gun.unlocked||gun.reload>0||gun.pump>0||gun.life<=0;$('#fireBtn').textContent=gun.life<=0?'Сломан':gun.reload>0?'Перезарядка…':'Выстрелить';
+  }
+  $('#unlockWeapon').addEventListener('click',()=>{gun.unlocked=true;$('#caseClosed').hidden=true;$('#shootingRange').hidden=false;adv.grant('hunter');gunHUD();});
+  $('#distance').addEventListener('input',gunHUD);
+  $('#fireBtn').addEventListener('click',()=>{
+    if(!gun.unlocked||gun.reload>0||gun.pump>0||gun.life<=0)return;
+    gun.ammo--;gun.life--;gun.pump=.4;
+    const hit=gun.hp>0?damage():0;gun.hp=Math.max(0,gun.hp-hit);snd('shot',.35);
+    $('#weaponFeedback').textContent=hit?'Попадание: −'+hit.toLocaleString('ru-RU',{maximumFractionDigits:1})+'.'+(gun.hp<=0?' Манекен упал.':'') : gun.hp<=0?'Манекен уже упал. Патрон всё равно потрачен.':'Мимо: цель дальше десяти блоков. Патрон и прочность потрачены.';
+    if(gun.ammo===0){gun.reload=10;snd('reload',.25);$('#weaponFeedback').textContent+=' Барабан пуст. Десять обязательных секунд.';}
+    if(!reduced.matches){clearTimeout(recoilTimer);$('#shotgunArt').classList.add('recoil');$('#paperTarget').classList.add('hit');$('#rangeFlash').classList.add('on');recoilTimer=setTimeout(()=>{$('#shotgunArt').classList.remove('recoil');$('#paperTarget').classList.remove('hit');$('#rangeFlash').classList.remove('on');},150);}
+    gunHUD();
+  });
+  $('#repairBtn').addEventListener('click',()=>{gun.life=300;$('#weaponFeedback').textContent='Демонстрация ремонта: прочность восстановлена. В игре подходят железо или порох; патроны ремонт не добавляет.';gunHUD();});
+  $('#resetTarget').addEventListener('click',()=>{gun.hp=80;$('#weaponFeedback').textContent='Новый манекен, 80 здоровья, без брони. Барабан и прочность остались прежними.';gunHUD();});
+  setInterval(()=>{
+    const now=performance.now(),dt=Math.min(.15,(now-last)/1000);last=now;if(document.hidden)return;
+    if(!ZM.sfx.on()&&sounds.size)clearSound();
+    if(task){const current=task;current.left=Math.max(0,current.left-dt);const p=1-current.left/current.duration;$('#sceneProgress').style.width=p*100+'%';current.progress?.(p);if(current.left<=0&&task===current){task=null;current.done();}}
+    if(gun.unlocked&&(gun.reload>0||gun.pump>0)){gun.pump=Math.max(0,gun.pump-dt);if(gun.reload>0){gun.reload=Math.max(0,gun.reload-dt);if(gun.reload===0){gun.ammo=6;$('#weaponFeedback').textContent='Десять секунд прошли. Барабан снова полон.';}}gunHUD();}
+  },50);
+  window.P27SCENE={state:s,gun}; // observable state for the page and regression tests
+  reset();gunHUD();
+  const cv=$('#character3d');
+  if(window.ZMGeo?.supported())try{
+    model=ZMGeo.create(cv,{geo:ZM.P27G.geo,anim:ZM.P27G.anim,tex:'../../assets/textures/p27/anton_chigur.png',idle:'animation.chigur.idle',lit:.45,mip:true,exclusive:true,cam:{yaw:195,pitch:3,dist:88,target:[0,16,0],fov:40}});
+    if(model){const image=new Image();image.onload=()=>$('#character').classList.add('model-ready');image.src='../../assets/textures/p27/anton_chigur.png';let seen=true,old=0;new IntersectionObserver(es=>seen=es[0].isIntersecting).observe(cv);
+      function frame(t){requestAnimationFrame(frame);if(t-old<45)return;const dt=Math.min(.07,(t-old)/1000);old=t;if(!seen||document.hidden)return;const target=58+s.distance*1.65;model.cam.dist+=(target-model.cam.dist)*(reduced.matches?1:.15);if(!reduced.matches)model.tick(dt);model.render();}requestAnimationFrame(frame);
+    }
+  }catch(e){model=null;console.warn('Chigur model fallback',e);}
 })();
