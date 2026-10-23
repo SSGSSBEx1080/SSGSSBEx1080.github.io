@@ -78,6 +78,7 @@
       if (t === 'log' && st.log) img.src = U(A + 'guest/stripped_oak_log.png');
       const done = t === 'bull' ? st.bull !== 'normal' : st[t];
       cap.textContent = done ? T[t].done : T[t].cap + ' · ЖДЁТ';
+      try { const d = { t: st.t, sheep: st.sheep, bull: st.bull, berries: st.berries, log: st.log, dur: st.dur }; window.__G4RCM = d; dispatchEvent(new CustomEvent('g4rcm', { detail: d })); } catch (e) {}
     };
     $('#rcmTargets').addEventListener('click', (e) => {
       const b = e.target.closest('[data-t]'); if (!b) return;
@@ -121,13 +122,78 @@
     durRender(); scene(); put('Выбери цель и примени ПКМ. Прочность честная: 500 использований.');
   })();
 
-  /* ============ 02. СОЛЬ: фитиль с лампой ============ */
+  /* ============ 02. СОЛЬ: добыча руды + фитиль с лампой ============ */
   const COLS = 14, ROWS = 7, TORCH = { r: 3, c: 0 }, LAMP = { r: 3, c: 13 };
   const grid = $('#fuseGrid');
   grid.style.gridTemplateColumns = `48px repeat(${COLS - 2}, 1fr) 48px`;
-  const cells = []; /* 0 пусто · 1 соль · 2 горит */
-  const life = [];
-  const btns = [];
+
+  /* ---- шахта: зажми руду — 10 стадий трещин, ровно 4 соли и 2–5 опыта ---- */
+  let saltOwned = 0;
+  const mineBlock = $('#mineBlock'), crackCv = $('#mineCrack'), crackG = crackCv.getContext('2d');
+  crackCv.width = crackCv.height = 16;
+  const CRACKS = (() => {   /* детерминированные трещины: 10 стадий по 12 пикселей */
+    let seed = 20261; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const px = new Set(); let x = 8, y = 8;
+    for (let i = 0; i < 120; i++) {
+      px.add(x + ',' + y);
+      x = Math.max(0, Math.min(15, x + (rnd() < .5 ? -1 : 1) * (rnd() < .35 ? 0 : 1)));
+      y = Math.max(0, Math.min(15, y + (rnd() < .5 ? -1 : 1)));
+      if (rnd() < .18) { x = 1 + (rnd() * 14 | 0); y = 1 + (rnd() * 14 | 0); }
+    }
+    return [...px];
+  })();
+  let mining = null, mineStage = 0;
+  const drawCracks = () => {
+    const fill = $('#mineFill'); if (fill) fill.style.width = (mineStage * 10) + '%';
+    crackG.clearRect(0, 0, 16, 16);
+    crackG.fillStyle = '#0a0a0acc';
+    for (let i = 0; i < mineStage * 12 && i < CRACKS.length; i++) { const [x, y] = CRACKS[i].split(','); crackG.fillRect(+x, +y, 1, 1); }
+  };
+  const saltSync = () => { $('#saltOwned').textContent = saltOwned; const m = $('#saltOwned2'); if (m) m.textContent = saltOwned; };
+  const mineFinish = () => {
+    mineStage = 0; mining = null; drawCracks();
+    saltOwned += 4; saltSync();
+    const xp = 2 + (Math.random() * 4 | 0);
+    $('#mineXp').textContent = '+' + xp + ' XP';
+    ZM.sfx('stone', .55, 1.15); ZM.sfx('orb', .3, 1.35);
+    mineBlock.classList.remove('broke'); void mineBlock.offsetWidth; mineBlock.classList.add('broke');
+    if (adv) adv.grant('salt_discovery');
+    const note = $('#mineNote');
+    if (note) { note.textContent = `Руда разобрана: ровно 4 соли в карман, ${xp} опыта за ручную добычу.`; note.classList.remove('flash'); void note.offsetWidth; note.classList.add('flash'); }
+  };
+  let holding = false, lastHit = 0, shakeOn = false;
+  const setShake = (on) => { if (on === shakeOn) return; shakeOn = on; mineBlock.style.setProperty('--shake', on ? ((Math.random() - .5) * 2 + 'px') : '0px'); };
+  const mineStep = (dt, now) => {
+    mineStage = Math.min(10, mineStage + dt * 5.2);
+    drawCracks();
+    if (now - lastHit > 190) { lastHit = now; ZM.sfx('hit', .12, .8 + Math.random() * .4); }
+    if (mineStage >= 10) { mineFinish(); return; }
+    setShake(true); mineBlock.style.setProperty('--shake', (Math.random() - .5) * 2 + 'px');
+  };
+  mineBlock.addEventListener('pointerdown', e => { e.preventDefault(); try { mineBlock.setPointerCapture(e.pointerId); } catch (_) {} holding = true; mining = performance.now(); });
+  mineBlock.addEventListener('pointerup', () => { holding = false; mining = null; });
+  mineBlock.addEventListener('pointercancel', () => { holding = false; mining = null; });
+  mineBlock.addEventListener('keydown', e => { if (e.code === 'Space' && !e.repeat) { e.preventDefault(); holding = true; mining = performance.now(); } });
+  mineBlock.addEventListener('keyup', e => { if (e.code === 'Space') { holding = false; mining = null; } });
+  mineBlock.addEventListener('blur', () => { holding = false; mining = null; });
+  mineBlock.addEventListener('contextmenu', e => e.preventDefault());
+  (function mineLoop() {
+    requestAnimationFrame(mineLoop);
+    const now = performance.now();
+    if (holding && !document.hidden) { mineStep((now - (mining || now)) / 1000, now); mining = now; return; }
+    mining = null; setShake(false);
+    if (mineStage > 0) { mineStage = Math.max(0, mineStage - .9); drawCracks(); }
+  })();
+  drawCracks(); saltSync();
+
+  /* ---- фитиль: дорожки рисуются на канвасе, как редстоун в MC ----
+   * соль соединяется с соседней солью И с факелом/лампой; изгиб — это
+   * изгиб, а не крест; поджиг — от любой соли рядом с факелом. */
+  const trail = document.createElement('canvas');
+  trail.className = 'fuse-trail'; trail.setAttribute('aria-hidden', 'true');
+  grid.appendChild(trail);
+  const tg = trail.getContext('2d');
+  const cells = []; const life = []; const btns = [];
   let burning = false, burned = 0, runBurned = 0, lampOn = false;
   for (let r = 0; r < ROWS; r++) {
     cells.push(Array(COLS).fill(0)); life.push(Array(COLS).fill(0)); btns.push([]);
@@ -140,8 +206,9 @@
       grid.appendChild(b); btns[r].push(b);
     }
   }
-  const salt = (r, c) => cells[r][c] >= 1;
-  let saltOwned = 0;
+  const salt = (r, c) => cells[r] && cells[r][c] >= 1;
+  const isNode = (r, c) => salt(r, c) || (r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c);
+  let painting = null;
   function paintCell(r, c, add) {
     if ((r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c)) return;
     if (burning && add) return;
@@ -149,35 +216,8 @@
     if (add && adv) adv.grant('salt_fuse');
     renderFuse();
   }
-  $('#mineSalt').addEventListener('click', () => {
-    saltOwned += 4; $('#saltOwned').textContent = saltOwned;
-    ZM.sfx('stone', .5, 1.15); ZM.sfx('orb', .3, 1.3);
-    if (adv) adv.grant('salt_discovery');
-  });
-  function renderFuse() {
-    let n = 0;
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      const b = btns[r][c];
-      if ((r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c)) continue;
-      const v = cells[r][c];
-      if (v) n++;
-      const hor = (c > 0 && salt(r, c - 1)) || (c < COLS - 1 && salt(r, c + 1));
-      const ver = (r > 0 && salt(r - 1, c)) || (r < ROWS - 1 && salt(r + 1, c));
-      b.className = v === 2 ? 'lit' : v === 1 ? 'salt' : '';
-      if (v) {
-        if (hor && ver) b.innerHTML = '<i class="w"></i>';
-        else if (hor) b.innerHTML = '<i class="h"></i>';
-        else if (ver) b.innerHTML = '<i class="v"></i>';
-        else b.innerHTML = '<i class="w"></i>';
-      } else b.innerHTML = '';
-    }
-    btns[LAMP.r][LAMP.c].classList.toggle('on', lampOn);
-    $('#fusePlaced').textContent = n;
-    $('#fuseBurned').textContent = burned;
-  }
-  let painting = null;
-  grid.addEventListener('pointerdown', (e) => {
-    const b = e.target.closest('button'); if (!b) return;
+  grid.addEventListener('pointerdown', e => {
+    const b = e.target.closest('button'); if (!b || e.target === trail) return;
     e.preventDefault();
     outer: for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (btns[r][c] === b) {
       if ((r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c)) break outer;
@@ -186,18 +226,54 @@
       break outer;
     }
   });
-  grid.addEventListener('pointerover', (e) => {
+  grid.addEventListener('pointerover', e => {
     if (painting === null || !e.target.closest) return;
     const b = e.target.closest('button'); if (!b) return;
     outer2: for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (btns[r][c] === b) { paintCell(r, c, painting); break outer2; }
   });
   addEventListener('pointerup', () => (painting = null));
   $('#fuseClear').addEventListener('click', () => { if (burning) return; for (let r = 0; r < ROWS; r++) cells[r].fill(0); renderFuse(); });
+  function renderFuse() {
+    let n = 0;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const b = btns[r][c];
+      if ((r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c)) continue;
+      const v = cells[r][c];
+      if (v) n++;
+      b.className = v === 2 ? 'lit' : v === 1 ? 'salt' : '';
+    }
+    btns[LAMP.r][LAMP.c].classList.toggle('on', lampOn);
+    $('#fusePlaced').textContent = n;
+    $('#fuseBurned').textContent = burned;
+    drawTrail();
+  }
+  function drawTrail() {
+    const w = grid.clientWidth, h = grid.clientHeight, d = Math.min(devicePixelRatio || 1, 2);
+    if (!w || !h) return;
+    if (trail.width !== Math.round(w * d) || trail.height !== Math.round(h * d)) { trail.width = Math.round(w * d); trail.height = Math.round(h * d); }
+    tg.setTransform(d, 0, 0, d, 0, 0); tg.clearRect(0, 0, w, h);
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      if (!salt(r, c)) continue;
+      const b = btns[r][c], x = b.offsetLeft - grid.clientLeft, y = b.offsetTop - grid.clientTop, bw = b.offsetWidth, bh = b.offsetHeight;
+      const cx = x + bw / 2, cy = y + bh / 2;
+      const t = Math.max(3, Math.round(Math.min(bw, bh) * .18));
+      const lit = cells[r][c] === 2;
+      const dirs = [[0, -1, x, cy - t / 2, bw / 2, t], [0, 1, cx, cy - t / 2, bw / 2 + .5, t], [-1, 0, cx - t / 2, y, t, bh / 2], [1, 0, cx - t / 2, cy, t, bh / 2 + .5]]
+        .filter(([dr, dc]) => isNode(r + dr, c + dc));
+      tg.fillStyle = lit ? '#ffb02e33' : '#e8e4d814';
+      for (const [, , rx, ry, rw, rh] of dirs) tg.fillRect(rx - 1.5, ry - 1.5, rw + 3, rh + 3);   /* ореол */
+      tg.fillStyle = lit ? '#ffd76e' : '#d9d3c4';
+      for (const [, , rx, ry, rw, rh] of dirs) tg.fillRect(rx, ry, rw, rh);
+      tg.fillStyle = lit ? '#ffd76e' : '#e8e4d8';
+      tg.fillRect(cx - t / 2, cy - t / 2, t, t);   /* точка в центре, как у пыли */
+    }
+  }
   $('#fuseIgnite').addEventListener('click', () => {
     if (burning) return;
-    const c = TORCH.c + 1, r = TORCH.r;
-    if (!salt(r, c)) { $('#fuseSignal').textContent = 'СИГНАЛ: — (СОЛИ РЯДОМ НЕТ)'; return; }
-    cells[r][c] = 2; life[r][c] = 2; burning = true; runBurned = 0;
+    const near = [[0, 1], [0, -1], [1, 0], [-1, 0]].filter(([dr, dc]) => salt(TORCH.r + dr, TORCH.c + dc));
+    if (!near.length) { $('#fuseSignal').textContent = 'СИГНАЛ: — (СОЛИ РЯДОМ НЕТ)'; return; }
+    for (const [dr, dc] of near) { cells[TORCH.r + dr][TORCH.c + dc] = 2; life[TORCH.r + dr][TORCH.c + dc] = 2; }
+    burning = true; runBurned = 0;
     $('#fuseSignal').textContent = 'СИГНАЛ: 15';
     ZM.sfx('click', .4, 1.3);
     renderFuse();
@@ -343,62 +419,6 @@
     if (adv) adv.grant('nina_knife');
   });
 
-  /* ============ 3D: нож гостя ============ */
-  (function knife3d() {
-    const fig = $('#knifeArt'), cv = $('#knife3d');
-    if (!fig || !cv || !(window.ZMGeo && ZMGeo.supported())) return;
-    const tex = (() => {
-      const c = document.createElement('canvas'); c.width = 64; c.height = 64;
-      const g = c.getContext('2d');
-      /* сталь: клинок и остриё */
-      const st = g.createLinearGradient(0, 0, 0, 38);
-      st.addColorStop(0, '#eef4f7'); st.addColorStop(.4, '#cfd8de'); st.addColorStop(1, '#9aa6ae');
-      g.fillStyle = st; g.fillRect(0, 0, 40, 38);
-      for (let i = 0; i < 130; i++) { g.fillStyle = 'rgba(255,255,255,' + (Math.random() * .3) + ')'; g.fillRect(Math.random() * 40 | 0, Math.random() * 38 | 0, 1, 1); }
-      g.fillStyle = '#f7fbfd'; g.fillRect(19, 1, 2, 18);           /* светлая кромка */
-      /* гарда: тёмная сталь */
-      g.fillStyle = '#57626b'; g.fillRect(42, 18, 13, 10);
-      g.fillStyle = '#7d8a93'; g.fillRect(42, 18, 13, 2);
-      /* рукоять: дерево с волокнами */
-      g.fillStyle = '#7a4a26'; g.fillRect(42, 0, 22, 14);
-      for (let y = 1; y < 14; y += 2) { g.fillStyle = 'rgba(94,56,30,.6)'; g.fillRect(42, y + (Math.random() * 2 | 0), 22, 1); }
-      g.fillStyle = '#c9d2d8'; g.fillRect(46, 4, 2, 2); g.fillRect(56, 8, 2, 2);  /* заклёпки */
-      return c.toDataURL('image/png');
-    })();
-    const GEO = {
-      tw: 64, th: 64,
-      bones: [
-        { name: 'knife', pivot: [0, 4, 0], cubes: [
-          { origin: [-1, 4, -4], size: [2, 4, 18], uv: [1, 1] },
-          { origin: [-1, 4, 14], size: [2, 2, 3], uv: [20, 30] },
-          { origin: [-2, 2, -6], size: [4, 5, 2], uv: [42, 20] },
-          { origin: [-1, 3, -15], size: [2, 3, 9], uv: [42, 1] },
-        ] },
-      ],
-    };
-    let api;
-    try { api = ZMGeo.create(cv, { geo: GEO, tex, nearest: true, lit: 1, cam: { yaw: -30, pitch: 22, dist: 48, target: [0, 5, 0], fov: 30 } }); } catch (e) { api = null; }
-    if (!api) return;
-    fig.classList.add('ready');
-    const st = K.spinner(cv, { ry: 30, rx: 0 }, 50);
-    let seen = false, last = 0, ang = 30, spin = 0;
-    new IntersectionObserver((e) => (seen = e[0].isIntersecting), { rootMargin: '90px' }).observe(cv);
-    const D2R = Math.PI / 180;
-    function frame(now) {
-      requestAnimationFrame(frame);
-      if (!seen || document.hidden || !cv.clientWidth) return;
-      const dt = Math.min(.05, (now - last) / 1000) || .016; last = now;
-      api.tick(dt);
-      if (spin > 0) { spin = Math.max(0, spin - dt * 1.4); ang += dt * 480 * spin; }
-      else if (st.idle()) ang = (ang + dt * 14) % 360;
-      else ang = st.ry;
-      api.setExtra(ZMGeo.M.mul(ZMGeo.M.rx(st.rx * D2R), ZMGeo.M.ry(ang * D2R)));
-      api.setBoneRot('knife', [Math.sin(now * .0013) * 2, 0, Math.sin(now * .0019) * 3]);
-      api.render();
-    }
-    requestAnimationFrame(frame);
-    cv.addEventListener('click', () => { spin = 1; ZM.sfx('hit', .3, 1.5); });
-  })();
 
   /* ---------- мини-ветка гостя в футере, как у основной линейки ---------- */
   (() => {

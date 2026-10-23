@@ -4,7 +4,7 @@
 <title>Гость П · Соль, нож и редиска — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера П: нож с ударом в спину ×2, солевой фитиль с сигналом 15, редиска с восемью стадиями и борщ, который возвращает миску. Механики из исходников ZitraksMode.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g4-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g4-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests5"><link rel="stylesheet" href="style.css?v=g4-5">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests6"><link rel="stylesheet" href="style.css?v=g4-6">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -109,6 +109,7 @@
               <button type="button" data-t="log"><img src="../../assets/textures/mc/p2/block_oak_log.png" alt="">БРЕВНО</button>
             </div>
             <div class="rcm-scene" id="rcmScene">
+              <canvas id="rcm3d" aria-label="Объёмная цель для ножа — крути мышью"></canvas>
               <img id="rcmImg" src="../../assets/textures/guest/sheep.png" alt="Цель для ножа">
               <b class="rcm-cap" id="rcmCap">ОВЦА · ЖДЁТ</b>
               <div class="rcm-drop" id="rcmDrop" aria-hidden="true"></div>
@@ -142,6 +143,26 @@
       <h2 id="saltTitle">Руда, фитиль и <em>сигнал 15</em></h2>
       <p>Соляная руда живёт на высоте 48–128 блоков и всегда отдаёт ровно четыре соли — даже если её взорвали или снесли ультой катаны. А сама соль кладётся trails-полосой и горит, как одноразовый бикфордов шнур.</p></header>
     <div class="g-cols">
+      <div class="g-panel mine-panel">
+        <h3 class="panel-title">СТЕНД: ДОБЫЧА РУДЫ</h3>
+        <div class="mine-stage">
+          <button type="button" class="mine-block" id="mineBlock" aria-label="Соляная руда: зажми и держи, чтобы добыть киркой">
+            <img src="../../assets/textures/guest/salt_ore.png" alt="" aria-hidden="true">
+            <canvas id="mineCrack" width="16" height="16" aria-hidden="true"></canvas>
+            <span class="mine-y" aria-hidden="true">Y 48–128</span>
+            <span class="mine-hint" aria-hidden="true">ЗАЖМИ И ДЕРЖИ</span>
+          </button>
+          <div class="mine-side">
+            <div class="mine-hud">
+              <span>СОЛИ В КАРМАНЕ: <b id="saltOwned2">0</b></span>
+              <span>ОПЫТ ЗА РУДУ: <b id="mineXp">2–5</b></span>
+              <span>ЖИЛ В ЧАНКЕ: <b>4 · РАЗМЕР 6</b></span>
+            </div>
+            <div class="mine-bar" aria-hidden="true"><i id="mineFill"></i></div>
+            <p class="g-note" id="mineNote">Дроп одинаковый для кирки, ТНТ и ульты катаны — ровно 4 соли; опыт 2–5 начисляется только за ручную добычу игроком.</p>
+          </div>
+        </div>
+      </div>
       <div class="g-panel">
         <h3 class="panel-title">СТЕНД: СОЛЕВОЙ ФИТИЛЬ</h3>
         <div class="fuse-wrap">
@@ -153,7 +174,6 @@
           </div>
           <div class="fuse-grid" id="fuseGrid" role="application" aria-label="Поле для солевого фитиля: рисуй соль и поджигай"></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button type="button" class="g-btn" id="mineSalt">ДОБЫТЬ СОЛЬ ИЗ РУДЫ <small>+4</small></button>
             <button type="button" class="g-btn" id="fuseIgnite">ПОДЖЕЧЬ ОТ РЫЧАГА</button>
             <button type="button" class="g-btn ghost small" id="fuseClear">СМЕСТИ СОЛЬ</button>
           </div>
@@ -311,5 +331,6 @@
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g4-5"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g4-6"></script><script src="../../shared/guest.js?v=guests1"></script>
+<script type="module" src="scene3d.js?v=g4-1"></script>
 </body></html>
