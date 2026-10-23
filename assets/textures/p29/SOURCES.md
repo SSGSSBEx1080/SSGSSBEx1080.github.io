@@ -80,3 +80,11 @@ clinical timers and outcomes continue unchanged. The header uses an explicit-UV
 copy only to stabilize zero-width native box-UV samples at texel boundaries; raw
 geometry/texture files remain unchanged. Source Java is preserved semantically;
 trailing whitespace is normalized for repository hygiene.
+
+## Reworked page 29 assets
+
+The 2026 rework (run loop, time-dilation stand, installation rite, spec plate)
+reuses only existing assets plus five more transitive vanilla 1.19.2 textures
+from the same InventivetalentDev archive: `block/anvil.png`,
+`block/tnt_side.png`, `item/netherite_helmet.png`, `item/netherite_chestplate.png`,
+`item/netherite_leggings.png`, `item/netherite_boots.png`. No new art is authored.
