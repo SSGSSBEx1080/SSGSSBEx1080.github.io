@@ -195,7 +195,7 @@ if (shots) fs.mkdirSync(shots, { recursive:true });
     await p.locator('#latchBtn').click(); await p.waitForFunction(() => P26APP.state.caught > 0);
     assert.equal(await p.evaluate(() => P26FLOOR.items.some(x => x.id==='bread')), true, 'Food must stay on floor in ORES');
     await p.locator('#latchBtn').click(); assert.equal(await p.evaluate(() => P26APP.state.maxSecs),0);
-    assert.deepEqual(await p.evaluate(() => {const old=P26APP.state.mode; P26APP.state.mode='blocks';const block=P26APP.matches(P26APP.byId('dropper')); P26APP.state.mode='misc';const wheat=P26APP.matches(P26APP.byId('wheat')),machine=P26APP.matches(P26APP.byId('dropper')); P26APP.state.mode=old;return [block,wheat,machine];}),[false,true,true]);
+    assert.deepEqual(await p.evaluate(() => {const old=P26APP.state.mode; P26APP.state.mode='blocks';const block=P26APP.matches(P26APP.byId('dropper')); P26APP.state.mode='food';const wheat=P26APP.matches(P26APP.byId('wheat'));const custom=P26APP.state.custom;P26APP.state.mode='custom';P26APP.state.custom='dropper';const onlyMachine=P26APP.matches(P26APP.byId('dropper')),notWheat=P26APP.matches(P26APP.byId('wheat'));P26APP.state.mode=old;P26APP.state.custom=custom;return [block,wheat,onlyMachine,notWheat];}),[false,true,true,false]);
     await p.locator('[data-mode="custom"]').click(); await p.locator('#customSearch').fill('minecraft:wheat'); await p.locator('#customSearch').press('Enter');
     assert.equal(await p.evaluate(() => P26APP.state.custom),'wheat'); assert.equal(await p.evaluate(() => P26APP.state.history[0]),'wheat');
     await p.locator('[data-mode="food"]').click(); await p.locator('[data-room="farm"]').click();

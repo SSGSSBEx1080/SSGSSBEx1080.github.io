@@ -1,0 +1,49 @@
+/* New point 28 + the user's #26 and #27 corrections. Optional Playwright env
+ * variables match the other browser suites; no production browser dependency. */
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+(async()=>{
+ const options={headless:true,args:['--no-sandbox']};if(process.env.SPARTICUZ_MODULE){const c=(await import(process.env.SPARTICUZ_MODULE)).default;options.executablePath=await c.executablePath();options.args=c.args.filter(x=>x!=='--single-process');}if(process.env.CHROMIUM_PATH)options.executablePath=process.env.CHROMIUM_PATH;
+ const browser=await chromium.launch(options),context=await browser.newContext({viewport:{width:1440,height:1000},hasTouch:true}),p=await context.newPage(),errors=[];
+ const base=(process.env.TEST_BASE_URL||'http://127.0.0.1:8765').replace(/\/$/,'');p.setDefaultTimeout(20000);p.setDefaultNavigationTimeout(45000);
+ p.on('pageerror',e=>errors.push(e.message));p.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
+ const go=async slug=>{await p.goto(base+'/pages/'+slug+'/',{waitUntil:'networkidle'});await p.addStyleTag({content:'html{scroll-behavior:auto!important}'});};
+ const shot=async name=>{if(process.env.TEST_SCREENSHOTS){fs.mkdirSync(process.env.TEST_SCREENSHOTS,{recursive:true});await p.screenshot({path:path.join(process.env.TEST_SCREENSHOTS,name+'.png'),timeout:45000,animations:'disabled'});}};
+ try{
+  await go('26-vacuum');assert.equal(await p.locator('#filters [data-mode]').count(),4);assert.equal(await p.locator('[data-mode="misc"]').count(),0);assert.equal(await p.locator('#roomEmpty').count(),0);
+  const bg=await p.evaluate(()=>getComputedStyle(document.body).backgroundColor);assert.equal(bg,'rgb(17, 35, 45)');
+  await p.locator('[data-mode="custom"]').click();await p.locator('#customSearch').fill('Яблоко');assert.equal(await p.evaluate(()=>P26APP.state.custom),'apple','A complete item name applies directly, not only after Enter');
+  assert.deepEqual(await p.evaluate(()=>['apple','bread','stone'].map(id=>P26APP.matches(P26APP.byId(id)))),[true,false,false]);
+  await p.locator('#floorCanvas').scrollIntoViewIfNeeded();await p.locator('#powerRange').fill('10');
+  await p.evaluate(()=>{P26FLOOR.items.length=0;P26FLOOR.items.push({key:99901,id:'apple',x:0,z:2.5,vx:0,vz:0,pull:0,phase:0,rot:0},{key:99902,id:'diamond',x:0,z:2.5,vx:0,vz:0,pull:0,phase:0,rot:0});P26FLOOR.refresh();});
+  await p.locator('#latchBtn').click();await p.waitForFunction(()=>P26FLOOR.items.every(x=>x.id!=='apple'));await p.locator('#latchBtn').click();
+  assert.ok(await p.evaluate(()=>P26FLOOR.items.some(x=>x.id==='diamond')));assert.equal(await p.locator('#floorStatus').getAttribute('data-complete'),'true');
+  const canvas=await p.locator('#floorCanvas').boundingBox(),restart=await p.locator('#scatterAgain').boundingBox();assert.ok(restart.y>=canvas.y+canvas.height-1,'Restart is in a toolbar, never over the suction canvas');
+  const caught=await p.evaluate(()=>P26APP.state.caught);await p.locator('#scatterAgain').click();assert.equal(await p.evaluate(()=>P26APP.state.caught),caught);assert.equal(await p.locator('#roomEmpty').count(),0);await shot('vacuum-four-filters-dark');
+  await go('27-chigur');await p.locator('#weaponModel').scrollIntoViewIfNeeded();assert.match(await p.locator('#weaponModel .m3d-rig').getAttribute('style'),/rotateZ\(180deg\)/);await p.locator('#unlockWeapon').click();assert.ok(await p.locator('#shotgunArt').evaluate(e=>new DOMMatrix(getComputedStyle(e).transform).m11<0),'Do not reverse the already-correct muzzle direction');
+  const wood=await p.evaluate(async()=>{const im=new Image();im.src='../../assets/textures/p27/shotgun_side.png?v=test';await im.decode();const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const g=c.getContext('2d');g.drawImage(im,0,0);const a=g.getImageData(0,0,c.width,c.height).data;let n=0,sum=0;for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){const i=(y*c.width+x)*4;if(a[i+3]>150&&a[i]>a[i+2]*1.2&&a[i+1]>a[i+2]*1.05){n++;sum+=y;}}return{n,mean:sum/n,height:c.height};});
+  assert.ok(wood.n>100&&wood.mean>wood.height/2,'The wooden grip is below the barrel, not upside down');await shot('shotgun-upright');
+  await go('28-medusa');assert.equal((await p.locator('h1').innerText()).trim(),'МЕДУЗА');assert.equal(await p.locator('.zm-route').count(),0);await p.locator('#worldViewport').scrollIntoViewIfNeeded();await p.waitForFunction(()=>window.P28?.scene?.stats?.actors===4);
+  assert.deepEqual(await p.evaluate(()=>P28.scene.stats.sphereSegments),[48,32]);assert.deepEqual(await p.evaluate(()=>P28.scene.stats.nativeColor),[125,238,190]);assert.equal(await p.evaluate(()=>P28.scene.stats.nativeAlpha),170);
+  await p.locator('#takeDevice').click();assert.ok(await p.evaluate(()=>ZM.store.get('p28.adv',[]).includes('01_medusa_discovery')));
+  for(const[level,cap]of[[0,32],[1,64],[2,128],[3,256],[4,512]]){await p.locator(`[data-science="${level}"]`).click();assert.equal(await p.locator('#radiusRange').getAttribute('max'),String(cap));}
+  await p.locator('#radiusInput').fill('512');await p.locator('#delayInput').fill('0.1');await p.locator('#armDevice').click();await p.waitForFunction(()=>P28.model.owner.stone);
+  assert.equal(await p.locator('#armDevice').isDisabled(),true);assert.equal(await p.locator('#throwDevice').isDisabled(),true);await p.waitForFunction(()=>P28Sound.state.played>=4);assert.deepEqual(await p.evaluate(()=>P28Sound.state.errors),[]);
+  const start=await p.evaluate(()=>P28.model.state.item.deadline);assert.equal(start,0,'Completed activation removes the absolute deadline');
+  await p.evaluate(()=>{P28.model.tick(30);P28.consume();P28.render();});assert.ok(await p.evaluate(()=>P28.model.state.entities.every(e=>e.stone)),'The sphere reaches entities behind the wall too');
+  assert.ok(await p.evaluate(()=>ZM.store.get('p28.adv',[]).includes('05_limit_512')));await shot('medusa-native-wave');
+  await p.locator('#skipTime').click();await p.locator('#skipTime').click();assert.equal(await p.evaluate(()=>P28.model.owner.stone),false);assert.ok(await p.evaluate(()=>P28.model.state.entities.find(e=>e.id==='villager').cured));
+  const before=await p.evaluate(()=>({xp:P28.model.owner.xp,d:P28.model.state.playerDiamonds,r:P28.model.state.item.radius,science:P28.model.state.item.science,delay:P28.model.state.item.delay}));await p.locator('#rechargeDevice').click();
+  assert.deepEqual(await p.evaluate(()=>({xp:P28.model.owner.xp,d:P28.model.state.playerDiamonds,r:P28.model.state.item.radius,science:P28.model.state.item.science,delay:P28.model.state.item.delay})),{...before,xp:before.xp-1,d:before.d-1});
+  await p.locator('#delayInput').fill('10');await p.locator('#armDevice').click();const deadline=await p.evaluate(()=>P28.model.state.item.deadline);await p.locator('#delayInput').fill('60');assert.equal(await p.evaluate(()=>P28.model.state.item.deadline),deadline);
+  const throwBox=await p.locator('#throwDevice').boundingBox();await p.mouse.move(throwBox.x+20,throwBox.y+20);await p.mouse.down();await p.waitForTimeout(300);await p.mouse.up();await p.waitForFunction(()=>!!P28.model.state.orb);assert.equal(await p.evaluate(()=>P28.model.state.orb.deadline),deadline);
+  await p.evaluate(()=>{Object.assign(P28.model.state.orb,{age:10,vx:0,vy:0,vz:0,y:.051});P28.render();});await p.locator('#pickupDevice').click();assert.equal(await p.evaluate(()=>P28.model.state.item.deadline),deadline);await p.evaluate(()=>P28.persist());await p.reload({waitUntil:'networkidle'});assert.equal(await p.evaluate(()=>P28.model.state.item.deadline),deadline,'Reload does not restart an armed countdown');
+  await p.goto(base+'/index.html#points',{waitUntil:'networkidle'});assert.ok(await p.locator('a[href*="pages/28-medusa"]').count(),'Point 28 is linked from the actual public catalog');assert.equal(await p.evaluate(()=>ZM.HUB_ADV.find(x=>x.n===28).adv.length),5);
+  // The new page and corrected page remain usable at tablet/phone widths.
+  for(const width of[768,375]){await p.setViewportSize({width,height:844});for(const slug of['26-vacuum','28-medusa']){await go(slug);assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),slug+' overflow at '+width);await shot(slug+'-'+width);}}
+  // No-WebGL + no-OGG browser still has the same live engine and delayed audio.
+  const fallback=await browser.newContext({viewport:{width:375,height:844},hasTouch:true,reducedMotion:'reduce'});await fallback.addInitScript(()=>{const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return String(type).includes('webgl')?null:get.call(this,type,...args);};const can=HTMLMediaElement.prototype.canPlayType;HTMLMediaElement.prototype.canPlayType=function(type){return type.includes('ogg')?'':can.call(this,type);};});
+  const f=await fallback.newPage();f.setDefaultTimeout(25000);f.on('pageerror',e=>errors.push(e.message));await f.goto(base+'/pages/28-medusa/',{waitUntil:'networkidle'});await f.locator('#takeDevice').click();await f.locator('#radiusInput').fill('32');await f.locator('#delayInput').fill('0.1');await f.locator('#armDevice').click();await f.waitForFunction(()=>P28.model.owner.stone&&P28Sound.state.played>=4);assert.equal(await f.locator('#worldViewport').getAttribute('data-renderer'),'fallback');assert.deepEqual(await f.evaluate(()=>P28Sound.state.errors),[]);await fallback.close();
+  assert.deepEqual(errors,[],errors.join('\n'));console.log('Browser: #26 dark / 3+custom / no popup, #27 upright + correct direction, #28 native 3D sphere / all caps / stasis / cure / recharge / irreversible saved timer / mobile / no-WebGL + MP3: OK');
+ }finally{await browser.close();}
+})().catch(error=>{console.error(error);process.exitCode=1});

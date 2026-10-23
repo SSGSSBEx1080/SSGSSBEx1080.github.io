@@ -1,0 +1,32 @@
+{
+  "parent": "zitraksmode:28_medusa/01_medusa_discovery",
+  "display": {
+    "icon": {
+      "item": "minecraft:clock"
+    },
+    "title": {
+      "text": "◈ТОЧКА НЕВОЗВРАТА◈",
+      "color": "green",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "Запустил семя в арбууууз...",
+      "color": "dark_green",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "countdown_started": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10,
+    "function": "zitraksmode:28_medusa/02_countdown"
+  }
+}
