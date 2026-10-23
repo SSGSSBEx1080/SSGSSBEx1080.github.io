@@ -52,7 +52,6 @@
     $('#stabArena').appendChild(f);
     setTimeout(() => f.remove(), 900);
     ZM.sfx('hit', .4, mult === 2 ? .8 : 1);
-    if (mult === 2 && adv) adv.grant('backstab');
   });
   stabRender();
 
@@ -66,7 +65,6 @@
     if (copper) {
       bull = 'copper'; bullImg.src = U('assets/textures/p22/cow_bull_copper.png');
       bullOut.innerHTML = '<span class="g-islot" data-tip="Медный бык" data-tip-sub="вариант быка"><img src="' + U('assets/textures/p22/cow_bull_copper.png') + '" alt="Медный бык"></span>';
-      if (adv) adv.grant('copperbull');
     } else {
       bull = 'bald'; bullImg.src = U('assets/textures/p22/cow_bull_bald.png');
       const n = 1 + (Math.random() * 2 | 0);
@@ -96,12 +94,19 @@
     }
   }
   const salt = (r, c) => cells[r][c] >= 1;
+  let saltOwned = 0;
   function paintCell(r, c, add) {
     if ((r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c)) return;
     if (burning && add) return;
     cells[r][c] = add ? 1 : 0;
+    if (add && adv) adv.grant('salt_fuse');
     renderFuse();
   }
+  $('#mineSalt').addEventListener('click', () => {
+    saltOwned += 4; $('#saltOwned').textContent = saltOwned;
+    ZM.sfx('stone', .5, 1.15); ZM.sfx('orb', .3, 1.3);
+    if (adv) adv.grant('salt_discovery');
+  });
   function renderFuse() {
     let n = 0;
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
@@ -173,7 +178,6 @@
           burning = false; lampOn = false; renderFuse();
           $('#fuseSignal').textContent = 'СИГНАЛ: —';
           ZM.sfx('pop', .4, .8);
-          if (runBurned >= 10 && adv) adv.grant('fuse');
           return;
         }
       }
@@ -196,7 +200,7 @@
         radCount--; stage[i] = 0; ZM.sfx('wood', .4, 1.4); farmRender();
       } else if (stage[i] === 7) {
         stage[i] = -1; radCount++; ZM.sfx('pop', .5, 1.1); farmRender();
-        if (adv) adv.grant('harvest');
+        if (adv) adv.grant('radish');
       }
     });
     plots.appendChild(b); stage.push(-1);
@@ -224,7 +228,7 @@
   });
   $('#harvestAll').addEventListener('click', () => {
     let n = 0; stage.forEach((s, i) => { if (s === 7) { stage[i] = -1; n++; } });
-    if (n) { radCount += n; ZM.sfx('pop', .5, 1.2); if (adv) adv.grant('harvest'); }
+    if (n) { radCount += n; ZM.sfx('pop', .5, 1.2); if (adv) adv.grant('radish'); }
     farmRender();
   });
   $('#farmReset').addEventListener('click', () => { stage.fill(-1); farmRender(); });
@@ -238,6 +242,7 @@
         clearInterval(iv); cooking = null; radCount--; friedCount++;
         $('#cookFill').style.width = '0%';
         ZM.sfx('pop', .5, .9); farmRender();
+        if (adv) adv.grant('fried_radish');
       }
     }, 16);
   });
@@ -262,13 +267,13 @@
   }
   $('#takeBorscht').addEventListener('click', () => {
     borschtCount++; ZM.sfx('pop', .5, 1.15);
-    if (adv) adv.grant('lunch');
     eatRender();
   });
   $('#eatBtn').addEventListener('click', () => {
     if (borschtCount < 1 || eatHunger >= 20) return;
     borschtCount--; bowlCount++; eatHunger = Math.min(20, eatHunger + 10);
     ZM.sfx('pop', .5, .95);
+    if (adv) adv.grant('borscht');
     $('#eatNote').innerHTML = '+10 голода и ×0.8 насыщения. Миска <b>вернулась в инвентарь</b> — как в исходнике.';
     eatRender();
   });
@@ -286,6 +291,10 @@
   };
   for (const id of ['hadIngot', 'hadSalt', 'hadRadish', 'hadPotato']) $('#' + id).addEventListener('change', (e) => { ZM.sfx('click', .3); unlockRender(); });
   unlockRender();
+  $('#takeKnife').addEventListener('click', () => {
+    ZM.sfx('equip', .5, 1.1);
+    if (adv) adv.grant('nina_knife');
+  });
 
   /* ============ 3D: нож гостя ============ */
   (function knife3d() {

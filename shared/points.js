@@ -39,7 +39,7 @@ ZM.POINTS = [
 ZM.GUEST_POINTS = [
   { letter: "Б", title: "Докторская колбаса",        from: "Мистер Б · торговля и голод",     page: "pages/g1-kolbasa/index.html", tone: "#ff6257" },
   { letter: "К", title: "Размножение кроликов",      from: "Мистер К · симуляция поля",       page: "pages/g2-kroliki/index.html", tone: "#ffa03a" },
-  { letter: "В", title: "Пункт Мистера В",           from: "Мистер В · сигнал отсутствует",   page: "pages/g3-rezerv/index.html",  tone: "#9db4c4", soon: true },
+  { letter: "В", title: "Команды близости",          from: "Мистер В · /sex и /blowjob",      page: "pages/g3-blizost/index.html", tone: "#f0568c" },
   { letter: "П", title: "Соль, нож и редиска",       from: "Мистер П · предметы и блоки",     page: "pages/g4-nina/index.html",    tone: "#e0576b" },
 ];
 ZM.pointNav = (n) => {
