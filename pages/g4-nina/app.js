@@ -55,24 +55,71 @@
   });
   stabRender();
 
-  /* ============ 01б. стрижка быка ============ */
-  let bull = 'normal';
-  const bullImg = $('#bullImg'), bullOut = $('#bullOut');
-  $('#bullShear').addEventListener('click', () => {
-    if (bull !== 'normal') return;
-    const copper = Math.random() < 0.5;
-    ZM.sfx('cloth', .6, 1.1);
-    if (copper) {
-      bull = 'copper'; bullImg.src = U('assets/textures/p22/cow_bull_copper.png');
-      bullOut.innerHTML = '<span class="g-islot" data-tip="Медный бык" data-tip-sub="вариант быка"><img src="' + U('assets/textures/p22/cow_bull_copper.png') + '" alt="Медный бык"></span>';
-    } else {
-      bull = 'bald'; bullImg.src = U('assets/textures/p22/cow_bull_bald.png');
-      const n = 1 + (Math.random() * 2 | 0);
-      bullOut.innerHTML = '<span class="g-islot" data-tip="Кожа ×' + n + '" data-tip-sub="выпадает из лысого быка"><img src="' + U('assets/textures/p22/i/leather.png') + '" alt="Кожа"><b>' + n + '</b></span>';
-    }
-    $('#bullShear').disabled = true;
-  });
-  $('#bullReset').addEventListener('click', () => { bull = 'normal'; bullImg.src = U('assets/textures/p22/cow_bull.png'); bullOut.innerHTML = ''; $('#bullShear').disabled = false; });
+  /* ============ 01б. ПКМ-стенд: все функции ножа правой кнопкой ============ */
+  (() => {
+    const A = 'assets/textures/';
+    const T = {
+      sheep:   { img: U(A + 'guest/sheep.png'), cap: 'ОВЦА', done: 'ОВЦА · ОСТРИЖЕНА' },
+      bull:    { img: U(A + 'p22/cow_bull.png'), cap: 'БЫК', done: 'БЫК · ОБРАБОТАН' },
+      berries: { img: U(A + 'p21/i/sweet_berries.png'), cap: 'КУСТ ЯГОД', done: 'КУСТ · СОБРАН, ОТРАСТЁТ' },
+      log:     { img: U(A + 'mc/p2/block_oak_log.png'), cap: 'ДУБ-БРЕВНО', done: 'БРЕВНО · БЕЗ КОРЫ' },
+    };
+    const st = { sheep: false, bull: 'normal', berries: false, log: false, t: 'sheep', dur: 500 };
+    const img = $('#rcmImg'), cap = $('#rcmCap'), drop = $('#rcmDrop'), logEl = $('#rcmLog');
+    const put = (t) => { const d = document.createElement('div'); d.textContent = t; logEl.appendChild(d); while (logEl.children.length > 8) logEl.firstChild.remove(); logEl.scrollTop = logEl.scrollHeight; };
+    const slot = (src, tip, n) => `<span class="g-islot" data-tip="${tip}"><img src="${src}" alt=""><b>${n || ''}</b></span>`;
+    const durRender = () => { $('#rcmDur').textContent = st.dur + ' / 500'; $('#rcmDurBar').style.width = (st.dur / 5) + '%'; };
+    const scene = () => {
+      const t = st.t;
+      if (t === 'bull') img.src = st.bull === 'normal' ? T.bull.img : U(A + (st.bull === 'copper' ? 'p22/cow_bull_copper.png' : 'p22/cow_bull_bald.png'));
+      else img.src = T[t].img;
+      img.classList.toggle('rcm-dim', (t === 'sheep' && st.sheep) || (t === 'berries' && st.berries));
+      img.classList.toggle('rcm-strip', t === 'log' && st.log);
+      if (t === 'log' && st.log) img.src = U(A + 'guest/stripped_oak_log.png');
+      const done = t === 'bull' ? st.bull !== 'normal' : st[t];
+      cap.textContent = done ? T[t].done : T[t].cap + ' · ЖДЁТ';
+    };
+    $('#rcmTargets').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-t]'); if (!b) return;
+      st.t = b.dataset.t; ZM.sfx('click', .3);
+      for (const x of $('#rcmTargets').children) x.classList.toggle('on', x === b);
+      drop.innerHTML = ''; scene();
+    });
+    $('#rcmUse').addEventListener('click', () => {
+      if (st.dur <= 0) { put('Нож сломался: 0 из 500. Нужен новый.'); return; }
+      const t = st.t;
+      if (t === 'bull' && st.bull !== 'normal') { put('Этот бык уже обработан — сначала «восстановить цель».'); return; }
+      if (t !== 'bull' && st[t]) { put('Цель уже обработана — восстанови, чтобы повторить.'); return; }
+      st.dur--; durRender();
+      $('#rcmMouse').classList.remove('click'); void $('#rcmMouse').offsetWidth; $('#rcmMouse').classList.add('click');
+      if (t === 'sheep') {
+        st.sheep = true; ZM.sfx('cloth', .6, 1.1);
+        const n = 1 + (Math.random() * 3 | 0);
+        drop.innerHTML = slot(U(A + 'p13/i/white_wool.png'), 'Шерсть', '×' + n);
+        put(`Овца острижена как ножницами: ${n} шерсти. Прочность −1.`);
+      } else if (t === 'bull') {
+        const copper = Math.random() < 0.5; ZM.sfx('cloth', .6, 1.1);
+        st.bull = copper ? 'copper' : 'bald';
+        if (copper) { drop.innerHTML = slot(U(A + 'p22/cow_bull_copper.png'), 'Медный бык'); put('Бык стал медным — 50 из 50. Ачивка №22 в родной ветке дойки.'); }
+        else { const n = 1 + (Math.random() * 2 | 0); drop.innerHTML = slot(U(A + 'p22/i/leather.png'), 'Кожа', '×' + n); put(`Бык стал лысым и роняет ${n} кожи. Прочность −1.`); }
+      } else if (t === 'berries') {
+        st.berries = true; ZM.sfx('pop', .5, 1.2);
+        drop.innerHTML = slot(U(A + 'p21/i/sweet_berries.png'), 'Ягоды', '+');
+        put('Куст отдал ягоды и отрастёт заново — поведение как у ножниц.');
+      } else {
+        st.log = true; ZM.sfx('wood', .6, .9);
+        drop.innerHTML = '';
+        put('Кора снята, как топором: бревно дуба стало бревном без коры.');
+      }
+      scene();
+    });
+    $('#rcmReset').addEventListener('click', () => {
+      st.sheep = false; st.bull = 'normal'; st.berries = false; st.log = false;
+      drop.innerHTML = ''; ZM.sfx('click', .3); scene();
+      put('Цель восстановлена. Прочность ножа не возвращается.');
+    });
+    durRender(); scene(); put('Выбери цель и примени ПКМ. Прочность честная: 500 использований.');
+  })();
 
   /* ============ 02. СОЛЬ: фитиль с лампой ============ */
   const COLS = 14, ROWS = 7, TORCH = { r: 3, c: 0 }, LAMP = { r: 3, c: 13 };
@@ -351,5 +398,23 @@
     }
     requestAnimationFrame(frame);
     cv.addEventListener('click', () => { spin = 1; ZM.sfx('hit', .3, 1.5); });
+  })();
+
+  /* ---------- мини-ветка гостя в футере, как у основной линейки ---------- */
+  (() => {
+    const el = $('#gBranch'); if (!el || !G) return;
+    const renderBranch = () => {
+      const got = ZM.store.get(G.store, []);
+      const chain = G.adv.map((a, i) => {
+        const has = got.includes(a.key), prev = i && got.includes(G.adv[i - 1].key);
+        const node = `<a class="adv-node${has ? '' : ' no'}" href="#adv" aria-label="${esc(has ? a.t : 'Скрытая ачивка')}"><span class="adv-frame ${a.frame}${has ? '' : ' locked'}"></span>${has ? `<span class="ic"><img src="${U(a.icon)}" alt=""></span>` : '<span class="q">?</span>'}</a>`;
+        return (i ? `<div class="adv-link${has && prev ? ' on' : ''}"></div>` : '') + node;
+      }).join('');
+      el.innerHTML = `<span class="gb-label">ВЕТКА ГОСТЯ · <b>${got.length}/${G.adv.length}</b></span><div class="gb-chain">${chain}</div>`;
+    };
+    renderBranch();
+    if (adv) { const grant0 = adv.grant; adv.grant = (k) => { const r = grant0(k); renderBranch(); return r; }; }
+    $('#advReset')?.addEventListener('click', () => setTimeout(renderBranch, 0));
+    addEventListener('storage', (e) => { if (e.key === 'zm:' + G.store) renderBranch(); });
   })();
 })();

@@ -34,6 +34,70 @@
   if(inOS){const dir={KeyW:'up',KeyA:'left',KeyS:'down',KeyD:'right'}[e.code];if(dir){e.preventDefault();setMove(dir,true);}if(e.code==='Space'&&!e.repeat&&!e.target.closest('button')){e.preventDefault();action(()=>model.attack());}}
  });
  document.addEventListener('keyup',e=>{const dir={KeyW:'up',KeyA:'left',KeyS:'down',KeyD:'right'}[e.code];if(dir)setMove(dir,false);});addEventListener('blur',clearInputs);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInputs();});
+
+ /* ЗАПИСЬ ПРОГОНА: канонический сценарий стенда как видео — все механики
+  * по очереди с субтитрами. Реальные вызовы модели, никаких нарисованных
+  * состояний; промотка — это model.tick(n), как на кнопках стенда. */
+ let rec=null,recT0=0,recIdx=0,cine=false;
+ const pct=()=>Math.round(model.state.psychosis);
+ const REC_CUES=[
+  {t:.4,cap:()=> 'ЗАПИСЬ · канонический прогон: все механики стенда подряд'},
+  {t:1.6,cap:()=> 'Город Энда · незеритовый нагрудник · две дозы — условия соблюдены'},
+  {t:2.8,fn:()=>action(()=>model.requestInstall()),cap:()=> 'Имплантация: 100 тиков нейро-связи'},
+  {t:8.2,cap:()=> 'Имплант зафиксирован в слоте нагрудника. V — разгон'},
+  {t:9.0,fn:()=>action(()=>model.toggle()),cap:()=> 'РАЗГОН · 5 секунд: часы мира идут, сущности замерли'},
+  {t:10.4,fn:()=>action(()=>model.shoot()),cap:()=> 'Стрела застыла в воздухе'},
+  {t:11.8,fn:()=>action(()=>model.ignite()),cap:()=> 'Запал ТНТ замер'},
+  {t:13.2,fn:()=>action(()=>model.attack()),cap:()=> 'Удар в ускорении: кадры неуязвимости цели сброшены'},
+  {t:14.6,cap:()=> 'Разгон кончился сам. Откат: 60 тиков за каждую секунду ускорения'},
+  {t:16.4,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Проматываем откат ×300 тиков'},
+  {t:18.0,fn:()=>action(()=>model.toggle()),cap:()=> 'Цикл 2/5 · разгон ради нейральной нагрузки'},
+  {t:18.9,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'Нагрузка +0.2 за тик · '+pct()+'%'},
+  {t:20.6,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Откат ×300 · промотка'},
+  {t:22.2,fn:()=>action(()=>model.toggle()),cap:()=> 'Цикл 3/5'},
+  {t:23.1,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'Нагрузка '+pct()+'%'},
+  {t:24.0,fn:()=>action(()=>model.inject()),cap:()=> 'Иммуносупрессант: −50 в очередь, эффективность −5 п.п.'},
+  {t:25.2,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Откат ×300 · промотка'},
+  {t:26.8,fn:()=>action(()=>model.toggle()),cap:()=> 'Цикл 4/5'},
+  {t:27.7,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'Нагрузка '+pct()+'%'},
+  {t:28.9,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Откат ×300 · промотка'},
+  {t:30.5,fn:()=>action(()=>model.toggle()),cap:()=> 'Цикл 5/5 · предел близко'},
+  {t:31.4,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'Нагрузка '+pct()+'% — очередь препарата гасит её медленнее'},
+  {t:33.0,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Откат ×300 · промотка'},
+  {t:34.6,fn:()=>action(()=>model.toggle()),cap:()=> 'Ещё разгон: до психоза осталось '+(100-pct())+' п.'},
+  {t:35.5,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'КИБЕРПСИХОЗ · 100 пунктов: урон себе и окружающим'},
+  {t:37.4,fn:()=>action(()=>{model.tick(90);}),cap:()=> 'Критическая фаза: магический урон субъекту'},
+  {t:39.6,fn:()=>action(()=>{model.tick(90);}),cap:()=> model.state.alive?('Критическая фаза: '+(model.state.psychosisTicks/20).toFixed(1)+'с из 10с'):'Субъект потерян. «Адам Смэшер» — только текст ачивки, не моб'},
+  {t:41.8,cap:()=> (model.state.alive?'Субъект выстоял 200 тиков — принудительный конец фазы. ':'')+'ПРОГОН ЗАВЕРШЕН · теперь попробуй сам: WASD / тяни по арене · V · пробел'},
+  {t:45.0,fn:()=>recStop()},
+ ];
+ const REC_TOTAL=45;
+ function recStop(){
+  if(!rec)return;rec=null;cine=false;clearInputs();
+  $('#recBar').hidden=true;$('#recPlay').setAttribute('aria-pressed','false');
+ }
+ function recStart(){
+  recStop();P29Sound.stop();model=new Core.Model();history.length=0;auto=false;
+  $('#autoRun').setAttribute('aria-pressed','false');
+  $('#endCity').checked=$('#netheriteChest').checked=true;window.P29.scene?.reset?.();
+  render();save();consume();cine=true;rec=1;recIdx=0;recT0=performance.now();
+  $('#recBar').hidden=false;$('#recPlay').setAttribute('aria-pressed','true');
+  $('#recCaption').textContent='ЗАПИСЬ · канонический прогон';$('#recProgress').style.width='0%';
+  requestAnimationFrame(recFrame);
+ }
+ function recFrame(){
+  if(!rec)return;
+  const el=(performance.now()-recT0)/1000;
+  while(recIdx<REC_CUES.length&&el>=REC_CUES[recIdx].t){
+   const c=REC_CUES[recIdx++];try{c.fn&&c.fn();}catch(err){}}
+  const c=REC_CUES[Math.max(0,recIdx-1)];
+  if(c&&c.cap)$('#recCaption').textContent=c.cap();
+  $('#recProgress').style.width=Math.min(100,el/REC_TOTAL*100)+'%';
+  $('#recTime').textContent=el.toFixed(1)+'с';
+  if(el<REC_TOTAL)requestAnimationFrame(recFrame);else recStop();
+ }
+ $('#recPlay').addEventListener('click',()=>{rec?recStop():recStart();});
+ $('#resetStand').addEventListener('click',recStop);
  function syncMotion(){document.documentElement.classList.toggle('no-sandy-effects',!motion);$('#motionToggle').setAttribute('aria-pressed',String(motion));$('#motionToggle').textContent=motion?'ЭФФЕКТЫ ВКЛ':'БЕЗ ВСПЫШЕК';}
  $('#motionToggle').addEventListener('click',()=>{motion=!motion;syncMotion();});syncMotion();
  const brewValid=()=>$('#potionSelect').value==='strong_regeneration'&&$('#bottleSelect').value==='potion';
@@ -73,7 +137,7 @@
  window.P29={get model(){return model;},get motion(){return motion;},get history(){return history;},render,consume,save,scene:null};
  renderBrew();render();save();let last=performance.now(),accum=0;
  setInterval(()=>{const now=performance.now(),dt=Math.min(250,now-last);last=now;if(document.hidden){accum=0;clearInputs();return;}accum+=dt;const n=Math.floor(accum/50);if(!n)return;accum-=n*50;
-  for(let i=0;i<n;i++){if(auto)model.movement(Math.cos(model.state.t*.025),Math.sin(model.state.t*.025));else if(steerVec)model.movement(steerVec.x,steerVec.y);else model.movement((inputs.has('right')?1:0)-(inputs.has('left')?1:0),(inputs.has('down')?1:0)-(inputs.has('up')?1:0));model.tick();if(model.state.t%10===0){history.push(model.state.psychosis);if(history.length>160)history.shift();}}
+  for(let i=0;i<n;i++){if(auto||cine)model.movement(Math.cos(model.state.t*.025),Math.sin(model.state.t*.025));else if(steerVec)model.movement(steerVec.x,steerVec.y);else model.movement((inputs.has('right')?1:0)-(inputs.has('left')?1:0),(inputs.has('down')?1:0)-(inputs.has('up')?1:0));model.tick();if(model.state.t%10===0){history.push(model.state.psychosis);if(history.length>160)history.shift();}}
   consume();render();drawGraph();if(now-lastSave>1000)save();
  },25);addEventListener('pagehide',save);
 })();

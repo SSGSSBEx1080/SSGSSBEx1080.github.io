@@ -61,3 +61,12 @@
 .tl-step b{color:#ffa03a}
 .tl-step.tl-last b{color:#b8f688}
 .g-btn.grow{box-shadow:0 0 22px #9fe08a33}
+
+/* =====================================================================
+   3D-ПОЛЯНА: двое кроликов, морковка, сердечки (фолбэк — иконка)
+   ===================================================================== */
+.art-hop canvas{position:absolute;inset:0;width:100%;height:100%;display:none;cursor:grab;touch-action:none;z-index:2}
+.art-hop canvas:active{cursor:grabbing}
+.art-hop.ready canvas{display:block}
+.art-hop.ready .art-fallback{display:none}
+.art-hop figcaption{z-index:3}
