@@ -89,6 +89,7 @@
           <div class="stab-controls">
             <label>КУДА СМОТРИТ ЦЕЛЬ · <b id="stabDeg2">0°</b><input type="range" id="stabRange" min="0" max="360" step="5" value="0"></label>
             <button type="button" class="g-btn" id="stabHit">УДАР НОЖОМ</button>
+            <button type="button" class="g-btn ghost small" id="takeKnife">ЗАБРАТЬ НОЖ В ИНВЕНТАРЬ</button>
           </div>
           <div class="no-knock"><img src="../../assets/textures/guest/nina_knife.png" alt="" width="26" height="26" style="image-rendering:pixelated"><span>Цель <b>не сдвинется ни на пиксель</b>: даже спринт-отбрасывание отменяется вместе с обычным.</span></div>
         </div>
@@ -131,10 +132,12 @@
           <div class="fuse-hud">
             <span>СОЛИ ПОЛОЖЕНО: <b id="fusePlaced">0</b></span>
             <span>СГОРЕЛО: <b id="fuseBurned">0</b></span>
+            <span>СОЛИ В КАРМАНЕ: <b id="saltOwned">0</b></span>
             <span class="sig" id="fuseSignal">СИГНАЛ: —</span>
           </div>
           <div class="fuse-grid" id="fuseGrid" role="application" aria-label="Поле для солевого фитиля: рисуй соль и поджигай"></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button type="button" class="g-btn" id="mineSalt">ДОБЫТЬ СОЛЬ ИЗ РУДЫ <small>+4</small></button>
             <button type="button" class="g-btn" id="fuseIgnite">ПОДЖЕЧЬ ОТ РЫЧАГА</button>
             <button type="button" class="g-btn ghost small" id="fuseClear">СМЕСТИ СОЛЬ</button>
           </div>
@@ -291,5 +294,5 @@
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests1"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/guest_adv.js?v=guests1"></script><script src="app.js?v=g4-2"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g4-3"></script>
 </body></html>

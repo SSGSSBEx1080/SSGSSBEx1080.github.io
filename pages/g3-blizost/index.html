@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru" data-root="../../"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#170d12">
+<title>Гость В · Команды близости — ZitraksMode Wiki</title>
+<meta name="description" content="Гостевой пункт Мистера В: команды близости ZitraksMode — /sex, /blowjob, /yes, /no. Радиус 2 блока, сессия 10 секунд, рефрактерность 60, кулдаун команды 5. 19 ачивок из 00_guest: от «Первый раз не пидорас» до «Первый раз в пещере».">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g3-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g3-64.png">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests2"><link rel="stylesheet" href="style.css?v=g3-3">
+</head><body class="guest-body">
+<main class="guest-main">
+
+  <section class="g-hero hero-cmd" style="--tone:#f0568c;--tone-ink:#2a0f0a;--tone-dim:#a06078;--tone2:#f0568c1f" aria-labelledby="title">
+    <div class="g-hero-strip"><span>ZITRAKSMODE · ГОСТЕВОЙ ДОСТУП</span><span>ФОРМА <b>G-В/3</b></span><span>СТАТУС: <b>СОГЛАСЕН</b></span><span>ВНЕ ОСНОВНОЙ ЛИНЕЙКИ</span></div>
+    <div class="g-hero-main">
+      <div class="g-letter" aria-hidden="true">В<small>МИСТЕР В</small></div>
+      <div>
+        <span class="g-kicker">ГОСТЕВОЙ ПУНКТ 3 / 4 <em>· КОМАНДЫ СЕРВЕРА</em></span>
+        <h1 class="g-title" id="title">Команды близости</h1>
+        <p class="g-sub">Четыре команды мода: /sex и /blowjob отправляют приглашение, /yes и /no отвечают на него. Живые цели просят согласия, мобы — нет. Ветка из 19 ачивок 00_guest — вся про это.</p>
+        <div class="g-metrics">
+          <span><b>2</b><small>БЛОКА — РАДИУС ЦЕЛИ</small></span>
+          <span><b>10</b><small>СЕКУНД ДЛИТСЯ СЕССИЯ</small></span>
+          <span><b>60</b><small>СЕКУНД РЕФРАКТЕРНОСТИ</small></span>
+          <span><b>5</b><small>КОЛЕБАНИЙ В СЕКУНДУ</small></span>
+        </div>
+      </div>
+      <figure class="g-art art-keys" aria-hidden="true">
+        <div class="keys-float"></div>
+        <div class="keys-grid">
+          <span class="key2 k-a">/sex</span><span class="key2 k-b">/blowjob</span>
+          <span class="key2 k-y">/yes</span><span class="key2 k-n">/no</span>
+        </div>
+        <figcaption>ЧЕТЫРЕ КОМАНДЫ · ИЗ INTIMACYCOMMAND.JAVA</figcaption>
+      </figure>
+      <span class="g-stamp" aria-hidden="true">ТОЛЬКО ДЛЯ ВЗРОСЛЫХ</span>
+    </div>
+    <div class="g-sign"><span>с уважением, <span class="g-hand">Мистер <i>В</i></span></span><span class="g-barcode" aria-hidden="true"></span><span style="font:9px var(--f-mono);color:var(--g-faint)">ПОДПИСЬ ГОСТЯ</span></div>
+  </section>
+
+  <nav class="g-chapters" aria-label="Разделы гостевого пункта">
+    <a href="#chat"><small>01</small> Чат-полигон</a>
+    <a href="#rules"><small>02</small> Правила системы</a>
+    <a href="#stats"><small>03</small> Счётчики и эффекты</a>
+    <a href="#adv"><small>04</small> Стенд-цели</a>
+  </nav>
+
+  <section class="g-section" id="chat" aria-labelledby="chatTitle">
+    <header class="g-head"><span class="g-eyebrow">01 / ЧАТ-ПОЛИГОН</span>
+      <h2 id="chatTitle">Играй <em>за обоих</em></h2>
+      <p>Настоящий чат Minecraft: ты вводишь команды, а за цель отвечаешь сам — кнопками /yes и /no в строке приглашения. Ачивки обеих сторон засчитываются тебе. Все числа — из IntimacyManager.</p></header>
+    <div class="chatrig">
+      <div class="sess-panel" id="sessPanel" aria-live="polite">
+        <div class="sess-top"><b>СЕССИЯ</b><span id="sessTxt">…</span></div>
+        <div class="sess-bar"><i id="sessBar"></i></div>
+        <div class="sess-fx" id="sessFx"></div>
+      </div>
+      <div class="mc-chat" id="chatLog" role="log" aria-label="Чат стенда"></div>
+      <div class="hud" id="hud"></div>
+      <div class="invite-bar" id="inviteBar"></div>
+      <div class="vil-chip" id="vilChip"><span>ЖИТЕЛЬ хочет заняться близостью с тобой</span><button type="button" class="g-btn tiny" id="vilYes">/yes</button><button type="button" class="g-btn tiny" id="vilNo">/no</button></div>
+      <form class="chat-form" id="chatForm">
+        <input id="chatIn" type="text" autocomplete="off" spellcheck="false" placeholder="/sex Толя — и Enter" aria-label="Команда">
+        <button type="submit" class="g-btn">ОТПРАВИТЬ ⏎</button>
+      </form>
+      <div class="cmd-row" id="cmdRow"></div>
+      <p class="pick-hint" id="pickHint">или собери команду сам:</p>
+      <div class="tgt-row" id="targetRow"></div>
+      <div class="ctrl-row">
+        <button type="button" class="g-btn ghost small" id="distToggle">ДИСТАНЦИЯ ДО ЦЕЛИ: 1.5 БЛОКА</button>
+        <span class="loc-now">ЛОКАЦИЯ: <b id="locNow">Равнина</b></span>
+      </div>
+      <div class="loc-row" id="locRow"></div>
+    </div>
+  </section>
+
+  <section class="g-section" id="rules" aria-labelledby="rulesTitle">
+    <header class="g-head"><span class="g-eyebrow">02 / ПРАВИЛА СИСТЕМЫ</span>
+      <h2 id="rulesTitle">Как это <em>работает в моде</em></h2>
+      <p>Цепочка от команды до рефрактерного периода — без изменений, константа в константу.</p></header>
+    <div class="g-cols">
+      <div class="g-kv">
+        <div><dt>КОМАНДЫ</dt><dd><b>/sex &lt;цель&gt;</b>, <b>/blowjob &lt;цель&gt;</b>, <b>/yes</b>, <b>/no</b></dd></div>
+        <div><dt>РАДИУС</dt><dd><b>2 блока</b> до цели при отправке</dd></div>
+        <div><dt>ПРИГЛАШЕНИЕ</dt><dd>живёт <b>30 секунд</b>, приём — в 3 блоках</dd></div>
+        <div><dt>КУЛДАУН КОМАНДЫ</dt><dd><b>5 секунд</b> между приглашениями</dd></div>
+        <div><dt>СЕССИЯ</dt><dd><b>10 секунд</b> (200 тиков), 5 колебаний/сек</dd></div>
+        <div><dt>РЕФРАКТЕРНОСТЬ</dt><dd><b>60 секунд</b> после сессии — обе стороны</dd></div>
+      </div>
+      <div class="g-panel">
+        <h3 class="panel-title">ПОТОК СОБЫТИЙ</h3>
+        <ol class="flow-steps">
+          <li><b>/sex ЦЕЛЬ</b><span>проверки: отошёл? кулдаун? дистанция ≤ 2?</span></li>
+          <li><b>приглашение</b><span>игроку — «Введи /yes или /no», мобу — сразу сессия</span></li>
+          <li><b>/yes или /no</b><span>отказ даёт «rejected», согласие запускает сцену</span></li>
+          <li><b>сессия 10 с</b><span>эффекты, частицы, звук, анимация 5 Гц</span></li>
+          <li><b>рефрактерность</b><span>60 с тишины, потом всё заново</span></li>
+        </ol>
+        <div class="g-facts" style="margin-top:14px">
+          <details><summary>Кого можно выбрать целью</summary><p>Любого игрока, животное или жителя в 2 блоках: IntimacyTargetHelper ищет по нику и по существу рядом. Имена в чате: «Житель», «Странствующий торговец», у животных — таблички.</p></details>
+          <details><summary>Что видит принимающая сторона</summary><p>Приглашение приходит в чат: «X хочет заняться близостью. Введи /yes или /no». При blowjob принимающий приседает — Pose.CROUCHING.</p></details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="g-section" id="stats" aria-labelledby="statsTitle">
+    <header class="g-head"><span class="g-eyebrow">03 / СЧЁТЧИКИ И ЭФФЕКТЫ</span>
+      <h2 id="statsTitle">Математика <em>ветки</em></h2>
+      <p>Счётчики живые — растут от твоих сессий на полигоне. Пороги взяты из IntimacyAchievements.</p></header>
+    <div class="g-cols">
+      <div class="g-panel">
+        <h3 class="panel-title">СЧЁТЧИКИ СТЕНДА</h3>
+        <div id="statRows"></div>
+      </div>
+      <div class="g-kv">
+        <div><dt>ЭФФЕКТЫ ОБОИМ</dt><dd>Замедление <b>255</b> + Слепота, 200 тиков</dd></div>
+        <div><dt>ЗАЩИТА</dt><dd>Неуязвимость на время сессии</dd></div>
+        <div><dt>МОБЫ</dt><dd>setNoAi(true), навигация остановлена</dd></div>
+        <div><dt>ЖИТЕЛЬ</dt><dd>Звук сделки (trade, 0.5F / 1.5F)</dd></div>
+        <div><dt>ЧАСТИЦЫ</dt><dd><b>30 сердечек + 15 искр</b> каждой стороне</dd></div>
+        <div><dt>ЗВУК</dt><dd>intimate / blowjob, громкость 3.0F</dd></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="g-section" id="adv" aria-labelledby="advTitle">
+    <header class="g-head"><span class="g-eyebrow">04 / СТЕНД-ЦЕЛИ ГОСТЯ</span>
+      <h2 id="advTitle">Ветка <em>Мистера В</em> в древе</h2>
+      <p>Все 19 целей — дословно из папки 00_guest мода: названия, цвета, описания и XP без изменений. Открываются действиями на полигоне, встают в общее древо и профиль.</p></header>
+    <div class="g-adv">
+      <div class="adv-board">
+        <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+        <div class="adv-detail" id="advDetail"></div>
+        <div class="adv-progress"><i id="advBar"></i></div>
+        <div class="adv-bottom"><span id="advTxt"></span><button type="button" id="advReset">Сбросить цели гостя</button></div>
+      </div>
+      <div class="adv-list" id="advList"></div>
+    </div>
+  </section>
+
+  <footer class="g-foot" id="finale">
+    <span class="g-fbrand">ZITRAKSMODE · ГОСТЕВАЯ ВЕТКА · ФОРМА G-В/3</span>
+    <div class="g-fcopy">
+      <h3>Команды близости</h3>
+      <p>Гостевой пункт №3 из 4. Команды, константы и все 19 ачивок — из исходников мода (IntimacyCommand, IntimacyManager, IntimacyAchievements, 00_guest). Чат-полигон — иллюстрация правил, не игровая сессия.</p>
+    </div>
+    <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
+  </footer>
+</main>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g3-3"></script>
+</body></html>

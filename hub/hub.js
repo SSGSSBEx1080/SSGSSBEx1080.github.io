@@ -211,7 +211,7 @@
     }).join("");
     const guestHtml = glist.map((g) => {
       const ga = (ZM.GUEST_ADV || []).find((x) => x.page === g.page), p = ga && st.per[ga.n];
-      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/guest/rabbit.png", "В": "assets/textures/mc/p2/block_deepslate.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
+      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/guest/rabbit.png", "В": "assets/textures/mc/p2/entity_steve.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
       return `<a class="pc live guest ${p && p.got === p.all ? "full" : ""}" href="${g.page}" style="--tone:${g.tone || "#8b8b95"}">
         <span class="pc-n">${esc(g.letter || "?")}</span>${ic ? `<img class="pc-ic" src="${ic}" alt="">` : ""}
         <span class="pc-t">${esc(g.title)}</span><span class="pc-d">ГОСТЕВОЙ ПУНКТ${g.soon ? " · НЕТ СИГНАЛА" : ""}</span>
@@ -372,7 +372,7 @@
   /* ================= вкладки: ветка каждого пункта отдельно, как на страницах ================= */
   const TILE = { 1: "assets/textures/mc/stone.png", 2: "assets/textures/mc/p2/block_tnt_side.png", 3: "assets/textures/mc/stone.png", 4: "assets/textures/mc/stone.png", 5: "assets/textures/mc/p2/terrain/dirt.png",
     6: "assets/textures/p6/pink_wool.png", 7: "assets/textures/p7/v/end_stone_bricks.png", 8: "assets/textures/mc/quartz.png", 9: "assets/textures/p9/v/pink_wool.png", 10: "assets/textures/p10/lime_concrete.png", 11: "assets/textures/p11/blue_wool.png", 12: "assets/textures/p12/crimson_planks.png",
-    101: "assets/textures/mc/p2/block_granite.png", 103: "assets/textures/mc/p2/block_deepslate.png", 104: "assets/textures/mc/p2/block_iron_block.png" };
+    101: "assets/textures/mc/p2/block_granite.png", 103: "assets/textures/p6/pink_wool.png", 104: "assets/textures/mc/p2/block_iron_block.png" };
   const FR_RU = { task: "обычная", goal: "цель", challenge: "испытание" };
   let tab = 0, ptSel = null;
   const aTitle = (a) => `<span style="color:${a.c && a.c !== "#FFFFFF" ? a.c : "#fff"}">${obf(a.t)}</span>`;
@@ -423,7 +423,7 @@
   $("#twRows").addEventListener("click", (e) => { const a = e.target.closest("a"); if (!a || e.ctrlKey || e.metaKey) return; const n = +a.dataset.n; if (!n) return; e.preventDefault(); setTab(n); $("#tw").scrollIntoView({ behavior: "smooth", block: "center" }); });
 
   /* ================= гости, история ================= */
-  const GICON = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/guest/rabbit.png", "П": "assets/textures/guest/nina_knife.png" };
+  const GICON = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/guest/rabbit.png", "В": "assets/textures/mc/p2/entity_steve.png", "П": "assets/textures/guest/nina_knife.png" };
   $("#guests").innerHTML = ZM.GUEST_POINTS.map((g, i) => `
     <${g.page ? "a" : "div"} class="gcard${g.soon ? " soon" : ""}"${g.page ? ` href="${U(g.page)}"` : ' aria-disabled="true"'} style="--gtone:${g.tone || "#8b8b95"}">
       <span class="gc-letter" aria-hidden="true">${esc(g.letter || "?")}<small>G-${i + 1}/${ZM.GUEST_POINTS.length}</small></span>
