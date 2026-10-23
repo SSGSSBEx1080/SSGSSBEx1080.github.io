@@ -68,19 +68,14 @@
 
 /* ---- солевой фитиль ---- */
 .fuse-wrap{display:flex;flex-direction:column;gap:12px}
-.fuse-grid{display:grid;gap:2px;background:#070c11;border:1px solid var(--g-line);padding:8px;touch-action:none}
+.fuse-grid{position:relative;display:grid;gap:2px;background:#070c11;border:1px solid var(--g-line);padding:8px;touch-action:none}
 .fuse-grid button{position:relative;aspect-ratio:1;background:
   linear-gradient(#182b1c,#132317);border:1px solid #ffffff0d;cursor:pointer;padding:0}
 .fuse-grid button:hover{border-color:#ffffff2e}
 .fuse-grid button.salt{background:#10161d}
-.fuse-grid button.salt>i{position:absolute;inset:14%;background-size:contain;background-repeat:no-repeat;background-position:center;image-rendering:pixelated}
-.fuse-grid button.salt>i.w{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_dot_white.png')}
-.fuse-grid button.salt>i.h{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_white.png')}
-.fuse-grid button.salt>i.v{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_white.png');transform:rotate(90deg)}
-.fuse-grid button.lit{background:#2b1d10}
-.fuse-grid button.lit>i{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_dot_lit.png')}
-.fuse-grid button.lit>i.h{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_lit.png')}
-.fuse-grid button.lit>i.v{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_lit.png');transform:rotate(90deg)}
+.fuse-grid button.salt{background:#10161d;box-shadow:inset 0 0 0 1px #ffffff0d}
+.fuse-grid button.lit{background:#2b1d10;box-shadow:inset 0 0 0 1px #ffb02e2e}
+.fuse-trail{position:absolute;inset:0;z-index:3;pointer-events:none;image-rendering:pixelated}
 .fuse-grid button.torch{background:#1d1410;cursor:default}
 .fuse-grid button.torch>i{position:absolute;inset:16%;background:url('../../assets/textures/mc/p2/block_redstone_torch.png') center/contain no-repeat;image-rendering:pixelated}
 .fuse-hud{display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center;font:11px var(--f-mono);letter-spacing:.12em;color:var(--g-faint)}
@@ -231,3 +226,70 @@
 @media(max-width:900px){.rcm-row{grid-template-columns:1fr}.rcm-main{flex-direction:column}
   .rcm-mouse{align-self:center}.rcm-scene{height:150px}}
 @media(prefers-reduced-motion:reduce){.rcm-scene img,.rcm-mouse i{animation:none}}
+
+
+/* ===================== ДОБЫЧА РУДЫ (v6) ===================== */
+.mine-stage{display:grid;grid-template-columns:132px 1fr;gap:16px;align-items:stretch}
+.mine-block{position:relative;width:132px;height:132px;padding:0;border:1px solid var(--g-line);
+  background:radial-gradient(circle at 50% 40%,#1a2430 0,#0b1119 75%);cursor:grab;border-radius:10px;overflow:hidden;
+  transform:translate(var(--shake,0),calc(var(--shake,0) * .6));user-select:none;-webkit-user-select:none;touch-action:none}
+.mine-block:active{cursor:grabbing}
+.mine-block img{position:absolute;inset:22px;width:calc(100% - 44px);height:calc(100% - 44px);image-rendering:pixelated;
+  filter:drop-shadow(0 10px 16px #000b)}
+.mine-block canvas{position:absolute;inset:22px;width:calc(100% - 44px);height:calc(100% - 44px);image-rendering:pixelated}
+.mine-block .mine-y{position:absolute;top:7px;left:9px;font:9.5px var(--f-mono);letter-spacing:.12em;color:#ffb02e99}
+.mine-block .mine-hint{position:absolute;bottom:7px;left:0;right:0;text-align:center;font:9px var(--f-mono);letter-spacing:.18em;
+  color:#ffffff59;opacity:0;transition:opacity .25s}
+.mine-block:hover .mine-hint,.mine-block:focus-visible .mine-hint{opacity:1}
+.mine-block.broke img{animation:mineBreak .5s cubic-bezier(.3,1.6,.4,1)}
+@keyframes mineBreak{
+  0%{transform:scale(1)}30%{transform:scale(1.14) rotate(3deg)}
+  55%{transform:scale(.86) rotate(-4deg);opacity:.4}100%{transform:scale(1);opacity:1}}
+.mine-side{display:flex;flex-direction:column;gap:10px;justify-content:center}
+.mine-hud{display:flex;flex-wrap:wrap;gap:8px 18px;font:11px var(--f-mono);letter-spacing:.08em;color:var(--g-dim)}
+.mine-hud b{color:var(--tone);font-weight:400}
+.mine-bar{height:5px;border:1px solid var(--g-line);background:#0b1119;border-radius:4px;overflow:hidden}
+.mine-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffb02e,#ffd76e);
+  box-shadow:0 0 10px #ffb02e88;transition:width .12s linear}
+#mineNote{min-height:2.6em}
+#mineNote.flash{animation:noteFlash 1.1s ease}
+@keyframes noteFlash{0%{color:#ffd76e}100%{color:inherit}}
+@media(max-width:560px){.mine-stage{grid-template-columns:110px 1fr}.mine-block{width:110px;height:110px}}
+
+/* ===================== ПКМ-СТЕНД В 3D (v6) ===================== */
+.rcm-scene{border-radius:12px}
+.rcm-scene canvas#rcm3d{position:absolute;inset:0;width:100%;height:100%;display:none;z-index:2;cursor:grab}
+.rcm-scene canvas#rcm3d:active{cursor:grabbing}
+.rcm-scene.ready3d canvas#rcm3d{display:block}
+.rcm-scene.ready3d>img{display:none}
+.rcm-scene canvas#rcm3d~.rcm-cap{z-index:4}
+
+/* ===================== ТЕПЛО СЕКЦИЙ: нож → соль → редиска → борщ ===================== */
+#knife{--tone:#e0576b;--tone2:#e0576b24;--tone-ink:#2a0b10;--tone-dim:#8f4a55;
+  background:radial-gradient(90% 46% at 82% 0%,#e0576b14,#0000 60%)}
+#salt{--tone:#ffb02e;--tone2:#ffb02e24;--tone-ink:#3a2405;--tone-dim:#a8762a;
+  background:radial-gradient(90% 46% at 18% 0%,#ffb02e12,#0000 60%)}
+#radish{--tone:#93dc7d;--tone2:#93dc7d24;--tone-ink:#0d2a0c;--tone-dim:#5d9455;
+  background:radial-gradient(90% 46% at 82% 0%,#93dc7d12,#0000 60%)}
+#borscht{--tone:#c04a6d;--tone2:#c04a6d24;--tone-ink:#2a0b14;--tone-dim:#8f4a62;
+  background:radial-gradient(90% 46% at 18% 0%,#c04a6d14,#0000 60%)}
+#adv{--tone:#e0576b}
+#radish .actions-list b,#radish .g-kv dd b{color:#c9f3bd}
+#radish .g-kv dt{color:#93dc7d}
+#radish .panel-title{color:#eafff2}
+
+/* ===================== СКРУГЛЕНИЯ И ПОЛИШ (v6) ===================== */
+.fuse-grid{border-radius:10px}
+.stab-arena{border-radius:12px}
+.g-kv>div{border-radius:8px}
+.actions-list li{border-radius:8px}
+.craft-row{border-radius:10px}
+.farm-plots{border-radius:10px}
+.cook-bar{border-radius:4px;overflow:hidden}
+.unlock-card{border-radius:10px}
+.g-log{border-radius:8px}
+.rcm-dur i{border-radius:3px}
+.g-section{transition:background .4s ease}
+.mine-block{transition:border-color .25s ease,box-shadow .25s ease}
+.mine-block:hover{border-color:color-mix(in srgb,#ffb02e 55%,var(--g-line));box-shadow:0 0 22px #ffb02e2e}
+@media(prefers-reduced-motion:reduce){.mine-block.broke img,#mineNote.flash{animation:none}}
