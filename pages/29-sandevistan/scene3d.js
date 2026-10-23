@@ -9,11 +9,17 @@ try{
  const scene=new T.Scene();scene.background=new T.Color(0x07111b);scene.fog=new T.FogExp2(0x07111b,.017);const camera=new T.PerspectiveCamera(48,1,.08,180);
  scene.add(new T.HemisphereLight(0xb5f3e0,0x183448,2));const sun=new T.DirectionalLight(0xe4f6b3,2);sun.position.set(-6,12,8);scene.add(sun);
  const loader=new T.TextureLoader();function tex(url){const t=loader.load(url);t.colorSpace=T.SRGBColorSpace;t.magFilter=T.NearestFilter;t.minFilter=T.NearestMipmapNearestFilter;return t;}
+ // Decorative anime-city environment; native gameplay stays in P29Core.
+ const city=loader.load('../../assets/textures/p29/neon-city.jpg');city.colorSpace=T.SRGBColorSpace;city.magFilter=T.LinearFilter;city.minFilter=T.LinearMipmapLinearFilter;scene.background=city;
+ const neonLight=new T.PointLight(0x36ffd8,0,13,2);scene.add(neonLight);
  const playerTex=tex('../../assets/textures/mc/p2/entity_steve.png'),mobTex=tex('../../assets/textures/mc/p2/entity_zombie_zombie.png');
  const playerMat=new T.MeshLambertMaterial({map:playerTex,alphaTest:.15}),mobMat=new T.MeshLambertMaterial({map:mobTex,alphaTest:.15});
  const floor=new T.Mesh(new T.PlaneGeometry(90,90),new T.MeshLambertMaterial({color:0x102b35}));floor.rotation.x=-Math.PI/2;floor.position.y=-.015;scene.add(floor);
  const grid=new T.GridHelper(90,45,0x3b898b,0x16424d);grid.material.transparent=true;grid.material.opacity=.35;scene.add(grid);
  const yellowMat=new T.MeshBasicMaterial({color:0xe8ee3e}),cyanMat=new T.MeshBasicMaterial({color:0x35cdbc}),buildingMat=new T.MeshLambertMaterial({color:0x0b1928});
+ const windows=document.createElement('canvas');windows.width=96;windows.height=192;const wg=windows.getContext('2d');wg.fillStyle='#091824';wg.fillRect(0,0,96,192);
+ for(let y=6;y<190;y+=10)for(let x=5;x<92;x+=13){const n=(x*37+y*13)%11;wg.fillStyle=n<3?'#35c7cb':n===4?'#dae644':n===5?'#be4483':'#112e3b';wg.fillRect(x,y,7,3);}
+ const windowTex=new T.CanvasTexture(windows);windowTex.colorSpace=T.SRGBColorSpace;buildingMat.map=windowTex;buildingMat.color.setHex(0x516273);buildingMat.emissive=new T.Color(0x47d4ce);buildingMat.emissiveMap=windowTex;buildingMat.emissiveIntensity=.8;
  for(let i=0;i<28;i++){const h=4+(i*17%11),side=i%2?1:-1,x=side*(26+i%4*4),z=-45+i*3.8;const b=new T.Mesh(new T.BoxGeometry(3.1,h,3.5),buildingMat);b.position.set(x,h/2,z);scene.add(b);if(i%3===0){const stripe=new T.Mesh(new T.BoxGeometry(.05,h*.7,.1),i%2?cyanMat:yellowMat);stripe.position.set(x-side*1.57,h*.53,z-1.8);scene.add(stripe);}}
  const zone=new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(40.6,.04,40.6)),new T.LineBasicMaterial({color:0x45e6d3,transparent:true,opacity:.42}));zone.position.y=.02;scene.add(zone);
  const defs=[{name:'body',size:[8,12,4],origin:[-4,12,-2],pivot:[0,0,0],uv:[16,16]},{name:'head',size:[8,8,8],origin:[-4,0,-4],pivot:[0,24,0],uv:[0,0]},
@@ -34,6 +40,10 @@ try{
   shader.fragmentShader='varying float vTrailAlpha;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.a *= vTrailAlpha;');
  };
  const alpha=new T.InstancedBufferAttribute(new Float32Array(200),1),ghosts=geos.map(g=>{const geo=g.clone();geo.setAttribute('trailAlpha',alpha);const mesh=new T.InstancedMesh(geo,ghostMat,200);mesh.count=0;mesh.frustumCulled=false;scene.add(mesh);return mesh;});
+ // A faint expanded additive skin is visual bloom only; original trail
+ // capture, scale, alpha and colors are unchanged in the six native meshes.
+ const glowMat=new T.MeshBasicMaterial({color:0x46ffdc,transparent:true,opacity:.14,depthWrite:false,blending:T.AdditiveBlending});glowMat.onBeforeCompile=ghostMat.onBeforeCompile;
+ const glows=ghosts.map(source=>{const g=source.geometry.clone();g.scale(1.035,1.035,1.035);g.setAttribute('trailAlpha',alpha);const m=new T.InstancedMesh(g,glowMat,200);m.instanceMatrix=source.instanceMatrix;m.count=0;m.frustumCulled=false;scene.add(m);return m;});
  const cube=(color,size)=>new T.Mesh(new T.BoxGeometry(...size),new T.MeshLambertMaterial({color}));
  const tnt=cube(0xb64f4f,[.65,.65,.65]);scene.add(tnt);const tntLabel=new T.Sprite(new T.SpriteMaterial({color:0xffd96a}));tntLabel.scale.set(.12,.12,1);tnt.add(tntLabel);tntLabel.position.y=.42;
  const arrow=new T.Group();arrow.add(cube(0x938865,[.8,.035,.035]));const tip=cube(0xd4e7d2,[.16,.1,.1]);tip.position.x=.38;arrow.add(tip);scene.add(arrow);
@@ -57,6 +67,7 @@ try{
     const angles=[0,0,-a,a,a*1.4,-a*1.4];for(let k=0;k<defs.length;k++){pivot.makeTranslation(...defs[k].pivot.map(x=>x/16));limb.makeRotationX(angles[k]);matrix.copy(base).multiply(pivot).multiply(limb);ghosts[k].setMatrixAt(count,matrix);ghosts[k].setColorAt(count,color);}
    }}
   alpha.needsUpdate=true;for(const mesh of ghosts){mesh.count=P29.motion?count:0;mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;}
+  glows.forEach((m,i)=>{m.count=P29.motion?count:0;m.instanceColor=ghosts[i].instanceColor;});neonLight.position.set(p.x,p.y+1,p.z);neonLight.intensity=P29.motion&&s.accelerating?3+Math.sin(now*.002)*.6:0;
   const e=s.targets[0],pos=new T.Vector3(e.x,e.y+2.3,e.z).project(camera);label.hidden=!e.alive||Math.abs(pos.x)>1.1||Math.abs(pos.y)>1.1;label.style.left=(pos.x*.5+.5)*w+'px';label.style.top=(-pos.y*.5+.5)*h+'px';label.textContent=e.freeze?'FROZEN / '+s.targetHP.toFixed(1)+' HP':'TARGET / '+s.targetHP.toFixed(1)+' HP';
   renderer.render(scene,camera);
  }
