@@ -40,18 +40,22 @@ try {
     g.translate(...d.origin.map((x, i) => (x + d.size[i] / 2) / 16)); return g;
   }
   const geos = defs.map(geometry);
+  const defsSlim = defs.map(d => (d.name === 'rightArm' || d.name === 'leftArm') ? Object.assign({}, d, { size: [3, 12, 4] }) : d);   /* у Алекс руки тоньше */
   const loader = new T.TextureLoader();
-  function skin(tint) {
-    const t = loader.load('../../assets/textures/mc/p2/entity_steve.png');
+  function skin(path, tint) {
+    const t = loader.load(path);
     t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter;
     return new T.MeshLambertMaterial({ map: t, alphaTest: .15, color: tint });
   }
-  function humanoid(tint) {
-    const mat = skin(tint), root = new T.Group(), parts = [];
-    for (let i = 0; i < defs.length; i++) { const pivot = new T.Group(); pivot.position.set(...defs[i].pivot.map(x => x / 16)); pivot.add(new T.Mesh(geos[i], mat)); root.add(pivot); parts.push(pivot); }
+  function humanoid(path, tint, slim) {
+    const ds = slim ? defsSlim : defs, own = ds.map(geometry);
+    const mat = skin(path, tint), root = new T.Group(), parts = [];
+    for (let i = 0; i < ds.length; i++) { const pivot = new T.Group(); pivot.position.set(...ds[i].pivot.map(x => x / 16)); pivot.add(new T.Mesh(own[i], mat)); root.add(pivot); parts.push(pivot); }
     root.scale.setScalar(.92); scene.add(root); return { root, parts };
   }
-  const A = humanoid(0xffffff), B = humanoid(0xffc2d4);
+  /* настоящая пара: Стив и Алекс, как на аватарке пункта */
+  const A = humanoid('../../assets/textures/mc/p2/entity_steve.png', 0xffffff, false);
+  const B = humanoid('../../assets/textures/mc/p2/entity_alex.png', 0xffffff, true);
   A.root.position.x = -.62; B.root.position.x = .62;
   A.root.rotation.y = Math.PI / 2; B.root.rotation.y = -Math.PI / 2;
   for (const [m, s] of [[A, 1], [B, -1]]) {           /* поза навстречу: руки вперёд, лёгкий наклон головы */

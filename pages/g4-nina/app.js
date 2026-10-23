@@ -68,8 +68,8 @@
   (() => {
     const A = 'assets/textures/';
     const T = {
-      sheep:   { img: U(A + 'guest/sheep.png'), cap: 'ОВЦА', done: 'ОВЦА · ОСТРИЖЕНА' },
-      bull:    { img: U(A + 'p22/cow_bull.png'), cap: 'БЫК', done: 'БЫК · ОБРАБОТАН' },
+      sheep:   { img: U(A + 'hub/av/sheep.png'), cap: 'ОВЦА', done: 'ОВЦА · ОСТРИЖЕНА' },
+      bull:    { img: U(A + 'hub/av/cow.png'), cap: 'БЫК', done: 'БЫК · ОБРАБОТАН' },
       berries: { img: U(A + 'p21/i/sweet_berries.png'), cap: 'КУСТ ЯГОД', done: 'КУСТ · СОБРАН, ОТРАСТЁТ' },
       log:     { img: U(A + 'mc/p2/block_oak_log.png'), cap: 'ДУБ-БРЕВНО', done: 'БРЕВНО · БЕЗ КОРЫ' },
     };
@@ -80,7 +80,7 @@
     const durRender = () => { $('#rcmDur').textContent = st.dur + ' / 500'; $('#rcmDurBar').style.width = (st.dur / 5) + '%'; };
     const scene = () => {
       const t = st.t;
-      if (t === 'bull') img.src = st.bull === 'normal' ? T.bull.img : U(A + (st.bull === 'copper' ? 'p22/cow_bull_copper.png' : 'p22/cow_bull_bald.png'));
+      if (t === 'bull') img.src = st.bull === 'normal' ? T.bull.img : U(A + 'hub/av/cow.png');
       else img.src = T[t].img;
       img.classList.toggle('rcm-dim', (t === 'sheep' && st.sheep) || (t === 'berries' && st.berries));
       img.classList.toggle('rcm-strip', t === 'log' && st.log);
@@ -110,7 +110,7 @@
       } else if (t === 'bull') {
         const copper = Math.random() < 0.5; ZM.sfx('cloth', .6, 1.1);
         st.bull = copper ? 'copper' : 'bald';
-        if (copper) { drop.innerHTML = slot(U(A + 'p22/cow_bull_copper.png'), 'Медный бык'); put('Бык стал медным — 50 из 50. Ачивка №22 в родной ветке дойки.'); }
+        if (copper) { drop.innerHTML = slot(U(A + 'hub/av/cow.png'), 'Медный бык'); put('Бык стал медным — 50 из 50. Ачивка №22 в родной ветке дойки.'); }
         else { const n = 1 + (Math.random() * 2 | 0); drop.innerHTML = slot(U(A + 'p22/i/leather.png'), 'Кожа', '×' + n); put(`Бык стал лысым и роняет ${n} кожи. Прочность −1.`); }
       } else if (t === 'berries') {
         st.berries = true; ZM.sfx('pop', .5, 1.2);
@@ -131,10 +131,8 @@
     durRender(); scene(); put('Выбери цель и примени ПКМ. Прочность честная: 500 использований.');
   })();
 
-  /* ============ 02. СОЛЬ: добыча руды + фитиль с лампой ============ */
-  const COLS = 14, ROWS = 7, TORCH = { r: 3, c: 0 }, LAMP = { r: 3, c: 13 };
+  /* ============ 02. СОЛЬ: добыча руды + мини-мир с дорожкой ============ */
   const grid = $('#fuseGrid');
-  grid.style.gridTemplateColumns = `48px repeat(${COLS - 2}, 1fr) 48px`;
 
   /* ---- шахта: зажми руду — 10 стадий трещин, ровно 4 соли и 2–5 опыта ---- */
   let saltOwned = 0;
@@ -203,42 +201,94 @@
   })();
   drawCracks(); saltSync();
 
-  /* ---- фитиль: дорожки рисуются на канвасе, как редстоун в MC ----
-   * соль соединяется с соседней солью И с факелом/лампой; изгиб — это
-   * изгиб, а не крест; поджиг — от любой соли рядом с факелом. */
+  /* ---- мини-мир: травяное поле, рычаг и 4 случайных блока-механизма ----
+   * Дорожка соли кладётся кликами по траве (1 соль = 1 клетка, соль из
+   * кармана). Дёрни рычаг — огонь идёт по дорожке: 2 тика на клетку,
+   * сигнал 15 — и запускает каждый механизм, до которого доберётся.
+   * Механики честные из мода: дроп ровно 4 соли с руды, горение 2 тика. */
+  const WCOLS = 12, WROWS = 7;
+  const VAN = U('assets/textures/mc/van/'), P2 = U('assets/textures/mc/p2/');
+  const POOL = [
+    { k: 'piston', n: 'ПОРШЕНЬ', tex: VAN + 'piston_top.png' },
+    { k: 'sticky', n: 'ЛИПКИЙ ПОРШЕНЬ', tex: VAN + 'piston_top_sticky.png' },
+    { k: 'tnt', n: 'ДИНАМИТ', tex: P2 + 'block_tnt_side.png' },
+    { k: 'dispenser', n: 'РАЗДАТЧИК СО СТРЕЛОЙ', tex: VAN + 'dispenser_front.png' },
+    { k: 'dropper', n: 'ДРОППЕР', tex: VAN + 'dropper_front.png' },
+    { k: 'observer', n: 'НАБЛЮДАТЕЛЬ', tex: VAN + 'observer_front.png' },
+    { k: 'lamp', n: 'КРАСНАЯ ЛАМПА', tex: VAN + 'redstone_lamp.png', texOn: VAN + 'redstone_lamp_on.png' },
+    { k: 'rtorch', n: 'РЕДСТОУН-ФАКЕЛ', tex: VAN + 'redstone_torch_off.png', texOn: VAN + 'redstone_torch.png' },
+    { k: 'note', n: 'НОТНЫЙ БЛОК', tex: VAN + 'note_block.png' },
+    { k: 'target', n: 'МИШЕНЬ', tex: VAN + 'target_top.png' },
+  ];
   const trail = document.createElement('canvas');
   trail.className = 'fuse-trail'; trail.setAttribute('aria-hidden', 'true');
   grid.appendChild(trail);
   const tg = trail.getContext('2d');
-  const cells = []; const life = []; const btns = [];
-  let burning = false, burned = 0, runBurned = 0, lampOn = false;
-  for (let r = 0; r < ROWS; r++) {
-    cells.push(Array(COLS).fill(0)); life.push(Array(COLS).fill(0)); btns.push([]);
-    for (let c = 0; c < COLS; c++) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      if (r === TORCH.r && c === TORCH.c) { b.className = 'torch'; b.setAttribute('aria-label', 'Рычаг: источник сигнала'); b.innerHTML = '<i></i>'; b.tabIndex = -1; }
-      else if (r === LAMP.r && c === LAMP.c) { b.className = 'lamp'; b.setAttribute('aria-label', 'Красная лампа: приёмник сигнала'); b.innerHTML = '<i></i>'; b.tabIndex = -1; }
-      else b.setAttribute('aria-label', `Клетка ${c + 1},${r + 1}`);
-      grid.appendChild(b); btns[r].push(b);
+  const cells = [], life = [], btns = [], mech = [];
+  let lever = { r: 3, c: 0 };
+  let burning = false, burned = 0;
+  const N4 = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+  const inGrid = (r, c) => r >= 0 && r < WROWS && c >= 0 && c < WCOLS;
+  const salt = (r, c) => inGrid(r, c) && cells[r][c] >= 1;
+  const isNode = (r, c) => salt(r, c) || (inGrid(r, c) && (mech[r][c] || (r === lever.r && c === lever.c)));
+
+  function buildWorld() {
+    burning = false; burned = 0;
+    cells.length = life.length = btns.length = mech.length = 0;
+    grid.querySelectorAll('button').forEach(b => b.remove());
+    for (let r = 0; r < WROWS; r++) {
+      cells.push(Array(WCOLS).fill(0)); life.push(Array(WCOLS).fill(0)); btns.push([]); mech.push(Array(WCOLS).fill(null));
+      for (let c = 0; c < WCOLS; c++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'grass';
+        b.setAttribute('aria-label', `Трава ${c + 1},${r + 1}: положить соль`);
+        grid.appendChild(b); btns[r].push(b);
+      }
     }
+    /* рычаг и 4 разных механизма: случайные клетки, не вплотную к рычагу */
+    const taken = [];
+    const free = (r, c) => !taken.some(([tr, tc]) => tr === r && tc === c) &&
+      N4.every(([dr, dc]) => !(r + dr === lever.r && c + dc === lever.c)) &&
+      Math.abs(r - lever.r) + Math.abs(c - lever.c) >= 3;
+    lever = { r: (Math.random() * WROWS) | 0, c: (Math.random() * WCOLS) | 0 };
+    taken.push([lever.r, lever.c]);
+    const lb = btns[lever.r][lever.c];
+    lb.classList.add('lever');
+    lb.innerHTML = `<img src="${VAN}lever.png" alt="Рычаг">`;
+    lb.setAttribute('aria-label', 'Рычаг: дёрнуть, чтобы поджечь дорожку');
+    const pick = [...POOL].sort(() => Math.random() - .5).slice(0, 4);
+    for (const def of pick) {
+      let r, c, guard = 0;
+      do { r = (Math.random() * WROWS) | 0; c = (Math.random() * WCOLS) | 0; } while (!free(r, c) && ++guard < 200);
+      if (guard >= 200) continue;
+      taken.push([r, c]);
+      mech[r][c] = Object.assign({ done: false, on: false }, def);
+      const b = btns[r][c];
+      b.classList.add('mech');
+      b.innerHTML = `<img src="${def.tex}" alt="${def.n}">`;
+      b.setAttribute('aria-label', def.n + ': запустится, когда огонь дойдёт');
+    }
+    renderFuse();
   }
-  const salt = (r, c) => cells[r] && cells[r][c] >= 1;
-  const isNode = (r, c) => salt(r, c) || (r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c);
+
   let painting = null;
   function paintCell(r, c, add) {
-    if ((r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c)) return;
+    if (!inGrid(r, c) || mech[r][c] || (r === lever.r && c === lever.c)) return;
     if (burning && add) return;
-    cells[r][c] = add ? 1 : 0;
-    if (add && adv) adv.grant('salt_fuse');
+    if (add) {
+      if (saltOwned <= 0) { $('#fuseSignal').textContent = 'СОЛИ НЕТ — ДОБУДЬ РУДУ'; return; }
+      cells[r][c] = 1; saltOwned--; saltSync();
+      if (adv) adv.grant('salt_fuse');
+    } else if (cells[r][c]) { cells[r][c] = 0; saltOwned++; saltSync(); }
     renderFuse();
   }
   grid.addEventListener('pointerdown', e => {
     const b = e.target.closest('button'); if (!b || e.target === trail) return;
     e.preventDefault();
-    outer: for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (btns[r][c] === b) {
-      if ((r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c)) break outer;
-      painting = cells[r][c] ? false : true;
+    outer: for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) if (btns[r][c] === b) {
+      if (mech[r][c] || (r === lever.r && c === lever.c)) break outer;
+      painting = !cells[r][c];
       paintCell(r, c, painting);
       break outer;
     }
@@ -246,20 +296,33 @@
   grid.addEventListener('pointerover', e => {
     if (painting === null || !e.target.closest) return;
     const b = e.target.closest('button'); if (!b) return;
-    outer2: for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (btns[r][c] === b) { paintCell(r, c, painting); break outer2; }
+    outer2: for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) if (btns[r][c] === b) { paintCell(r, c, painting); break outer2; }
   });
   addEventListener('pointerup', () => (painting = null));
-  $('#fuseClear').addEventListener('click', () => { if (burning) return; for (let r = 0; r < ROWS; r++) cells[r].fill(0); renderFuse(); });
+  $('#fuseClear').addEventListener('click', () => {
+    if (burning) return;
+    let refund = 0;
+    for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) if (cells[r][c]) { cells[r][c] = 0; refund++; }
+    saltOwned += refund; saltSync(); renderFuse();
+  });
+  $('#fuseNew').addEventListener('click', () => {
+    if (burning) return;
+    let refund = 0;
+    for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) if (cells[r][c]) refund++;
+    saltOwned += refund; saltSync();
+    ZM.sfx('page', .5, 1.2);
+    buildWorld();
+  });
+
   function renderFuse() {
     let n = 0;
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      const b = btns[r][c];
-      if ((r === TORCH.r && c === TORCH.c) || (r === LAMP.r && c === LAMP.c)) continue;
+    for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) {
+      const b = btns[r][c]; if (!b) continue;
       const v = cells[r][c];
       if (v) n++;
-      b.className = v === 2 ? 'lit' : v === 1 ? 'salt' : '';
+      b.classList.toggle('salt', v === 1);
+      b.classList.toggle('lit', v === 2);
     }
-    btns[LAMP.r][LAMP.c].classList.toggle('on', lampOn);
     $('#fusePlaced').textContent = n;
     $('#fuseBurned').textContent = burned;
     drawTrail();
@@ -279,7 +342,7 @@
     tg.setTransform(d, 0, 0, d, 0, 0); tg.clearRect(0, 0, w, h);
     tg.imageSmoothingEnabled = false;
     const pad = 2.6;   /* перекрыть зазор сетки, чтобы дорожка была сплошной */
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) {
       if (!salt(r, c)) continue;
       const b = btns[r][c], x = b.offsetLeft - grid.clientLeft, y = b.offsetTop - grid.clientTop, bw = b.offsetWidth, bh = b.offsetHeight;
       const cx = x + bw / 2, cy = y + bh / 2;
@@ -302,37 +365,101 @@
     }
   }
   addEventListener('resize', () => renderFuse());
+
+  /* --- реакции механизмов: каждый срабатывает по-своему --- */
+  const wPop = (r, c, col) => {
+    const host = btns[r][c]; if (!host) return;
+    for (let i = 0; i < 6; i++) {
+      const pt = document.createElement('i');
+      pt.className = 'wpt';
+      const ang = Math.random() * Math.PI * 2, dist = 16 + Math.random() * 30;
+      pt.style.cssText = `--c:${col};--sz:${2 + Math.random() * 4}px;--dx:${Math.cos(ang) * dist}px;--dy:${Math.sin(ang) * dist}px`;
+      host.appendChild(pt);
+      setTimeout(() => pt.remove(), 700);
+    }
+  };
+  function shootArrow(r, c) {
+    const b = btns[r][c], a = document.createElement('i');
+    a.className = 'w-arrow';
+    const dir = c >= lever.c ? 1 : -1;
+    a.style.left = b.offsetLeft + 'px'; a.style.top = b.offsetTop + b.offsetHeight / 2 + 'px';
+    a.style.setProperty('--fly', dir * (grid.clientWidth + 40) + 'px');
+    a.style.setProperty('--flip', dir < 0 ? 'scaleX(-1)' : '');
+    grid.appendChild(a);
+    setTimeout(() => a.remove(), 900);
+    ZM.sfx('click', .6, .7);
+  }
+  function boom(r, c) {
+    ZM.sfx('anvil', .9, .45); ZM.sfx('stone', 1, .5);
+    grid.classList.remove('quake'); void grid.offsetWidth; grid.classList.add('quake');
+    /* сам динамит превращается в воронку */
+    const self = btns[r][c];
+    mech[r][c] = null;
+    self.classList.remove('mech'); self.innerHTML = ''; self.classList.add('scorch');
+    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+      const nr = r + dr, nc = c + dc;
+      if (!inGrid(nr, nc) || (nr === r && nc === c)) continue;
+      cells[nr][nc] = 0;
+      const b = btns[nr][nc];
+      b.classList.remove('salt', 'lit');
+      b.classList.add('boom');
+      setTimeout(() => b.classList.remove('boom'), 650);
+      if (mech[nr][nc]) {
+        /* цепная детонация соседнего динамита, остальные механизмы уцелели */
+        if (mech[nr][nc].k === 'tnt' && !mech[nr][nc].done) { mech[nr][nc].done = true; const rr = nr, cc = nc; setTimeout(() => boom(rr, cc), 260); }
+        continue;
+      }
+      if (!(nr === lever.r && nc === lever.c)) b.classList.add('scorch');
+    }
+    wPop(r, c, '#ffb02e');
+    renderFuse();
+  }
+  function fireMech(r, c) {
+    const m = mech[r][c]; if (!m || m.done) return;
+    m.done = true; m.on = true;
+    const b = btns[r][c];
+    b.classList.add('act');
+    if (m.k === 'lamp' || m.k === 'rtorch') { const im = b.querySelector('img'); if (im && m.texOn) im.src = m.texOn; b.classList.add('on'); ZM.sfx('click', .5, 1.4); ZM.sfx('orb', .25, 1.6); }
+    else if (m.k === 'piston') { b.classList.add('push'); setTimeout(() => b.classList.remove('push'), 480); ZM.sfx('page', .6, .8); }
+    else if (m.k === 'sticky') { b.classList.add('push'); setTimeout(() => b.classList.remove('push'), 1500); ZM.sfx('page', .6, .65); }
+    else if (m.k === 'dispenser') shootArrow(r, c);
+    else if (m.k === 'dropper') { wPop(r, c, '#e9e9e9'); ZM.sfx('pop', .6, .8); }
+    else if (m.k === 'observer') { b.classList.add('on'); ZM.sfx('click', .35, .7); wPop(r, c, '#9fd8ff'); }
+    else if (m.k === 'note') { b.classList.add('ding'); ZM.sfx('pop', .55, .55 + Math.random() * 1.3); wPop(r, c, '#ffd76e'); }
+    else if (m.k === 'target') { b.classList.add('hit'); ZM.sfx('hit', .6, 1.3); }
+    else if (m.k === 'tnt') setTimeout(() => boom(r, c), 220);
+  }
+
   $('#fuseIgnite').addEventListener('click', () => {
     if (burning) return;
-    const near = [[0, 1], [0, -1], [1, 0], [-1, 0]].filter(([dr, dc]) => salt(TORCH.r + dr, TORCH.c + dc));
-    if (!near.length) { $('#fuseSignal').textContent = 'СИГНАЛ: — (СОЛИ РЯДОМ НЕТ)'; return; }
-    for (const [dr, dc] of near) { cells[TORCH.r + dr][TORCH.c + dc] = 2; life[TORCH.r + dr][TORCH.c + dc] = 2; }
-    burning = true; runBurned = 0;
+    const near = N4.filter(([dr, dc]) => salt(lever.r + dr, lever.c + dc));
+    if (!near.length) { $('#fuseSignal').textContent = 'СИГНАЛ: — (СОЛИ У РЫЧАГА НЕТ)'; return; }
+    for (const [dr, dc] of near) { cells[lever.r + dr][lever.c + dc] = 2; life[lever.r + dr][lever.c + dc] = 2; }
+    burning = true;
+    btns[lever.r][lever.c].classList.add('pulled');
     $('#fuseSignal').textContent = 'СИГНАЛ: 15';
     ZM.sfx('click', .4, 1.3);
     renderFuse();
     const step = () => {
       if (!document.hidden) {
-        for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) {
           if (cells[r][c] === 2) {
-            for (const [dr, dc] of [[0, 1], [0, -1], [1, 0], [-1, 0]]) {
+            for (const [dr, dc] of N4) {
               const nr = r + dr, nc = c + dc;
-              if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && cells[nr][nc] === 1) { cells[nr][nc] = 2; life[nr][nc] = 2; }
+              if (inGrid(nr, nc) && cells[nr][nc] === 1) { cells[nr][nc] = 2; life[nr][nc] = 2; }
             }
           }
         }
-        /* лампа: сигнал 15 доходит до соседней соли */
-        lampOn = [[0, 1], [0, -1], [1, 0], [-1, 0]].some(([dr, dc]) => {
-          const nr = LAMP.r + dr, nc = LAMP.c + dc;
-          return nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && cells[nr][nc] === 2;
-        });
-        for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-          if (cells[r][c] === 2 && --life[r][c] <= 0) { cells[r][c] = 0; burned++; runBurned++; }
+        /* механизм срабатывает, когда соседняя соль горит: сигнал 15 */
+        for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) {
+          if (mech[r][c] && !mech[r][c].done && N4.some(([dr, dc]) => salt(r + dr, c + dc) && cells[r + dr][c + dc] === 2)) fireMech(r, c);
+        }
+        for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) {
+          if (cells[r][c] === 2 && --life[r][c] <= 0) { cells[r][c] = 0; burned++; }
         }
         renderFuse();
-        const anyLit = cells.flat().includes(2);
-        if (!anyLit) {
-          burning = false; lampOn = false; renderFuse();
+        if (!cells.flat().includes(2)) {
+          burning = false; renderFuse();
           $('#fuseSignal').textContent = 'СИГНАЛ: —';
           ZM.sfx('pop', .4, .8);
           return;
@@ -342,7 +469,7 @@
     };
     setTimeout(step, 100);
   });
-  renderFuse();
+  buildWorld();
 
   /* ============ 03. РЕДИСКА: грядка ============ */
   const plots = $('#farmPlots');

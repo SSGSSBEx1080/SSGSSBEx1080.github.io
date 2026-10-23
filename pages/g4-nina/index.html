@@ -4,7 +4,7 @@
 <title>Гость П · Соль, нож и редиска — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера П: нож с ударом в спину ×2, солевой фитиль с сигналом 15, редиска с восемью стадиями и борщ, который возвращает миску. Механики из исходников ZitraksMode.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g4-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g4-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests6"><link rel="stylesheet" href="style.css?v=g4-7">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests6"><link rel="stylesheet" href="style.css?v=g4-8">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -23,10 +23,9 @@
           <span><b>10</b><small>ГОЛОДА ОТ БОРЩА</small></span>
         </div>
       </div>
-      <figure class="g-art g-art--3d" id="knifeArt">
-        <canvas id="knife3d" aria-label="Нож гостя — объёмная модель. Перетащи, чтобы повернуть"></canvas>
+      <figure class="g-art g-art--tex" id="knifeArt">
         <img class="art-fallback" src="../../assets/textures/guest/nina_knife.png" alt="Нож — оригинальная текстура предмета из мода" width="64" height="64">
-        <figcaption>ОБЪЁМНАЯ МОДЕЛЬ · ТЕКСТУРА ИЗ МОДА · КРУТИ МЫШЬЮ</figcaption>
+        <figcaption>ТЕКСТУРА ИЗ МОДА · 2D · ОДНА КАРТИНКА, БЕЗ 3D</figcaption>
       </figure>
       <span class="g-stamp" aria-hidden="true">ГОСТЕВОЙ ПУНКТ</span>
     </div>
@@ -103,14 +102,14 @@
           <div class="rcm-mouse" id="rcmMouse" aria-hidden="true"><i></i><span>ПРАВАЯ<br>КНОПКА</span></div>
           <div class="rcm-game">
             <div class="rcm-targets" id="rcmTargets" role="tablist" aria-label="Цель для правой кнопки">
-              <button type="button" class="on" data-t="sheep"><img src="../../assets/textures/guest/sheep.png" alt="">ОВЦА</button>
-              <button type="button" data-t="bull"><img src="../../assets/textures/p22/cow_bull.png" alt="">БЫК</button>
+              <button type="button" class="on" data-t="sheep"><img src="../../assets/textures/hub/av/sheep.png" alt="">ОВЦА</button>
+              <button type="button" data-t="bull"><img src="../../assets/textures/hub/av/cow.png" alt="">БЫК</button>
               <button type="button" data-t="berries"><img src="../../assets/textures/p21/i/sweet_berries.png" alt="">ЯГОДЫ</button>
               <button type="button" data-t="log"><img src="../../assets/textures/mc/p2/block_oak_log.png" alt="">БРЕВНО</button>
             </div>
             <div class="rcm-scene" id="rcmScene">
               <canvas id="rcm3d" aria-label="Объёмная цель для ножа — крути мышью"></canvas>
-              <img id="rcmImg" src="../../assets/textures/guest/sheep.png" alt="Цель для ножа">
+              <img id="rcmImg" src="../../assets/textures/hub/av/sheep.png" alt="Цель для ножа">
               <b class="rcm-cap" id="rcmCap">ОВЦА · ЖДЁТ</b>
               <div class="rcm-drop" id="rcmDrop" aria-hidden="true"></div>
             </div>
@@ -127,8 +126,8 @@
               <div class="g-panel" style="margin-top:16px">
           <h3 class="panel-title">ЧЕМ ЕЩЁ ПОЛЕЗЕН</h3>
           <ul class="actions-list">
-            <li><img src="../../assets/textures/guest/sheep.png" alt=""><span><b>Стрижёт овец</b> и грибных коров — как ножницами, с уроном прочности</span></li>
-            <li><img src="../../assets/textures/p22/cow_bull.png" alt=""><span><b>Стрижёт быка:</b> обычный становится медным или лысым, лысый роняет 1–2 кожи</span></li>
+            <li><img src="../../assets/textures/hub/av/sheep.png" alt=""><span><b>Стрижёт овец</b> и грибных коров — как ножницами, с уроном прочности</span></li>
+            <li><img src="../../assets/textures/hub/av/cow.png" alt=""><span><b>Стрижёт быка:</b> обычный становится медным или лысым, лысый роняет 1–2 кожи</span></li>
             <li><img src="../../assets/textures/p22/i/leather.png" alt=""><span><b>Быстро ломает</b> листву, шерсть и паутину; дроп с шерсти, паутины и блока травы</span></li>
             <li><img src="../../assets/textures/p26/v/carrot.png" alt=""><span><b>Собирает ягоды</b> и вырезает тыквы, снимает кору как топор</span></li>
           </ul>
@@ -165,7 +164,7 @@
         </div>
       </div>
       <div class="g-panel">
-        <h3 class="panel-title">СТЕНД: СОЛЕВОЙ ФИТИЛЬ</h3>
+        <h3 class="panel-title">СТЕНД: МИНИ-МИР С СОЛЬЮ</h3>
         <div class="fuse-wrap">
           <div class="fuse-hud">
             <span>СОЛИ ПОЛОЖЕНО: <b id="fusePlaced">0</b></span>
@@ -173,12 +172,13 @@
             <span>СОЛИ В КАРМАНЕ: <b id="saltOwned">0</b></span>
             <span class="sig" id="fuseSignal">СИГНАЛ: —</span>
           </div>
-          <div class="fuse-grid" id="fuseGrid" role="application" aria-label="Поле для солевого фитиля: рисуй соль и поджигай"></div>
+          <div class="fuse-grid world-grid" id="fuseGrid" role="application" aria-label="Мини-мир: прокладывай солевую дорожку по траве до блоков-механизмов и рычага"></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button type="button" class="g-btn" id="fuseIgnite">ПОДЖЕЧЬ ОТ РЫЧАГА</button>
+            <button type="button" class="g-btn" id="fuseIgnite">ДЁРНУТЬ РЫЧАГ</button>
+            <button type="button" class="g-btn ghost small" id="fuseNew">НОВОЕ ПОЛЕ</button>
             <button type="button" class="g-btn ghost small" id="fuseClear">СМЕСТИ СОЛЬ</button>
           </div>
-          <p class="g-note">Кликай или веди пальцем по клеткам. Факел слева поджигает соседнюю соль; дальше огонь идёт сам — по два тика на клетку, в стороны и вверх-вниз по склонам.</p>
+          <p class="g-note">Мини-мир на травяных блоках: рычаг и четыре случайных блока-механизма из пула — поршень, липкий поршень, динамит, раздатчик со стрелой, дроппер, наблюдатель, красная лампа, редстоун-факел, нотный блок, мишень. Кликай по траве — кладёшь соль из кармана (одна соль = одна клетка, руду добывай выше); клик по соли — снять и вернуть в карман. Дёрни рычаг — огонь побежит по дорожке: два тика на клетку, сигнал 15, — и запустит каждый механизм, до которого доберётся.</p>
         </div>
       </div>
       <div>
@@ -252,12 +252,12 @@
         <h3 class="panel-title">КРАФТ</h3>
         <div class="craft-row">
           <div class="craft-grid" style="grid-template-columns:repeat(3,auto)">
-            <span class="g-islot" data-tip="Свёкла" data-tip-sub="minecraft:beetroot"><img src="../../assets/textures/guest/beetroot.png" alt="Свёкла"></span>
+            <span class="g-islot" data-tip="Свёкла" data-tip-sub="minecraft:beetroot"><img src="../../assets/textures/mc/van/item_beetroot.png" alt="Свёкла"></span>
             <span class="g-islot" data-tip="Редиска" data-tip-sub="zitraksmode:radish"><img src="../../assets/textures/guest/radish.png" alt="Редиска"></span>
             <span class="g-islot" data-tip="Картофель" data-tip-sub="minecraft:potato"><img src="../../assets/textures/p26/v/potato.png" alt="Картофель"></span>
             <span class="g-islot" data-tip="Морковь" data-tip-sub="minecraft:carrot"><img src="../../assets/textures/p26/v/carrot.png" alt="Морковь"></span>
             <span class="g-islot" data-tip="Соль" data-tip-sub="zitraksmode:salt"><img src="../../assets/textures/guest/salt.png" alt="Соль"></span>
-            <span class="g-islot" data-tip="Сырая курица" data-tip-sub="minecraft:chicken"><img src="../../assets/textures/guest/chicken.png" alt="Сырая курица"></span>
+            <span class="g-islot" data-tip="Сырая курица" data-tip-sub="minecraft:chicken"><img src="../../assets/textures/mc/van/item_chicken.png" alt="Сырая курица"></span>
             <span class="g-islot"></span>
             <span class="g-islot" data-tip="Миска" data-tip-sub="minecraft:bowl"><img src="../../assets/textures/p22/i/bowl.png" alt="Миска"></span>
             <span class="g-islot"></span>
@@ -332,6 +332,6 @@
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests2"></script><script src="app.js?v=g4-7"></script><script src="../../shared/guest.js?v=guests1"></script>
-<script type="module" src="scene3d.js?v=g4-2"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests3"></script><script src="app.js?v=g4-8"></script><script src="../../shared/guest.js?v=guests1"></script>
+<script type="module" src="scene3d.js?v=g4-3"></script>
 </body></html>

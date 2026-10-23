@@ -480,7 +480,55 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc.guest .pc-n{color:var(--tone);text-shadow:0 2px 12px color-mix(in srgb,var(--tone) 60%,transparent)}
 .pc.guest::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--tone);opacity:.8}
 .pc.guest .pc-d{color:#b9b9c4}
-.pc-st.g-nobranch{position:absolute;top:14px;right:14px;font:400 10px var(--f-pixel);color:#6d6d78;letter-spacing:.1em}
+.pc-st.g-nobranch{position:absolute;top:62px;left:14px;font:400 10px var(--f-pixel);color:#6d6d78;letter-spacing:.1em;border:1px dashed #4a4a55;padding:2px 6px;border-radius:4px}
 .pgrid.list .pc-st.g-nobranch{position:static}
 .tw-tab.guest{box-shadow:0 0 0 2px color-mix(in srgb,#8b99ab 55%,transparent),inset 0 0 0 2px #0006}
 .tw-tab.guest.full{box-shadow:0 0 0 2px color-mix(in srgb,#c9e08a 60%,transparent),inset 0 0 0 2px #0006}
+
+/* ---------- ФОНЫ 22–29: у каждой карточки — свой мир ---------- */
+.pc-22 .pc-bg{background:radial-gradient(circle at 72% 28%,rgba(242,242,242,.45),transparent 52%),linear-gradient(160deg,#2b3038,#111419 65%,#0a0c10)}
+.pc-22 .pc-bg::before{content:"";position:absolute;left:16%;top:12%;width:9px;height:12px;border-radius:50% 50% 50% 50%/58% 58% 42% 42%;background:#f7f7f7;box-shadow:36px 44px 0 -1px rgba(242,242,242,.75),74px 16px 0 -2px rgba(255,255,255,.85),118px 58px 0 -1px rgba(226,226,226,.6),160px 30px 0 -2px rgba(255,255,255,.5);animation:milkDrop 2.8s ease-in-out infinite}
+.pc-23 .pc-bg{background:radial-gradient(circle at 74% 30%,rgba(108,92,255,.55),transparent 55%),linear-gradient(160deg,#241f4d,#0d0b22)}
+.pc-23 .pc-bg::before{content:"";position:absolute;right:9%;top:14%;width:46px;height:18px;background:#6c5cff;border-radius:10px 10px 10px 3px;box-shadow:-14px 24px 0 -1px #8f7dff,26px 40px 0 -3px #4b3fae;animation:maxBub 3.2s ease-in-out infinite}
+.pc-24 .pc-bg{background:radial-gradient(circle at 26% 24%,rgba(0,224,160,.35),transparent 45%),linear-gradient(180deg,#0d2018 0%,#123024 46%,#0a130e)}
+.pc-24 .pc-bg::before{content:"";position:absolute;left:0;right:0;bottom:20%;height:3px;background:repeating-linear-gradient(90deg,#eafff5 0 26px,transparent 26px 48px);opacity:.85;animation:road24 .8s linear infinite}
+.pc-25 .pc-bg{background:radial-gradient(ellipse 60% 70% at 74% 16%,rgba(255,136,0,.35),transparent 65%),repeating-linear-gradient(115deg,rgba(58,34,8,.75) 0 13px,rgba(74,44,10,.75) 13px 26px),linear-gradient(160deg,#241305,#0d0803)}
+.pc-25 .pc-bg::before{content:"";position:absolute;left:50%;top:24%;width:46px;height:58px;margin-left:-23px;background:linear-gradient(180deg,#ff9d24,#b35304);clip-path:polygon(50% 0,100% 22%,82% 100%,18% 100%,0 22%);filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));animation:tw 3.4s ease-in-out infinite}
+.pc-26 .pc-bg{background:radial-gradient(circle at 70% 38%,rgba(165,239,216,.35),transparent 45%),radial-gradient(circle at 12% 80%,rgba(165,239,216,.12) 0 2px,transparent 3px),radial-gradient(circle at 30% 66%,rgba(255,255,255,.2) 0 1.5px,transparent 2.5px),linear-gradient(160deg,#0f1f24,#060d10)}
+.pc-26 .pc-bg::before{content:"";position:absolute;left:calc(70% - 36px);top:calc(38% - 36px);width:72px;height:72px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 38%,rgba(165,239,216,.55) 50%,transparent 62% 100%);-webkit-mask:radial-gradient(circle,transparent 32%,#000 42%);mask:radial-gradient(circle,transparent 32%,#000 42%);animation:sbSpin 2.2s linear infinite}
+.pc-27 .pc-bg{background:radial-gradient(circle at 72% 34%,rgba(229,188,121,.32),transparent 46%),linear-gradient(160deg,#1c1a14,#0a0906)}
+.pc-27 .pc-bg::before{content:"";position:absolute;left:calc(72% - 16px);top:calc(34% - 16px);width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#ffe9b0,#c99a3f 72%);box-shadow:0 0 16px rgba(229,188,121,.55);animation:coinT 2.6s ease-in-out infinite}
+.pc-28 .pc-bg{background:repeating-conic-gradient(from 0deg at 74% 36%,rgba(125,255,154,.1) 0 6deg,transparent 6deg 18deg),radial-gradient(circle at 74% 36%,rgba(125,255,154,.4),transparent 52%),linear-gradient(160deg,#0c2415,#050d08)}
+.pc-28 .pc-bg::before{content:"";position:absolute;left:calc(74% - 21px);top:calc(36% - 12px);width:42px;height:24px;border-radius:50%;background:radial-gradient(circle,#7dff9a 0 5px,#0a1f10 6px);box-shadow:0 0 18px rgba(125,255,154,.6);animation:medEye 3.2s ease-in-out infinite}
+.pc-29 .pc-bg{background:radial-gradient(circle at 70% 30%,rgba(238,246,56,.4),transparent 50%),linear-gradient(160deg,#1c1e08,#0a0b04)}
+.pc-29 .pc-bg::before{content:"";position:absolute;left:-12%;right:-12%;top:22%;height:26px;background:repeating-linear-gradient(90deg,transparent 0 18px,rgba(238,246,56,.5) 18px 54px,transparent 54px 72px);transform:skewX(-24deg);animation:sdv .5s linear infinite;opacity:.8}
+
+/* ---------- ГОСТЕВЫЕ КАРТОЧКИ: свои миры ---------- */
+.pc.guest .pc-bg{background:radial-gradient(circle at 72% 32%,color-mix(in srgb,var(--tone) 45%,transparent),transparent 55%),linear-gradient(160deg,#201318,#0c0709)}
+.g-Б .pc-bg{background:repeating-linear-gradient(45deg,rgba(255,98,87,.14) 0 12px,transparent 12px 24px),radial-gradient(circle at 72% 32%,rgba(255,98,87,.42),transparent 55%),linear-gradient(160deg,#301416,#120708)}
+.g-Б .pc-bg::before{content:"ГОСТ";position:absolute;right:9%;top:15%;padding:2px 7px;font:700 15px var(--f-head);color:#ffd7d2;border:2px solid rgba(255,98,87,.65);border-radius:5px;transform:rotate(7deg);letter-spacing:.08em}
+.g-К .pc-bg{background:radial-gradient(circle at 20% 16%,rgba(255,236,200,.16) 0 12px,transparent 13px),radial-gradient(circle at 80% 66%,rgba(255,255,255,.14) 0 1.5px,transparent 2.5px),radial-gradient(circle at 12% 74%,rgba(255,255,255,.12) 0 1.5px,transparent 2.5px),radial-gradient(circle at 76% 26%,rgba(255,160,58,.45),transparent 52%),linear-gradient(160deg,#20160e,#0b0705)}
+.g-К .pc-bg::before{content:"";position:absolute;right:16%;top:24%;width:12px;height:38px;background:linear-gradient(180deg,#ffa03a,#d97b1e);clip-path:polygon(50% 100%,0 0,100% 0);box-shadow:20px 14px 0 #e37814,-4px -8px 0 -3px #7dc242,8px -11px 0 -3px #8fd14c;transform:rotate(12deg)}
+.g-В .pc-bg{background:radial-gradient(circle at 26% 26%,rgba(240,86,140,.5),transparent 55%),radial-gradient(circle at 82% 70%,rgba(240,86,140,.3),transparent 45%),linear-gradient(160deg,#2c0f1c,#10060b)}
+.g-В .pc-bg::before{content:"";position:absolute;left:calc(72% - 12px);top:calc(32% - 12px);width:24px;height:24px;background:#f0568c;transform:rotate(45deg);box-shadow:-12px 0 0 #f0568c,0 -12px 0 #f0568c,0 0 18px rgba(240,86,140,.65);animation:heartB 1.6s ease-in-out infinite}
+.g-П .pc-bg{background:radial-gradient(circle at 18% 62%,rgba(255,255,255,.6) 0 2px,transparent 3px),radial-gradient(circle at 24% 52%,rgba(255,255,255,.4) 0 1.5px,transparent 2.5px),radial-gradient(circle at 13% 50%,rgba(255,255,255,.4) 0 1.5px,transparent 2.5px),radial-gradient(circle at 74% 30%,rgba(224,87,107,.45),transparent 52%),linear-gradient(160deg,#2a1114,#0f0709)}
+.g-П .pc-bg::before{content:"";position:absolute;left:-10%;right:-10%;top:46%;height:2px;background:linear-gradient(90deg,transparent,#fff 40%,#e0576b 72%,transparent);transform:rotate(-10deg);box-shadow:0 0 12px #e0576b;animation:ktCut 3.4s cubic-bezier(.2,.8,.2,1) infinite}
+
+@keyframes milkDrop{0%,100%{transform:translateY(0)}50%{transform:translateY(9px)}}
+@keyframes maxBub{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes road24{to{background-position:-48px 0}}
+@keyframes coinT{0%,100%{transform:translateY(0) rotateY(0)}50%{transform:translateY(-15px) rotateY(180deg)}}
+@keyframes medEye{0%,100%{box-shadow:0 0 10px rgba(125,255,154,.35)}50%{box-shadow:0 0 26px rgba(125,255,154,.85)}}
+@keyframes sdv{to{background-position:-72px 0}}
+@keyframes heartB{0%,100%{transform:rotate(45deg) scale(1)}50%{transform:rotate(45deg) scale(1.14)}}
+
+/* ---------- ДРЕВО: вкладки не обтёсываются, окно выше на телефоне ---------- */
+.tw-tabs{max-width:calc(100% - 28px);overflow-x:auto;scrollbar-width:none}
+.tw-tabs::-webkit-scrollbar{display:none}
+.tw-map,.tw-lines{overflow:visible}
+@media (max-width:700px){
+  .tw-in{height:min(680px,76vh)}
+  .pc-st.g-nobranch{top:46px;left:11px}
+  .tw-title{max-width:46%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pc-ic{width:40px;height:40px}
+}
