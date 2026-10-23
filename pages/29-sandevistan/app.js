@@ -1,143 +1,117 @@
 (()=>{'use strict';
  const{$,$$,esc}=ZM,K=ZM.kit,Core=P29Core,store='p29.lab',fmt=(n,d=1)=>Number(n).toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});
  ZM.topbar({crumb:'№29 · Сандевистан',...ZM.pointNav(29)});K.finNav(29,$('#finNav'));document.addEventListener('DOMContentLoaded',()=>document.querySelector('.zm-route')?.remove());
- let model=new Core.Model(ZM.store.get(store,null)),auto=false,motion=!matchMedia('(prefers-reduced-motion: reduce)').matches,status='',lastSave=0;
- const inputs=new Set(),history=[];
+ let model=new Core.Model(ZM.store.get(store,null)),motion=!matchMedia('(prefers-reduced-motion: reduce)').matches,status='',lastLog='',lastSave=0,implantShown=false;
+ const history=[];
  const adv=K.adv({list:ZM.P29.advancements,store:'p29.adv',icon:a=>'../../assets/textures/p29/i/'+a.icon+'.png',intro:'Шесть скрытых достижений оригинального мода. Описания — цитаты из исходных JSON.',onGrant:a=>{P29Sound.play(a.key);}});
  const save=()=>{ZM.store.set(store,model.snapshot());lastSave=performance.now();};
- const clearInputs=()=>{inputs.clear();model.movement(0,0);$$('[data-move]').forEach(b=>b.setAttribute('aria-pressed','false'));};
- const FX={event(e){if(!motion)return;const cyan=e.type==='installed'||e.type==='ritualStart'||(e.type==='sound'&&e.name==='activate');const red=e.type==='death'||e.type==='psychosisBurst'||(e.type==='sound'&&e.name==='psychosis');if(!cyan&&!red)return;const f=$('#fxFlash');if(f){f.classList.remove('cyan','red','go');void f.offsetWidth;f.classList.add(cyan?'cyan':'red','go');}if(red){const a=$('#arena');a.classList.remove('fx-shake');void a.offsetWidth;a.classList.add('fx-shake');}}};
- function consume(){for(const e of model.drain()){if(e.type==='adv')adv.grant(e.key);if(e.type==='sound')P29Sound.play(e.name);if(e.type==='ritualStart'||e.type==='installed')P29Sound.play(e.type);window.P29?.scene?.event?.(e);FX.event(e);}}
+ /* FX: вспышка и тряска фигуры субъекта в разделе 03. */
+ const FX={event(e){if(!motion)return;const cyan=e.type==='installed'||e.type==='ritualStart'||(e.type==='sound'&&e.name==='activate');const red=e.type==='death'||e.type==='psychosisBurst'||(e.type==='sound'&&e.name==='psychosis');if(!cyan&&!red)return;const st=$('#psychoStage');if(!st)return;st.classList.remove('fx-cyan','fx-red');void st.offsetWidth;st.classList.add(cyan?'fx-cyan':'fx-red');if(red){st.classList.remove('fx-shake');void st.offsetWidth;st.classList.add('fx-shake');}}};
+ function ring(radius){const fig=$('#psychoFig');if(!fig||fig.querySelectorAll('.pf-ring').length>7)return;const d=document.createElement('div');d.className='pf-ring';d.style.setProperty('--r',(70+radius*14)+'px');fig.appendChild(d);d.addEventListener('animationend',()=>d.remove());}
+ function consume(){for(const e of model.drain()){if(e.type==='adv')adv.grant(e.key);if(e.type==='sound')P29Sound.play(e.name);if(e.type==='log')lastLog=e.text;if(e.type==='psychosisBurst')ring(e.radius);if(e.type==='ritualStart'||e.type==='installed')P29Sound.play(e.type);window.P29?.scene?.event?.(e);FX.event(e);}}
  function action(fn,error=''){const ok=fn();status=ok?'':error;consume();render();save();return ok;}
- $('#installButton').addEventListener('click',()=>action(()=>model.requestInstall(),'Условия: город Энда, незеритовый нагрудник и две дозы.'));
+ /* ── раздел 03: субъект ─────────────────────────────────────────── */
+ $('#psychoV').addEventListener('click',()=>action(()=>model.toggle(),'Ускорение недоступно: нужен имплант, завершённый откат и отсутствие критической фазы.'));
+ $('#inject').addEventListener('click',()=>{if(model.state.using?.kind==='inject'){model.cancelUse();render();return;}action(()=>model.inject(),'Инъекция начинается только с установленным имплантом, с дозой в кармане и без активного ускорения.');});
+ $('#waitCooldown').addEventListener('click',()=>{model.tick(model.state.cooldown);consume();render();save();});
+ $('#restFiveMinutes').addEventListener('click',()=>{model.tick(6000);consume();render();save();});
+ $('#psychoReset').addEventListener('click',()=>{P29Sound.stop();model=new Core.Model();history.length=0;status='';lastLog='';implantShown=false;noteSticky=false;$('#endCity').checked=$('#netheriteChest').checked=true;consume();render();save();$('#psychoStatus').textContent='Новый субъект: город Энда, незеритовый нагрудник и пустой карман.';});
  for(const id of['endCity','netheriteChest'])$('#'+id).addEventListener('change',()=>{const s=model.state;if(s.inCutscene||s.chest==='sandevistan')return;s.inCity=$('#endCity').checked;s.chest=$('#netheriteChest').checked?'netherite':'other';s.ritualReady=false;render();save();});
- $('#activate').addEventListener('click',()=>action(()=>model.toggle(),'Ускорение недоступно: нужен имплант, завершённый откат и отсутствие критической фазы.'));
- $('#inject').addEventListener('click',()=>{if(model.state.using?.kind==='inject'){model.cancelUse();render();return;}action(()=>model.inject(),'Инъекция начинается только с установленным имплантом и без активного ускорения.');});
- $('#foodDemo').addEventListener('click',()=>action(()=>model.food(),'Сначала завершите текущее использование предмета.'));
- $('#attack').addEventListener('click',()=>action(()=>model.attack(),'Цель должна быть ближе 3,3 блока. Её обычные кадры неуязвимости действуют вне ускорения.'));
- $('#spawnArrow').addEventListener('click',()=>action(()=>model.shoot()));$('#spawnTNT').addEventListener('click',()=>action(()=>model.ignite()));$('#peerActive').addEventListener('click',()=>{model.peer();render();save();});$('#resetTarget').addEventListener('click',()=>{model.resetTarget();render();save();});
- $('#autoRun').addEventListener('click',()=>{auto=!auto;$('#autoRun').setAttribute('aria-pressed',String(auto));if(!auto)clearInputs();});
- $('#waitCooldown').addEventListener('click',()=>{clearInputs();model.tick(model.state.cooldown);consume();render();save();});
- $('#restFiveMinutes').addEventListener('click',()=>{clearInputs();model.tick(6000);consume();render();save();});
- $('#resetStand').addEventListener('click',()=>{P29Sound.stop();clearInputs();auto=false;$('#autoRun').setAttribute('aria-pressed','false');model=new Core.Model();history.length=0;status='';$('#endCity').checked=$('#netheriteChest').checked=true;window.P29.scene?.reset?.();render();save();});
- // прямое управление ареной: тяни по арене — бежишь, тап — удар (мышь и сенсор)
- const arenaHost=$('#arena');let steer=null,steered=false,steerVec=null;
- const endSteer=()=>{steer=null;steered=false;steerVec=null;};
- arenaHost.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;steer={x:e.clientX,y:e.clientY};steered=false;});
- arenaHost.addEventListener('pointermove',e=>{if(!steer)return;const dx=e.clientX-steer.x,dy=e.clientY-steer.y;if(!steered&&Math.hypot(dx,dy)<12)return;steered=true;steerVec={x:Math.max(-1,Math.min(1,dx/70)),y:Math.max(-1,Math.min(1,dy/70))};});
- for(const name of['pointerup','pointercancel'])arenaHost.addEventListener(name,()=>{if(!steer)return;if(!steered)action(()=>model.attack(),'Цель должна быть ближе 3,3 блока. Её обычные кадры неуязвимости действуют вне ускорения.');endSteer();});
- const setMove=(key,on)=>{if(on)inputs.add(key);else inputs.delete(key);$$('[data-move]').forEach(b=>b.setAttribute('aria-pressed',String(inputs.has(b.dataset.move))));};
- $$('[data-move]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);setMove(b.dataset.move,true);});for(const name of['pointerup','pointercancel','lostpointercapture','blur'])b.addEventListener(name,()=>setMove(b.dataset.move,false));});
- const editable=e=>e.target.closest('input,select,textarea,[contenteditable]');
- document.addEventListener('keydown',e=>{if(editable(e))return;const inOS=$('#os').getBoundingClientRect().bottom>100&&$('#os').getBoundingClientRect().top<innerHeight;
-  if(e.code==='KeyV'&&!e.repeat){e.preventDefault();action(()=>model.toggle());}
-  if(inOS){const dir={KeyW:'up',KeyA:'left',KeyS:'down',KeyD:'right'}[e.code];if(dir){e.preventDefault();setMove(dir,true);}if(e.code==='Space'&&!e.repeat&&!e.target.closest('button')){e.preventDefault();action(()=>model.attack());}}
- });
- document.addEventListener('keyup',e=>{const dir={KeyW:'up',KeyA:'left',KeyS:'down',KeyD:'right'}[e.code];if(dir)setMove(dir,false);});addEventListener('blur',clearInputs);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInputs();});
-
- /* ЗАПИСЬ ПРОГОНА: канонический сценарий стенда как видео — все механики
-  * по очереди с субтитрами. Реальные вызовы модели, никаких нарисованных
-  * состояний; промотка — это model.tick(n), как на кнопках стенда. */
- let rec=null,recT0=0,recIdx=0,cine=false;
- const pct=()=>Math.round(model.state.psychosis);
- const REC_CUES=[
-  {t:.4,cap:()=> 'ЗАПИСЬ · канонический прогон: все механики стенда подряд'},
-  {t:1.6,cap:()=> 'Город Энда · незеритовый нагрудник · две дозы — условия соблюдены'},
-  {t:2.8,fn:()=>action(()=>model.requestInstall()),cap:()=> 'Имплантация: 100 тиков нейро-связи'},
-  {t:8.2,cap:()=> 'Имплант зафиксирован в слоте нагрудника. V — разгон'},
-  {t:9.0,fn:()=>action(()=>model.toggle()),cap:()=> 'РАЗГОН · 5 секунд: часы мира идут, сущности замерли'},
-  {t:10.4,fn:()=>action(()=>model.shoot()),cap:()=> 'Стрела застыла в воздухе'},
-  {t:11.8,fn:()=>action(()=>model.ignite()),cap:()=> 'Запал ТНТ замер'},
-  {t:13.2,fn:()=>action(()=>model.attack()),cap:()=> 'Удар в ускорении: кадры неуязвимости цели сброшены'},
-  {t:14.6,cap:()=> 'Разгон кончился сам. Откат: 60 тиков за каждую секунду ускорения'},
-  {t:16.4,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Проматываем откат ×300 тиков'},
-  {t:18.0,fn:()=>action(()=>model.toggle()),cap:()=> 'Цикл 2/5 · разгон ради нейральной нагрузки'},
-  {t:18.9,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'Нагрузка +0.2 за тик · '+pct()+'%'},
-  {t:20.6,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Откат ×300 · промотка'},
-  {t:22.2,fn:()=>action(()=>model.toggle()),cap:()=> 'Цикл 3/5'},
-  {t:23.1,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'Нагрузка '+pct()+'%'},
-  {t:24.0,fn:()=>action(()=>model.inject()),cap:()=> 'Иммуносупрессант: −50 в очередь, эффективность −5 п.п.'},
-  {t:25.2,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Откат ×300 · промотка'},
-  {t:26.8,fn:()=>action(()=>model.toggle()),cap:()=> 'Цикл 4/5'},
-  {t:27.7,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'Нагрузка '+pct()+'%'},
-  {t:28.9,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Откат ×300 · промотка'},
-  {t:30.5,fn:()=>action(()=>model.toggle()),cap:()=> 'Цикл 5/5 · предел близко'},
-  {t:31.4,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'Нагрузка '+pct()+'% — очередь препарата гасит её медленнее'},
-  {t:33.0,fn:()=>action(()=>{model.tick(model.state.cooldown);}),cap:()=> 'Откат ×300 · промотка'},
-  {t:34.6,fn:()=>action(()=>model.toggle()),cap:()=> 'Ещё разгон: до психоза осталось '+(100-pct())+' п.'},
-  {t:35.5,fn:()=>action(()=>{model.tick(100);}),cap:()=> 'КИБЕРПСИХОЗ · 100 пунктов: урон себе и окружающим'},
-  {t:37.4,fn:()=>action(()=>{model.tick(90);}),cap:()=> 'Критическая фаза: магический урон субъекту'},
-  {t:39.6,fn:()=>action(()=>{model.tick(90);}),cap:()=> model.state.alive?('Критическая фаза: '+(model.state.psychosisTicks/20).toFixed(1)+'с из 10с'):'Субъект потерян. «Адам Смэшер» — только текст ачивки, не моб'},
-  {t:41.8,cap:()=> (model.state.alive?'Субъект выстоял 200 тиков — принудительный конец фазы. ':'')+'ПРОГОН ЗАВЕРШЕН · теперь попробуй сам: WASD / тяни по арене · V · пробел'},
-  {t:45.0,fn:()=>recStop()},
- ];
- const REC_TOTAL=45;
- function recStop(){
-  if(!rec)return;rec=null;cine=false;clearInputs();
-  $('#recBar').hidden=true;$('#recPlay').setAttribute('aria-pressed','false');
+ /* ── раздел 04: ритуал со стихом из ачивки «Иммуносупрессант» ──── */
+ const POEM=(ZM.P29.advancements[0].desc||'').split('\n'),stage=$('#ritualStage');
+ let theater=null,typeTimer=null,noteSticky=false;
+ function typeLine(text){clearInterval(typeTimer);const span=$('#poemLine span');span.textContent='';let i=0;typeTimer=setInterval(()=>{i++;span.textContent=text.slice(0,i);if(i>=text.length)clearInterval(typeTimer);},32);}
+ function startTheater(replay){
+  if(theater)return;const s=model.state;
+  if(!replay){
+   if(!s.alive){status='Субъект погиб — ритуал невозможен. Сначала «НОВЫЙ СУБЪЕКТ».';render();return;}
+   if(s.chest==='sandevistan')replay=true;
+   else if(!s.inCity||s.chest!=='netherite'){status='Условия ритуала: город Энда и незеритовый нагрудник на субъекте.';render();return;}
+   else if(s.doses<2){status='Нужно минимум две дозы иммуносупрессанта — свари партию в аптеке выше.';render();return;}
+  }
+  stage.dataset.beat='idle';typeLine('');noteSticky=false;$('#ritualNote').textContent=replay?'повтор стиха — имплант уже в слоте':'ритуал начат';
+  theater={t0:performance.now(),replay:!!replay,idx:0,linked:false};
+  if(!replay)P29Sound.play('ritualStart');
+  requestAnimationFrame(theaterFrame);
  }
- function recStart(){
-  recStop();P29Sound.stop();model=new Core.Model();history.length=0;auto=false;
-  $('#autoRun').setAttribute('aria-pressed','false');
-  $('#endCity').checked=$('#netheriteChest').checked=true;window.P29.scene?.reset?.();
-  render();save();consume();cine=true;rec=1;recIdx=0;recT0=performance.now();
-  $('#recBar').hidden=false;$('#recPlay').setAttribute('aria-pressed','true');
-  $('#recCaption').textContent='ЗАПИСЬ · канонический прогон';$('#recProgress').style.width='0%';
-  requestAnimationFrame(recFrame);
+ const CUES=[{t:.2,b:'armor',l:0},{t:4.8,b:'void',l:1},{t:9.4,b:'syr',l:2},{t:14.0,b:'finale',l:3},{t:16.2,link:true}];
+ function theaterFrame(){
+  if(!theater)return;
+  const el=(performance.now()-theater.t0)/1000;
+  while(theater.idx<CUES.length&&el>=CUES[theater.idx].t){const c=CUES[theater.idx++];
+   if(c.b){stage.dataset.beat=c.b;typeLine(POEM[c.l]||'');}
+   if(c.link){
+    if(theater.replay){finishTheater();return;}
+    const ok=model.requestInstall();consume();
+    if(!ok){$('#ritualNote').textContent='условия ритуала изменились — связь сорвана';theater=null;return;}
+    theater.linked=true;$('#ritualNote').textContent='нейро-связь: 0 / 100 тиков';
+   }}
+  if(theater&&theater.linked){const s=model.state;
+   $('#ritualNote').textContent='нейро-связь: '+Math.min(100,s.cutsceneTicks)+' / 100 тиков · имплант на 99-м';
+   if(s.chest==='sandevistan'){finishTheater();return;}
+   if(el>34){theater=null;$('#ritualNote').textContent='сигнал нейро-связи потерян';return;}}
+  if(theater)requestAnimationFrame(theaterFrame);
  }
- function recFrame(){
-  if(!rec)return;
-  const el=(performance.now()-recT0)/1000;
-  while(recIdx<REC_CUES.length&&el>=REC_CUES[recIdx].t){
-   const c=REC_CUES[recIdx++];try{c.fn&&c.fn();}catch(err){}}
-  const c=REC_CUES[Math.max(0,recIdx-1)];
-  if(c&&c.cap)$('#recCaption').textContent=c.cap();
-  $('#recProgress').style.width=Math.min(100,el/REC_TOTAL*100)+'%';
-  $('#recTime').textContent=el.toFixed(1)+'с';
-  if(el<REC_TOTAL)requestAnimationFrame(recFrame);else recStop();
- }
- $('#recPlay').addEventListener('click',()=>{rec?recStop():recStart();});
- $('#resetStand').addEventListener('click',recStop);
- function syncMotion(){document.documentElement.classList.toggle('no-sandy-effects',!motion);$('#motionToggle').setAttribute('aria-pressed',String(motion));$('#motionToggle').textContent=motion?'ЭФФЕКТЫ ВКЛ':'БЕЗ ВСПЫШЕК';}
- $('#motionToggle').addEventListener('click',()=>{motion=!motion;syncMotion();});syncMotion();
+ function finishTheater(){theater=null;clearInterval(typeTimer);stage.dataset.beat='done';$('#poemLine span').textContent=POEM[3]||'';noteSticky=true;$('#ritualNote').textContent=model.state.chest==='sandevistan'?'имплант в слоте · проклятия наложены':'стих окончен';render();save();}
+ $('#installButton').addEventListener('click',()=>startTheater(false));
+ $('#ritualReplay').addEventListener('click',()=>startTheater(true));
+ /* ── аптека ─────────────────────────────────────────────────────── */
  const brewValid=()=>$('#potionSelect').value==='strong_regeneration'&&$('#bottleSelect').value==='potion';
- function renderBrew(){$('#brewButton').disabled=!brewValid();$('#brewStatus').textContent=brewValid()?'Обычная Регенерация II + Око Энда. Один ингредиент на партию.':'Этот набор не подходит исходному рецепту.';}
+ function renderBrew(){$('#brewButton').disabled=!brewValid();$('#brewStatus').textContent=brewValid()?'Обычная Регенерации II + Око Энда. Один ингредиент на партию.':'Этот набор не подходит исходному рецепту.';}
  $('#potionSelect').addEventListener('change',renderBrew);$('#bottleSelect').addEventListener('change',renderBrew);
- $('#brewButton').addEventListener('click',()=>{action(()=>model.brew({potion:$('#potionSelect').value,type:$('#bottleSelect').value,bottles:Number($('#brewBottles').value)}));$('#brewStatus').textContent='Партия готова. Дозы добавлены к запасу стенда.';});
+ $('#brewButton').addEventListener('click',()=>{if(action(()=>model.brew({potion:$('#potionSelect').value,type:$('#bottleSelect').value,bottles:Number($('#brewBottles').value)})))$('#brewStatus').textContent='Партия готова. Дозы добавлены к запасу стенда.';});
+ /* ── тумблеры ───────────────────────────────────────────────────── */
+ function syncMotion(){document.documentElement.classList.toggle('no-sandy-effects',!motion);$('#motionToggle').setAttribute('aria-pressed',String(motion));$('#motionToggle').textContent=motion?'~ АНИМАЦИЯ':'БЕЗ ЭФФЕКТОВ';}
+ $('#motionToggle').addEventListener('click',()=>{motion=!motion;syncMotion();});syncMotion();
+ const editable=e=>e.target.closest('input,select,textarea,[contenteditable]');
+ document.addEventListener('keydown',e=>{if(editable(e))return;if(window.P29SLOW?.hover)return;if(e.code==='KeyV'&&!e.repeat){e.preventDefault();action(()=>model.toggle());}});
+ /* ── рендер ─────────────────────────────────────────────────────── */
  function render(){const s=model.state,installed=s.chest==='sandevistan',active=s.accelerating,critical=s.psychosisActive;
   const phase=!s.alive?'SYSTEM FAILURE':critical?'CYBERPSYCHOSIS':s.inCutscene?'INSTALLING':active?'ACCELERATION ACTIVE':s.cooldown?'COOLDOWN':installed?'STANDBY':'AWAITING IMPLANT';
-  $('#systemState').textContent=phase;$('#subjectState').textContent=!s.alive?'DECEASED':critical?'CRITICAL':installed?'ONLINE':'PREPARED';$('#systemLight').classList.toggle('active',active);$('#arena').classList.toggle('active',active);$('#arena').classList.toggle('critical',critical);
-  $('#nativeHUD').hidden=!installed;$('#hudStatus').textContent='STATUS: '+(active?'ACTIVE':installed?'STANDBY':'OFFLINE');$('#hudStatus').style.color=active?'#73ff73':'#64d4d5';$('#hudTolerance').textContent='TOLERANCE: '+Math.round(s.tolerance*100)+'%';
-  $('#hudLoad').style.width=s.psychosis+'%';$('#hudLoad').style.background=s.psychosis>80?'#ff4359':s.psychosis>50?'#effa47':'#4ff689';$('#hudTimer').textContent=active?'TIME: '+((100-s.accelerationTicks)/20).toFixed(1)+'s':s.cooldown?'COOLDOWN: '+(s.cooldown/20).toFixed(1)+'s':installed?'READY — PRESS [V]':!s.alive?'SIGNAL LOST':'IMPLANT REQUIRED';
-  $('#trailCount').textContent='AFTERIMAGES: '+s.trail.length+' / 100';$('#targetReadout').textContent='МАНЕКЕН: '+Math.max(0,s.targetHP).toFixed(1)+' HP';
-  $('#ritualOverlay').hidden=!s.inCutscene;$('#ritualCountdown').textContent=(Math.max(0,100-s.cutsceneTicks)/20).toFixed(1);$('#ritualPhase').textContent=s.cutsceneTicks<40?'Подъём / синхронизация':s.cutsceneTicks<90?'Связь с имплантом':'Фиксация в слоте нагрудника';
-  $('#criticalOverlay').hidden=!critical;$('#criticalClock').textContent=!s.alive?'SUBJECT LOST':(s.psychosisTicks/20).toFixed(1)+' / 10.0s';
-  $('#activate').disabled=!s.alive||!installed||s.inCutscene||critical||!active&&(s.cooldown>0||s.psychosis>=100);$('#activate').classList.toggle('active',active);$('#activateText').textContent=!s.alive?'СИСТЕМА ПОТЕРЯНА':critical?'КРИТИЧЕСКАЯ ФАЗА':active?'ОТКЛЮЧИТЬ':s.cooldown?'ОТКАТ '+fmt(s.cooldown/20)+' С':installed?'УСКОРИТЬ':'НУЖЕН ИМПЛАНТ';
-  $('#installControls').hidden=installed||critical||!s.alive;$('#installButton').disabled=s.inCutscene||s.ritualReady||!s.inCity||s.chest!=='netherite'||s.doses<2;$('#endCity').disabled=$('#netheriteChest').disabled=s.inCutscene;
-  $('#chestState').textContent=installed?'Сандевистан':s.chest==='netherite'?'Незеритовый':s.chest==='empty'?'Пусто':'Другой предмет';const icon=installed?'sandevistan':'netherite_chestplate';const url='../../assets/textures/p29/i/'+icon+'.png';if($('#chestIcon').getAttribute('src')!==url)$('#chestIcon').src=url;$('#curseState').textContent=s.binding?'НЕСЪЁМНОСТЬ\nУТРАТА':'—';
-  $('#playerHP').textContent=fmt(Math.max(0,s.hp),1)+' / 20';$('#healthFill').style.width=(Math.max(0,s.hp)/20*100)+'%';$('#healthFill').style.background=critical?'#f85269':'#6ecb9c';
-  $('#doseCount').textContent=s.doses;$('#inject').disabled=!s.alive||!installed||active||s.doses<1||!!s.using&&s.using.kind!=='inject';$('#injectText').textContent=s.using?.kind==='inject'?'ОТМЕНИТЬ ИНЪЕКЦИЮ':'ВВЕСТИ ДОЗУ';$('#useProgress').style.width=s.using?((1-s.using.remaining/s.using.total)*100)+'%':'0%';
-  $('#useState').textContent=s.using?'Использование: '+fmt(s.using.remaining/20)+' с.':s.nausea?'Тошнота: '+fmt(s.nausea/20)+' с.':critical?'После запуска психоза новая доза не отменит критическую фазу.':'';
-  $('#foodDemo').disabled=!s.alive||s.inCutscene||!!s.using;$('#foodTime').textContent=active?'1 тик':'32 тика';$('#cooldownTime').textContent=fmt(s.cooldown/20)+' с';$('#toleranceValue').textContent=Math.round(s.tolerance*100)+'%';$('#queuedReduction').textContent=fmt(s.psychosisToReduce);$('#waitCooldown').disabled=!s.cooldown||active||critical||s.inCutscene;$('#restFiveMinutes').disabled=!s.alive||s.inCutscene;
-  $('#operatorStatus').textContent=P29Sound.state.errors.length?'Для звука нажмите кнопку «ЗВУК».':status||!s.alive&&'Субъект погиб. «Новый субъект» — отдельный прогон стенда.'||critical&&'Фаза необратима: магический урон, атака по окружающим и удаление импланта.'||active&&'Ускорение не останавливает часы мира. Нейральная нагрузка растёт.'||s.inCutscene&&'Установка занимает 100 тиков. Имплант появится на 99-м.'||s.cooldown&&'Откат идёт, психоз сам не уменьшается.'||installed&&'Система готова. Повторный V отключает ускорение раньше срока.'||'Подготовлены город Энда, незеритовый нагрудник и три дозы стенда.';
-  $('#neuralPercent').textContent=(Math.floor(s.psychosis*100)/100).toFixed(2)+'%';$('#neuralPercent').style.color=s.psychosis>=80?'#fc586e':s.psychosis>=50?'#eff34b':'#b9e55d';$('#loadWarning').textContent=critical?'CRITICAL ERROR':s.psychosis>=80?'NEURAL OVERLOAD IMMINENT':s.psychosis>=50?'CAUTION':'STABLE';
-  $('#attack').disabled=!s.alive||s.inCutscene;$('#autoRun').disabled=!s.alive||s.inCutscene;
+  $('#systemState').textContent=phase;$('#systemLight').classList.toggle('active',active);
+  const bigV=$('#psychoV');bigV.disabled=!s.alive||!installed||s.inCutscene||critical||!active&&(s.cooldown>0||s.psychosis>=100);bigV.classList.toggle('active',active);
+  bigV.querySelector('span').textContent=!s.alive?'СИСТЕМА ПОТЕРЯНА':critical?'КРИТИЧЕСКАЯ ФАЗА':active?'ОТКЛЮЧИТЬ':s.cooldown?'ОТКАТ '+fmt(s.cooldown/20)+' С':installed?'УСКОРИТЬ':'НУЖЕН ИМПЛАНТ';
+  $('#inject').disabled=!s.alive||!installed||active||s.doses<1||!!s.using&&s.using.kind!=='inject';
+  $('#injectText').textContent=s.using?.kind==='inject'?'ОТМЕНА · '+s.using.remaining+' т':s.using?'занято':'доза в кармане: '+s.doses;
+  $('#waitCooldown').disabled=!s.cooldown||active||critical||s.inCutscene;$('#restFiveMinutes').disabled=!s.alive||s.inCutscene;
+  $('#doseCount').textContent=s.doses;$('#toleranceValue').textContent='×'+fmt(s.tolerance,2);$('#queuedReduction').textContent=fmt(s.psychosisToReduce);
+  $('#cooldownTime').textContent=s.cooldown?fmt(s.cooldown/20)+' с':'готов';$('#playerHP').textContent=fmt(Math.max(0,s.hp))+' / 20';
+  $('#psychoPhase').textContent=!s.alive?'субъект потерян':critical?'идёт · '+fmt(s.psychosisTicks/20)+' с':'нет';
+  $('#neuralPercent').textContent=(Math.floor(s.psychosis*100)/100).toFixed(2)+'%';$('#neuralPercent').style.color=s.psychosis>=80?'#fc586e':s.psychosis>=50?'#eff34b':'#b9e55d';
+  $('#loadFill').style.width=s.psychosis+'%';$('#loadFill').style.background=s.psychosis>=80?'#f85269':s.psychosis>=50?'#effa47':'#6ecb9c';
+  $('#loadWarning').textContent=critical?'CRITICAL ERROR':s.psychosis>=80?'NEURAL OVERLOAD IMMINENT':s.psychosis>=50?'CAUTION':'STABLE';
+  const fig=$('#psychoFig');fig.classList.toggle('active',active);fig.classList.toggle('critical',critical);fig.classList.toggle('dead',!s.alive);
+  const op=Math.min(1,s.psychosis/100);fig.querySelector('.v1').style.opacity=op*.55;fig.querySelector('.v2').style.opacity=op*.8;fig.querySelector('.v3').style.opacity=op;
+  if(installed)implantShown=true;else if(!s.alive&&implantShown)implantShown=true;else if(!s.alive)implantShown=false;
+  const imp=$('#pfImplant');imp.classList.toggle('on',installed);imp.classList.toggle('lost',!installed&&implantShown&&!s.alive);
+  if(!implantShown&&!installed)imp.classList.remove('lost');
+  $('#psychoCaption').textContent=!s.alive?'субъект потерян · имплант удалён':critical?'критическая фаза: урон себе и вокруг':active?'нейроны разогнаны ×2 · нагрузка растёт':s.inCutscene?'нейро-связь устанавливается…':s.cooldown?'откат импланта':installed?'стабилен · V готов':'имплант не установлен';
+  const tags=[];tags.push(installed?'ONLINE':'NO IMPLANT');if(active)tags.push('ACTIVE');if(s.cooldown)tags.push('COOLDOWN '+s.cooldown+'т');if(s.nausea)tags.push('NAUSEA');if(critical)tags.push('CRITICAL');if(!s.alive)tags.push('LOST');
+  $('#psychoTags').innerHTML=tags.map(t=>'<i>'+esc(t)+'</i>').join('');
+  $('#criticalOverlay').hidden=!critical;$('#criticalClock').textContent=!s.alive?'SUBJECT LOST':fmt(s.psychosisTicks/20)+' / 10.0 с';
+  $('#installButton').disabled=!!theater||s.inCutscene;$('#installLabel').textContent=theater?'РИТУАЛ ИДЁТ…':installed?'ПОВТОРИТЬ РИТУАЛ':'НАЧАТЬ РИТУАЛ';
+  if(s.inCutscene){$('#ritualNote').textContent='нейро-связь: '+Math.min(100,s.cutsceneTicks)+' / 100 тиков · имплант на 99-м';noteSticky=false;}else if(!theater&&!noteSticky)$('#ritualNote').textContent=installed?'имплант в слоте · проклятия несъёмности и утраты':!s.alive?'нужен новый субъект':'нажми «начать ритуал» — дальше он сам';
+  $('#curseState').textContent=!s.alive?(implantShown?'ИМПЛАНТ УТРАЧЕН':'СУБЪЕКТ ПОТЕРЯН'):s.binding?'НЕСЪЁМНОСТЬ + УТРАТА':'без проклятий';
+  $('#plateCurse').classList.toggle('on',!!s.binding&&installed);
+  $('#psychoStatus').textContent=P29Sound.state.errors.length?'Для звука нажмите кнопку «ЗВУК» в разделе 01.':status||(!s.alive&&'Субъект погиб. Киберпсихоз забрал имплант — «НОВЫЙ СУБЪЕКТ» начнёт отдельный прогон.')||(critical&&'Фаза необратима: магический урон субъекту, атаки по округе и удаление импланта в конце.')||(active&&'Часы мира не останавливаются. Нагрузка +0.2 за тик разгона.')||(s.inCutscene&&'Установка: 100 тиков, имплант появляется на 99-м.')||(s.cooldown&&'Откат идёт; нагрузка сама не рассасывается, пока очередь препарата пуста.')||(installed&&'Система готова. Повторный V отключает ускорение раньше срока.')||lastLog||'Подготовлены город Энда и незеритовый нагрудник. Дозы варятся в аптеке ниже.';
  }
- const graph=$('#loadGraph'),g=graph.getContext('2d');let graphW=400,graphH=180;
- new ResizeObserver(()=>{graphW=graph.clientWidth;graphH=graph.clientHeight;const d=Math.min(devicePixelRatio||1,1.5);graph.width=Math.round(graphW*d);graph.height=Math.round(graphH*d);g.setTransform(d,0,0,d,0,0);drawGraph();}).observe(graph);
- function drawGraph(){g.clearRect(0,0,graphW,graphH);g.strokeStyle='#1e4045';g.lineWidth=1;for(const y of[20,50,80,100]){const h=graphH-y/100*graphH;g.beginPath();g.moveTo(0,h);g.lineTo(graphW,h);g.stroke();}if(history.length<2)return;g.strokeStyle=model.state.psychosis>=80?'#fb5570':'#b3e765';g.lineWidth=2;g.beginPath();history.forEach((p,i)=>{const x=i/159*graphW,y=graphH-p/100*graphH;i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();}
- // The page's isolated native armor model, including its source texture/bone turn.
+ /* ── журнал нагрузки ────────────────────────────────────────────── */
+ const graph=$('#loadGraph'),g=graph.getContext('2d');let graphW=400,graphH=120;
+ new ResizeObserver(()=>{graphW=graph.clientWidth||560;graphH=graph.clientHeight||120;const d=Math.min(devicePixelRatio||1,1.5);graph.width=Math.round(graphW*d);graph.height=Math.round(graphH*d);g.setTransform(d,0,0,d,0,0);drawGraph();}).observe(graph);
+ function drawGraph(){if(!g)return;g.clearRect(0,0,graphW,graphH);g.strokeStyle='#1e4045';g.lineWidth=1;for(const y of[20,50,80,100]){const h=graphH-y/100*graphH;g.beginPath();g.moveTo(0,h);g.lineTo(graphW,h);g.stroke();}if(history.length<2)return;g.strokeStyle=model.state.psychosis>=80?'#fb5570':'#b3e765';g.lineWidth=2;g.beginPath();history.forEach((p,i)=>{const x=i/159*graphW,y=graphH-p/100*graphH;i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();}
+ /* ── 3D-вьювер импланта: нативная модель брони из мода ──────────── */
  const cv=$('#implant3d');let implant=null,seen=true,drag=null;
  // The native model has sub-pixel box-UV dimensions. Sample zero-width UVs just
  // inside the intended texel to avoid GPU roundoff speckling; geometry is untouched.
- const displayGeo=structuredClone(ZM.P29G.geo);
- for(const bone of displayGeo.bones)for(const c of bone.cubes||[]){if(!Array.isArray(c.uv))continue;const[u,v]=c.uv,[w,h,d]=c.size.map(Math.floor);const rects={east:[u,v+d,u+d,v+d+h],north:[u+d,v+d,u+d+w,v+d+h],west:[u+d+w,v+d,u+2*d+w,v+d+h],south:[u+2*d+w,v+d,u+2*d+2*w,v+d+h],up:[u+d,v,u+d+w,v+d],down:[u+d+w,v+d,u+d+2*w,v]};c.uv={};for(const[name,a]of Object.entries(rects)){if(a[0]===a[2])a[0]=a[2]=a[0]+.0001;if(a[1]===a[3])a[1]=a[3]=a[1]+.0001;c.uv[name]={uv:[a[0],a[1]],uv_size:[a[2]-a[0],a[3]-a[1]]};}}
-
- if(window.ZMGeo?.supported())try{implant=ZMGeo.create(cv,{geo:displayGeo,anim:{},tex:'../../assets/textures/p29/sandevistan_armor.png',nearest:true,lit:.4,cam:{yaw:15,pitch:7,dist:16,target:[0,19.5,2],fov:40}});if(implant){$('#implantArt').classList.add('ready');new IntersectionObserver(e=>seen=e[0].isIntersecting).observe(cv);cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:implant.cam.yaw,pitch:implant.cam.pitch};cv.setPointerCapture(e.pointerId);});cv.addEventListener('pointermove',e=>{if(drag){implant.cam.yaw=drag.yaw+(e.clientX-drag.x)*.6;implant.cam.pitch=Math.max(-60,Math.min(60,drag.pitch+(e.clientY-drag.y)*.25));}});for(const event of['pointerup','pointercancel','lostpointercapture'])cv.addEventListener(event,()=>drag=null);cv.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();implant.cam.yaw+=e.key==='ArrowLeft'?-12:12;}});let last=0;(function frame(t){requestAnimationFrame(frame);if(seen&&!document.hidden&&t-last>50){last=t;implant.render();}})(0);}}catch(e){console.warn('Implant uses native item fallback',e.message);}
+ const displayGeo=(window.structuredClone||(o=>JSON.parse(JSON.stringify(o))))(ZM.P29G.geo);
+ for(const bone of displayGeo.bones)for(const c of bone.cubes||[]){if(!Array.isArray(c.uv))continue;const[u,v]=c.uv,[w,h,d]=c.size.map(Math.floor);const rects={east:[u,v+d,u+d,v+d+h],north:[u+d,v+d,u+d+w,v+d+h],west:[u+d+w,v,u+2*d+w,v+d+h],south:[u+2*d+w,v+d,u+2*d+2*w,v+d+h],up:[u+d,v,u+d+w,v+d],down:[u+d+w,v+d,u+d+2*w,v]};c.uv={};for(const[name,a]of Object.entries(rects)){if(a[0]===a[2])a[0]=a[2]=a[0]+.0001;if(a[1]===a[3])a[1]=a[3]=a[1]+.0001;c.uv[name]={uv:[a[0],a[1]],uv_size:[a[2]-a[0],a[3]-a[1]]};}}
+ if(window.ZMGeo?.supported())try{implant=ZMGeo.create(cv,{geo:displayGeo,anim:{},tex:'../../assets/textures/p29/sandevistan_armor.png',nearest:true,lit:.4,cam:{yaw:15,pitch:7,dist:16,target:[0,19.5,2],fov:40}});if(implant){$('#implantArt').classList.add('ready');new IntersectionObserver(e=>seen=e[0].isIntersecting).observe(cv);cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:implant.cam.yaw,pitch:implant.cam.pitch};cv.setPointerCapture(e.pointerId);});cv.addEventListener('pointermove',e=>{if(drag){implant.cam.yaw=drag.yaw+(e.clientX-drag.x)*.6;implant.cam.pitch=Math.max(-60,Math.min(60,drag.pitch+(e.clientY-drag.y)*.25));}});for(const event of['pointerup','pointercancel','lostpointercapture'])cv.addEventListener(event,()=>drag=null);let last=0;(function frame(t){requestAnimationFrame(frame);if(seen&&!document.hidden&&t-last>50){last=t;implant.render();}})(0);}}catch(e){console.warn('Implant uses native item fallback',e.message);}
  window.P29={get model(){return model;},get motion(){return motion;},get history(){return history;},render,consume,save,scene:null};
+ /* ── главный цикл: 20 тиков в секунду, как в моде ───────────────── */
  renderBrew();render();save();let last=performance.now(),accum=0;
- setInterval(()=>{const now=performance.now(),dt=Math.min(250,now-last);last=now;if(document.hidden){accum=0;clearInputs();return;}accum+=dt;const n=Math.floor(accum/50);if(!n)return;accum-=n*50;
-  for(let i=0;i<n;i++){if(auto||cine)model.movement(Math.cos(model.state.t*.025),Math.sin(model.state.t*.025));else if(steerVec)model.movement(steerVec.x,steerVec.y);else model.movement((inputs.has('right')?1:0)-(inputs.has('left')?1:0),(inputs.has('down')?1:0)-(inputs.has('up')?1:0));model.tick();if(model.state.t%10===0){history.push(model.state.psychosis);if(history.length>160)history.shift();}}
+ setInterval(()=>{const now=performance.now(),dt=Math.min(250,now-last);last=now;if(document.hidden){accum=0;return;}
+  accum+=dt;const n=Math.floor(accum/50);if(!n)return;accum-=n*50;
+  for(let i=0;i<n;i++){model.movement(0,0);model.tick();if(model.state.t%10===0){history.push(model.state.psychosis);if(history.length>160)history.shift();}}
   consume();render();drawGraph();if(now-lastSave>1000)save();
  },25);addEventListener('pagehide',save);
 })();
