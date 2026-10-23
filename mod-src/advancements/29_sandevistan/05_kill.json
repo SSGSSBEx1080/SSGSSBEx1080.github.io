@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:iron_sword"
+    },
+    "title": {
+      "text": "ULTRAKILL",
+      "color": "red",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "Скоростной киберубийца найтраннер.",
+      "color": "dark_red",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "zitraksmode:29_sandevistan/04_injected",
+  "criteria": {
+    "kill": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

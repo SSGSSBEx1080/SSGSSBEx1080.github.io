@@ -1,0 +1,37 @@
+{
+  "display": {
+    "icon": {
+      "item": "zitraksmode:immunosuppressant"
+    },
+    "title": {
+      "text": "Иммуносупрессант",
+      "color": "dark_aqua",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "Чёрной, как нигер, брони полный сет,\nНа ёбаной лодке, что парит в пустоте.\nВ каждую руку по шприцу возьми,\nИ член мой шлюха отсоси!",
+      "color": "aqua",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "zitraksmode:root",
+  "criteria": {
+    "has_immunosuppressant": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "zitraksmode:immunosuppressant"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

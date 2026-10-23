@@ -34,7 +34,7 @@ ZM.POINTS = [
   { n: 26, title: "Пылесос",               date: "07.08.2026", confirmed: true,  page: "pages/26-vacuum/index.html", icon: "assets/textures/p26/vacuum_icon.png", tone: "#a5efd8" },
   { n: 27, title: "Антон Чигур",          date: "15.08.2026", confirmed: true, page: "pages/27-chigur/index.html", icon: "assets/textures/p27/anton_portrait.png", tone: "#e5bc79" },
   { n: 28, title: "Медуза",                date: "17.08.2026", confirmed: true,  page: "pages/28-medusa/index.html", icon: "assets/textures/p28/medusa.png", tone: "#7dff9a" },
-  { n: 29, title: "Секретный пункт",       date: "05.09.2026", confirmed: true, page: null, tone: "#aa00aa" },
+  { n: 29, title: "Сандевистан",           date: "05.09.2026", confirmed: true, page: "pages/29-sandevistan/index.html", icon: "assets/textures/p29/sandevistan.png", tone: "#eef638" },
 ];
 ZM.GUEST_POINTS = [
   { title: "Колбаса ГОСТ «Докторская»", from: "от бабушки Вали" },

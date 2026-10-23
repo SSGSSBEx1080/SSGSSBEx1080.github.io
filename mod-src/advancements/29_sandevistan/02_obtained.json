@@ -1,0 +1,41 @@
+{
+  "display": {
+    "icon": {
+      "item": "zitraksmode:sandevistan"
+    },
+    "title": {
+      "text": "Cyberpunk: Edgerunners",
+      "color": "yellow",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "Вы установили киберимплант Сандевистан. Скорость твоя фишка - так не останавливайся.",
+      "color": "gold",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "zitraksmode:29_sandevistan/01_brewed",
+  "criteria": {
+    "obtained_sandevistan": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "zitraksmode:sandevistan"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "function": "zitraksmode:29_sandevistan/02_obtained",
+    "experience": 100
+  }
+}

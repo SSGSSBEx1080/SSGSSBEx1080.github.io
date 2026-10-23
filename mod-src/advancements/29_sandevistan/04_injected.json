@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "zitraksmode:immunosuppressant"
+    },
+    "title": {
+      "text": "Зелёнка по венам",
+      "color": "dark_aqua",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "Используйте иммуносупрессант для снижения киберпсихоза. Учтите, с каждым разом он действует слабее на 5%, пока вы не дадите импланту отдохнуть.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "zitraksmode:29_sandevistan/03_activated",
+  "criteria": {
+    "injected": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

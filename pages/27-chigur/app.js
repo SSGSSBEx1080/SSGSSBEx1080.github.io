@@ -73,7 +73,7 @@
   }
   function coinChoice(){
     title('Игра','в монету','Назови сторону. Один раз на этого Чигура.');$('#coinOverlay').hidden=false;$('#coinDisc').className='coin-disc';$('#coinCaption').textContent='50 / 50';
-    show('coinChoice','Орёл или решка?',[['heads','<img src="../../assets/textures/p27/coin_face.png" alt="">Орёл'],['tails','<img src="../../assets/textures/p27/coin_back.png" alt="">Решка']],'Честные 50/50. Никакой гарантированной победы после нескольких проигрышей.');
+    show('coinChoice','Орёл или решка?',[['heads','<img src="../../assets/textures/p27/coin_model_heads.png?v=items4" alt="">Орёл'],['tails','<img src="../../assets/textures/p27/coin_model_tails.png?v=items4" alt="">Решка']],'Честные 50/50. Никакой гарантированной победы после нескольких проигрышей.');
   }
   function toss(heads){
     if(s.phase!=='coinChoice'||s.coinUsed)return;

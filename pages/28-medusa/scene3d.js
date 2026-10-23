@@ -30,13 +30,18 @@ try{
  const labelLayer=document.createElement('div');labelLayer.className='world-labels';host.append(labelLayer);const rigs=new Map();
  function rig(e){const root=new THREE.Group(),material=skinMats[e.kind]||skinMats.mob,parts=[],groups={};
   const villager=e.kind==='villager';
-  parts.push(box(root,[-4,12,-2],[8,12,4],villager?[16,20]:[16,16],material));
-  parts.push(box(root,[-4,24,-4],[8,villager?10:8,8],[0,0],material));
-  if(e.kind==='villager'||e.kind==='zombieVillager')parts.push(box(root,[-1,24,-6],[2,4,2],[24,0],material));
+  const npc=e.kind!=='player',tallHead=e.kind==='villager'||e.kind==='zombieVillager';
+  const torso=box(root,[-4,12,-2],[8,12,4],villager?[16,20]:[16,16],material);parts.push(torso);
+  // NPC arms point along +Z in this stand's Y-up rig. Rotate the complete
+  // head (nose included), not its image/UV, by PI to match that direction.
+  const head=new THREE.Group();head.position.set(0,24/16,0);head.rotation.y=npc?Math.PI:0;root.add(head);groups.head=head;
+  parts.push(box(head,[-4,0,-4],[8,tallHead?10:8,8],[0,0],material));
+  if(tallHead)parts.push(box(head,[-1,0,-6],[2,4,2],[24,0],material));
+  if(npc)torso.rotation.y=Math.PI;
   for(const [name,x,uv]of[['rightArm',-6,[40,16]],['leftArm',6,e.kind==='player'?[32,48]:[40,16]],['rightLeg',-2,[0,16]],['leftLeg',2,e.kind==='player'?[16,48]:[0,16]]]){
    const g=new THREE.Group(),arm=name.includes('Arm');g.position.set(x/16,(arm?23:12)/16,0);root.add(g);parts.push(box(g,[-2,-(arm?11:12),-2],[4,12,4],uv,material));groups[name]=g;
   }
-  root.scale.setScalar(e.kind==='villager'?e.height/(34/16):e.height/2);root.rotation.y=.17;root.position.set(e.x,e.y,e.z);root.userData.id=e.id;scene.add(root);
+  root.scale.setScalar((e.kind==='villager'||e.kind==='zombieVillager')?e.height/(34/16):e.height/2);root.rotation.y=.17;root.position.set(e.x,e.y,e.z);root.userData.id=e.id;scene.add(root);
   parts.forEach(p=>p.userData.id=e.id);const shadow=pad.clone();shadow.position.set(e.x,.013,e.z);scene.add(shadow);
   const tag=document.createElement('button');tag.type='button';tag.className='world-label';tag.dataset.actor=e.id;tag.textContent=e.name;tag.addEventListener('click',()=>P28.select(e.id));labelLayer.append(tag);
   return{root,groups,parts,material,shadow,tag,kind:e.kind,stone:false};
@@ -79,6 +84,6 @@ try{
   for(let i=motes.length-1;i>=0;i--){const p=motes[i];p.life-=dt;const a=p.object.geometry.attributes.position;for(let k=0;k<a.count;k++)a.setY(k,a.getY(k)+dt*.45);a.needsUpdate=true;if(p.life<=0){scene.remove(p.object);p.object.geometry.dispose();motes.splice(i,1);}}
   renderer.render(scene,camera);
  }
- host.dataset.renderer='three';document.querySelector('#cameraReset').hidden=false;document.querySelector('#worldCaption').textContent='Оригинальная текстура сферы · перетащи для обзора';P28.scene={resetCamera,reset:()=>{resetCamera();},reward:key=>particles(key.startsWith('05')?72:key.startsWith('03')?48:24),event:()=>{},get stats(){return{sphereSegments:[48,32],nativeAlpha:170,nativeColor:[125,238,190],actors:rigs.size,waves:waves.size};}};
+ host.dataset.renderer='three';document.querySelector('#cameraReset').hidden=false;document.querySelector('#worldCaption').textContent='Оригинальная текстура сферы · перетащи для обзора';P28.scene={resetCamera,reset:()=>{resetCamera();},reward:key=>particles(key.startsWith('05')?72:key.startsWith('03')?48:24),event:()=>{},get stats(){return{sphereSegments:[48,32],nativeAlpha:170,nativeColor:[125,238,190],actors:rigs.size,waves:waves.size,heads:Object.fromEntries([...rigs].map(([id,r])=>[id,r.groups.head.rotation.y]))};}};
  requestAnimationFrame(frameLoop);
 }catch(error){host.dataset.renderer='fallback';console.warn('Medusa uses its playable 2D cross-section:',error.message);}
