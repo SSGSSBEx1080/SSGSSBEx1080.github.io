@@ -1,0 +1,24 @@
+/* Г-Б · Мистер Б — Докторская колбаса. Красный «гастрономический» тон. */
+.panel-title{font:700 13px var(--f-head);letter-spacing:.04em;color:#eef5f8;margin-bottom:12px}
+.eat-demo{display:flex;flex-direction:column;gap:16px}
+.eat-bars .eat-label{display:flex;justify-content:space-between;font:10px var(--f-mono);letter-spacing:.16em;color:var(--g-faint);margin-bottom:8px}
+.eat-bars .eat-label b{color:#ffd76e;font-weight:400}
+.hunger-bar{display:flex;gap:3px}
+.hunger-bar img{width:22px;height:22px;image-rendering:pixelated}
+.hunger-bar img.half{filter:brightness(.55)}
+.eat-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.inv-strip{display:flex;gap:8px;margin-top:16px}
+.prof-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.prof-grid button{border:1px solid var(--g-line);background:#0b1119;color:var(--g-dim);padding:8px 11px;font-size:12px}
+.prof-grid button:hover{border-color:var(--tone);color:var(--g-txt)}
+.prof-grid button.on{background:color-mix(in srgb,var(--tone) 16%,#0b1119);border-color:var(--tone);color:#fff}
+.prof-grid button.no-trade{opacity:.55;text-decoration:line-through 1px}
+.trade-deal{display:grid;gap:14px;border:1px solid var(--g-line);background:#0b1119;padding:16px}
+.deal-offer{display:flex;gap:14px;align-items:center;justify-content:center;padding:8px 0}
+.deal-info{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:9px var(--f-mono);letter-spacing:.1em;color:var(--g-faint)}
+.deal-info b{color:var(--tone);font-weight:400}
+.trade-deal.refused .deal-offer{opacity:.35;filter:grayscale(.8)}
+.trade-deal.refused .deal-info{opacity:.5}
+.g-log.receipt{font-size:12px}
+.g-log.receipt div::before{content:'· ';color:var(--tone)}
+@media(pointer:coarse){.prof-grid button,.g-btn{min-height:44px}}

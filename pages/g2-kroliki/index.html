@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ru" data-root="../../"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#171008">
+<title>Гость К · Размножение кроликов — ZitraksMode Wiki</title>
+<meta name="description" content="Гостевой пункт Мистера К: размножение кроликов в ZitraksMode. Поза «паровозик» на 3 секунды, тряска заднего кролика, отлёт ровно на 2 блока и оглушение вверх ногами на 5–10 секунд.">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g2-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g2-64.png">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/guest.css"><link rel="stylesheet" href="style.css?v=g2-1">
+</head><body class="guest-body">
+<main class="guest-main">
+
+  <section class="g-hero" style="--tone:#ffa03a;--tone-ink:#2a1a05;--tone-dim:#8f6a37;--tone2:#ffa03a24" aria-labelledby="title">
+    <div class="g-hero-strip"><span>ZITRAKSMODE · ГОСТЕВОЙ ДОСТУП</span><span>ФОРМА <b>G-К/2</b></span><span>СТАТУС: <b>ДОПУЩЕН</b></span><span>ВНЕ ОСНОВНОЙ ЛИНЕЙКИ</span></div>
+    <div class="g-hero-main">
+      <div class="g-letter" aria-hidden="true">К<small>МИСТЕР К</small></div>
+      <div>
+        <span class="g-kicker">ГОСТЕВОЙ ПУНКТ 2 / 4 <em>· ПОВЕДЕНИЕ МИРА</em></span>
+        <h1 class="g-title" id="title">Размножение кроликов</h1>
+        <p class="g-sub">Две морковки — и кролики встают «паровозиком»: три секунды тряски, затем задний отлетает ровно на два блока и лежит вверх ногами до десяти секунд. Гостевой пункт от Мистера К.</p>
+        <div class="g-metrics">
+          <span><b>3 с</b><small>ПОЗА «ПАРОВОЗИК» — 60 ТИКОВ</small></span>
+          <span><b>2 бл.</b><small>ОТЛЁТ ЗАДНЕГО КРОЛИКА</small></span>
+          <span><b>5–10 с</b><small>ОГЛУШЕНИЕ ВВЕРХ НОГАМИ</small></span>
+          <span><b>0.45</b><small>БЛОКА МЕЖДУ ПАРОЙ</small></span>
+        </div>
+      </div>
+      <figure class="g-art">
+        <img src="../../assets/textures/guest/rabbit.png" alt="Пиксельный кролик — иконка гостевого пункта" width="256" height="256" style="image-rendering:pixelated">
+        <figcaption>КРОЛИК · ИКОНКА ГОСТЕВОЙ ВЕТКИ</figcaption>
+      </figure>
+      <span class="g-stamp" aria-hidden="true">ГОСТЕВОЙ ПУНКТ</span>
+    </div>
+    <div class="g-sign"><span>с уважением, <span class="g-hand">Мистер <i>К</i></span></span><span class="g-barcode" aria-hidden="true"></span><span style="font:9px var(--f-mono);color:var(--g-faint)">ПОДПИСЬ ГОСТЯ</span></div>
+  </section>
+
+  <nav class="g-chapters" aria-label="Разделы гостевого пункта">
+    <a href="#sim"><small>01</small> Полевой стенд</a>
+    <a href="#numbers"><small>02</small> Точная механика</a>
+    <a href="#fine"><small>03</small> За кадром</a>
+  </nav>
+
+  <section class="g-section" id="sim" aria-labelledby="simTitle">
+    <header class="g-head"><span class="g-eyebrow">01 / ПОЛЕВОЙ СТЕНД</span>
+      <h2 id="simTitle">Накорми <em>обоих</em></h2>
+      <p>Стенд повторяет порядок тиков исходника: поза начинается на следующий тик после того, как оба кролика в любви, — не тогда, когда ваниль выдаст детёныша.</p></header>
+    <div class="g-panel">
+      <div class="sim-wrap">
+        <div class="sim-hud">
+          <span>ФАЗА: <b id="simPhase">ОЖИДАНИЕ</b></span>
+          <span>ДИСТАНЦИЯ: <b id="simDist">—</b></span>
+          <span>ТИК: <b id="simTick">0</b></span>
+          <span>ОГЛУШЕНИЕ: <b id="simStun">—</b></span>
+        </div>
+        <canvas id="simCanvas" aria-label="Стенд размножения кроликов: два кролика, морковки и отлёт заднего"></canvas>
+        <div class="sim-controls">
+          <button type="button" class="g-btn" id="feedA"><img src="../../assets/textures/p26/v/carrot.png" alt=""> МОРКОВКА КРОЛИКУ А</button>
+          <button type="button" class="g-btn" id="feedB"><img src="../../assets/textures/p26/v/carrot.png" alt=""> МОРКОВКА КРОЛИКУ Б</button>
+          <button type="button" class="g-btn ghost small" id="simReset">НОВЫЙ ПРОГОН ↺</button>
+        </div>
+      </div>
+      <div class="g-log" id="simLog" role="status" aria-live="polite" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <section class="g-section" id="numbers" aria-labelledby="numTitle">
+    <header class="g-head"><span class="g-eyebrow">02 / ТОЧНАЯ МЕХАНИКА</span>
+      <h2 id="numTitle">Числа из <em>исходника</em></h2></header>
+    <div class="g-cols">
+      <div class="g-kv">
+        <div><dt>СТАРТ ПОСЛЕДОВАТЕЛЬНОСТИ</dt><dd>Тик, когда <b>оба</b> кролика в любви — не BabyEntitySpawnEvent</dd></div>
+        <div><dt>ПОИСК ПАРТНЁРА</dt><dd>Ближайший в любви в радиусе <b>3 блоков</b></dd></div>
+        <div><dt>ПОЗА «ПАРОВОЗИК»</dt><dd>А спереди, Б в <b>0.45 блока</b> сзади; оба смотрят в одну сторону</dd></div>
+        <div><dt>ТРЯСКА</dt><dd>Задний кролик, <b>±0.06 блока</b>, знак меняется каждый тик</dd></div>
+        <div><dt>ДЛИТЕЛЬНОСТЬ ПОЗЫ</dt><dd><b>60 тиков</b> (3 секунды)</dd></div>
+        <div><dt>ОТЛЁТ</dt><dd>Ровно <b>2.0 блока</b> назад от исходной позиции заднего</dd></div>
+        <div><dt>ОГЛУШЕНИЕ</dt><dd><b>100–200 тиков</b> (5–10 с), вверх ногами, ИИ выключен</dd></div>
+        <div><dt>ПОСЛЕ ОГЛУШЕНИЯ</dt><dd>Возврат исходного XRot и прежнего состояния NoAi</dd></div>
+      </div>
+      <div class="g-panel">
+        <h3 class="panel-title">ТАЙМЛАЙН ОДНОГО ПРОГОНА</h3>
+        <div class="tl-strip" aria-hidden="true">
+          <div class="tl-step"><b>T+0</b><span>обе морковки съедены</span></div>
+          <div class="tl-step"><b>T+1</b><span>тик старта: телепорт в позу</span></div>
+          <div class="tl-step"><b>T+1…61</b><span>паровозик и тряска</span></div>
+          <div class="tl-step"><b>T+61</b><span>отлёт на 2 блока, XRot 180°</span></div>
+          <div class="tl-step"><b>T+61…</b><span>оглушение 5–10 с</span></div>
+          <div class="tl-step tl-last"><b>ПОТОМ</b><span>кролик встаёт и живёт дальше</span></div>
+        </div>
+        <p class="g-note" style="margin-top:14px">Детёныш появляется <b>по ванильной логике</b>: ИИ размножения во время позы не отключался.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="g-section" id="fine" aria-labelledby="fineTitle">
+    <header class="g-head"><span class="g-eyebrow">03 / ЗА КАДРОМ</span>
+      <h2 id="fineTitle">Заметки <em>гостя</em></h2></header>
+    <div class="g-panel">
+      <div class="g-facts">
+        <details open><summary>Почему поза видна сразу</summary><p>Ваниль запускает размножение с задержкой, и событие появления детёныша приходит позже. Последовательность стартует по флагу «в любви» у обоих — паровозик виден все три секунды, а не последние кадры.</p></details>
+        <details><summary>Кто создаёт сцену</summary><p>Оба кролика получают LivingTick-событие, но последовательность создаёт только одно из них: сравнение UUID отбрасывает второе, чтобы сцена не задвоилась.</p></details>
+        <details><summary>Отлёт — телепорт, не импульс</summary><p>Задний кролик не получает скорость: его координаты устанавливаются ровно на 2 блока позади исходной точки, скорость обнуляется, навигация останавливается. ИИ выключается только на время оглушения.</p></details>
+        <details><summary>Как рендер узнаёт про «вверх ногами»</summary><p>XRot = 180° синхронизируется обычными пакетами поворота; для рендера есть публичная проверка isUpsideDown по отклонению питча от 180°.</p></details>
+        <details><summary>Направление паровозика</summary><p>Вектор берётся от Б к А; если кролики стоят в одной точке, направление выбирается случайно. Обаyaw выставляются по этому вектору — А всегда спиной к Б.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <footer class="g-foot" id="finale">
+    <span class="g-fbrand">ZITRAKSMODE · ГОСТЕВАЯ ВЕТКА · ФОРМА G-К/2</span>
+    <div class="g-fcopy">
+      <h3>Размножение кроликов</h3>
+      <p>Гостевой пункт №2 из 4. Все дистанции, тики и фазы — из RabbitRecoilHandler исходников мода; стенд показывает правила, а не игровую сессию.</p>
+    </div>
+    <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
+  </footer>
+</main>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests1"></script><script src="app.js?v=g2-1"></script>
+</body></html>

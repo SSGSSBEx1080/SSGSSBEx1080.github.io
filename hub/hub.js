@@ -408,7 +408,14 @@
   $("#twRows").addEventListener("click", (e) => { const a = e.target.closest("a"); if (!a || e.ctrlKey || e.metaKey) return; const n = +a.dataset.n; if (!n) return; e.preventDefault(); setTab(n); $("#tw").scrollIntoView({ behavior: "smooth", block: "center" }); });
 
   /* ================= гости, история ================= */
-  $("#guests").innerHTML = ZM.GUEST_POINTS.map((g) => `<div>${g.page ? `<a href="${U(g.page)}">${esc(g.title)}</a>` : esc(g.title)}<small>${esc(g.from)}</small></div>`).join("");
+  const GICON = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/guest/rabbit.png", "П": "assets/textures/guest/nina_knife.png" };
+  $("#guests").innerHTML = ZM.GUEST_POINTS.map((g, i) => `
+    <${g.page ? "a" : "div"} class="gcard${g.soon ? " soon" : ""}"${g.page ? ` href="${U(g.page)}"` : ' aria-disabled="true"'} style="--gtone:${g.tone || "#8b8b95"}">
+      <span class="gc-letter" aria-hidden="true">${esc(g.letter || "?")}<small>G-${i + 1}/${ZM.GUEST_POINTS.length}</small></span>
+      <span class="gc-body"><b>${esc(g.title)}</b><small>${esc(g.from)}</small></span>
+      ${GICON[g.letter] ? `<img class="gc-icon" src="${U(GICON[g.letter])}" alt="" width="48" height="48">` : ""}
+      ${g.soon ? `<span class="gc-soon" aria-hidden="true">НЕТ СИГНАЛА</span>` : ""}
+    </${g.page ? "a" : "div"}>`).join("");
   const H = (ZM.HISTORY || []).slice().reverse(); let all = false;
   const tl = () => {
     $("#tl").innerHTML = (all ? H : H.slice(0, 8)).map((h) => { const p = ZM.POINTS.find((x) => x.page && x.date === h.date);

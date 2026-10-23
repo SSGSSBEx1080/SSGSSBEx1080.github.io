@@ -1,0 +1,110 @@
+/* Г-П · Мистер П — Соль, нож и редиска. Кухонный «свекольно-стальной» тон. */
+.panel-title{font:700 13px var(--f-head);letter-spacing:.04em;color:#eef5f8;margin-bottom:12px}
+.g-sub .g-chip{display:inline-block;margin-top:4px}
+
+/* ---- крафт ---- */
+.craft-row{display:flex;gap:16px;align-items:center;justify-content:center;padding:14px;border:1px solid var(--g-line);background:#0b1119}
+.craft-grid{display:grid;gap:5px}
+.craft-grid .g-islot{width:48px;height:48px}
+.craft-grid .g-islot img{width:34px;height:34px}
+.craft-result{display:flex;flex-direction:column;gap:8px;align-items:center}
+.craft-result .g-islot{width:58px;height:58px;border-color:var(--tone)}
+.craft-result .g-islot img{width:42px;height:42px}
+.craft-label{font:8px var(--f-mono);letter-spacing:.14em;color:var(--g-faint);text-align:center}
+
+/* ---- нож: статы и подсказки ---- */
+.knife-cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,28px)}
+.actions-list{display:grid;gap:8px}
+.actions-list li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;list-style:none;
+  border:1px solid var(--g-line);background:#0b1119;padding:8px 10px;font-size:12.5px;color:var(--g-dim)}
+.actions-list img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}
+.actions-list b{color:var(--g-txt);font-weight:600}
+
+/* ---- нож: демо удара ---- */
+.stab-wrap{display:grid;gap:14px}
+.stab-arena{position:relative;height:280px;border:1px solid var(--g-line);background:
+  radial-gradient(circle at 50% 42%,#132029 0,#0a0f15 70%),#0a0f15;overflow:hidden}
+.stab-zone{position:absolute;left:50%;top:42%;width:230px;height:230px;transform:translate(-50%,-50%);border-radius:50%;
+  background:conic-gradient(from 120deg,#39506280 0 120deg,#ffb02ecc 120deg 240deg,#e0576b 240deg 360deg);
+  opacity:.24;transition:transform .15s linear}
+.stab-zone::after{content:'';position:absolute;inset:38%;border-radius:50%;background:#0a0f15;border:1px dashed #2e4356}
+.stab-dummy{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;
+  filter:drop-shadow(0 3px 5px #000b)}
+.stab-dummy .d-head{position:relative;width:22px;height:20px;background:#93a7ba;border:1px solid #0000008c;box-shadow:inset 0 -4px 0 #7b8fa2}
+.stab-dummy .d-head::before,.stab-dummy .d-head::after{content:'';position:absolute;top:8px;width:4px;height:4px;background:#232e3a}
+.stab-dummy .d-head::before{left:4px}.stab-dummy .d-head::after{right:4px}
+.stab-dummy .d-torso{display:flex;gap:2px}
+.stab-dummy .d-arm{width:7px;height:32px;background:#6b7f92;border:1px solid #0000008c}
+.stab-dummy .d-body{width:26px;height:32px;background:#7b8fa2;border:1px solid #0000008c;box-shadow:inset 0 0 0 2px #6b7f92}
+.stab-dummy .d-legs{display:flex;gap:3px}
+.stab-dummy .d-legs i{width:11px;height:22px;background:#5b6f82;border:1px solid #0000008c}
+.stab-facing{position:absolute;left:50%;top:42%;width:4px;height:118px;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(var(--face,0deg));
+  background:linear-gradient(180deg,#c9d6de,#0000);border-radius:2px}
+.stab-facing::after{content:'';position:absolute;top:-8px;left:-5px;border:7px solid #0000;border-top-color:#c9d6de}
+.stab-attacker{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px}
+.stab-attacker img{width:44px;height:44px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 10px #e0576b66)}
+.stab-attacker small{font:8px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)}
+.stab-readout{position:absolute;left:12px;top:12px;display:grid;gap:4px;font:10px var(--f-mono);color:var(--g-faint)}
+.stab-readout b{color:var(--g-txt);font-weight:400}
+.stab-mult{position:absolute;right:12px;top:12px;font:700 26px var(--f-head);color:#e0576b;text-shadow:0 2px 0 #000}
+.stab-mult.side{color:#ffb02e}.stab-mult.front{color:#8ba0b4}
+.stab-hint{position:absolute;left:12px;bottom:10px;right:12px;font:9px/1.7 var(--f-mono);color:var(--g-faint)}
+.dmg-float{position:absolute;left:50%;top:36%;transform:translateX(-50%);font:700 30px var(--f-head);color:#fff;
+  text-shadow:0 2px 0 #000,0 0 14px #e0576b;animation:dmg-up .9s ease-out forwards;pointer-events:none}
+@keyframes dmg-up{from{opacity:1;translate:0 0}to{opacity:0;translate:0 -64px}}
+.stab-controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.stab-controls label{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px;font:9px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)}
+.stab-controls input[type=range]{accent-color:var(--tone)}
+.no-knock{display:flex;gap:10px;align-items:center;border:1px dashed var(--g-line2);padding:10px 12px;font-size:12px;color:var(--g-dim)}
+.no-knock b{color:var(--g-warn)}
+
+/* ---- бык ---- */
+.bull-demo{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.bull-stage{width:150px;height:150px;display:grid;place-items:center;background:#0b1119;border:1px solid var(--g-line)}
+.bull-stage img{width:118px;height:118px;object-fit:contain;image-rendering:pixelated}
+.bull-out{display:flex;gap:8px;flex-wrap:wrap;min-height:46px;align-items:center}
+.bull-out .g-islot{width:40px;height:40px}
+.bull-out .g-islot img{width:28px;height:28px}
+
+/* ---- солевой фитиль ---- */
+.fuse-wrap{display:flex;flex-direction:column;gap:12px}
+.fuse-grid{display:grid;gap:2px;background:#070c11;border:1px solid var(--g-line);padding:8px;touch-action:none}
+.fuse-grid button{position:relative;aspect-ratio:1;background:
+  linear-gradient(#182b1c,#132317);border:1px solid #ffffff0d;cursor:pointer;padding:0}
+.fuse-grid button:hover{border-color:#ffffff2e}
+.fuse-grid button.salt{background:#10161d}
+.fuse-grid button.salt>i{position:absolute;inset:14%;background-size:contain;background-repeat:no-repeat;background-position:center;image-rendering:pixelated}
+.fuse-grid button.salt>i.w{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_dot_white.png')}
+.fuse-grid button.salt>i.h{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_white.png')}
+.fuse-grid button.salt>i.v{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_white.png');transform:rotate(90deg)}
+.fuse-grid button.lit{background:#2b1d10}
+.fuse-grid button.lit>i{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_dot_lit.png')}
+.fuse-grid button.lit>i.h{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_lit.png')}
+.fuse-grid button.lit>i.v{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_lit.png');transform:rotate(90deg)}
+.fuse-grid button.torch{background:#1d1410;cursor:default}
+.fuse-grid button.torch>i{position:absolute;inset:16%;background:url('../../assets/textures/mc/p2/block_redstone_torch.png') center/contain no-repeat;image-rendering:pixelated}
+.fuse-hud{display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center;font:9px var(--f-mono);letter-spacing:.12em;color:var(--g-faint)}
+.fuse-hud b{color:var(--tone);font-weight:400}
+.fuse-hud .sig{color:#ffd76e}
+
+/* ---- редиска ---- */
+.farm-plots{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.plot{position:relative;aspect-ratio:1;background:linear-gradient(#3a2a1a,#2c1f13);border:1px solid #513a24;display:grid;place-items:center;cursor:pointer;padding:0}
+.plot img{width:72%;height:72%;object-fit:contain;image-rendering:pixelated}
+.plot.ready{border-color:#e0576b;box-shadow:0 0 0 1px #e0576b inset}
+.plot::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,#0000 0 6px,#00000022 6px 7px)}
+.farm-inventory{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.cook-bar{height:8px;background:#0b1119;border:1px solid var(--g-line);position:relative;flex:1;min-width:130px}
+.cook-bar i{position:absolute;inset:1px;width:0;background:#ffb02e}
+
+/* ---- борщ и разблокировка ---- */
+.unlock-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.unlock-card{border:1px solid var(--g-line);background:#0b1119;padding:14px}
+.unlock-card h4{font:700 12px var(--f-head);color:#eef5f8;margin-bottom:10px}
+.unlock-card label{display:flex;gap:9px;align-items:center;font-size:12.5px;color:var(--g-dim);padding:5px 0;cursor:pointer}
+.unlock-card input{accent-color:var(--tone)}
+.unlock-state{margin-top:10px;font:700 11px var(--f-mono);letter-spacing:.12em;padding:8px 10px;border:1px dashed var(--g-line2);color:var(--g-faint)}
+.unlock-state.ok{border-color:#9fe08a;color:#9fe08a}
+@media(max-width:940px){.knife-cols{grid-template-columns:1fr}.bull-demo{grid-template-columns:1fr;justify-items:center}.unlock-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.farm-plots{grid-template-columns:repeat(3,1fr)}.stab-arena{height:250px}.stab-zone{width:190px;height:190px}}
+@media(pointer:coarse){.g-btn{min-height:44px}.plot{min-height:56px}}

@@ -6,7 +6,8 @@
  const adv=K.adv({list:ZM.P29.advancements,store:'p29.adv',icon:a=>'../../assets/textures/p29/i/'+a.icon+'.png',intro:'Шесть скрытых достижений оригинального мода. Описания — цитаты из исходных JSON.',onGrant:a=>{P29Sound.play(a.key);}});
  const save=()=>{ZM.store.set(store,model.snapshot());lastSave=performance.now();};
  const clearInputs=()=>{inputs.clear();model.movement(0,0);$$('[data-move]').forEach(b=>b.setAttribute('aria-pressed','false'));};
- function consume(){for(const e of model.drain()){if(e.type==='adv')adv.grant(e.key);if(e.type==='sound')P29Sound.play(e.name);if(e.type==='ritualStart'||e.type==='installed')P29Sound.play(e.type);window.P29?.scene?.event?.(e);}}
+ const FX={event(e){if(!motion)return;const cyan=e.type==='installed'||e.type==='ritualStart'||(e.type==='sound'&&e.name==='activate');const red=e.type==='death'||e.type==='psychosisBurst'||(e.type==='sound'&&e.name==='psychosis');if(!cyan&&!red)return;const f=$('#fxFlash');if(f){f.classList.remove('cyan','red','go');void f.offsetWidth;f.classList.add(cyan?'cyan':'red','go');}if(red){const a=$('#arena');a.classList.remove('fx-shake');void a.offsetWidth;a.classList.add('fx-shake');}}};
+ function consume(){for(const e of model.drain()){if(e.type==='adv')adv.grant(e.key);if(e.type==='sound')P29Sound.play(e.name);if(e.type==='ritualStart'||e.type==='installed')P29Sound.play(e.type);window.P29?.scene?.event?.(e);FX.event(e);}}
  function action(fn,error=''){const ok=fn();status=ok?'':error;consume();render();save();return ok;}
  $('#installButton').addEventListener('click',()=>action(()=>model.requestInstall(),'Условия: город Энда, незеритовый нагрудник и две дозы.'));
  for(const id of['endCity','netheriteChest'])$('#'+id).addEventListener('change',()=>{const s=model.state;if(s.inCutscene||s.chest==='sandevistan')return;s.inCity=$('#endCity').checked;s.chest=$('#netheriteChest').checked?'netherite':'other';s.ritualReady=false;render();save();});

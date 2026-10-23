@@ -1,0 +1,14 @@
+/* Г-К · Мистер К — Размножение кроликов. Морковный тон. */
+.panel-title{font:700 13px var(--f-head);letter-spacing:.04em;color:#eef5f8;margin-bottom:12px}
+.sim-wrap{display:flex;flex-direction:column;gap:12px}
+.sim-hud{display:flex;gap:10px 22px;flex-wrap:wrap;font:9px var(--f-mono);letter-spacing:.12em;color:var(--g-faint);border:1px solid var(--g-line);background:#0b1119;padding:10px 12px}
+.sim-hud b{color:var(--tone);font-weight:400}
+#simCanvas{display:block;width:100%;height:430px;background:#0d1a12;border:1px solid var(--g-line);touch-action:pan-y}
+.sim-controls{display:flex;gap:10px;flex-wrap:wrap}
+.tl-strip{display:flex;flex-direction:column;gap:0}
+.tl-step{display:grid;grid-template-columns:86px 1fr;gap:12px;padding:9px 0;border-bottom:1px dashed var(--g-line);font-size:12.5px;color:var(--g-dim)}
+.tl-step b{font:700 12px var(--f-mono);color:var(--tone)}
+.tl-step:last-child{border-bottom:0}
+.tl-step.tl-last b{color:#9fe08a}
+@media(pointer:coarse){.sim-controls .g-btn{min-height:44px}}
+@media(max-width:600px){#simCanvas{height:330px}.tl-step{grid-template-columns:70px 1fr}}
