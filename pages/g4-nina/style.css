@@ -25,8 +25,23 @@
 .stab-arena{position:relative;height:280px;border:1px solid var(--g-line);background:
   radial-gradient(circle at 50% 42%,#132029 0,#0a0f15 70%),#0a0f15;overflow:hidden}
 .stab-zone{position:absolute;left:50%;top:42%;width:230px;height:230px;transform:translate(-50%,-50%);border-radius:50%;
-  background:conic-gradient(from 120deg,#39506280 0 120deg,#ffb02ecc 120deg 240deg,#e0576b 240deg 360deg);
-  opacity:.24;transition:transform .15s linear}
+  --seg-back:#e0576b;--seg-side:#ffb02e;--seg-front:#7f96ab;
+  background:conic-gradient(from 300deg,var(--seg-front) 0 120deg,var(--seg-side) 120deg 180deg,var(--seg-back) 180deg 300deg,var(--seg-side) 300deg 360deg);
+  opacity:.3;transition:transform .15s linear,opacity .3s ease,box-shadow .3s ease,filter .3s ease}
+.stab-zone.z-back{--seg-back:#ff6d85;opacity:.62;box-shadow:0 0 46px 6px #e0576b55}
+.stab-zone.z-side{--seg-side:#ffd76e;opacity:.62;box-shadow:0 0 46px 6px #ffb02e4d}
+.stab-zone.z-front{--seg-front:#c9d9e8;opacity:.62;box-shadow:0 0 46px 6px #8fa5b855}
+.zl{position:absolute;transform:translate(-50%,-50%) rotate(calc(var(--face,0deg) * -1));font:700 10px var(--f-mono);
+  letter-spacing:.1em;color:#fff;opacity:.45;white-space:nowrap;text-shadow:0 1px 4px #000d;pointer-events:none;transition:opacity .25s}
+.zl-back{left:50%;top:calc(100% - 16px)}
+.zl-front{left:50%;top:16px}
+.zl-side.l{left:15px;top:50%}
+.zl-side.r{left:calc(100% - 15px);top:50%}
+.stab-zone.z-back .zl-back,.stab-zone.z-side .zl-side,.stab-zone.z-front .zl-front{opacity:1;color:#ffe9ee}
+.stab-arena.hit .stab-zone{animation:stabFlash .45s ease}
+@keyframes stabFlash{0%{filter:brightness(2.4)}100%{filter:brightness(1)}}
+.stab-dummy.flinch{animation:dummyFlinch .4s cubic-bezier(.2,.8,.3,1)}
+@keyframes dummyFlinch{0%{transform:translate(-50%,-50%)}35%{transform:translate(-50%,calc(-50% + 8px)) rotate(4deg)}100%{transform:translate(-50%,-50%)}}
 .stab-zone::after{content:'';position:absolute;inset:38%;border-radius:50%;background:#0a0f15;border:1px dashed #2e4356}
 .stab-dummy{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;
   filter:drop-shadow(0 3px 5px #000b)}
@@ -293,3 +308,17 @@
 .mine-block{transition:border-color .25s ease,box-shadow .25s ease}
 .mine-block:hover{border-color:color-mix(in srgb,#ffb02e 55%,var(--g-line));box-shadow:0 0 22px #ffb02e2e}
 @media(prefers-reduced-motion:reduce){.mine-block.broke img,#mineNote.flash{animation:none}}
+
+
+/* ===================== РУДА v7: кольцо, искры, подлинные трещины ===================== */
+.mine-ring{position:absolute;inset:5px;width:calc(100% - 10px);height:calc(100% - 10px);transform:rotate(-90deg);pointer-events:none}
+.mine-ring .bg{fill:none;stroke:#ffffff1f;stroke-width:1.4}
+.mine-ring .fg{fill:none;stroke:#ffb02e;stroke-width:2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;
+  filter:drop-shadow(0 0 4px #ffb02ecc);transition:stroke-dashoffset .12s linear}
+.mine-block .mpt{position:absolute;left:50%;top:50%;width:var(--sz);height:var(--sz);background:var(--c);pointer-events:none;
+  image-rendering:pixelated;animation:mpt .75s cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes mpt{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  .mpt{display:none}
+  .stab-arena.hit .stab-zone,.stab-dummy.flinch{animation:none}
+}

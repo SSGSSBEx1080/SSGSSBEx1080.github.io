@@ -34,6 +34,7 @@
   function stabRender() {
     zone.style.transform = `translate(-50%,-50%) rotate(${face}deg)`;
     facing.style.setProperty('--face', face + 'deg');
+    $('#stabArena').style.setProperty('--face', face + 'deg');
     $('#stabDeg').textContent = face + '°';
     $('#stabDeg2').textContent = face + '°';
     const dot = -Math.cos(face / R2D); /* цель смотрит от 0° (вверх), атакующий снизу */
@@ -41,6 +42,9 @@
     const back = dot <= -0.5, side = Math.abs(dot) < 0.5;
     multEl.textContent = back ? '×2' : side ? '×1.5' : '×1';
     multEl.className = 'stab-mult' + (side ? ' side' : !back ? ' front' : '');
+    /* подсвечиваем сектор, в который сейчас бьём */
+    zone.classList.remove('z-back', 'z-side', 'z-front');
+    zone.classList.add(back ? 'z-back' : side ? 'z-side' : 'z-front');
   }
   $('#stabRange').addEventListener('input', (e) => { face = +e.target.value; stabRender(); });
   $('#stabHit').addEventListener('click', () => {
@@ -51,7 +55,12 @@
     f.className = 'dmg-float'; f.textContent = '−' + dmg.toFixed(mult === 1.5 ? 1 : 0);
     $('#stabArena').appendChild(f);
     setTimeout(() => f.remove(), 900);
-    ZM.sfx('hit', .4, mult === 2 ? .8 : 1);
+    /* вспышка сектора + отброс манекена отменён (нож не толкает) */
+    const arena = $('#stabArena');
+    arena.classList.remove('hit'); void arena.offsetWidth; arena.classList.add('hit');
+    const dummy = $('.stab-dummy', arena);
+    if (dummy) { dummy.classList.remove('flinch'); void dummy.offsetWidth; dummy.classList.add('flinch'); }
+    ZM.sfx('hit', .55, mult === 2 ? .72 : mult === 1.5 ? .9 : 1.1);
   });
   stabRender();
 
@@ -131,23 +140,29 @@
   let saltOwned = 0;
   const mineBlock = $('#mineBlock'), crackCv = $('#mineCrack'), crackG = crackCv.getContext('2d');
   crackCv.width = crackCv.height = 16;
-  const CRACKS = (() => {   /* детерминированные трещины: 10 стадий по 12 пикселей */
-    let seed = 20261; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-    const px = new Set(); let x = 8, y = 8;
-    for (let i = 0; i < 120; i++) {
-      px.add(x + ',' + y);
-      x = Math.max(0, Math.min(15, x + (rnd() < .5 ? -1 : 1) * (rnd() < .35 ? 0 : 1)));
-      y = Math.max(0, Math.min(15, y + (rnd() < .5 ? -1 : 1)));
-      if (rnd() < .18) { x = 1 + (rnd() * 14 | 0); y = 1 + (rnd() * 14 | 0); }
-    }
-    return [...px];
-  })();
+  /* подлинные стадии разрушения из ванилы — как на стендах 01 и 04 */
+  const DST = Array.from({ length: 10 }, (_, i) => { const im = new Image(); im.src = U(`assets/textures/mc/destroy_stage_${i}.png`); return im; });
+  const SALT_COLS = ['#ffffff', '#e9e9e9', '#cfc9bd', '#8f8a80', '#5a5a5a'];
   let mining = null, mineStage = 0;
+  const mineParticles = (n, power) => {
+    for (let i = 0; i < n; i++) {
+      const pt = document.createElement('i');
+      pt.className = 'mpt';
+      const ang = Math.random() * Math.PI * 2, dist = (26 + Math.random() * 58) * power;
+      pt.style.cssText = `--c:${SALT_COLS[(Math.random() * SALT_COLS.length) | 0]};--sz:${3 + Math.random() * 5}px;--dx:${Math.cos(ang) * dist}px;--dy:${Math.sin(ang) * dist + 34 * power}px;--r:${Math.random() * 360}deg`;
+      mineBlock.appendChild(pt);
+      setTimeout(() => pt.remove(), 760);
+    }
+  };
   const drawCracks = () => {
-    const fill = $('#mineFill'); if (fill) fill.style.width = (mineStage * 10) + '%';
+    const fill = $('#mineFill'), ring = $('#mineRing');
+    if (fill) fill.style.width = (mineStage * 10) + '%';
+    if (ring) ring.style.strokeDashoffset = String(1 - mineStage / 10);
     crackG.clearRect(0, 0, 16, 16);
-    crackG.fillStyle = '#0a0a0acc';
-    for (let i = 0; i < mineStage * 12 && i < CRACKS.length; i++) { const [x, y] = CRACKS[i].split(','); crackG.fillRect(+x, +y, 1, 1); }
+    if (mineStage > 0.15) {
+      crackG.imageSmoothingEnabled = false;
+      crackG.drawImage(DST[Math.min(9, Math.floor(mineStage))], 0, 0, 16, 16);
+    }
   };
   const saltSync = () => { $('#saltOwned').textContent = saltOwned; const m = $('#saltOwned2'); if (m) m.textContent = saltOwned; };
   const mineFinish = () => {
@@ -155,7 +170,8 @@
     saltOwned += 4; saltSync();
     const xp = 2 + (Math.random() * 4 | 0);
     $('#mineXp').textContent = '+' + xp + ' XP';
-    ZM.sfx('stone', .55, 1.15); ZM.sfx('orb', .3, 1.35);
+    ZM.sfx('stone', 1, .8); ZM.sfx('orb', .3, 1.35);
+    mineParticles(18, 1);
     mineBlock.classList.remove('broke'); void mineBlock.offsetWidth; mineBlock.classList.add('broke');
     if (adv) adv.grant('salt_discovery');
     const note = $('#mineNote');
@@ -166,7 +182,8 @@
   const mineStep = (dt, now) => {
     mineStage = Math.min(10, mineStage + dt * 5.2);
     drawCracks();
-    if (now - lastHit > 190) { lastHit = now; ZM.sfx('hit', .12, .8 + Math.random() * .4); }
+    /* как в игре: удар раз в 4 тика с pitch 0.5, искры с каждой стадии */
+    if (now - lastHit > 200) { lastHit = now; ZM.sfx('hit', .5, .5); mineParticles(2, .5); }
     if (mineStage >= 10) { mineFinish(); return; }
     setShake(true); mineBlock.style.setProperty('--shake', (Math.random() - .5) * 2 + 'px');
   };
@@ -247,27 +264,44 @@
     $('#fuseBurned').textContent = burned;
     drawTrail();
   }
+  /* текстуры дорожки — те же, что кладёт блок в игре: line0 вертикальная,
+   * для горизонталей поворачиваем; каждая связь = половинка от центра к краю */
+  const TR = {
+    lineW: Object.assign(new Image(), { src: U('assets/textures/guest/salt_trail/salt_redstone_dust_line0_white.png') }),
+    lineL: Object.assign(new Image(), { src: U('assets/textures/guest/salt_trail/salt_redstone_dust_line0_lit.png') }),
+    dotW: Object.assign(new Image(), { src: U('assets/textures/guest/salt_trail/salt_redstone_dust_dot_white.png') }),
+    dotL: Object.assign(new Image(), { src: U('assets/textures/guest/salt_trail/salt_redstone_dust_dot_lit.png') }),
+  };
   function drawTrail() {
     const w = grid.clientWidth, h = grid.clientHeight, d = Math.min(devicePixelRatio || 1, 2);
     if (!w || !h) return;
     if (trail.width !== Math.round(w * d) || trail.height !== Math.round(h * d)) { trail.width = Math.round(w * d); trail.height = Math.round(h * d); }
     tg.setTransform(d, 0, 0, d, 0, 0); tg.clearRect(0, 0, w, h);
+    tg.imageSmoothingEnabled = false;
+    const pad = 2.6;   /* перекрыть зазор сетки, чтобы дорожка была сплошной */
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
       if (!salt(r, c)) continue;
       const b = btns[r][c], x = b.offsetLeft - grid.clientLeft, y = b.offsetTop - grid.clientTop, bw = b.offsetWidth, bh = b.offsetHeight;
       const cx = x + bw / 2, cy = y + bh / 2;
-      const t = Math.max(3, Math.round(Math.min(bw, bh) * .18));
       const lit = cells[r][c] === 2;
-      const dirs = [[0, -1, x, cy - t / 2, bw / 2, t], [0, 1, cx, cy - t / 2, bw / 2 + .5, t], [-1, 0, cx - t / 2, y, t, bh / 2], [1, 0, cx - t / 2, cy, t, bh / 2 + .5]]
-        .filter(([dr, dc]) => isNode(r + dr, c + dc));
-      tg.fillStyle = lit ? '#ffb02e33' : '#e8e4d814';
-      for (const [, , rx, ry, rw, rh] of dirs) tg.fillRect(rx - 1.5, ry - 1.5, rw + 3, rh + 3);   /* ореол */
-      tg.fillStyle = lit ? '#ffd76e' : '#d9d3c4';
-      for (const [, , rx, ry, rw, rh] of dirs) tg.fillRect(rx, ry, rw, rh);
-      tg.fillStyle = lit ? '#ffd76e' : '#e8e4d8';
-      tg.fillRect(cx - t / 2, cy - t / 2, t, t);   /* точка в центре, как у пыли */
+      const line = lit ? TR.lineL : TR.lineW, dot = lit ? TR.dotL : TR.dotW;
+      /* направления: вверх (k=0), вправо (1), вниз (2), влево (3) */
+      const dirs = [[-1, 0, 0], [0, 1, 1], [1, 0, 2], [0, -1, 3]].filter(([dr, dc]) => isNode(r + dr, c + dc));
+      if (!dirs.length) {   /* одинокая соль — точка, как у красной пыли */
+        const sz = Math.min(bw, bh) * .78;
+        if (lit) { tg.globalAlpha = .4; tg.drawImage(dot, cx - sz / 2 - 2, cy - sz / 2 - 2, sz + 4, sz + 4); tg.globalAlpha = 1; }
+        tg.drawImage(dot, cx - sz / 2, cy - sz / 2, sz, sz);
+        continue;
+      }
+      for (const [, , k] of dirs) {
+        tg.save(); tg.translate(cx, cy); tg.rotate(k * Math.PI / 2);
+        if (lit) { tg.globalAlpha = .38; tg.drawImage(line, 0, 0, 16, 8, -bw / 2 - 2, -bh / 2 - pad - 2, bw + 4, bh / 2 + pad + 4); tg.globalAlpha = 1; }
+        tg.drawImage(line, 0, 0, 16, 8, -bw / 2, -bh / 2 - pad, bw, bh / 2 + pad);
+        tg.restore();
+      }
     }
   }
+  addEventListener('resize', () => renderFuse());
   $('#fuseIgnite').addEventListener('click', () => {
     if (burning) return;
     const near = [[0, 1], [0, -1], [1, 0], [-1, 0]].filter(([dr, dc]) => salt(TORCH.r + dr, TORCH.c + dc));
