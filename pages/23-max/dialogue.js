@@ -219,6 +219,8 @@
     if (topic === 'noStream') flags.stream = false;
     // Remember a few facts instead of contradicting what the player already
     // told this fictional character in the same conversation.
+    if (id === 'pm' && topic === 'food' && flags.ate)
+      reply = ['Сегодня суп. Помню, ты уже поел — добавку оставила на плите.', 'Ты уже поел, помню. Суп ещё есть, если позже проголодаешься.'][index];
     if (id === 'pm' && topic === 'homework' && flags.homework)
       reply = ['Ты уже сказал, что сделал уроки. Молодец. Что именно хотел спросить про домашку?', 'Ты сделал уроки — помню. Хочешь, проверю ответ или помогу с трудным местом?'][index];
     if (id === 'pc' && topic === 'raid' && flags.truce)

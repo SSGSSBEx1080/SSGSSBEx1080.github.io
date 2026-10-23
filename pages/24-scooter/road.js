@@ -14,7 +14,7 @@
   new ResizeObserver(size).observe(cv);size();
   function polygon(points,color){g.fillStyle=color;g.beginPath();points.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();}
   function mountain(base,amp,color,offset){const pts=[[-40,h]];for(let x=-40;x<w+50;x+=30)pts.push([x,base-Math.round((Math.sin((x+offset)*.009)+Math.sin((x+offset)*.021)*.35)*amp/9)*9]);pts.push([w+50,h]);polygon(pts,color);}
-  function tree(x,y,scale){g.fillStyle='#6f7d6a';g.fillRect(x-3*scale,y-12*scale,6*scale,24*scale);g.fillStyle='#869780';g.fillRect(x-20*scale,y-47*scale,40*scale,27*scale);g.fillRect(x-13*scale,y-57*scale,26*scale,12*scale);g.fillStyle='#a0ac8d';g.fillRect(x-20*scale,y-47*scale,30*scale,9*scale);}
+  function tree(x,y,scale){g.fillStyle='#263e35';g.fillRect(x-3*scale,y-12*scale,6*scale,24*scale);g.fillStyle='#3b6247';g.fillRect(x-20*scale,y-47*scale,40*scale,27*scale);g.fillRect(x-13*scale,y-57*scale,26*scale,12*scale);g.fillStyle='#5b7e52';g.fillRect(x-20*scale,y-47*scale,30*scale,9*scale);}
   function rider(id,x,y,scale,driver){
     const face=id==='player'?'steve':types[id]?.[3], img=faces[face];
     const palette=id==='iron_golem'?['#c2c1af','#e0d9c1']:id==='zombie'?['#548777','#435b75']:id==='pig'?['#b77e75','#d5a798']:['#53758a','#7fa2b1'];
@@ -28,18 +28,18 @@
   function draw(t){
     requestAnimationFrame(draw);if(t-last<40)return;last=t;if(!visible||document.hidden)return;
     const motion=reduced.matches?0:s.distance*7;
-    g.clearRect(0,0,w,h);g.fillStyle='#d8e5e0';g.fillRect(0,0,w,h);
-    g.fillStyle='#f6edcc';g.beginPath();g.arc(w*.73,78,32,0,Math.PI*2);g.fill();
-    for(let i=0;i<4;i++){const x=((i*260-motion*.06)%(w+220)+(w+220))%(w+220)-100;g.fillStyle='#f4f1e3';g.fillRect(x,55+i%2*35,99,13);g.fillRect(x+20,44+i%2*35,43,11);}
-    mountain(h*.49,27,'#c2d0bc',motion*.08);mountain(h*.61,22,'#a4b79b',motion*.2);
+    g.clearRect(0,0,w,h);g.fillStyle='#12252e';g.fillRect(0,0,w,h);
+    g.fillStyle='#cbdfac';g.beginPath();g.arc(w*.73,78,32,0,Math.PI*2);g.fill();
+    for(let i=0;i<4;i++){const x=((i*260-motion*.06)%(w+220)+(w+220))%(w+220)-100;g.fillStyle='#294249';g.fillRect(x,55+i%2*35,99,13);g.fillRect(x+20,44+i%2*35,43,11);}
+    mountain(h*.49,27,'#1c393b',motion*.08);mountain(h*.61,22,'#244b47',motion*.2);
     const grade=s.slope==='climb'?-.13:s.slope==='descent'?.13:0;
     const groundY=x=>h*.81+(x-w*.4)*grade;
-    polygon([[0,groundY(0)-15],[w,groundY(w)-15],[w,h],[0,h]],'#a5ad8c');
+    polygon([[0,groundY(0)-15],[w,groundY(w)-15],[w,h],[0,h]],'#2c4c3b');
     for(let i=0;i<10;i++){const x=((i*170-motion*.45)%(w+220)+(w+220))%(w+220)-100;tree(x,groundY(x)-24,.55+(i%3)*.18);}
-    polygon([[0,groundY(0)],[w,groundY(w)],[w,groundY(w)+58],[0,groundY(0)+58]],s.surface==='honey'?'#a78945':s.surface==='hay'?'#bba45d':s.surface==='water'?'#7caaad':'#7a827c');
-    g.strokeStyle='#d2ccac';g.lineWidth=3;g.beginPath();g.moveTo(0,groundY(0)+3);g.lineTo(w,groundY(w)+3);g.stroke();
-    g.strokeStyle=s.surface==='water'?'#c5e3db':'#e4dfc9';g.lineWidth=2;g.setLineDash([26,33]);g.lineDashOffset=-motion%59;g.beginPath();g.moveTo(0,groundY(0)+38);g.lineTo(w,groundY(w)+38);g.stroke();g.setLineDash([]);
-    for(let i=0;i<4;i++){const x=((i*340-motion)%(w+340)+(w+340))%(w+340)-100;const y=groundY(x)-4;g.fillStyle='#dedccc';g.fillRect(x,y-26,5,32);g.fillStyle='#bd6240';g.fillRect(x,y-24,5,7);}
+    polygon([[0,groundY(0)],[w,groundY(w)],[w,groundY(w)+58],[0,groundY(0)+58]],s.surface==='honey'?'#a78945':s.surface==='hay'?'#bba45d':s.surface==='water'?'#7caaad':'#35464a');
+    g.strokeStyle='#a4c18b';g.lineWidth=3;g.beginPath();g.moveTo(0,groundY(0)+3);g.lineTo(w,groundY(w)+3);g.stroke();
+    g.strokeStyle=s.surface==='water'?'#c5e3db':'#c1dfab';g.lineWidth=2;g.setLineDash([26,33]);g.lineDashOffset=-motion%59;g.beginPath();g.moveTo(0,groundY(0)+38);g.lineTo(w,groundY(w)+38);g.stroke();g.setLineDash([]);
+    for(let i=0;i<4;i++){const x=((i*340-motion)%(w+340)+(w+340))%(w+340)-100;const y=groundY(x)-4;g.fillStyle='#c1d8b7';g.fillRect(x,y-26,5,32);g.fillStyle='#89b751';g.fillRect(x,y-24,5,7);}
     const sw=Math.min(246,w*.53),sh=sw*364/556,x=w<650?w*.29:w*.37,y=groundY(x)+4+s.lane*14;
     g.save();g.translate(x,y);g.rotate(Math.atan(grade));
     g.fillStyle='#26382c26';g.beginPath();g.ellipse(0,-4,sw*.55,8,0,0,Math.PI*2);g.fill();

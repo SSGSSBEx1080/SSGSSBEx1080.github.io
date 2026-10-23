@@ -2,6 +2,7 @@
    Mechanics: VacuumData / VacuumServerEvents / vacuum.json, not invented item stats. */
 (() => {
   'use strict';
+  document.addEventListener('DOMContentLoaded',()=>document.querySelector('.zm-route')?.remove());
   const $=ZM.$, K=ZM.kit, esc=ZM.esc, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const T='../../assets/textures/p26/', icon=id=>T+(id==='vacuum_icon'?'vacuum_icon':'v/'+id)+'.png';
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -52,7 +53,7 @@
     $('#latchBtn').setAttribute('aria-pressed',String(sources.has('latch')));
     $('#heroVisual').classList.toggle('pumping',S.active||preview);
   }
-  function stop(){sources.clear();S.active=false;S.maxSecs=0;preview=false;clearTimeout(previewTimer);$('#heroSpin').setAttribute('aria-pressed','false');$('#heroSpin').textContent='Послушай, как работает ↗';$('#heroVisual').classList.remove('pumping');$('#latchBtn').setAttribute('aria-pressed','false');renderStats();renderTimer();syncAudio();}
+  function stop(){sources.clear();S.active=false;S.maxSecs=0;preview=false;clearTimeout(previewTimer);$('#heroSpin').setAttribute('aria-pressed','false');$('#heroSpin').textContent='Включить пылесос ▷';$('#heroVisual').classList.remove('pumping');$('#latchBtn').setAttribute('aria-pressed','false');renderStats();renderTimer();syncAudio();}
   const holdBtn=$('#suckBtn');
   holdBtn.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();holdBtn.setPointerCapture(e.pointerId);hold(true,'button');});
   ['pointerup','pointercancel','lostpointercapture'].forEach(event=>holdBtn.addEventListener(event,()=>hold(false,'button')));
@@ -64,9 +65,9 @@
   new IntersectionObserver(es=>{if(!es[0].isIntersecting&&S.active)stop();}).observe($('#cleanup'));
   document.addEventListener('click',()=>setTimeout(syncAudio,0));
   $('#heroSpin').addEventListener('click',()=>{
-    preview=!preview;clearTimeout(previewTimer);$('#heroVisual').classList.toggle('pumping',preview);$('#heroSpin').setAttribute('aria-pressed',String(preview));$('#heroSpin').textContent=preview?'Стоп. Всё, послушали.':'Послушай, как работает ↗';
+    preview=!preview;clearTimeout(previewTimer);$('#heroVisual').classList.toggle('pumping',preview);$('#heroSpin').setAttribute('aria-pressed',String(preview));$('#heroSpin').textContent=preview?'Выключить пылесос ■':'Включить пылесос ▷';
     if(preview&&!ZM.sfx.on())K.say('Звук выключен. Его можно включить кнопкой внизу.');
-    syncAudio();if(preview)previewTimer=setTimeout(()=>{preview=false;$('#heroVisual').classList.toggle('pumping',S.active);$('#heroSpin').setAttribute('aria-pressed','false');$('#heroSpin').textContent='Послушай, как работает ↗';syncAudio();},4500);
+    syncAudio();if(preview)previewTimer=setTimeout(()=>{preview=false;$('#heroVisual').classList.toggle('pumping',S.active);$('#heroSpin').setAttribute('aria-pressed','false');$('#heroSpin').textContent='Включить пылесос ▷';syncAudio();},4500);
   });
   function renderStats(){
     $('#powerNumber').textContent=S.power;$('#powerRange').value=S.power;

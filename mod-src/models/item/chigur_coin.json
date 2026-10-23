@@ -1,0 +1,62 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "zitraksmode:item/chigur_coin",
+		"particle": "zitraksmode:item/chigur_coin"
+	},
+	"elements": [
+		{
+			"name": "coin_hand",
+			"from": [1.875, 1.875, 6.475],
+			"to": [14, 14.125, 7.55],
+			"rotation": {"angle": 0, "axis": "y", "origin": [14.45, 0, 8.975]},
+			"faces": {
+				"north": {"uv": [0.5, 0.5, 6.5, 6.5], "texture": "#0"},
+				"east": {"uv": [0, 0.5, 0.5, 6.5], "texture": "#0"},
+				"south": {"uv": [7, 0.5, 13, 6.5], "texture": "#0"},
+				"west": {"uv": [6.5, 0.5, 7, 6.5], "texture": "#0"},
+				"up": {"uv": [6.5, 0.5, 0.5, 0], "texture": "#0"},
+				"down": {"uv": [12.5, 0, 6.5, 0.5], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [-91.49, 0.86, 177.86],
+			"translation": [0, 0.75, 1.75],
+			"scale": [0.47, 0.45, 0.64]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [-84.48, -3.65, -171.71],
+			"translation": [0, 0.75, 2.25],
+			"scale": [0.45703, 0.45703, 0.45703]
+		},
+		"firstperson_righthand": {
+			"rotation": [-9.7, -12.94, 30.82],
+			"translation": [0, 4.5, 1],
+			"scale": [0.48047, 0.48047, 0.48047]
+		},
+		"firstperson_lefthand": {
+			"rotation": [-9.75, 0, 21.5],
+			"translation": [0, 4.75, 1.5],
+			"scale": [0.52344, 0.52344, 0.52344]
+		},
+		"ground": {
+			"translation": [0, 3.25, 0]
+		},
+		"head": {
+			"translation": [0, 11.25, 0]
+		}
+	},
+	"groups": [
+		{
+			"name": "coin_hand",
+			"origin": [-6, 15, -2],
+			"scope": 0,
+			"color": 8,
+			"children": [0]
+		}
+	]
+}

@@ -57,16 +57,21 @@ assert.equal(HUB_ADV.find(p => p.n === 23).adv.length, 4);
 const maxHtml = fs.readFileSync(path.join(root, 'pages/23-max/index.html'), 'utf8');
 const maxApp = fs.readFileSync(path.join(root, 'pages/23-max/app.js'), 'utf8');
 assert.match(maxApp, /ZM\.reveal\(\)/, 'Restored MAX sections must be revealed');
-// Restored latest published #23, not the unrelated five-contact experiment.
+// The user explicitly requested the five existing demo personas, while the
+// messenger's original message/file/gift flows and section structure stay intact.
 for (const id of ['heroIcon', 'heroNotif', 'iconWrap', 'advChain']) {
-  assert.ok(maxHtml.includes(`id="${id}"`), `Restored MAX control ${id} missing`);
+  assert.ok(maxHtml.includes(`id="${id}"`), `MAX control ${id} missing`);
 }
-for (const name of ['Nagibator3000', 'Ksyusha_mc', 'Oleg_Pro', 'Dimon']) {
-  assert.ok(maxApp.includes(name), `Restored MAX contact ${name} missing`);
+vm.runInNewContext(fs.readFileSync(path.join(root,'pages/23-max/personas.js'),'utf8'),ctx);
+assert.equal(ctx.ZMMaxPersonas.length,5);
+for (const name of ['5opka','Готка','Диор Армани','Чеченцы','Мама']) {
+  assert.ok(ctx.ZMMaxPersonas.some(p=>p.name===name), `Requested MAX profile ${name} missing`);
 }
-assert.match(maxApp, /const BOTS =/, 'Latest messenger contacts missing');
-assert.match(maxApp, /botAct\(V\.sel\)/, 'Messenger replies must remain interactive');
-assert.doesNotMatch(maxHtml, /dialogue\.js/, 'Do not swap in the different MAX redesign');
+assert.match(maxApp,/refreshContacts/,'Old saved contacts must migrate without deleting messages');
+assert.match(maxApp,/const BOTS =/);
+assert.match(maxApp,/botAct\(V\.sel\)/,'Messenger replies must remain interactive');
+assert.match(maxHtml,/dialogue\.js/,'The five persona engine must actually be connected');
+assert.match(maxHtml,/conversation\.js/,'Precise context/escrow logic must remain connected');
 assert.equal(POINTS.find(p => p.n === 25).page, 'pages/25-cloaks/index.html');
 assert.equal(HUB_ADV.find(p => p.n === 25).adv.length, 7);
 assert.equal(POINTS.find(p => p.n === 24).page, 'pages/24-scooter/index.html');

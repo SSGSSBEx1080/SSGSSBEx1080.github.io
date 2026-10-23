@@ -88,7 +88,7 @@
 
   /* ================= HERO: иконка + уведомления ================= */
   (function hero() {
-    const n = $("#heroNotif"), lines = [["Nagibator3000", "Салам"], ["Ksyusha_mc", "Иди нахуй, я строю"], ["Oleg_Pro", "Подарок"], ["Dimon", "Как хуй?"], ["Избранное", "заметки"]];
+    const n = $("#heroNotif"), lines = [["5opka", "42, братуха"], ["Готка", "Ночной эфир"], ["Чеченцы", "Обмены в Minecraft"], ["Мама", "Ужин готов"], ["Диор Армани", "Новый трэк"]];
     let i = 0;
     const tick = () => { const [a, b] = lines[i++ % lines.length]; n.innerHTML = `<b>${esc(a)}</b><span>${esc(b)}</span><i>${i}</i>`; n.classList.remove("on"); void n.offsetWidth; n.classList.add("on"); };
     tick(); setInterval(() => { if (motion()) tick(); }, 3200);
@@ -138,37 +138,57 @@
   /* ================= 02 СИМУЛЯТОР ================= */
   const KEY = "zm:p23.max";
   const now = Date.now(), H = 3600e3;
-  const BOTS = [
-    { id: "b1", name: "Nagibator3000", base: "Nagibator3000", desc: "", ava: "stock_skull", online: true },
-    { id: "b2", name: "Ksyusha_mc", base: "Ksyusha_mc", desc: "строю замки, не пишите", ava: "stock_cat", online: true },
-    { id: "b3", name: "Oleg_Pro", base: "OlegPro2009", desc: "", ava: "stock_alex", online: false },
-    { id: "b4", name: "Dimon", base: "dimon_minecraft", desc: "продаю алмазы недорого", ava: "stock_smile", online: true },
-  ];
+  const BOTS = window.ZMMaxPersonas;
   const seed = () => {
     const S = { me: { id: "me", base: (ZM.profile && ZM.profile.me().nick) || "Player", name: "", desc: "", ava: "stock_steve", show: "", reg: false, sent: 0, trades: 0, rejects: 0,
         inv: { diamond: 3, bread: 16, iron_ingot: 10, cobblestone: 64, oak_log: 20, apple: 5, ender_pearl: 4, gold_ingot: 6 } },
       users: BOTS.map((b) => Object.assign({ trades: 0 }, b)), msgs: [], gifts: {}, next: 1 };
     const add = (from, to, text, t, o = {}) => S.msgs.push(Object.assign({ id: S.next++, from, to, text, t, read: true, type: "TEXT" }, o));
-    add("b1", "me", "Салам", now - 26 * H); add("b1", "me", "есть железо?", now - 26 * H + 60e3);
-    add("b2", "me", "Иди нахуй, я строю", now - 25 * H);
-    add("b2", "me", "координаты базы: 1250 64 -830", now - 25 * H + 30e3, { deleted: true, hr: false });
-    add("b2", "me", "ой не туда", now - 25 * H + 40e3);
-    add("b4", "me", "Стой сука, есть дело", now - 2 * H, { read: false }); add("b4", "me", "продаю алмазы, 1 алмаз = 3 железа", now - 2 * H + 20e3, { read: false });
+    add("b1", "me", "42, братуха. Чат на месте.", now - 26 * H);
+    add("b2", "me", "Привет. Сегодня строю башню на ночном эфире.", now - 25 * H);
+    add("b3", "me", "Йо. Диор Армани на связи. Он же Влад Клёвые Тачки.", now - 4 * H);
+    add("b4", "me", "Салам. Обсудим базу, перемирие или обмены в Minecraft.", now - 2 * H, {read:false});
+    add("b4", "me", "Алмаз за три железа. Перед подарком договоримся о количестве.", now - 2 * H + 20e3, {read:false});
+    add("b5", "me", "Ужин готов. Напиши, когда освободишься.", now - H, {read:false});
     return S;
   };
   let S; try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
   if (!S || !S.me || !S.msgs || !S.me.inv) S = seed();
+  // Stable old IDs preserve conversations, escrow, counters and saved replies.
+  // Refresh demo identities even in a browser with the previous four contacts.
+  const refreshContacts=S.demoProfiles!==2;
+  S.users=BOTS.map(profile=>{
+    const old=(S.users||[]).find(u=>u.id===profile.id);
+    return Object.assign({},old||{trades:0},profile,{online:!refreshContacts&&typeof old?.online==='boolean'?old.online:profile.online});
+  });
+  S.demoProfiles=2;
+
   const files = {}; // вложения этой сессии: id → File (для «↓»)
   // Original inputs are transient, NOT alternate message bodies: forwards, search,
   // editing and AntiCensor keep using the existing server-side text.
   const intentions = new Map(), pendingBots = new Map(), giftTimers = new Map();
   if (!S.talk || typeof S.talk !== "object" || Array.isArray(S.talk)) S.talk = {};
   const save = () => { try { const c = JSON.parse(JSON.stringify(S)); c.msgs.forEach((m) => { if (m.att) delete m.att.preview; }); localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} };
+  save();
   const user = (id) => id === "me" ? S.me : S.users.find((u) => u.id === id);
   const dname = (u) => (u.name || u.base || "Player").slice(0, 24);
   const trim = (t, n) => (t = String(t || ""), t.length > n ? t.slice(0, n) + "…" : t);
   const mx = $("#mx");
+  const shelf=document.createElement('div');shelf.className='mx-profile-shelf';
+  shelf.setAttribute('aria-label','Профили собеседников MAX');
+  shelf.innerHTML=BOTS.map(person=>`<button type="button" data-contact="${person.id}"><img src="${person.portrait}" alt=""><span><b>${esc(person.name)}</b><small>Профиль ↗</small></span></button>`).join('');
+  mx.parentElement.before(shelf);
+
   const V = { sel: null, reply: 0, edit: 0, fwd: 0, att: null, search: "", res: [], ri: -1, status: "", menu: null, modal: null, attachMenu: false, draft: "", giftSlots: [], stick: true };
+  shelf.addEventListener('click',event=>{const button=event.target.closest('[data-contact]');if(button){V.modal='profile:'+button.dataset.contact;render();}});
+  // A newly opened/re-rendered profile may not have received its RAF focus yet.
+  // Escape must still close it instead of leaving an invisible keyboard trap.
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape' && V.modal?.startsWith('profile:')){
+      event.preventDefault();event.stopPropagation();V.modal=null;render();
+      $('.mx-who, .mx-self',mx)?.focus({preventScroll:true});
+    }
+  },true);
   let statusT = 0;
   const status = (t) => { V.status = t; const el = $(".mx-status", mx); if (el) el.textContent = t; clearTimeout(statusT); statusT = setTimeout(() => { V.status = ""; const e2 = $(".mx-status", mx); if (e2) e2.textContent = ""; }, 3500); };
   const counters = () => {
@@ -284,7 +304,7 @@
   const dayLabel = (t) => { const d = new Date(t), n = new Date(); const y = new Date(n); y.setDate(n.getDate() - 1);
     return d.toDateString() === n.toDateString() ? "Сегодня" : d.toDateString() === y.toDateString() ? "Вчера" : d.toLocaleDateString("ru-RU", { day: "numeric", month: "long" }); };
   function render() {
-    if (!S.me.reg && V.modal !== "crop") V.modal = V.modal === "picker" ? "picker" : "register";
+    if (!S.me.reg && V.modal !== "crop" && !V.modal?.startsWith("profile:")) V.modal = V.modal === "picker" ? "picker" : "register";
     const keepScroll = $(".mx-msgs", mx); const oldTop = keepScroll ? keepScroll.scrollTop : 0, oldH = keepScroll ? keepScroll.scrollHeight - keepScroll.clientHeight : 0;
     const wasBottom = !keepScroll || oldH - oldTop < 30;
     const draft = $(".mx-input", mx) ? $(".mx-input", mx).value : V.draft; V.draft = draft;
@@ -296,7 +316,7 @@
     const cl = $(".mx-contacts", side);
     contacts().forEach((c) => {
       const row = document.createElement("button"); row.type = "button"; row.className = "mx-row" + (V.sel === c.id ? " on" : "") + (V.fwd ? " fwd" : "");
-      row.appendChild(ava(c.ava, 40, c.on, true));
+      row.appendChild(ava(c.ava, 44, c.on, true));
       row.insertAdjacentHTML("beforeend", `<span class="mx-row-t"><b>${esc(trim(c.name, 16))}</b><i class="${c.fav ? "fav" : ""}">${esc(trim(c.prev, 18))}</i></span>${c.un ? `<em>${c.un > 9 ? "9+" : c.un}</em>` : ""}`);
       row.addEventListener("click", () => openChat(c.id)); cl.appendChild(row);
     });
@@ -317,6 +337,10 @@
       who.insertAdjacentHTML("beforeend", `<span><b>${esc(fav ? "Избранное" : dname(u))}</b><i class="${fav ? "fav" : ""}">${esc(sub)}</i></span>`);
       who.addEventListener("click", () => { V.modal = "profile:" + V.sel; snd("click", 0.4); render(); });
       hd.appendChild(who);
+      const profileButton=document.createElement('button');profileButton.type='button';profileButton.className='mx-open-profile';
+      profileButton.textContent='Профиль';profileButton.setAttribute('aria-label','Открыть профиль '+dname(u));
+      profileButton.addEventListener('click',()=>{V.modal='profile:'+V.sel;render();});hd.appendChild(profileButton);
+
       hd.insertAdjacentHTML("beforeend", `<div class="mx-sbox"><input class="mx-search" type="search" placeholder="Поиск..." value="${esc(V.search)}" aria-label="Поиск по чату"><span>${V.res.length ? `${V.ri + 1}/${V.res.length}` : ""}</span><button type="button" data-s="-1" aria-label="Выше">↑</button><button type="button" data-s="1" aria-label="Ниже">↓</button></div>`);
       main.appendChild(hd);
       const sb = $(".mx-search", hd);
@@ -539,10 +563,13 @@
       const C = V.crop; box.classList.add("crop");
       box.innerHTML = `<div class="mx-mh"><b>Обрезка аватарки</b><span>Колёсико — менять размер, мышью — двигать</span></div><div class="mx-crop"><img src="${C.url}" alt=""><i class="mx-cropbox"></i></div>
         <input type="range" class="mx-range" min="8" max="100" value="${C.s}" aria-label="Размер квадрата"><div class="mx-mf"><button type="button" class="mx-b ok" data-x="apply">Обрезать</button><button type="button" class="mx-b" data-x="cancel">Отмена</button></div>`;
-      const area = $(".mx-crop", box), cb = $(".mx-cropbox", box), im = $("img", area);
-      const place = () => { const r = im.getBoundingClientRect(), ar = area.getBoundingClientRect(); const side = Math.min(r.width, r.height) * C.s / 100;
+      const area = $(".mx-crop", box), cb = $(".mx-cropbox", box), im = $("img", area), apply = box.querySelector('[data-x="apply"]');
+      apply.disabled = true;
+      const place = () => { const r = im.getBoundingClientRect(), ar = area.getBoundingClientRect();
+        if (!im.complete || !im.naturalWidth || !r.width || !r.height) return;
+        const side = Math.min(r.width, r.height) * C.s / 100;
         C.x = clamp(C.x, 0, r.width - side); C.y = clamp(C.y, 0, r.height - side);
-        Object.assign(cb.style, { left: r.left - ar.left + C.x + "px", top: r.top - ar.top + C.y + "px", width: side + "px", height: side + "px" }); C.side = side; C.iw = r.width; };
+        Object.assign(cb.style, { left: r.left - ar.left + C.x + "px", top: r.top - ar.top + C.y + "px", width: side + "px", height: side + "px" }); C.side = side; C.iw = r.width; apply.disabled = !(C.side > 0 && C.iw > 0); };
       im.addEventListener("load", place); requestAnimationFrame(place);
       $(".mx-range", box).addEventListener("input", (e) => { C.s = +e.target.value; place(); });
       area.addEventListener("wheel", (e) => { e.preventDefault(); C.s = clamp(C.s - Math.sign(e.deltaY) * 5, 8, 100); $(".mx-range", box).value = C.s; place(); }, { passive: false });
@@ -569,12 +596,13 @@
     } else if (kind.startsWith("profile:")) {
       const id = kind.slice(8), p = user(id) || S.me, self = id === "me";
       box.classList.add("prof");
-      const theme = { stock_skull:"slate", stock_cat:"rose", stock_alex:"copper", stock_smile:"gold" }[p.ava] || "blue";
+      const theme = p.theme || { stock_skull:"slate", stock_cat:"rose", stock_alex:"copper", stock_smile:"gold" }[p.ava] || "blue";
       const showcase = ITEMS[p.show] ? p.show : "";
       const sent = self ? S.me.sent : S.msgs.filter(m => m.from === id && !m.fwd).length;
       const rejected = self ? S.me.rejects : Object.values(S.gifts).filter(g => g.to === id && g.state === "REJECTED").length;
-      const prompts = { b1:["Есть железо?", "Как отправить подарок?"], b2:["Строю башню", "Напомни координаты"], b4:["Куплю 2 алмаза", "Как работает подарок?"] }[id] || [];
+      const prompts = p.prompts || [];
       box.dataset.theme = theme;
+      box.dataset.persona = p.persona || "me";
       box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Профиль " + dname(p));
       requestAnimationFrame(() => {
         if (!box.isConnected) return;
@@ -592,11 +620,11 @@
       box.innerHTML = `<div class="mx-profile-cover"><span>MAX / ПРОФИЛЬ</span><button type="button" class="mx-profile-close" data-x="back" aria-label="Закрыть профиль">×</button><div class="mx-profile-pattern" aria-hidden="true">M</div></div>
         <div class="mx-profile-body"><div class="mx-profile-face"></div><div class="mx-profile-online ${self || p.online ? "online" : ""}"><i></i>${self ? "Твой профиль" : p.online ? "В сети" : "Не в сети"}</div>
         <h3>${esc(dname(p))}</h3><div class="mx-profile-login">@${esc(trim(p.base, 24))}</div>
-        <p class="mx-profile-about">${esc(p.desc || "Пока без описания. За тебя скажет витрина.")}</p>
-        <div class="mx-profile-showcase"><span class="mx-slotbox">${showcase ? `<img src="${I(showcase)}" alt="${esc(ITEMS[showcase])}">` : "<i>+</i>"}</span><div><small>НА ВИТРИНЕ</small><b>${esc(showcase ? ITEMS[showcase] : "Пока ничего")}</b><span>Один предмет. Просто напоказ.</span></div></div>
+        <p class="mx-profile-about">${esc(p.desc || "Описание не заполнено.")}</p>
+        <div class="mx-profile-showcase"><span class="mx-slotbox">${showcase ? `<img src="${I(showcase)}" alt="${esc(ITEMS[showcase])}">` : "<i>+</i>"}</span><div><small>НА ВИТРИНЕ</small><b>${esc(showcase ? ITEMS[showcase] : "Пока ничего")}</b><span>Предмет из витрины профиля.</span></div></div>
         <div class="mx-profile-stats"><div><b>${sent || 0}</b><span>сообщений</span></div><div><b>${p.trades || 0}</b><span>сделок</span></div><div><b>${rejected || 0}</b><span>отклонено</span></div></div>
-        ${!self && prompts.length ? `<div class="mx-profile-prompts"><small>С ЧЕГО НАЧНЁМ?</small><div>${prompts.map((prompt,i) => `<button type="button" data-prompt="${i}">${esc(prompt)} ↗</button>`).join("")}</div></div>` : ""}
-        <div class="mx-profile-foot"><span>${self ? "Личный профиль" : "Демо-контакт"} · ${esc(id)}</span><span>${!self && !p.online ? "Офлайн — пока без ответов" : "Хранится в этом браузере"}</span></div>
+        ${!self && prompts.length ? `<div class="mx-profile-prompts"><small>ТЕМЫ ДЛЯ ПЕРЕПИСКИ</small><div>${prompts.map((prompt,i) => `<button type="button" data-prompt="${i}">${esc(prompt)} ↗</button>`).join("")}</div></div>` : ""}
+        <div class="mx-profile-foot"><span>${self ? "Личный профиль" : "Демо-профиль"} · ${esc(id)}</span><span>${!self && !p.online ? "Офлайн — пока без ответов" : "Хранится в этом браузере"}</span></div>
         <div class="mx-mf">${self ? `<button type="button" class="mx-b ok" data-x="edit">Изменить профиль</button>` : `<button type="button" class="mx-b ok" data-x="chat">Открыть переписку</button>`}</div></div>`;
       $(".mx-profile-face", box).appendChild(ava(p.ava, 88, false, false));
       box.querySelector('[data-x="back"]').addEventListener("click", () => { V.modal = null; render(); });

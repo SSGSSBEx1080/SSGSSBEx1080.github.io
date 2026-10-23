@@ -3,6 +3,7 @@
    Server rates: 20 ticks/s, HUD = speed * 72, world movement = speed * .5 per tick. */
 (() => {
   'use strict';
+  document.addEventListener('DOMContentLoaded',()=>document.querySelector('.zm-route')?.remove());
   const $ = ZM.$, K = ZM.kit, clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const scrollTo = el => el.scrollIntoView({behavior:reduce.matches ? 'instant' : 'smooth', block:'start'});
@@ -23,16 +24,16 @@
   const heavy = () => clamp((mass()-1)/24,0,1);
   const say = text => $('#stageMessage').textContent = text;
   const notes = {
-    level:'На ровной — до 80. Сними палец с газа: инерция никуда не делась.',
-    climb:'В горку всё труднее. Особенно когда каждый пассажир — железный голем.',
-    descent:'Отпусти газ. На спуске самокат катится и разгоняется сам. С тяжёлым экипажем — ещё сильнее.'
+    level:'Ровная дорога: предел 80 км/ч. При отпускании газа сохраняется инерция.',
+    climb:'Подъём: разгон зависит от массы самоката и пассажиров.',
+    descent:'Спуск: самокат ускоряется под действием гравитации. Дополнительная масса усиливает накат.'
   };
   function roster() {
     $('#roster').innerHTML = s.riders.map((id,i) => `<div class="seat ${id ? 'occupied' : ''}"><span class="seat-number">МЕСТО 0${i+2}</span><div class="seat-figure">${id ? `<img src="${portraits.has(id) ? '../../assets/textures/hub/av/'+types[id][3]+'.png' : '../../assets/textures/p23/i/name_tag.png'}" alt="${ZM.esc(types[id][1])}">` : ''}</div>${id ? `<select data-seat="${i}" aria-label="Пассажир на месте ${i+2}">${TYPES.map(([key,label,w])=>`<option value="${key}" ${key===id?'selected':''}>${label} · ${w}</option>`).join('')}</select><button class="remove" type="button" data-remove="${i}">Высадить ×</button>` : `<button type="button" class="board" data-board="${i}">Посадить ↗</button><small>Пока никого</small>`}</div>`).join('');
     $('#hudMass').textContent = mass().toFixed(1);
     const count = s.riders.filter(Boolean).length, full = count === 4;
-    $('#crewHint').innerHTML = ['Водитель уже на борту.<br>Четыре места для компании.','Один уже на борту.<br>Ещё три места свободны.','Двое уже с тобой.<br>Поместятся ещё двое.','Трое на борту.<br>Осталось одно место.','Водитель и четыре пассажира.<br>Тормозить будешь ты.'][count];
-    $('#tripTitle').innerHTML = full ? 'Ну вот. <em>Все в сборе.</em>' : s.riders.some(Boolean) ? 'Теперь — <em>с пассажирами.</em>' : 'Сначала — <em>без големов.</em>';
+    $('#crewHint').innerHTML = ['Водитель уже на борту.<br>Четыре места для компании.','Один уже на борту.<br>Ещё три места свободны.','Двое уже с тобой.<br>Поместятся ещё двое.','Трое на борту.<br>Осталось одно место.','Водитель и четыре пассажира.<br>Все пять мест заняты.'][count];
+    $('#tripTitle').innerHTML = full ? 'Заезд: <em>полный экипаж</em>' : s.riders.some(Boolean) ? 'Заезд <em>с пассажирами</em>' : 'Испытательный <em>заезд</em>';
   }
   $('#roster').addEventListener('click', e => {
     const board = e.target.closest('[data-board]'), remove = e.target.closest('[data-remove]');
@@ -43,7 +44,7 @@
   document.querySelectorAll('[data-slope]').forEach(b => b.addEventListener('click', () => {
     s.slope = b.dataset.slope;
     document.querySelectorAll('[data-slope]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
-    $('#routeLabel').textContent = {level:'Дорога без сюрпризов', climb:'Пассажиры внезапно потяжелели', descent:'Тормоза лучше не забывать'}[s.slope];
+    $('#routeLabel').textContent = {level:'Ровный участок', climb:'Подъём', descent:'Спуск'}[s.slope];
     $('#terrainText').textContent = notes[s.slope];
     $('#roadSign').innerHTML = s.slope==='level' ? '80<br><small>ПО РОВНОЙ</small>' : s.slope==='climb' ? '↗<br><small>ПОДЪЁМ</small>' : '↘<br><small>СПУСК</small>';
     hud();
