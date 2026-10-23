@@ -20,6 +20,12 @@
  $('#waitCooldown').addEventListener('click',()=>{clearInputs();model.tick(model.state.cooldown);consume();render();save();});
  $('#restFiveMinutes').addEventListener('click',()=>{clearInputs();model.tick(6000);consume();render();save();});
  $('#resetStand').addEventListener('click',()=>{P29Sound.stop();clearInputs();auto=false;$('#autoRun').setAttribute('aria-pressed','false');model=new Core.Model();history.length=0;status='';$('#endCity').checked=$('#netheriteChest').checked=true;window.P29.scene?.reset?.();render();save();});
+ // прямое управление ареной: тяни по арене — бежишь, тап — удар (мышь и сенсор)
+ const arenaHost=$('#arena');let steer=null,steered=false,steerVec=null;
+ const endSteer=()=>{steer=null;steered=false;steerVec=null;};
+ arenaHost.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;steer={x:e.clientX,y:e.clientY};steered=false;});
+ arenaHost.addEventListener('pointermove',e=>{if(!steer)return;const dx=e.clientX-steer.x,dy=e.clientY-steer.y;if(!steered&&Math.hypot(dx,dy)<12)return;steered=true;steerVec={x:Math.max(-1,Math.min(1,dx/70)),y:Math.max(-1,Math.min(1,dy/70))};});
+ for(const name of['pointerup','pointercancel'])arenaHost.addEventListener(name,()=>{if(!steer)return;if(!steered)action(()=>model.attack(),'Цель должна быть ближе 3,3 блока. Её обычные кадры неуязвимости действуют вне ускорения.');endSteer();});
  const setMove=(key,on)=>{if(on)inputs.add(key);else inputs.delete(key);$$('[data-move]').forEach(b=>b.setAttribute('aria-pressed',String(inputs.has(b.dataset.move))));};
  $$('[data-move]').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);setMove(b.dataset.move,true);});for(const name of['pointerup','pointercancel','lostpointercapture','blur'])b.addEventListener(name,()=>setMove(b.dataset.move,false));});
  const editable=e=>e.target.closest('input,select,textarea,[contenteditable]');
@@ -67,7 +73,7 @@
  window.P29={get model(){return model;},get motion(){return motion;},get history(){return history;},render,consume,save,scene:null};
  renderBrew();render();save();let last=performance.now(),accum=0;
  setInterval(()=>{const now=performance.now(),dt=Math.min(250,now-last);last=now;if(document.hidden){accum=0;clearInputs();return;}accum+=dt;const n=Math.floor(accum/50);if(!n)return;accum-=n*50;
-  for(let i=0;i<n;i++){if(auto)model.movement(Math.cos(model.state.t*.025),Math.sin(model.state.t*.025));else model.movement((inputs.has('right')?1:0)-(inputs.has('left')?1:0),(inputs.has('down')?1:0)-(inputs.has('up')?1:0));model.tick();if(model.state.t%10===0){history.push(model.state.psychosis);if(history.length>160)history.shift();}}
+  for(let i=0;i<n;i++){if(auto)model.movement(Math.cos(model.state.t*.025),Math.sin(model.state.t*.025));else if(steerVec)model.movement(steerVec.x,steerVec.y);else model.movement((inputs.has('right')?1:0)-(inputs.has('left')?1:0),(inputs.has('down')?1:0)-(inputs.has('up')?1:0));model.tick();if(model.state.t%10===0){history.push(model.state.psychosis);if(history.length>160)history.shift();}}
   consume();render();drawGraph();if(now-lastSave>1000)save();
  },25);addEventListener('pagehide',save);
 })();
