@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:skeleton_skull"
+    },
+    "title": {
+      "text": "✦КИБЕРПСИХОЗ✦",
+      "color": "dark_red",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "За тобой пришёл Адам Смэшер. Тебе пиздец, чумба! Ты забыл что это всего лишь базовый имплант.",
+      "color": "red",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "zitraksmode:29_sandevistan/05_kill",
+  "criteria": {
+    "death": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "function": "zitraksmode:29_sandevistan/06_death",
+    "experience": 50
+  }
+}

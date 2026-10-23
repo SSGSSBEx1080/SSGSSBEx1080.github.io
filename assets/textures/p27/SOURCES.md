@@ -29,7 +29,20 @@ An inventory render or a presentation camera is not a change to the game's model
 The firing-range illustration mirrors its raster gun so the muzzle faces the
 actual target; inventory icons retain the original item's GUI orientation.
 
-`tools/render_p27_assets.js` reproduces `anton_stalk.png` from the original
-`animation.chigur.stalk` at t = 0.35 s (not a baked T-pose), and
-`shotgun_side.png` from the original Java item model. The latter replaces the old
-entity-bone-derived weapon illustration. No original source JSON is altered.
+`pages/27-chigur/item-model.js` now builds actual Three.js cuboids from the
+original Java item elements. It maps all six native faces, honors negative/rotated
+UV rectangles, element pivots/rescale and planar geometry. Minecraft Java face UVs
+are normalized to 16; the Blockbench `texture_size` is not a second normalization.
+No source JSON or texture is altered.
+
+The former CSS-face stack is no longer used on this page. Its face winding and
+zero-width transforms could hide surfaces while orbiting. A planar trigger guard
+now has two oppositely facing real faces rather than two doubled CSS sheets.
+The shotgun has 32 drawable native faces; the thin coin has all six, including
+its edge and its separate north/south atlas rectangles. The live coin toss rotates
+that model, not an image of the atlas.
+
+`tools/render_p27_assets.js` reproduces the static item/coin snapshots and icons
+through the same WebGL meshes. The actor's existing `anton_stalk.png` remains a
+render of its original animation at t = 0.35 s. Unsupported WebGL browsers see
+proper rendered item views, never the unfolded atlas.

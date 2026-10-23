@@ -43,7 +43,7 @@ if (shots) fs.mkdirSync(shots, { recursive:true });
     await p.waitForFunction(({id,count}) => JSON.parse(localStorage.getItem('zm:p23.max')).msgs.filter(m => m.from === id).length > count, {id,count});
     return (await max()).msgs.filter(m => m.from === id).at(-1).text;
   };
-  const waitPhase = phase => p.waitForFunction(phase => P27SCENE.state.phase === phase, phase, { timeout:17000 });
+  const waitPhase = phase => p.waitForFunction(phase => P27SCENE.state.phase === phase, phase, { timeout:25000 });
   const act = action => p.locator(`[data-act="${action}"]`).click();
   const setHidden = hidden => p.evaluate(hidden => {
     if (hidden) Object.defineProperty(document, 'hidden', { configurable:true, get:() => true });

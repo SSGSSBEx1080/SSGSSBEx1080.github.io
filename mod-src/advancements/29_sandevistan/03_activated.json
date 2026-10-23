@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:feather"
+    },
+    "title": {
+      "text": "✧ПЕДАЛЬ В ПОЛ✧",
+      "color": "green",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "Впервые активируйте скорость. Главное — не передрочить шкалу киберпсихоза. А то кто знает чем это может кончиться...",
+      "color": "dark_green",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "zitraksmode:29_sandevistan/02_obtained",
+  "criteria": {
+    "activated": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
