@@ -5,7 +5,7 @@
   const mount=document.querySelector('#weaponModel');if(!mount||!window.ZMModel3D||!ZM.P27ITEMS)return;
   const model=structuredClone(ZM.P27ITEMS.shotgun);model.textures={0:'chigur_shotgun'};
   let view=null,drag=null,rx=10,ry=70;
-  function transform(){if(view)view.rig.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;}
+  function transform(){if(view)view.rig.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(180deg)`;}
   function rebuild(){
     mount.innerHTML='';view=ZMModel3D.build(model,'../../assets/textures/p27/',{unit:Math.min(18,mount.clientWidth/27)});
     mount.append(view.el);transform();

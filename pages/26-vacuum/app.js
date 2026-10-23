@@ -9,7 +9,7 @@
   ZM.topbar({crumb:'№26 · Пылесос',...ZM.pointNav(26)});K.finNav(26,$('#finNav'));
   const ITEMS=[['diamond','Алмаз','ore'],['coal','Уголь','ore'],['raw_iron','Сырое железо','ore'],['emerald','Изумруд','ore'],['copper_ingot','Медь','ore'],['iron_ingot','Железо','ore'],['raw_gold','Сырое золото','ore'],['stone','Камень','block'],['cobblestone','Булыжник','block'],['dirt','Земля','block'],['oak_log','Дуб','block'],['apple','Яблоко','food'],['bread','Хлеб','food'],['carrot','Морковь','food'],['potato','Картофель','food'],['wheat','Пшеница','wheat'],['dropper','Выбрасыватель','misc'],['feather','Перо','misc'],['stick','Палка','misc'],['arrow','Стрела','misc'],['redstone','Редстоун','misc'],['chest','Сундук','misc'],['hopper','Воронка','misc'],['anvil','Наковальня','misc'],['enchanted_book','Книга чар','misc']].map(([id,name,category])=>({id,name,category,max:id==='enchanted_book'?1:64}));
   const byId=id=>ITEMS.find(x=>x.id===id);
-  const MODES=[['ores','Руды','diamond'],['blocks','Блоки','stone'],['food','Еда','bread'],['misc','Прочее','feather'],['custom','Один предмет','name_tag']];
+  const MODES=[['ores','Руды','diamond'],['blocks','Блоки','stone'],['food','Еда','bread'],['custom','Свой предмет','name_tag']];
   const defaults={power:5,mode:'ores',custom:'diamond',history:[],upgrades:0,enchant:0,inventory:[],caught:0};
   const specimenKeys=Object.keys(defaults);
   function clean(input={}) {
@@ -29,7 +29,7 @@
   const snapshot=()=>Object.fromEntries(specimenKeys.map(k=>[k,structuredClone(S[k])]));
   function persist(){S.specimens[S.exemplar]=snapshot();ZM.store.set('p26.lab',Object.assign(snapshot(),{exemplar:S.exemplar,specimens:S.specimens,playerCount:S.playerCount,crafted:S.crafted}));}
   const capacity=()=>27+S.upgrades*10, range=()=>S.power+S.enchant*5, free=()=>capacity()-S.inventory.length;
-  function matches(item){if(!item)return false;return S.mode==='ores'?item.category==='ore':S.mode==='blocks'?item.category==='block':S.mode==='food'?['food','wheat'].includes(item.category):S.mode==='misc'?['misc','wheat'].includes(item.category):item.id===S.custom;}
+  function matches(item){if(!item)return false;return S.mode==='ores'?item.category==='ore':S.mode==='blocks'?item.category==='block':S.mode==='food'?['food','wheat'].includes(item.category):S.mode==='custom'&&item.id===S.custom;}
   const log=text=>$('#labLog').textContent=text;
   const adv=K.adv({list:ZM.P26.advancements,store:'p26.adv',icon:a=>icon(a.icon),intro:'Три настоящих достижения мода. Имена и описания оставлены без прикрас.'});
   function ensureItem(){S.crafted=true;adv.grant('crafted');}
@@ -83,12 +83,12 @@
   $('#powerRange').addEventListener('input',e=>setPower(+e.target.value));
   function renderFilters(){
     $('#filters').innerHTML=MODES.map(([id,title,item])=>`<button type="button" data-mode="${id}" aria-pressed="${S.mode===id}"><img src="${item==='name_tag'?'../../assets/textures/p23/i/name_tag.png':icon(item)}" alt="">${title}</button>`).join('');
-    $('#customPicker').hidden=S.mode!=='custom';$('#customSearch').value='minecraft:'+S.custom;renderSearch();
+    $('#customPicker').hidden=S.mode!=='custom';$('#customSearch').value=byId(S.custom).name;$('#customSelected').textContent='Выбран: '+byId(S.custom).name;renderSearch();
   }
   $('#filters').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(!b)return;S.mode=b.dataset.mode;persist();renderFilters();log('Берём только '+MODES.find(x=>x[0]===S.mode)[1].toLowerCase()+'. Всё остальное останется.');window.P26FLOOR?.refresh();});
   function selectCustom(id){if(!byId(id))return false;S.custom=id;S.mode='custom';S.history=[id,...S.history.filter(x=>x!==id)].slice(0,10);persist();renderFilters();log('Фильтр: '+byId(id).name+'.');window.P26FLOOR?.refresh();return true;}
   function renderSearch(){const q=$('#customSearch').value.toLowerCase().trim().replace(/^minecraft:/,'');$('#customSuggestions').innerHTML=ITEMS.filter(x=>x.id.includes(q)||x.name.toLowerCase().includes(q)).slice(0,6).map(x=>`<button type="button" data-item="${x.id}">${esc(x.name)}</button>`).join('');$('#customHistory').innerHTML=S.history.map(id=>`<button type="button" data-item="${id}">↶ ${esc(byId(id).name)}</button>`).join('');}
-  $('#customSearch').addEventListener('input',renderSearch);$('#customSearch').addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const v=e.target.value.toLowerCase().trim().replace(/^minecraft:/,'');const item=byId(v)||ITEMS.find(x=>x.name.toLowerCase()===v);if(!item)log('Такого образца здесь нет. Выбери предмет из подсказок.');else selectCustom(item.id);});
+  $('#customSearch').addEventListener('input',e=>{const entered=e.target.value;renderSearch();const q=entered.toLowerCase().trim().replace(/^minecraft:/,'');const item=byId(q)||ITEMS.find(x=>x.name.toLowerCase()===q);if(item&&item.id!==S.custom){selectCustom(item.id);e.target.value=entered;renderSearch();}});$('#customSearch').addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const v=e.target.value.toLowerCase().trim().replace(/^minecraft:/,'');const item=byId(v)||ITEMS.find(x=>x.name.toLowerCase()===v);if(!item)log('Такого образца здесь нет. Выбери предмет из подсказок.');else selectCustom(item.id);});
   $('#customPicker').addEventListener('click',e=>{const b=e.target.closest('[data-item]');if(b)selectCustom(b.dataset.item);});
   function renderBag(){
     const r=$('#rowRange'),max=Math.max(0,Math.ceil(capacity()/9)-3);r.max=max;r.value=Math.min(+r.value,max);const first=+r.value*9;

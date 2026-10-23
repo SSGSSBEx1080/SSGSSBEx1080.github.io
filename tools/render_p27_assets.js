@@ -28,7 +28,7 @@ const{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
   await p.evaluate(({model,base})=>{
    document.body.innerHTML='<div id="item"></div>';document.body.style='padding:0;margin:0;background:transparent';
    const style=document.createElement('style');style.textContent='html{background:transparent!important}#item{position:fixed;inset:0;perspective:1500px}.m3d{position:absolute;left:50%;top:50%;transform-style:preserve-3d}.m3d-rig{position:absolute;left:0;top:0;transform-style:preserve-3d}.m3d-f{display:block;position:absolute;left:0;top:0;width:100px;height:100px;transform-origin:0 0;background-repeat:no-repeat;image-rendering:pixelated;backface-visibility:hidden}';document.head.appendChild(style);
-   model.textures={0:'chigur_shotgun'};const view=ZMModel3D.build(model,base+'/assets/textures/p27/',{unit:29});view.rig.style.transform='rotateX(8deg) rotateY(-70deg)';document.querySelector('#item').append(view.el);
+   model.textures={0:'chigur_shotgun'};const view=ZMModel3D.build(model,base+'/assets/textures/p27/',{unit:29});view.rig.style.transform='rotateX(8deg) rotateY(-70deg) rotateZ(180deg)';document.querySelector('#item').append(view.el);
   },{model,base});
   await p.waitForTimeout(600);await p.screenshot({path:'assets/textures/p27/shotgun_side.png',omitBackground:true,timeout:45000});
   console.log('Rendered original stalk animation and native item side view.');

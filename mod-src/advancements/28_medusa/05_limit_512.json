@@ -1,0 +1,32 @@
+{
+  "parent": "zitraksmode:28_medusa/04_science_radius",
+  "display": {
+    "icon": {
+      "item": "minecraft:nether_star"
+    },
+    "title": {
+      "text": "✦Глобальное окаменение✦",
+      "color": "gold",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "12 800 000 метров. 1 секунда.",
+      "color": "yellow",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "radius_512_used": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 100,
+    "function": "zitraksmode:28_medusa/05_limit_512"
+  }
+}

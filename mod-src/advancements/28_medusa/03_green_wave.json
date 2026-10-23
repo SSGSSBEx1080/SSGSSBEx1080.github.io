@@ -1,0 +1,32 @@
+{
+  "parent": "zitraksmode:28_medusa/02_countdown",
+  "display": {
+    "icon": {
+      "item": "minecraft:emerald"
+    },
+    "title": {
+      "text": "✧ЗЕЛЁНЫЙ ГОРИЗОНТ✧",
+      "color": "dark_aqua",
+      "bold": true,
+      "italic": false
+    },
+    "description": {
+      "text": "3 июня 2019 года.",
+      "color": "aqua",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "green_wave_activated": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 20,
+    "function": "zitraksmode:28_medusa/03_green_wave"
+  }
+}

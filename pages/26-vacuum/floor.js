@@ -24,8 +24,9 @@
   function refresh(){
     const remaining=loose.length+crops.filter(x=>x.ripe).length;$('#roomRemaining').textContent='На полу: '+remaining;
     const matched=loose.filter(x=>app.matches(byId(x.id))).length+(S.mode==='food'?crops.filter(x=>x.ripe).length:0);
-    const complete=collected>0&&matched===0;$('#roomEmpty').hidden=!complete;
-    if(complete){$('#roomEmpty strong').textContent=remaining?'Нужное — внутри.':'Чисто.';$('#roomEmpty span').textContent=remaining?'Остальное осталось на полу. Можно сменить фильтр.':'Всё, что лежало, теперь у тебя.';}
+    const complete=collected>0&&matched===0,status=$('#floorStatus');
+    status.dataset.complete=String(complete);
+    status.textContent=complete?(remaining?'Подходящие предметы собраны. Можно сменить фильтр.':'Все предметы собраны.'):'Под выбранный фильтр: '+matched+'.';
   }
   function update(){
     if(document.hidden||!seen)return;ticks++;
@@ -53,17 +54,17 @@
   cv.addEventListener('keyup',e=>{if(e.key===' '){e.preventDefault();app.hold(false,'floor-key');}});cv.addEventListener('blur',()=>{release();app.hold(false,'floor-key');});
   document.querySelectorAll('[data-room]').forEach(b=>b.addEventListener('click',()=>selectRoom(b.dataset.room)));
   $('#spawnBtn').addEventListener('click',()=>{spawn();app.log('Новая россыпь. Старое содержимое пылесоса никуда не делось.');});
-  $('#scatterAgain').addEventListener('click',()=>{collected=0;spawn(14);});
+  $('#scatterAgain').addEventListener('click',()=>{selectRoom(scene);app.log('Новая россыпь. Хранилище и настройки сохранены.');});
   $('#regrow').addEventListener('click',()=>{crops.forEach(x=>x.ripe=true);collected=0;refresh();app.log('Демонстрация: грядка снова выросла. В Minecraft растения растут своим ходом.');});
   function sprite(id,x,y,size,rotation=0,alpha=1){const image=images[id];if(!image||!image.complete||!image.naturalWidth)return;g.save();g.translate(x,y);g.rotate(rotation);g.globalAlpha=alpha;g.imageSmoothingEnabled=false;g.drawImage(image,-size/2,-size/2,size,size);g.restore();}
   function draw(t){
     requestAnimationFrame(draw);if(t-last<40)return;last=t;if(!seen||document.hidden)return;
-    g.clearRect(0,0,w,h);g.fillStyle=scene==='farm'?'#d0d7b8':'#e6e5d5';g.fillRect(0,0,w,h);
-    const tile=Math.max(35,u*1.9);g.strokeStyle=scene==='farm'?'#b5c3a1':'#d4d7c4';g.lineWidth=1;
+    g.clearRect(0,0,w,h);g.fillStyle=scene==='farm'?'#1b3533':'#162c36';g.fillRect(0,0,w,h);
+    const tile=Math.max(35,u*1.9);g.strokeStyle=scene==='farm'?'#2c4c45':'#294650';g.lineWidth=1;
     for(let x=ox%tile;x<w;x+=tile){g.beginPath();g.moveTo(x,0);g.lineTo(x,h);g.stroke();}
     for(let y=oy%tile;y<h;y+=tile){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}
     // Small wear marks belong to the floor, not to the collectable item count.
-    g.fillStyle=scene==='farm'?'#b5c39e':'#c9cebb';for(let i=0;i<38;i++){const x=(i*137.8+41)%w,y=(i*63.4+37)%h;g.fillRect(x,y,2+(i%3),2);}
+    g.fillStyle=scene==='farm'?'#315548':'#304e58';for(let i=0;i<38;i++){const x=(i*137.8+41)%w,y=(i*63.4+37)%h;g.fillRect(x,y,2+(i%3),2);}
     for(const c of crops){const x=ox+c.x*u,y=oy-c.z*u;g.fillStyle='#9c9871';g.fillRect(x-u*.7,y-u*.65,u*1.4,u*1.3);g.fillStyle='#b8af7c';g.fillRect(x-u*.6,y-u*.55,u*1.2,2);if(c.ripe)sprite('wheat',x,y,Math.min(39,u*1.5));else{g.strokeStyle='#78966a';g.lineWidth=2;g.beginPath();g.moveTo(x,y+6);g.lineTo(x,y-4);g.moveTo(x,y);g.lineTo(x-5,y-3);g.moveTo(x,y+2);g.lineTo(x+5,y-1);g.stroke();}}
     // True cone angle and true range, projected onto this small tabletop.
     const a=.30+S.power*.025,r=app.range()*u;
