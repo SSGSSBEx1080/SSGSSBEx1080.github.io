@@ -1,10 +1,11 @@
 /* Г-Н · 3D-сцены на three.js.
- * 1) НОЖ: воксельная сборка — каждый непрозрачный пиксель оригинальной
- *    текстуры nina_knife.png превращается в куб, получается объёмный
- *    пиксельный нож. Крути мышью, в покое он дрейфует сам.
+ * 1) НОЖ — только плоская текстура из мода (2D, одна текстура):
+ *    по требованию автора объёмная воксельная модель убрана.
  * 2) ПКМ-СТЕНД: овца и бык собраны из ванильной геометрии sheep/cow geo
- *    с настоящими текстурами (у овцы — шкура + шерсть sheep_fur, которая
- *    срезается при стрижке; у быка — рога и перекраска в медь/лысый).
+ *    с настоящими текстурами. Шерсть овцы — как в ява-модели SheepModel:
+ *    тело inflate 1.375, голова 1.0 с открытым лицом, на ногах — короткие
+ *    шерстяные «штанишки» 4×6×4 (низ ног открыт). У быка рога и морда
+ *    не перекрашиваются при стрижке — отдельный материал без тонировки.
  *    Куст ягод и дуб-бревно с реальными текстурами блока. Состояниями
  *    управляет app.js через событие 'g4rcm' — механики и прочность
  *    ножа честные и числятся в app.js, тут только картинка. */
@@ -49,60 +50,7 @@ function fit(cv, renderer, camera) {
 }
 
 /* =====================================================================
- * 1. НОЖ: воксельная модель из текстуры предмета
- * ===================================================================== */
-try {
-  const fig = document.querySelector('#knifeArt'), cv = document.querySelector('#knife3d');
-  if (!fig || !cv) throw Error('нет места под сцену');
-  if (!webgl2) throw Error('WebGL2 недоступен');
-  const renderer = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: 'low-power' });
-  renderer.setPixelRatio(DPR);
-  const scene = new T.Scene();
-  const camera = new T.PerspectiveCamera(30, 1, .1, 120);
-  const ob = orbit(cv, .62, .34);
-
-  scene.add(new T.HemisphereLight(0xfff1e2, 0x30121a, 1.6));
-  const key = new T.DirectionalLight(0xffffff, 1.15); key.position.set(3, 4, 3); scene.add(key);
-  const rim = new T.DirectionalLight(0xe0576b, .55); rim.position.set(-3.5, 1.4, -2.6); scene.add(rim);
-
-  const tex = new Image();
-  tex.crossOrigin = 'anonymous';
-  tex.onload = () => {
-    try {
-      const S = 16, c = document.createElement('canvas'); c.width = c.height = S;
-      const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
-      g.drawImage(tex, 0, 0, S, S);
-      const data = g.getImageData(0, 0, S, S).data, cubes = [];
-      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-        const i = (y * S + x) * 4;
-        if (data[i + 3] < 70) continue;
-        cubes.push({ x: x - S / 2 + .5, y: S / 2 - y - .5, h: (data[i] << 16) | (data[i + 1] << 8) | data[i + 2] });
-      }
-      if (!cubes.length) throw Error('пустая текстура');
-      const inst = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1.5), new T.MeshLambertMaterial({}), cubes.length);
-      const m = new T.Matrix4(), col = new T.Color();
-      cubes.forEach((q, i) => { m.setPosition(q.x, q.y, 0); inst.setMatrixAt(i, m); inst.setColorAt(i, col.setHex(q.h)); });
-      inst.instanceMatrix.needsUpdate = true;
-      if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
-      inst.rotation.z = -.12;
-      scene.add(inst);
-      fig.classList.add('ready');
-    } catch (e) { /* остаётся плоская текстура-заглушка */ }
-  };
-  tex.src = '../../assets/textures/guest/nina_knife.png';
-
-  looper(cv, (dt, t, w, h) => {
-    fit(cv, renderer, camera);
-    const { yaw, pitch } = ob.step(dt);
-    const dist = 31;
-    camera.position.set(Math.sin(yaw) * Math.cos(pitch) * dist, Math.sin(pitch) * dist + 1.5, Math.cos(yaw) * Math.cos(pitch) * dist);
-    camera.lookAt(0, 0, 0);
-    renderer.render(scene, camera);
-  });
-} catch (e) { /* нож остаётся картинкой из мода */ }
-
-/* =====================================================================
- * 2. ПКМ-СТЕНД: овца · бык · куст ягод · дуб-бревно
+ * 1. ПКМ-СТЕНД: овца · бык · куст ягод · дуб-бревно
  * ===================================================================== */
 try {
   const host = document.querySelector('#rcmScene'), cv = document.querySelector('#rcm3d');
@@ -132,9 +80,11 @@ try {
   /* ---- сборка сущности из ванильного geo: боксы + java-раскладка UV ---- */
   const loader = new T.TextureLoader();
   const texOf = (p) => { const t = loader.load(p); t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter; return t; };
-  function animalOf(model, texPath, tint = 0xffffff, inflate = 0) {
+  function animalOf(model, texPath, tint = 0xffffff, inflate = 0, untint) {
     const [TW, TH] = model.tex;
     const mat = new T.MeshLambertMaterial({ map: texOf(texPath), color: tint, alphaTest: .4 });
+    /* рога/морда быка — свой материал без тонировки, чтобы медь/лысый красили только шкуру */
+    const plain = untint ? new T.MeshLambertMaterial({ map: mat.map }) : null;
     const root = new T.Group(), bones = {}, meshes = [];
     for (const b of model.bones) {
       const g = new T.Group();
@@ -157,9 +107,10 @@ try {
               uvA.setXY(i, (r[0] + uvA.getX(i) * (r[2] - r[0])) / TW, 1 - (r[3] - uvA.getY(i) * (r[3] - r[1])) / TH);
           }
         }
-        const m = new T.Mesh(geo, mat);
+        const m = new T.Mesh(geo, untint && untint(c) ? plain : mat);
         m.position.set((c.o[0] + c.s[0] / 2 - b.p[0]) / 16, (c.o[1] + c.s[1] / 2 - b.p[1]) / 16, (c.o[2] + c.s[2] / 2 - b.p[2]) / 16);
-        if (inflate) m.scale.set((c.s[0] + 2 * inflate) / c.s[0], (c.s[1] + 2 * inflate) / c.s[1], (c.s[2] + 2 * inflate) / c.s[2]);
+        const inf = c.inf !== undefined ? c.inf : inflate;
+        if (inf) m.scale.set((c.s[0] + 2 * inf) / c.s[0], (c.s[1] + 2 * inf) / c.s[1], (c.s[2] + 2 * inf) / c.s[2]);
         m.userData.base = [m.scale.x, m.scale.y, m.scale.z];
         g.add(m); meshes.push(m);
       }
@@ -169,14 +120,26 @@ try {
     return { root, bones, mat, meshes };
   }
 
-  /* ОВЦА: шкура + отдельный слой шерсти (надув кубов), шерсть срезается */
+  /* ОВЦА: шкура + слой шерсти точно как в ява SheepModel —
+   * тело inflate 1.375, голова inflate 1.0 (в sheep_fur лицо открыто),
+   * на ногах короткие «штанишки» 4×6×4 с inflate 0.5 — низ ног голый. */
   const sheepSkin = animalOf(MODELS.sheep, '../../assets/textures/mc/entity/sheep/sheep.png');
-  const sheepWool = animalOf(MODELS.sheep, '../../assets/textures/mc/entity/sheep/sheep_fur.png', 0xffffff, .9);
+  const SHEEP_WOOL = {
+    tex: [64, 32], bones: [
+      { n: 'body', p: [0, 19, 2], r: [90, 0, 0], c: [{ s: [8, 16, 6], o: [-4, 13, -5], uv: [28, 8], inf: 1.375 }] },
+      { n: 'head', p: [0, 18, -8], c: [{ s: [6, 6, 8], o: [-3, 16, -14], uv: [0, 0], inf: 1.0 }] },
+      { n: 'leg0', p: [-3, 12, 7], c: [{ s: [4, 6, 4], o: [-5, 6, 5], uv: [0, 16], inf: .5 }] },
+      { n: 'leg1', p: [3, 12, 7], c: [{ s: [4, 6, 4], o: [1, 6, 5], uv: [0, 16], inf: .5 }] },
+      { n: 'leg2', p: [-3, 12, -5], c: [{ s: [4, 6, 4], o: [-5, 6, -7], uv: [0, 16], inf: .5 }] },
+      { n: 'leg3', p: [3, 12, -5], c: [{ s: [4, 6, 4], o: [1, 6, -7], uv: [0, 16], inf: .5 }] },
+    ],
+  };
+  const sheepWool = animalOf(SHEEP_WOOL, '../../assets/textures/mc/entity/sheep/sheep_fur.png');
   const sheepG = new T.Group(); sheepG.add(sheepSkin.root, sheepWool.root); scene.add(sheepG);
   const woolMeshes = sheepWool.meshes;
 
-  /* БЫК: ванильная корова с рогами; медь/лысый — перекраска материала */
-  const bull = animalOf(MODELS.cow, '../../assets/textures/mc/entity/cow/cow.png');
+  /* БЫК: ванильная корова; медь/лысый красят шкуру, рога [1×3×1] остаются природными */
+  const bull = animalOf(MODELS.cow, '../../assets/textures/mc/entity/cow/cow.png', 0xffffff, 0, (c) => c.s[0] === 1 && c.s[1] === 3 && c.s[2] === 1);
   const bullG = new T.Group(); bullG.add(bull.root); scene.add(bullG);
   const bullMat = bull.mat;
 
@@ -237,7 +200,7 @@ try {
     for (const m of woolMeshes) { const v = Math.max(.001, m.userData.tw.v); m.scale.set(m.userData.base[0] * v, m.userData.base[1] * v, m.userData.base[2] * v); }
     for (const b of berries) b.scale.setScalar(Math.max(.001, b.userData.tw.v));
     /* живость: головы кивают, куст дышит, бревно покачивается */
-    if (cur === 'sheep') sheepSkin.bones.head.rotation.x = Math.sin(t * 1.7) * .07;
+    if (cur === 'sheep') { sheepSkin.bones.head.rotation.x = Math.sin(t * 1.7) * .07; sheepWool.bones.head.rotation.x = sheepSkin.bones.head.rotation.x; }
     if (cur === 'bull') bull.bones.head.rotation.x = Math.sin(t * 1.3) * .06;
     if (cur === 'berries') { const s = 1 + Math.sin(t * 2.2) * .02; berG.scale.set(s, 1 / s, s); }
     if (cur === 'log') logMesh.rotation.y = .5 + Math.sin(t * .9) * .06;

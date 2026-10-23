@@ -211,8 +211,9 @@
     }).join("");
     const guestHtml = glist.map((g) => {
       const ga = (ZM.GUEST_ADV || []).find((x) => x.page === g.page), p = ga && st.per[ga.n];
-      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/hub/av/rabbit.png", "В": "assets/textures/mc/p2/entity_steve.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
-      return `<a class="pc live guest ${p && p.got === p.all ? "full" : ""}" href="${g.page}" style="--tone:${g.tone || "#8b8b95"}">
+      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/hub/av/rabbit.png", "В": "assets/textures/hub/av/couple.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
+      return `<a class="pc live guest g-${esc(g.letter || "?")} ${p && p.got === p.all ? "full" : ""}" href="${g.page}" style="--tone:${g.tone || "#8b8b95"}">
+        <span class="pc-bg"></span>
         <span class="pc-n">${esc(g.letter || "?")}</span>${ic ? `<img class="pc-ic" src="${ic}" alt="">` : ""}
         <span class="pc-t">${esc(g.title)}</span><span class="pc-d">ГОСТЕВОЙ ПУНКТ${g.soon ? " · НЕТ СИГНАЛА" : ""}</span>
         ${p ? `<span class="pc-pr" style="--p:${(p.got / p.all) * 100}%"><i></i><b>★ ${p.got}/${p.all}</b></span>` : `<span class="pc-st g-nobranch">БЕЗ ВЕТКИ</span>`}</a>`;
@@ -236,11 +237,15 @@
     const rows = HUB.length, yc = TW.y0 + ((rows - 1) * TW.row) / 2;
     nodes.push({ id: "root", x: TW.x0, y: yc - 4, a: ROOT, root: true });
     const c1 = TW.x0 + 60 + 44;
+    let maxX = 0;
     HUB.forEach((pt, r) => {
       const y = TW.y0 + r * TW.row, depth = {};
-      pt.adv.forEach((a) => { depth[a.key] = a.parent ? (depth[a.parent] ?? 0) + 1 : 0; nodes.push({ id: pt.n + ":" + a.key, x: c1 + depth[a.key] * TW.step, y, a, pt }); });
+      let lastX = c1;
+      pt.adv.forEach((a) => { depth[a.key] = a.parent ? (depth[a.parent] ?? 0) + 1 : 0; lastX = c1 + depth[a.key] * TW.step; nodes.push({ id: pt.n + ":" + a.key, x: lastX, y, a, pt }); });
+      /* подпись справа от последней ачивки: считаем её ширину, чтобы ничего не обтёсывалось */
+      maxX = Math.max(maxX, lastX + 52, lastX + 64 + `${ptLabel(pt)} ${pt.title} · 00/00`.length * 7.4 + 44);
     });
-    TW.W = Math.max(...nodes.map((n) => n.x)) + 52 + 230; TW.H = TW.y0 * 2 + (rows - 1) * TW.row + 52;
+    TW.W = maxX + 26; TW.H = TW.y0 * 2 + (rows - 1) * TW.row + 52;
   }
   function treeRender(st) {
     const R = nodes[0], c1 = TW.x0 + 60 + 44, trunk = c1 - 22;
@@ -273,10 +278,10 @@
     TW.pan.x = cx - ((cx - TW.pan.x) * s2) / TW.s; TW.pan.y = cy - ((cy - TW.pan.y) * s2) / TW.s; TW.s = s2; applyPan(); hideTip();
   }
   function home() {
-    const W = twIn.clientWidth, H = twIn.clientHeight;
-    TW.s = clamp(Math.min(W / (TW.W + 20), H / (TW.H + 20)), 0.55, 1);
-    if (W < 700) TW.s = 0.7;
-    const R = nodes[0]; TW.pan.x = W < 700 ? 16 - R.x * TW.s : (W - TW.W * TW.s) / 2; TW.pan.y = H / 2 - (R.y + 30) * TW.s; applyPan();
+    const W = twIn.clientWidth, H = twIn.clientHeight, R = nodes[0];
+    /* вписываем всё древо в окно целиком: ни ветка, ни подпись не обтёсываются */
+    TW.s = clamp(Math.min(W / (TW.W + 30), H / (TW.H + 30)), 0.3, 1);
+    TW.pan.x = (W - TW.W * TW.s) / 2; TW.pan.y = H / 2 - (R.y + 30) * TW.s; applyPan();
   }
   // подсказка как в игре
   let twSel = -1;
@@ -423,7 +428,7 @@
   $("#twRows").addEventListener("click", (e) => { const a = e.target.closest("a"); if (!a || e.ctrlKey || e.metaKey) return; const n = +a.dataset.n; if (!n) return; e.preventDefault(); setTab(n); $("#tw").scrollIntoView({ behavior: "smooth", block: "center" }); });
 
   /* ================= гости, история ================= */
-  const GICON = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/guest/rabbit.png", "В": "assets/textures/mc/p2/entity_steve.png", "П": "assets/textures/guest/nina_knife.png" };
+  const GICON = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/hub/av/rabbit.png", "В": "assets/textures/hub/av/couple.png", "П": "assets/textures/guest/nina_knife.png" };
   $("#guests").innerHTML = ZM.GUEST_POINTS.map((g, i) => `
     <${g.page ? "a" : "div"} class="gcard${g.soon ? " soon" : ""}"${g.page ? ` href="${U(g.page)}"` : ' aria-disabled="true"'} style="--gtone:${g.tone || "#8b8b95"}">
       <span class="gc-letter" aria-hidden="true">${esc(g.letter || "?")}<small>G-${i + 1}/${ZM.GUEST_POINTS.length}</small></span>

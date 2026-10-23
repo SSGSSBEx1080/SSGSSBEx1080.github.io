@@ -83,16 +83,47 @@
 
 /* ---- солевой фитиль ---- */
 .fuse-wrap{display:flex;flex-direction:column;gap:12px}
-.fuse-grid{position:relative;display:grid;gap:2px;background:#070c11;border:1px solid var(--g-line);padding:8px;touch-action:none}
-.fuse-grid button{position:relative;aspect-ratio:1;background:
-  linear-gradient(#182b1c,#132317);border:1px solid #ffffff0d;cursor:pointer;padding:0}
-.fuse-grid button:hover{border-color:#ffffff2e}
-.fuse-grid button.salt{background:#10161d}
-.fuse-grid button.salt{background:#10161d;box-shadow:inset 0 0 0 1px #ffffff0d}
-.fuse-grid button.lit{background:#2b1d10;box-shadow:inset 0 0 0 1px #ffb02e2e}
+.fuse-grid{position:relative;touch-action:none}
+.world-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;background:#0b140c;
+  border:1px solid var(--g-line);padding:8px;border-radius:10px}
+.world-grid button{position:relative;aspect-ratio:1;border:1px solid #00000042;border-radius:2px;padding:0;cursor:pointer;
+  background:url('../../assets/textures/mc/p2/block_grass_block_top.png') 0 0/100% 100%;image-rendering:pixelated;
+  box-shadow:inset 0 5px 0 -3px rgba(255,255,255,.17),inset 0 -7px 0 -4px rgba(0,0,0,.4);transition:filter .15s}
+.world-grid button::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;border-radius:0 0 2px 2px;pointer-events:none;
+  background:url('../../assets/textures/mc/p2/block_grass_block_side.png') 0 0/16px 100%;image-rendering:pixelated;opacity:.85}
+.world-grid button:hover{filter:brightness(1.18)}
+.world-grid button img{position:absolute;left:50%;top:46%;width:74%;height:74%;transform:translate(-50%,-50%);
+  object-fit:contain;image-rendering:pixelated;z-index:1;filter:drop-shadow(0 3px 3px rgba(0,0,0,.55))}
+.world-grid button.lever{cursor:pointer}
+.world-grid button.lever img{width:58%;height:58%;transform:translate(-50%,-30%) rotate(-18deg);transition:transform .18s}
+.world-grid button.lever.pulled img{transform:translate(-50%,-24%) rotate(15deg)}
+.world-grid button.mech{cursor:default}
+.world-grid button.salt{box-shadow:inset 0 0 0 2px rgba(255,255,255,.16),inset 0 5px 0 -3px rgba(255,255,255,.1),inset 0 -7px 0 -4px rgba(0,0,0,.4)}
+.world-grid button.lit{box-shadow:inset 0 0 0 2px rgba(255,176,46,.55),inset 0 5px 0 -3px rgba(255,176,46,.16),inset 0 -7px 0 -4px rgba(0,0,0,.4)}
+.world-grid button.scorch{background-image:url('../../assets/textures/mc/p2/block_dirt.png')}
+.world-grid button.scorch::after{display:none}
+.world-grid button.on img{filter:brightness(1.35) drop-shadow(0 0 9px #ffd76ecc)}
+.world-grid button.push img{animation:pistPush .48s ease-out}
+.world-grid button.sticky.push img{animation:pistStick 1.5s ease-in-out}
+.world-grid button.ding img{animation:noteDing .5s ease-out}
+.world-grid button.hit img{animation:hitRing .55s ease-out}
+.world-grid button.act{animation:actRing .55s ease-out}
+.world-grid button.boom{animation:boomFlash .62s ease-out}
+.world-grid.quake{animation:gridQuake .5s linear}
 .fuse-trail{position:absolute;inset:0;z-index:3;pointer-events:none;image-rendering:pixelated}
-.fuse-grid button.torch{background:#1d1410;cursor:default}
-.fuse-grid button.torch>i{position:absolute;inset:16%;background:url('../../assets/textures/mc/p2/block_redstone_torch.png') center/contain no-repeat;image-rendering:pixelated}
+.w-arrow{position:absolute;width:26px;height:26px;z-index:4;pointer-events:none;image-rendering:pixelated;
+  background:url('../../assets/textures/mc/van/item_arrow.png') 0 0/100% 100%;filter:drop-shadow(0 2px 2px #000a);
+  transform:var(--flip);animation:wFly .85s linear forwards}
+.wpt{position:absolute;left:50%;top:50%;width:var(--sz);height:var(--sz);background:var(--c);z-index:4;pointer-events:none;animation:wptFly .65s ease-out forwards}
+@keyframes pistPush{50%{transform:translate(-50%,-50%) translateY(-36%)}}
+@keyframes pistStick{0%,100%{transform:translate(-50%,-50%)}35%{transform:translate(-50%,-50%) translateY(-36%)}42%{transform:translate(-50%,-50%) translateY(-36%)}}
+@keyframes noteDing{40%{transform:translate(-50%,-58%) scale(1.22)}}
+@keyframes hitRing{50%{transform:translate(-50%,-50%) scale(1.18);filter:brightness(1.5) drop-shadow(0 0 8px #ffd76e)}}
+@keyframes actRing{0%{box-shadow:0 0 0 0 rgba(255,215,110,.9)}100%{box-shadow:0 0 0 16px rgba(255,215,110,0)}}
+@keyframes boomFlash{0%{filter:brightness(4) saturate(0)}18%{filter:brightness(2.6) sepia(.5) saturate(3)}100%{filter:none}}
+@keyframes gridQuake{0%,100%{transform:translate(0,0)}20%{transform:translate(-4px,3px)}40%{transform:translate(4px,-3px)}60%{transform:translate(-3px,-2px)}80%{transform:translate(2px,3px)}}
+@keyframes wFly{to{transform:var(--flip) translateX(var(--fly))}}
+@keyframes wptFly{to{transform:translate(var(--dx),var(--dy));opacity:0}}
 .fuse-hud{display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center;font:11px var(--f-mono);letter-spacing:.12em;color:var(--g-faint)}
 .fuse-hud b{color:var(--tone);font-weight:400}
 .fuse-hud .sig{color:#ffd76e}
@@ -117,15 +148,21 @@
 .unlock-state.ok{border-color:#9fe08a;color:#9fe08a}
 @media(max-width:940px){.knife-cols{grid-template-columns:1fr}.bull-demo{grid-template-columns:1fr;justify-items:center}.unlock-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.farm-plots{grid-template-columns:repeat(3,1fr)}.stab-arena{height:250px}.stab-zone{width:190px;height:190px}}
-@media(pointer:coarse){.g-btn{min-height:44px}.plot{min-height:56px}}
+@media(max-width:600px){
+  .world-grid{gap:2px;padding:5px;border-radius:8px}
+  .world-grid button::after{height:24%}
+  .w-arrow{width:20px;height:20px}
+  .craft-row{gap:10px;padding:10px}
+  .craft-grid .g-islot{width:42px;height:42px}
+  .craft-grid .g-islot img{width:30px;height:30px}
+}
+@media(pointer:coarse){.g-btn{min-height:44px}.plot{min-height:56px}.world-grid button{cursor:default}}
 
 /* ---- 3D-нож в герое ---- */
-.g-art--3d{cursor:grab;touch-action:pan-y}
-.g-art--3d:active{cursor:grabbing}
-.g-art--3d canvas{position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 34px);z-index:2;display:none}
-.g-art--3d.ready canvas{display:block}
-.g-art--3d.ready .art-fallback{display:none}
-.g-art--3d.ready figcaption{z-index:3}
+.g-art--tex .art-fallback{image-rendering:pixelated;width:min(64%,230px);
+  filter:drop-shadow(0 16px 24px rgba(0,0,0,.6)) drop-shadow(0 0 28px rgba(255,176,46,.2));
+  animation:knifeFloat 5.2s ease-in-out infinite}
+@keyframes knifeFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-9px) rotate(2deg)}}
 
 /* ---- солевой фитиль: лампа-приёмник ---- */
 .fuse-grid button.lamp{background:#1a1208;cursor:default}
