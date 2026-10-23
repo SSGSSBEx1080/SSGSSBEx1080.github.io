@@ -142,3 +142,41 @@
 .g-adv .adv-progress{height:3px;background:#141c26;margin:16px 0}
 .g-adv .adv-progress i{display:block;height:100%;width:0;transition:width .3s}
 .g-adv .adv-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* =====================================================================
+   УСИЛИТЕЛЬ · соляная пещера: кристаллы, янтарный свет, готическая
+   гравюра заголовка
+   ===================================================================== */
+@font-face{font-family:'Salt';font-weight:400;font-display:swap;src:url('../../assets/fonts/DelaGothic-400-cyrillic.woff2')}
+@font-face{font-family:'Salt';font-weight:400;font-display:swap;src:url('../../assets/fonts/DelaGothic-400-latin.woff2');unicode-range:U+0000-00FF,U+2000-206F}
+
+.g-title{font:400 clamp(26px,3.8vw,46px)/1.1 Salt,var(--f-head);color:#ffeef0;
+  text-shadow:0 0 22px #e0576b59,0 2px 0 #0006}
+.g-kicker{color:#ffcf7d}
+.g-kicker::before{background:#ffb02e;box-shadow:0 0 12px #ffb02e}
+.g-hero-strip b{color:#ffb02e}
+.g-head h2 em{color:#ffb02e;text-shadow:0 0 16px #ffb02e4d}
+.panel-title{color:#ffb9a5}
+
+/* пещера: тёплый отсвет снизу, розовая соль сверху */
+.g-hero{background:
+  radial-gradient(100% 80% at 50% 115%,#ffb02e1e 0,#0000 58%),
+  radial-gradient(70% 55% at 88% 12%,#e0576b1c 0,#0000 60%),
+  linear-gradient(168deg,#151017,#0d0a10 58%,#121018)}
+
+/* витрина-кристалл: блик ходит по соли */
+.g-art{background:radial-gradient(80% 80% at 50% 45%,#2a2030,#100c14 78%);border-color:#ffb02e3d;
+  box-shadow:inset 0 0 40px #ffb02e14,0 0 26px #e0576b16}
+.g-art::before{border-color:#ffb02e30}
+.g-art::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,#0000 30%,#ffffff16 45%,#0000 60%);background-size:250% 100%;
+  animation:salt-shine 7s linear infinite}
+@keyframes salt-shine{from{background-position:130% 0}to{background-position:-130% 0}}
+@media(prefers-reduced-motion:reduce){.g-art::after{animation:none;opacity:0}}
+
+/* гранты и действия отзываются янтарём */
+.actions-list li{transition:border-color .15s,background .15s}
+.actions-list li:hover{border-color:#ffb02e66;background:color-mix(in srgb,#ffb02e 6%,#0b1119)}
+.stab-arena{box-shadow:inset 0 0 40px #000a}
+.craft-row{clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%)}
+.craft-result .g-islot{box-shadow:0 0 22px #ffb02e33}

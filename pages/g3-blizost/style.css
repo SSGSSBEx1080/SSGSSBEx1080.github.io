@@ -126,3 +126,38 @@
 .g-adv .adv-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 @media(max-width:900px){.mc-chat{min-height:220px}.keys-grid{gap:8px;padding:12px}.key2{font-size:13px}}
+
+/* =====================================================================
+   УСИЛИТЕЛЬ · маджента-неон: пульс, свечение кейкапов, терминал чата
+   ===================================================================== */
+@font-face{font-family:'Pulse';font-weight:800;font-display:swap;src:url('../../assets/fonts/Tektur-800-cyrillic.woff2')}
+@font-face{font-family:'Pulse';font-weight:800;font-display:swap;src:url('../../assets/fonts/Tektur-800-latin.woff2');unicode-range:U+0000-00FF,U+2000-206F}
+
+.g-title{font:800 clamp(30px,4.6vw,56px)/1.02 Pulse,var(--f-head);color:#fff;letter-spacing:.01em;
+  text-shadow:0 0 16px #f0568cb3,0 0 46px #f0568c66}
+.g-kicker{color:#ff7fae}
+.g-kicker::before{background:#f0568c;box-shadow:0 0 12px #f0568c}
+.g-hero-strip b{color:#ff9cc0}
+.g-head h2 em{color:#ff7fae;text-shadow:0 0 18px #f0568c66}
+
+/* неоновая сетка и сканлайны сильнее */
+.hero-cmd{background:
+  repeating-linear-gradient(0deg,#0000 0 3px,#f0568c09 3px 4px),
+  repeating-linear-gradient(90deg,#0000 0 47px,#f0568c0a 47px 48px),
+  radial-gradient(120% 90% at 85% 10%,#f0568c22 0,#0000 55%),
+  radial-gradient(90% 70% at 10% 90%,#f0568c16 0,#0000 60%),
+  linear-gradient(165deg,#180a12,#0e060b 60%,#12070e)}
+
+/* жетон-буква пульсирует как сердце */
+.g-letter{animation:heart-pulse 1.15s ease-in-out infinite}
+@keyframes heart-pulse{0%,100%{box-shadow:0 0 22px #f0568c2b}12%{box-shadow:0 0 46px #f0568c5e}24%{box-shadow:0 0 26px #f0568c33}}
+@media(prefers-reduced-motion:reduce){.g-letter{animation:none}}
+
+/* терминал чата и логи — розовое стекло */
+.g-log{background:linear-gradient(180deg,#1c0e16,#120a0f);border-color:#f0568c33}
+.g-log div::before{color:#ff7fae}
+.mc-chat{box-shadow:inset 0 0 34px #000a}
+.key2{box-shadow:0 6px 18px -8px #f0568c45,inset 0 1px 0 #ffffff1c}
+.g-stamp{box-shadow:0 0 18px #0006 inset,0 0 26px #f0568c4d}
+.stat-row b{color:#ff9cc0;text-shadow:0 0 12px #f0568c55}
+.flow-steps li::before{color:#ff7fae}
