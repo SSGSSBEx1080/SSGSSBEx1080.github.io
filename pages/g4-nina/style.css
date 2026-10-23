@@ -1,5 +1,5 @@
 /* Г-П · Мистер П — Соль, нож и редиска. Кухонный «свекольно-стальной» тон. */
-.panel-title{font:700 13px var(--f-head);letter-spacing:.04em;color:#eef5f8;margin-bottom:12px}
+.panel-title{font:700 14px var(--f-head);letter-spacing:.04em;color:#eef5f8;margin-bottom:12px}
 .g-sub .g-chip{display:inline-block;margin-top:4px}
 
 /* ---- крафт ---- */
@@ -10,13 +10,13 @@
 .craft-result{display:flex;flex-direction:column;gap:8px;align-items:center}
 .craft-result .g-islot{width:58px;height:58px;border-color:var(--tone)}
 .craft-result .g-islot img{width:42px;height:42px}
-.craft-label{font:8px var(--f-mono);letter-spacing:.14em;color:var(--g-faint);text-align:center}
+.craft-label{font:10px var(--f-mono);letter-spacing:.14em;color:var(--g-faint);text-align:center}
 
 /* ---- нож: статы и подсказки ---- */
 .knife-cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,28px)}
 .actions-list{display:grid;gap:8px}
 .actions-list li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;list-style:none;
-  border:1px solid var(--g-line);background:#0b1119;padding:8px 10px;font-size:12.5px;color:var(--g-dim)}
+  border:1px solid var(--g-line);background:#0b1119;padding:8px 10px;font-size:13.5px;color:var(--g-dim)}
 .actions-list img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}
 .actions-list b{color:var(--g-txt);font-weight:600}
 
@@ -43,19 +43,19 @@
 .stab-facing::after{content:'';position:absolute;top:-8px;left:-5px;border:7px solid #0000;border-top-color:#c9d6de}
 .stab-attacker{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px}
 .stab-attacker img{width:44px;height:44px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 10px #e0576b66)}
-.stab-attacker small{font:8px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)}
-.stab-readout{position:absolute;left:12px;top:12px;display:grid;gap:4px;font:10px var(--f-mono);color:var(--g-faint)}
+.stab-attacker small{font:10px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)}
+.stab-readout{position:absolute;left:12px;top:12px;display:grid;gap:4px;font:11.5px var(--f-mono);color:var(--g-faint)}
 .stab-readout b{color:var(--g-txt);font-weight:400}
 .stab-mult{position:absolute;right:12px;top:12px;font:700 26px var(--f-head);color:#e0576b;text-shadow:0 2px 0 #000}
 .stab-mult.side{color:#ffb02e}.stab-mult.front{color:#8ba0b4}
-.stab-hint{position:absolute;left:12px;bottom:10px;right:12px;font:9px/1.7 var(--f-mono);color:var(--g-faint)}
+.stab-hint{position:absolute;left:12px;bottom:10px;right:12px;font:11px/1.7 var(--f-mono);color:var(--g-faint)}
 .dmg-float{position:absolute;left:50%;top:36%;transform:translateX(-50%);font:700 30px var(--f-head);color:#fff;
   text-shadow:0 2px 0 #000,0 0 14px #e0576b;animation:dmg-up .9s ease-out forwards;pointer-events:none}
 @keyframes dmg-up{from{opacity:1;translate:0 0}to{opacity:0;translate:0 -64px}}
 .stab-controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.stab-controls label{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px;font:9px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)}
+.stab-controls label{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px;font:11px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)}
 .stab-controls input[type=range]{accent-color:var(--tone)}
-.no-knock{display:flex;gap:10px;align-items:center;border:1px dashed var(--g-line2);padding:10px 12px;font-size:12px;color:var(--g-dim)}
+.no-knock{display:flex;gap:10px;align-items:center;border:1px dashed var(--g-line2);padding:10px 12px;font-size:13px;color:var(--g-dim)}
 .no-knock b{color:var(--g-warn)}
 
 /* ---- бык ---- */
@@ -83,7 +83,7 @@
 .fuse-grid button.lit>i.v{background-image:url('../../assets/textures/guest/salt_trail/salt_redstone_dust_line0_lit.png');transform:rotate(90deg)}
 .fuse-grid button.torch{background:#1d1410;cursor:default}
 .fuse-grid button.torch>i{position:absolute;inset:16%;background:url('../../assets/textures/mc/p2/block_redstone_torch.png') center/contain no-repeat;image-rendering:pixelated}
-.fuse-hud{display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center;font:9px var(--f-mono);letter-spacing:.12em;color:var(--g-faint)}
+.fuse-hud{display:flex;gap:10px 22px;flex-wrap:wrap;align-items:center;font:11px var(--f-mono);letter-spacing:.12em;color:var(--g-faint)}
 .fuse-hud b{color:var(--tone);font-weight:400}
 .fuse-hud .sig{color:#ffd76e}
 
@@ -100,10 +100,10 @@
 /* ---- борщ и разблокировка ---- */
 .unlock-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .unlock-card{border:1px solid var(--g-line);background:#0b1119;padding:14px}
-.unlock-card h4{font:700 12px var(--f-head);color:#eef5f8;margin-bottom:10px}
-.unlock-card label{display:flex;gap:9px;align-items:center;font-size:12.5px;color:var(--g-dim);padding:5px 0;cursor:pointer}
+.unlock-card h4{font:700 13px var(--f-head);color:#eef5f8;margin-bottom:10px}
+.unlock-card label{display:flex;gap:9px;align-items:center;font-size:13.5px;color:var(--g-dim);padding:5px 0;cursor:pointer}
 .unlock-card input{accent-color:var(--tone)}
-.unlock-state{margin-top:10px;font:700 11px var(--f-mono);letter-spacing:.12em;padding:8px 10px;border:1px dashed var(--g-line2);color:var(--g-faint)}
+.unlock-state{margin-top:10px;font:700 12.5px var(--f-mono);letter-spacing:.12em;padding:8px 10px;border:1px dashed var(--g-line2);color:var(--g-faint)}
 .unlock-state.ok{border-color:#9fe08a;color:#9fe08a}
 @media(max-width:940px){.knife-cols{grid-template-columns:1fr}.bull-demo{grid-template-columns:1fr;justify-items:center}.unlock-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.farm-plots{grid-template-columns:repeat(3,1fr)}.stab-arena{height:250px}.stab-zone{width:190px;height:190px}}
@@ -137,7 +137,7 @@
 .g-adv .adv-row{background:#0d141b;border-color:var(--g-line)}
 .g-adv .adv-progress i{background:var(--tone)}
 .g-adv .adv-bottom{color:var(--g-dim)}
-.g-adv .adv-bottom button{background:none;border:1px solid var(--g-line2);color:var(--g-dim);font:10px var(--f-mono);padding:8px 12px;cursor:pointer}
+.g-adv .adv-bottom button{background:none;border:1px solid var(--g-line2);color:var(--g-dim);font:11.5px var(--f-mono);padding:8px 12px;cursor:pointer}
 .g-adv .adv-bottom button:hover{color:var(--tone);border-color:var(--tone)}
 .g-adv .adv-progress{height:3px;background:#141c26;margin:16px 0}
 .g-adv .adv-progress i{display:block;height:100%;width:0;transition:width .3s}

@@ -1,5 +1,5 @@
 /* Г-Б · Мистер Б — Докторская колбаса. ГАСТРОНОМ №1: кафель, кумач, чековая бумага. */
-.panel-title{font:700 13px var(--f-head);letter-spacing:.04em;color:#eef5f8;margin-bottom:12px}
+.panel-title{font:700 14px var(--f-head);letter-spacing:.04em;color:#eef5f8;margin-bottom:12px}
 
 /* ---- герой-гастроном: кафельная стена и красный кумач ---- */
 .hero-deli{
@@ -41,7 +41,7 @@
 
 /* ---- весовой отдел ---- */
 .eat-demo{display:flex;flex-direction:column;gap:16px}
-.eat-bars .eat-label{display:flex;justify-content:space-between;font:10px var(--f-mono);letter-spacing:.16em;color:var(--g-faint);margin-bottom:8px}
+.eat-bars .eat-label{display:flex;justify-content:space-between;font:11.5px var(--f-mono);letter-spacing:.16em;color:var(--g-faint);margin-bottom:8px}
 .eat-bars .eat-label b{color:#ffd76e;font-weight:400}
 .hunger-bar{display:flex;gap:3px}
 .hunger-bar img{width:22px;height:22px;image-rendering:pixelated}
@@ -52,13 +52,13 @@
 
 /* ---- прилавок ---- */
 .prof-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
-.prof-grid button{border:1px solid var(--g-line);background:#0b1119;color:var(--g-dim);padding:8px 11px;font-size:12px}
+.prof-grid button{border:1px solid var(--g-line);background:#0b1119;color:var(--g-dim);padding:8px 11px;font-size:13px}
 .prof-grid button:hover{border-color:var(--tone);color:var(--g-txt)}
 .prof-grid button.on{background:color-mix(in srgb,var(--tone) 16%,#0b1119);border-color:var(--tone);color:#fff}
 .prof-grid button.no-trade{opacity:.55;text-decoration:line-through 1px}
 .trade-deal{display:grid;gap:14px;border:1px solid var(--g-line);background:#0b1119;padding:16px}
 .deal-offer{display:flex;gap:14px;align-items:center;justify-content:center;padding:8px 0}
-.deal-info{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:9px var(--f-mono);letter-spacing:.1em;color:var(--g-faint)}
+.deal-info{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:11px var(--f-mono);letter-spacing:.1em;color:var(--g-faint)}
 .deal-info b{color:var(--tone);font-weight:400}
 .trade-deal.refused .deal-offer{opacity:.35;filter:grayscale(.8)}
 .trade-deal.refused .deal-info{opacity:.5}
@@ -79,7 +79,7 @@
 .panel-check .g-log.receipt div{color:#4a3826}
 .panel-check .g-log.receipt div::before{content:'* ';color:#a02721}
 .panel-check .g-note{color:#6f5d46}
-.g-log.receipt{font-size:12px}
+.g-log.receipt{font-size:13px}
 .g-log.receipt div::before{content:'· ';color:var(--tone)}
 .g-log{max-height:220px}
 
@@ -99,7 +99,7 @@
 .g-adv .adv-row{background:#0d141b;border-color:var(--g-line)}
 .g-adv .adv-progress i{background:var(--tone)}
 .g-adv .adv-bottom{color:var(--g-dim)}
-.g-adv .adv-bottom button{background:none;border:1px solid var(--g-line2);color:var(--g-dim);font:10px var(--f-mono);padding:8px 12px;cursor:pointer}
+.g-adv .adv-bottom button{background:none;border:1px solid var(--g-line2);color:var(--g-dim);font:11.5px var(--f-mono);padding:8px 12px;cursor:pointer}
 .g-adv .adv-bottom button:hover{color:var(--tone);border-color:var(--tone)}
 .g-adv .adv-progress{height:3px;background:#141c26;margin:16px 0}
 .g-adv .adv-progress i{display:block;height:100%;width:0;transition:width .3s}
