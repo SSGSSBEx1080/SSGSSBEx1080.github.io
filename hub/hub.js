@@ -1,9 +1,11 @@
 /* Главная: титульный экран, профиль и сохранения, пункты, общее древо достижений */
 (function () {
   const { $, $$, esc, url: U, store: S } = ZM;
-  const PF = ZM.profile, HUB = ZM.HUB_ADV || [], ROOT = ZM.HUB_ROOT;
+  const PF = ZM.profile, ROOT = ZM.HUB_ROOT;
+  const HUB = [...(ZM.HUB_ADV || []), ...(ZM.GUEST_ADV || [])];
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const pad2 = (n) => String(n).padStart(2, "0");
+  const ptLabel = (pt) => pt && pt.guest ? `G-${pt.letter}` : `№${pad2(pt.n)}`;
   const plural = (n, a, b, c) => { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c; };
   const sfx = (n, v = 0.5, r = 1) => ZM.sfx && ZM.sfx(n, v, r);
 
@@ -119,13 +121,13 @@
     $("#pfXpTxt").textContent = st.xp >= st.xpAll ? `${st.xp} XP · всё собрано` : `${st.xp} / ${st.xpAll} XP · до ${st.lv.L + 1} уровня ${Math.ceil(st.lv.span - st.lv.cur)} XP`;
     $("#pfStats").innerHTML = [[`${st.got}/${st.all}`, "ачивок"], [st.xp, "опыта"], [`${st.full}/${HUB.length}`, "пунктов закрыто"], [`${seen.filter((n) => LIVE.some((p) => p.n === n)).length}/${LIVE.length}`, "страниц открыто"]]
       .map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join("");
-    $("#pfPts").innerHTML = HUB.map((pt) => { const p = st.per[pt.n]; return `<a href="${pt.page}#adv" style="--tone:${pt.tone}" class="${p.got === p.all ? "full" : ""}" title="${esc(pt.title)}: ${p.got}/${p.all}"><img src="${pt.icon}" alt="">№${pad2(pt.n)} <span style="margin-left:auto">${p.got}/${p.all}</span><i style="width:${(p.got / p.all) * 100}%"></i></a>`; }).join("");
+    $("#pfPts").innerHTML = HUB.map((pt) => { const p = st.per[pt.n]; return `<a href="${pt.page}#adv" style="--tone:${pt.tone}" class="${p.got === p.all ? "full" : ""}" title="${esc(pt.title)}: ${p.got}/${p.all}"><img src="${pt.icon}" alt="">${ptLabel(pt)} <span style="margin-left:auto">${p.got}/${p.all}</span><i style="width:${(p.got / p.all) * 100}%"></i></a>`; }).join("");
     $("#pfQ").textContent = `ур. ${st.lv.L} · ${rankOf(st.lv.L)}`;
     // профили
     const list = PF.list(), act = PF.me().id;
     $("#pfList").innerHTML = list.map((p) => {
       let n = 0;
-      if (p.id === act) n = PF.gotCount(); else try { const d = JSON.parse(localStorage.getItem("zmp:snap:" + p.id)) || {}; for (const k in d) if (/^p\d\d\.adv$/.test(k)) n += (JSON.parse(d[k]) || []).length; } catch (e) {}
+      if (p.id === act) n = PF.gotCount(); else try { const d = JSON.parse(localStorage.getItem("zmp:snap:" + p.id)) || {}; for (const k in d) if (/^(?:p\d\d|g\d)\.adv$/.test(k)) n += (JSON.parse(d[k]) || []).length; } catch (e) {}
       return `<div class="pf-row ${p.id === act ? "on" : ""}"><img src="${PF.avatarUrl(p.avatar)}" alt=""><b>${esc(p.nick)}<small>★ ${n} · с ${dateRu(p.created)}</small></b>${p.id === act ? `<span class="pf-cur" style="font:400 12px var(--f-pixel);color:var(--acc)">играешь</span>` : `<button class="mcb" type="button" data-sw="${p.id}">Играть</button>`}${list.length > 1 ? `<button class="del" type="button" data-del="${p.id}" title="Удалить профиль">×</button>` : ""}</div>`;
     }).join("");
     // лента
@@ -195,7 +197,10 @@
     const st = stats(), q = $("#ptSearch").value.trim().toLowerCase();
     const match = (p) => !q || String(p.n) === q.replace(/^№/, "") || pad2(p.n) === q || p.title.toLowerCase().includes(q);
     const list = ZM.POINTS.filter((p) => (ptF === "all" || (ptF === "live" && p.page) || (ptF === "soon" && !p.page) || (ptF === "todo" && p.page && st.per[p.n] && st.per[p.n].got < st.per[p.n].all)) && match(p));
-    $("#pGrid").innerHTML = list.map((p) => {
+    // гости — в той же сетке, сразу после основной линейки
+    const gMatch = (g) => !q || g.title.toLowerCase().includes(q) || (g.letter || "").toLowerCase() === q.replace(/^g-/, "") || (g.from || "").toLowerCase().includes(q);
+    const glist = (ZM.GUEST_POINTS || []).filter((g) => g.page && (ptF === "all" || ptF === "live" || (ptF === "todo" && (() => { const ga = (ZM.GUEST_ADV || []).find((x) => x.page === g.page); return ga && st.per[ga.n] && st.per[ga.n].got < st.per[ga.n].all; })())) && gMatch(g));
+    const mainHtml = list.map((p) => {
       const pr = st.per[p.n];
       if (!p.page) return `<div class="pc soon ${p.n === 29 ? "secret" : ""}" style="--tone:${p.tone}"><span class="pc-n">${pad2(p.n)}</span><span class="pc-st">СКОРО</span><span class="pc-t">${esc(p.title)}</span><span class="pc-d">${p.date || "—"} ${p.confirmed ? "" : '<span class="q" title="Номер не подтверждён">?</span>'}</span></div>`;
       const pc = pr ? (pr.got / pr.all) * 100 : 0;
@@ -203,11 +208,20 @@
         <span class="pc-n">${pad2(p.n)}</span>${p.icon ? `<img class="pc-ic" src="${p.icon}" alt="">` : ""}
         <span class="pc-t">${esc(p.title)}</span><span class="pc-d">${p.date} ${p.confirmed ? "" : '<span class="q" title="Номер не подтверждён">?</span>'}</span>
         ${pr ? `<span class="pc-pr" style="--p:${pc}%"><i></i><b>★ ${pr.got}/${pr.all}</b></span>` : ""}</a>`;
-    }).join("") || `<p class="pf-empty">Ничего не нашлось.</p>`;
+    }).join("");
+    const guestHtml = glist.map((g) => {
+      const ga = (ZM.GUEST_ADV || []).find((x) => x.page === g.page), p = ga && st.per[ga.n];
+      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/guest/rabbit.png", "В": "assets/textures/mc/p2/block_deepslate.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
+      return `<a class="pc live guest ${p && p.got === p.all ? "full" : ""}" href="${g.page}" style="--tone:${g.tone || "#8b8b95"}">
+        <span class="pc-n">${esc(g.letter || "?")}</span>${ic ? `<img class="pc-ic" src="${ic}" alt="">` : ""}
+        <span class="pc-t">${esc(g.title)}</span><span class="pc-d">ГОСТЕВОЙ ПУНКТ${g.soon ? " · НЕТ СИГНАЛА" : ""}</span>
+        ${p ? `<span class="pc-pr" style="--p:${(p.got / p.all) * 100}%"><i></i><b>★ ${p.got}/${p.all}</b></span>` : `<span class="pc-st g-nobranch">БЕЗ ВЕТКИ</span>`}</a>`;
+    }).join("");
+    $("#pGrid").innerHTML = (mainHtml + guestHtml) || `<p class="pf-empty">Ничего не нашлось.</p>`;
     // найденные ачивки (только полученные: скрытые не выдаём)
     const found = q.length >= 2 && cfg.done ? HUB.flatMap((pt) => pt.adv.filter((a) => st.per[pt.n].g.has(a.key) && (a.t + " " + a.d).toLowerCase().includes(q)).map((a) => ({ a, pt }))) : [];
-    $("#ptFound").innerHTML = found.slice(0, 12).map(({ a, pt }) => `<a href="${pt.page}#adv"><img src="${a.icon}" alt=""><span style="color:${a.c}">${esc(a.t.replace(/§[kr]/g, ""))}</span><small>№${pad2(pt.n)} ${esc(pt.title)}</small></a>`).join("");
-    $("#ptQ").textContent = `${LIVE.length} из ${ZM.POINTS.length} готово`;
+    $("#ptFound").innerHTML = found.slice(0, 12).map(({ a, pt }) => `<a href="${pt.page}#adv"><img src="${a.icon}" alt=""><span style="color:${a.c}">${esc(a.t.replace(/§[kr]/g, ""))}</span><small>${ptLabel(pt)} ${esc(pt.title)}</small></a>`).join("");
+    $("#ptQ").textContent = `${LIVE.length} из ${ZM.POINTS.length} готово · +${(ZM.GUEST_POINTS || []).filter((g) => g.page).length} гостевых`;
   }
   $("#ptFilter").addEventListener("click", (e) => { const b = e.target.closest("[data-f]"); if (!b) return; ptF = b.dataset.f; $$("#ptFilter button").forEach((x) => x.classList.toggle("on", x === b)); ptRender(); });
   $("#ptSearch").addEventListener("input", ptRender);
@@ -244,9 +258,9 @@
       const has = st.per[n.pt.n].g.has(n.a.key), show = has || !n.a.hidden;
       return `<button type="button" class="tw-node ${has ? "has" : "no"} ${twSel === i ? "sel" : ""}" data-i="${i}" style="left:${n.x}px;top:${n.y}px" aria-label="${show ? esc(n.a.t.replace(/§[kr]/g, "")) : "Скрытое достижение"}"><span class="adv-frame ${show ? n.a.frame : "task"}${has ? "" : " locked"}"></span>${show ? `<img src="${n.a.icon}" alt=""${has ? "" : ' style="filter:brightness(.55) saturate(.4)"'}>` : "<i>?</i>"}</button>`;
     }).join("") + HUB.map((pt, r) => { const last = nodes.filter((n) => n.pt === pt).pop(), p = st.per[pt.n];
-      return `<span class="tw-lab" data-n="${pt.n}" style="left:${last.x + 64}px;top:${TW.y0 + r * TW.row + 18}px;--tone:${pt.tone}"><em>№${pad2(pt.n)}</em> ${esc(pt.title)} · ${p.got}/${p.all}</span>`; }).join("");
+      return `<span class="tw-lab" data-n="${pt.n}" style="left:${last.x + 64}px;top:${TW.y0 + r * TW.row + 18}px;--tone:${pt.tone}"><em>${ptLabel(pt)}</em> ${esc(pt.title)} · ${p.got}/${p.all}</span>`; }).join("");
     $("#trQ").textContent = `${st.got} / ${st.all} · ${st.xp} XP`;
-    $("#twRows").innerHTML = HUB.map((pt) => { const p = st.per[pt.n]; return `<a href="${pt.page}#adv" data-n="${pt.n}" style="--tone:${pt.tone}"><img src="${pt.icon}" alt=""><span>№${pad2(pt.n)} ${esc(pt.title)}</span><b>${p.got}/${p.all}</b><i style="width:${(p.got / p.all) * 100}%"></i></a>`; }).join("");
+    $("#twRows").innerHTML = HUB.map((pt) => { const p = st.per[pt.n]; return `<a href="${pt.page}#adv" data-n="${pt.n}" style="--tone:${pt.tone}"><img src="${pt.icon}" alt=""><span>${ptLabel(pt)} ${esc(pt.title)}</span><b>${p.got}/${p.all}</b><i style="width:${(p.got / p.all) * 100}%"></i></a>`; }).join("");
   }
   function applyPan() {
     const W = twIn.clientWidth, H = twIn.clientHeight, sw = TW.W * TW.s, sh = TW.H * TW.s, m = 60;
@@ -274,7 +288,7 @@
     const fr = n.root ? "task" : n.a.frame, title = n.root ? "ZitraksMode" : show ? obf(n.a.t) : "???";
     const desc = n.root ? `${esc(ROOT.d)}<em>Получено ${st.got} из ${st.all} · ${st.xp} XP</em>` : show ? obf(n.a.d) : "Скрытое достижение. Откроется, когда получишь.";
     twTip.innerHTML = `<div class="tw-bar"><span class="tw-ic"><span class="adv-frame ${show ? fr : "task"}${has ? "" : " locked"}"></span>${show ? `<img src="${n.a.icon}" alt="">` : "<i>?</i>"}</span><b style="${has && n.a.c && !n.root ? `color:${n.a.c === "#FFFFFF" ? "#fff" : n.a.c}` : ""}">${title}</b></div>`
-      + `<div class="tw-desc">${desc}${has && !n.root && n.a.xp ? `<em>+${n.a.xp} XP · ${{ task: "обычная", goal: "цель", challenge: "испытание" }[n.a.frame]}</em>` : ""}${pin && !n.root ? `<a href="${n.pt.page}#adv">№${pad2(n.pt.n)} ${esc(n.pt.title)} →</a>` : ""}</div>`;
+      + `<div class="tw-desc">${desc}${has && !n.root && n.a.xp ? `<em>+${n.a.xp} XP · ${{ task: "обычная", goal: "цель", challenge: "испытание" }[n.a.frame]}</em>` : ""}${pin && !n.root ? `<a href="${n.pt.page}#adv">${ptLabel(n.pt)} ${esc(n.pt.title)} →</a>` : ""}</div>`;
     twTip.hidden = false;
     const frR = twTip.parentElement.getBoundingClientRect(), inR = twIn.getBoundingClientRect(), sz = n.root ? 60 : 52;
     const nx = inR.left - frR.left + TW.pan.x + n.x * TW.s - (sz * (1 - TW.s)) / 2 * 0, ny = inR.top - frR.top + TW.pan.y + n.y * TW.s + (sz * TW.s - 52) / 2;
@@ -357,13 +371,14 @@
 
   /* ================= вкладки: ветка каждого пункта отдельно, как на страницах ================= */
   const TILE = { 1: "assets/textures/mc/stone.png", 2: "assets/textures/mc/p2/block_tnt_side.png", 3: "assets/textures/mc/stone.png", 4: "assets/textures/mc/stone.png", 5: "assets/textures/mc/p2/terrain/dirt.png",
-    6: "assets/textures/p6/pink_wool.png", 7: "assets/textures/p7/v/end_stone_bricks.png", 8: "assets/textures/mc/quartz.png", 9: "assets/textures/p9/v/pink_wool.png", 10: "assets/textures/p10/lime_concrete.png", 11: "assets/textures/p11/blue_wool.png", 12: "assets/textures/p12/crimson_planks.png" };
+    6: "assets/textures/p6/pink_wool.png", 7: "assets/textures/p7/v/end_stone_bricks.png", 8: "assets/textures/mc/quartz.png", 9: "assets/textures/p9/v/pink_wool.png", 10: "assets/textures/p10/lime_concrete.png", 11: "assets/textures/p11/blue_wool.png", 12: "assets/textures/p12/crimson_planks.png",
+    101: "assets/textures/mc/p2/block_granite.png", 103: "assets/textures/mc/p2/block_deepslate.png", 104: "assets/textures/mc/p2/block_iron_block.png" };
   const FR_RU = { task: "обычная", goal: "цель", challenge: "испытание" };
   let tab = 0, ptSel = null;
   const aTitle = (a) => `<span style="color:${a.c && a.c !== "#FFFFFF" ? a.c : "#fff"}">${obf(a.t)}</span>`;
   function tabsRender(st) {
     $("#twTabs").innerHTML = `<button type="button" class="tw-tab root ${tab === 0 ? "on" : ""}" data-tab-n="0" data-tip="ZitraksMode · всё древо"><img src="${ROOT.icon}" alt=""></button>`
-      + HUB.map((pt) => { const p = st.per[pt.n]; return `<button type="button" class="tw-tab ${tab === pt.n ? "on" : ""} ${p.got === p.all ? "full" : ""}" data-tab-n="${pt.n}" data-tip="№${pad2(pt.n)} ${esc(pt.title)} · ${p.got}/${p.all}"><img src="${pt.icon}" alt=""></button>`; }).join("");
+      + HUB.map((pt) => { const p = st.per[pt.n]; return `<button type="button" class="tw-tab ${tab === pt.n ? "on" : ""} ${pt.guest ? "guest" : ""} ${p.got === p.all ? "full" : ""}" data-tab-n="${pt.n}" data-tip="${ptLabel(pt)} ${esc(pt.title)} · ${p.got}/${p.all}"><img src="${pt.icon}" alt=""></button>`; }).join("");
   }
   function ptBoard(st) {
     const pt = HUB.find((x) => x.n === tab); if (!pt) return;
@@ -399,7 +414,7 @@
     const pt = HUB.find((x) => x.n === n), st = stats();
     $("#tw").classList.toggle("pt", !!pt);
     $("#twIn2").hidden = !!pt; $("#twPt").hidden = !pt;
-    $(".tw-title").textContent = pt ? `№${pad2(pt.n)} · ${pt.title}` : "ZitraksMode";
+    $(".tw-title").textContent = pt ? `${ptLabel(pt)} · ${pt.title}` : "ZitraksMode";
     tabsRender(st); if (pt) { ptBoard(st); $("#twPt").scrollTop = 0; } else requestAnimationFrame(() => { sizeBg(); home(); });
     const on = $("#twTabs .on"); if (on) on.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
   }

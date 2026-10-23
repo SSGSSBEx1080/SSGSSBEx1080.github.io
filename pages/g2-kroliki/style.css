@@ -12,3 +12,12 @@
 .tl-step.tl-last b{color:#9fe08a}
 @media(pointer:coarse){.sim-controls .g-btn{min-height:44px}}
 @media(max-width:600px){#simCanvas{height:330px}.tl-step{grid-template-columns:70px 1fr}}
+
+/* ---- поколения и скорость ---- */
+.sim-controls{flex-wrap:wrap}
+.g-btn.grow{border-color:#9fe08a;color:#9fe08a;background:#12241a}
+.speed-seg{display:flex;margin-left:auto}
+.speed-seg button{border:1px solid var(--g-line2);background:#0d141b;color:var(--g-dim);font:700 11px var(--f-mono);padding:8px 11px;cursor:pointer}
+.speed-seg button+button{border-left:none}
+.speed-seg button[aria-pressed=true]{color:var(--tone);border-color:var(--tone);background:color-mix(in srgb,var(--tone) 12%,#0d141b)}
+@media(max-width:640px){.speed-seg{margin-left:0}}

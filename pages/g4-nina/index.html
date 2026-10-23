@@ -4,7 +4,7 @@
 <title>Гость П · Соль, нож и редиска — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера П: нож с ударом в спину ×2, солевой фитиль с сигналом 15, редиска с восемью стадиями и борщ, который возвращает миску. Механики из исходников ZitraksMode.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g4-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g4-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/guest.css"><link rel="stylesheet" href="style.css?v=g4-1">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests2"><link rel="stylesheet" href="style.css?v=g4-2">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -23,9 +23,10 @@
           <span><b>10</b><small>ГОЛОДА ОТ БОРЩА</small></span>
         </div>
       </div>
-      <figure class="g-art">
-        <img src="../../assets/textures/guest/nina_knife.png" alt="Нож — оригинальная текстура предмета из мода" width="64" height="64">
-        <figcaption>ОРИГИНАЛЬНАЯ ТЕКСТУРА · 64×64</figcaption>
+      <figure class="g-art g-art--3d" id="knifeArt">
+        <canvas id="knife3d" aria-label="Нож гостя — объёмная модель. Перетащи, чтобы повернуть"></canvas>
+        <img class="art-fallback" src="../../assets/textures/guest/nina_knife.png" alt="Нож — оригинальная текстура предмета из мода" width="64" height="64">
+        <figcaption>ОБЪЁМНАЯ МОДЕЛЬ · ТЕКСТУРА ИЗ МОДА · КРУТИ МЫШЬЮ</figcaption>
       </figure>
       <span class="g-stamp" aria-hidden="true">ГОСТЕВОЙ ПУНКТ</span>
     </div>
@@ -37,6 +38,7 @@
     <a href="#salt"><small>02</small> Соль</a>
     <a href="#radish"><small>03</small> Редиска</a>
     <a href="#borscht"><small>04</small> Борщ</a>
+    <a href="#adv"><small>05</small> Стенд-цели</a>
   </nav>
 
   <!-- ======================= НОЖ ======================= -->
@@ -177,6 +179,7 @@
         <div class="farm-plots" id="farmPlots"></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center">
           <button type="button" class="g-btn small" id="tickBtn">СЛУЧАЙНЫЕ ТИКИ ×10</button>
+          <button type="button" class="g-btn small" id="mealBtn">КОСТНАЯ МУКА</button>
           <button type="button" class="g-btn ghost small" id="harvestAll">СОБРАТЬ СПЕЛЫЕ</button>
           <button type="button" class="g-btn ghost small" id="farmReset">ПЕРЕКОПАТЬ ↺</button>
         </div>
@@ -186,7 +189,7 @@
           <span class="cook-bar"><i id="cookFill"></i></span>
           <span class="g-islot" data-tip="Жареная редиска" data-tip-sub="zitraksmode:fried_radish"><img src="../../assets/textures/guest/fried_radish.png" alt="Жареная редиска"><b id="friedCount">0</b></span>
         </div>
-        <p class="g-note" style="margin-top:12px">Спелая грядка подсвечена красным. Первая редиска уже в кармане — посадить можно сразу.</p>
+        <p class="g-note" style="margin-top:12px" id="farmNote">Спелая грядка подсвечена красным. Первая редиска уже в кармане — посадить можно сразу. Костная мука прыгает через стадию, тики — честные случайные.</p>
       </div>
       <div class="g-kv">
         <div><dt>ИДЕНТИФИКАТОР</dt><dd><b>zitraksmode:radish</b></dd></div>
@@ -232,6 +235,15 @@
           <div><dt>СТЕК</dt><dd>Один предмет в слоте</dd></div>
           <div><dt>ПОСЛЕ ЕДЫ</dt><dd>Возвращается <b>миска</b> (кроме креатива)</dd></div>
         </div>
+        <h3 class="panel-title" style="margin-top:18px">СТЕНД: ОБЕД</h3>
+        <div class="eat-row">
+          <span class="g-islot" data-tip="Борщ" data-tip-sub="zitraksmode:borscht"><img src="../../assets/textures/guest/borscht.png" alt="Борщ"><b id="borschtCount">0</b></span>
+          <button type="button" class="g-btn small" id="eatBtn" disabled>СЪЕСТЬ ПОРЦИЮ</button>
+          <button type="button" class="g-btn ghost small" id="fastBtn2">ПРОГУЛОЧКА <small>−7</small></button>
+          <span class="eat-bar" id="eatBar" aria-label="Шкала голода"></span>
+          <span class="g-islot" data-tip="Миска" data-tip-sub="возвращается после еды"><img src="../../assets/textures/p22/i/bowl.png" alt="Миска"><b id="bowlCount">0</b></span>
+        </div>
+        <p class="g-note" id="eatNote" style="margin-top:10px">Забери борщ из верстака — и попробуй: десяток голода одной порцией, миска честно возвращается.</p>
       </div>
       <div class="g-panel">
         <h3 class="panel-title">СТЕНД: ПАМЯТЬ РЕЦЕПТОВ</h3>
@@ -255,6 +267,21 @@
     </div>
   </section>
 
+  <section class="g-section" id="adv" aria-labelledby="advTitle">
+    <header class="g-head"><span class="g-eyebrow">05 / СТЕНД-ЦЕЛИ ГОСТЯ</span>
+      <h2 id="advTitle">Ветка <em>Мистера П</em> в древе</h2>
+      <p>Цепочка целей гостевого пункта: подлый удар, медный бык, солевой шнур, урожай и обед. Получаются действиями на стендах, показываются в общем древе достижений и засчитываются в опыт профиля.</p></header>
+    <div class="g-adv">
+      <div class="adv-board">
+        <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+        <div class="adv-detail" id="advDetail"></div>
+        <div class="adv-progress"><i id="advBar"></i></div>
+        <div class="adv-bottom"><span id="advTxt"></span><button type="button" id="advReset">Сбросить цели гостя</button></div>
+      </div>
+      <div class="adv-list" id="advList"></div>
+    </div>
+  </section>
+
   <footer class="g-foot" id="finale">
     <span class="g-fbrand">ZITRAKSMODE · ГОСТЕВАЯ ВЕТКА · ФОРМА G-П/4</span>
     <div class="g-fcopy">
@@ -264,5 +291,5 @@
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests1"></script><script src="app.js?v=g4-1"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests1"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/guest_adv.js?v=guests1"></script><script src="app.js?v=g4-2"></script>
 </body></html>
