@@ -20,20 +20,20 @@ if(host&&canvas&&window.ZM?.P24ST){
   const portMat={side:new THREE.MeshStandardMaterial({map:modTexture('side'),roughness:.78}),front:new THREE.MeshStandardMaterial({map:modTexture('front'),roughness:.78}),top:new THREE.MeshStandardMaterial({map:modTexture('top'),roughness:.78}),bottom:new THREE.MeshStandardMaterial({map:modTexture('bottom'),roughness:.78})};
   // THREE.BoxGeometry face order is +x, -x, +y, -y, +z, -z. Minecraft east = +x.
   const portFaces={east:[portMat.front,portMat.side,portMat.top,portMat.bottom,portMat.side,portMat.side],west:[portMat.side,portMat.front,portMat.top,portMat.bottom,portMat.side,portMat.side],south:[portMat.side,portMat.side,portMat.top,portMat.bottom,portMat.front,portMat.side],north:[portMat.side,portMat.side,portMat.top,portMat.bottom,portMat.side,portMat.front]};
-  const scene=new THREE.Scene();scene.background=new THREE.Color(0xdfe4d7);scene.fog=new THREE.FogExp2(0xdfe4d7,.013);
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c181d);scene.fog=new THREE.FogExp2(0x0c181d,.013);
   const camera=new THREE.PerspectiveCamera(38,1,.08,130);
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
-  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;
+  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  scene.add(new THREE.HemisphereLight(0xcce3e0,0x405159,2.1));
-  const sun=new THREE.DirectionalLight(0xffe9cb,2.45);sun.position.set(6,12,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-12;sun.shadow.camera.right=12;sun.shadow.camera.top=12;sun.shadow.camera.bottom=-12;sun.shadow.normalBias=.035;scene.add(sun);
+  scene.add(new THREE.HemisphereLight(0xa7c7d6,0x263a36,1.65));
+  const sun=new THREE.DirectionalLight(0xe5ebcf,2.1);sun.position.set(6,12,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-12;sun.shadow.camera.right=12;sun.shadow.camera.top=12;sun.shadow.camera.bottom=-12;sun.shadow.normalBias=.035;scene.add(sun);
   const fill=new THREE.DirectionalLight(0xbacba0,.32);fill.position.set(-7,4,-5);scene.add(fill);
   const lanternLight=new THREE.PointLight(0xffb359,7,8,2);lanternLight.position.set(2.5,3.38,-3);scene.add(lanternLight);
   // Presentation base only: exact NBT starts at y = 0. The official tuff tile repeats once per block.
   const floorTex=texture('tuff');floorTex.wrapS=floorTex.wrapT=THREE.RepeatWrapping;floorTex.repeat.set(12,13);
   const floorMat=new THREE.MeshStandardMaterial({map:floorTex,roughness:1});
   const base=new THREE.Mesh(new THREE.BoxGeometry(12,.5,13),[materials.cobblestone,materials.cobblestone,floorMat,materials.cobblestone,materials.cobblestone,materials.cobblestone]);base.position.y=-.37;base.receiveShadow=true;scene.add(base);
-  const grid=new THREE.GridHelper(90,90,0xb8c2ac,0xcbd3c0);grid.position.y=-.107;grid.material.transparent=true;grid.material.opacity=.14;scene.add(grid);
+  const grid=new THREE.GridHelper(90,90,0x425c52,0x263e39);grid.position.y=-.107;grid.material.transparent=true;grid.material.opacity=.14;scene.add(grid);
   const cached=new Map(),instanced=new Map(),ports=[],signBoards=[];
   function form(bounds){const key=bounds.join('/');if(cached.has(key))return cached.get(key);
    const [x0,y0,z0,x1,y1,z1]=bounds;
@@ -87,19 +87,25 @@ if(host&&canvas&&window.ZM?.P24ST){
    if(p.east==='true')addPart(n,x,y,z,[.5,0,.4375,1,1,.5625]);
    if(p.west==='true')addPart(n,x,y,z,[0,0,.4375,.5,1,.5625]);
   }
-  function makeSign(x,y,z,lines){const group=new THREE.Group();group.position.set(x-4.5+.44,y+.55,z-5);
-   const board=new THREE.Mesh(new THREE.BoxGeometry(.105,.5,.99),materials.oak_planks);board.castShadow=true;group.add(board);
-   const mount=new THREE.Mesh(new THREE.BoxGeometry(.22,.09,.19),materials.oak_planks);mount.position.x=-.16;group.add(mount);
-   // Sign texture comes from Minecraft's entity/signs/oak.png; the two lines are
-   // copied verbatim from the two NBT block entities, NOT decorative text.
-   const face=document.createElement('canvas');face.width=384;face.height=192;const ctx=face.getContext('2d');ctx.fillStyle='#ad8650';ctx.fillRect(0,0,384,192);
-   const signTex=new THREE.CanvasTexture(face);signTex.colorSpace=THREE.SRGBColorSpace;signTex.magFilter=THREE.NearestFilter;
-   const plaque=new THREE.Mesh(new THREE.PlaneGeometry(.97,.47),new THREE.MeshBasicMaterial({map:signTex,side:THREE.DoubleSide}));plaque.rotation.y=Math.PI/2;plaque.position.x=.056;group.add(plaque);
-   const image=new Image();image.onload=()=>{ctx.imageSmoothingEnabled=false;ctx.drawImage(image,2,2,24,12,0,0,384,192);
-    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#242016';ctx.shadowColor='#ead3a6';ctx.shadowBlur=2;
-    for(const [i,text] of lines.filter(Boolean).entries()){let fs=i?65:53;ctx.font=`900 ${fs}px Arial,sans-serif`;while(ctx.measureText(text).width>340){fs-=2;ctx.font=`900 ${fs}px Arial,sans-serif`;}
-     ctx.fillText(text,192,i?138:67);}
-    signTex.needsUpdate=true;};image.src=root+'oak_sign.png';
+  function makeSign(x,y,z,lines,props){
+   // WallSignRenderer: the board is at -7/16 of its own block, against the
+   // supporting block. EAST signs attach to the WEST neighbour, not +7/16.
+   const group=new THREE.Group();group.position.set(x-4.5,y+.5208333333,z-5);
+   group.rotation.y={south:0,east:Math.PI/2,north:Math.PI,west:-Math.PI/2}[props.facing]??0;
+   const board=new THREE.Mesh(new THREE.BoxGeometry(1,.5,1/12),materials.oak_planks);
+   board.position.z=-7/16;board.castShadow=true;group.add(board);
+   const face=document.createElement('canvas');face.width=384;face.height=192;
+   const ctx=face.getContext('2d'),signTex=new THREE.CanvasTexture(face);signTex.colorSpace=THREE.SRGBColorSpace;signTex.magFilter=THREE.NearestFilter;
+   const plaque=new THREE.Mesh(new THREE.PlaneGeometry(1,.5),new THREE.MeshBasicMaterial({map:signTex}));
+   plaque.position.z=-7/16+1/24+.001;group.add(plaque);
+   const image=new Image();
+   function paint(){ctx.imageSmoothingEnabled=false;ctx.fillStyle='#ad8650';ctx.fillRect(0,0,384,192);
+    if(image.complete&&image.naturalWidth)ctx.drawImage(image,2,2,24,12,0,0,384,192);
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#242016';ctx.font='36px Pixel,monospace';
+    lines.forEach((text,i)=>ctx.fillText(text,192,39+i*35));signTex.needsUpdate=true;}
+   image.onload=paint;image.src=root+'oak_sign.png';paint();
+   document.fonts.load('36px Pixel').then(paint);
+   group.userData={position:[x,y,z],facing:props.facing,attachment:-7/16};
    scene.add(group);signBoards.push(group);
   }
   function lampFace(geo,face,rect){const uv=geo.attributes.uv;for(let i=face*4;i<(face+1)*4;i++){
@@ -128,7 +134,7 @@ if(host&&canvas&&window.ZM?.P24ST){
    else if(n.endsWith('_wall'))wall(n,x,y,z,p);
    else if(n==='stone_brick_slab')addPart(n,x,y,z,p.type==='top'?[0,.5,0,1,1,1]:[0,0,0,1,.5,1]);
    else if(n==='iron_bars')bars(x,y,z,p);
-   else if(n==='oak_wall_sign'){const sign=source.signs.find(s=>s.pos[0]===x&&s.pos[1]===y&&s.pos[2]===z);makeSign(x,y,z,sign?.lines||[]);}
+   else if(n==='oak_wall_sign'){const sign=source.signs.find(s=>s.pos[0]===x&&s.pos[1]===y&&s.pos[2]===z);makeSign(x,y,z,sign?.lines||[],p);}
    else if(n==='lantern')makeLantern(x,y,z);
    else addPart(n,x,y,z,[0,0,0,1,1,1]);
   }
@@ -142,10 +148,10 @@ if(host&&canvas&&window.ZM?.P24ST){
   const stars=[];for(let i=0;i<32;i++)stars.push((Math.sin(i*121.1)*56)%15,(i*5.93)%7+.3,(Math.sin(i*41.4)*64)%16);
   const dustG=new THREE.BufferGeometry();dustG.setAttribute('position',new THREE.Float32BufferAttribute(stars,3));
   const dust=new THREE.Points(dustG,new THREE.PointsMaterial({color:0x9ca88d,size:.055,transparent:true,opacity:.35,depthWrite:false}));scene.add(dust);
-  const selected=new THREE.BoxHelper(ports[0],0xc75e37);selected.material.transparent=true;scene.add(selected);
+  const selected=new THREE.BoxHelper(ports[0],0xb8f655);selected.material.transparent=true;scene.add(selected);
   let chosen=0;
   function pick(i){chosen=Math.max(0,Math.min(ports.length-1,i));selected.setFromObject(ports[chosen]);window.dispatchEvent(new CustomEvent('p24-port',{detail:chosen}));}
-  window.P24Station={select:pick,count:ports.length,blocks:source.blocks.length,signs:source.signs.length};
+  window.P24Station={select:pick,count:ports.length,blocks:source.blocks.length,signs:source.signs.length,get camera(){return{target:cam.target.toArray(),yaw:cam.yaw,pitch:cam.pitch,distance:cam.dist}},signMounts:signBoards.map(g=>({...g.userData,center:g.localToWorld(new THREE.Vector3(0,0,-7/16)).toArray(),normal:new THREE.Vector3(0,0,1).applyQuaternion(g.quaternion).toArray()}))};
   const original={target:new THREE.Vector3(0,2.35,0),yaw:1.22,pitch:.34,dist:19.8};
   const cam={target:original.target.clone(),yaw:original.yaw,pitch:original.pitch,dist:original.dist};
   let focus=null,drag=null,lastTouch=0,visible=true;
@@ -154,7 +160,7 @@ if(host&&canvas&&window.ZM?.P24ST){
    const msg=document.querySelector('#stationFocus');if(msg)msg.textContent=label;}
   const reset=()=>{goto([0,2.35,0],1.22,.34,19.8,'СТАНЦИЯ · 198 БЛОКОВ / 3 ПОРТА / 2 ТАБЛИЧКИ / 1 ФОНАРЬ');};
   document.querySelector('#stationReset')?.addEventListener('click',reset);
-  document.querySelector('#stationSign')?.addEventListener('click',()=>goto([-2,2.52,-3],Math.PI/2,.13,1.95,'ТАБЛИЧКА · «БЕНЗИНА НЕТ!» / ПОВЕРНИ ДЛЯ ВЫХОДА'));
+  document.querySelector('#stationSign')?.addEventListener('click',()=>goto([-2.88,2.52,-3],Math.PI/2,.08,2.7,'НАСТЕННАЯ ТАБЛИЧКА · «БЕНЗИНА НЕТ!»'));
   document.querySelector('#stationLamp')?.addEventListener('click',()=>goto([2.5,3.42,-3],1.1,.16,4.8,'ПОДВЕСНОЙ ФОНАРЬ · МОДЕЛЬ И АТЛАС MINECRAFT 1.19.2'));
   canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:cam.yaw,pitch:cam.pitch};focus=null;lastTouch=performance.now();canvas.setPointerCapture(e.pointerId)});
   canvas.addEventListener('pointermove',e=>{if(!drag)return;cam.yaw=drag.yaw+(e.clientX-drag.x)*.006;cam.pitch=Math.max(-.07,Math.min(1.3,drag.pitch+(e.clientY-drag.y)*.005));});
@@ -164,7 +170,7 @@ if(host&&canvas&&window.ZM?.P24ST){
   canvas.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){focus=null;cam.yaw+=e.key==='ArrowLeft'?.2:-.2;lastTouch=performance.now();e.preventDefault();}if(e.key==='+'||e.key==='-'||e.key==='ArrowUp'||e.key==='ArrowDown'){focus=null;cam.dist=Math.max(1.25,Math.min(36,cam.dist+(e.key==='+'||e.key==='ArrowUp'?-1:1)));lastTouch=performance.now();e.preventDefault();}});
   const mq=matchMedia('(prefers-reduced-motion: reduce)');new IntersectionObserver(es=>visible=es[0].isIntersecting,{rootMargin:'180px'}).observe(host);
   let last=performance.now();
-  function frame(t){requestAnimationFrame(frame);const dt=Math.min(.25,(t-last)*.001);last=t;if(!visible||document.hidden||t-(frame.lastDraw||0)<40)return;frame.lastDraw=t;
+  function frame(t){requestAnimationFrame(frame);if(!visible||document.hidden||t-(frame.lastDraw||0)<40)return;const dt=Math.min(.25,(t-last)*.001);last=t;frame.lastDraw=t;
    const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
    const d=Math.min(devicePixelRatio||1,1.6);if(canvas.width!==Math.round(w*d)||canvas.height!==Math.round(h*d)){renderer.setPixelRatio(d);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
    if(focus){const k=mq.matches?1:1-Math.exp(-dt*3.8);cam.target.lerp(focus.target,k);let a=focus.yaw-cam.yaw;a=Math.atan2(Math.sin(a),Math.cos(a));cam.yaw+=a*k;cam.pitch+=(focus.pitch-cam.pitch)*k;cam.dist+=(focus.dist-cam.dist)*k;}

@@ -56,7 +56,7 @@ const ICON = {
   24: (a) => first(({ scooter: "assets/textures/p24/scooter_item.png", station: "assets/textures/mc/p2/item_redstone.png", speed: "assets/textures/p3/vanilla/item_barrier.png" })[a.icon], `assets/textures/p24/${a.icon}.svg`),
   25: (a) => first(`assets/textures/p25/i/${a.icon}.png`),
   26: (a) => first(`assets/textures/p26/${a.icon}.png`, `assets/textures/p26/v/${a.icon}.png`),
-  27: (a) => first(`assets/textures/p27/${a.icon}.png`),
+  27: (a) => first(`assets/textures/p27/i/${a.icon}.png`),
 };
 const DIRS = { 23: "23_max", 24: "24_scooter", 26: "26_vacuum", 27: "27_chigur", 1: "01_numbers", 2: "02_tnt_armor", 3: "03_sniper", 4: "04_miner", 5: "05_adun", 6: "p06", 7: "p07", 8: "p08", 9: "09_dildo", 10: "10_creeper", 11: "11_jbl", 12: "12_katana" };
 const out = [], warn = [];

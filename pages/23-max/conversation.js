@@ -57,8 +57,17 @@
       return finish(id === 'b2' ? 'Чужие и удалённые координаты я не пересказываю. Свою точку можешь прислать тремя числами — запомню.' : 'Своих координат я не присылал. Придумывать точку не буду.');
     }
     if (/забудь|очисти.*(?:память|коорд)/.test(text)) {
-      m.coords = ''; m.build = ''; m.material = ''; m.quote = null; m.topic = ''; m.awaiting = '';
+      m.coords = ''; m.build = ''; m.material = ''; m.quote = null; m.topic = ''; m.awaiting = ''; m.character = null;
       return finish('Наши договорённости и запомненную точку забыл. Сообщения и вещи от этого не удаляются.');
+    }
+    const character = window.ZMMaxDialogue;
+    const characterReply = () => {
+      const answer=character.answer(contact.persona,raw,m.character||{});
+      m.character=answer.memory;return finish(answer.text);
+    };
+    if(contact.persona && character){
+      const topic=character.topicFor(raw,contact.persona,m.character?.lastTopic);
+      if(new Set(['age','music','lyrics','second','notHeard','heard','critic','food','ate','noFood','homework','doneHomework','lateHomework','wifi','stream','noStream','streamProblem','outfit','peace','endPeace','raid','support','sorry','compliment','insult','andYou']).has(topic))return characterReply();
     }
     if (/не\s+(?:хоч\p{L}*|буд\p{L}*|надо|нуж\p{L}*|покуп\p{L}*|беру|брать|меня\p{L}*)|отмен\p{L}*|передум\p{L}*/u.test(text)) {
       if (m.quote) {
@@ -98,7 +107,7 @@
       if (!m.quote) { m.topic = 'trade'; m.awaiting = 'quantity'; }
       return finish(m.quote ? `Договорились о ${diamonds(m.quote.qty)} за ${m.quote.qty * 3} железа. Можно изменить количество или отменить. Ничего ещё не списано.` : 'Один алмаз — три железа. Сколько хочешь купить?');
     }
-    if (diamond && id !== 'b4') return finish(id === 'b2' ? 'За алмазами лучше к Димону: он сам написал свой курс в чате. Я больше по стройке.' : 'Алмазы продаёт Димон. Я не буду обещать чужие вещи.');
+    if (diamond && id !== 'b4') return finish(id === 'b2' ? 'За алмазами лучше к клану «Чеченцы»: он сам написал свой курс в чате. Я больше по стройке.' : 'Алмазы продаёт Клан «Чеченцы». Я не буду обещать чужие вещи.');
     const buildMatch = text.match(/замок|башн\p{L}*|ферм\p{L}*|мост\p{L}*|дом\p{L}*/u);
     const materialMatch = text.match(/булыжник\p{L}*|камен\p{L}*|камн\p{L}*|дуб\p{L}*|дерев\p{L}*|кирпич\p{L}*|стекл\p{L}*|земл\p{L}*/u);
     const building = /стро|построй|постро|совет|материал/.test(text) || !!buildMatch || (m.topic === 'build' && !!materialMatch);
@@ -110,7 +119,7 @@
       if (materialMatch) {
         const part = materialMatch[0]; m.material = /камен|камн/.test(part) ? 'камень' : /дуб/.test(part) ? 'дуб' : /дерев/.test(part) ? 'дерево' : /кирпич/.test(part) ? 'кирпич' : /стекл/.test(part) ? 'стекло' : /земл/.test(part) ? 'земля' : 'булыжник';
       }
-      if (id !== 'b2') return finish(id === 'b4' ? 'По постройкам спроси Ксюшу. Если нужны алмазы — скажи количество.' : 'Ксюша строит замки. С планом постройки она поможет лучше меня.');
+      if (id !== 'b2') return finish(id === 'b4' ? 'По постройкам спроси Готку. Если нужны алмазы — скажи количество.' : 'Готка строит замки. С планом постройки она поможет лучше меня.');
       if (/что (?:ты )?стро|чем занима/.test(text)) { m.awaiting = 'build'; return finish('Замки строю. А ты что задумал: дом, башню или что-то другое?'); }
       if (!m.build) { m.awaiting = 'build'; return finish('Сначала определимся с постройкой. Что планируешь: дом, башню, замок, мост или ферму?'); }
       if (!m.material) { m.awaiting = 'material'; return finish(`Так, ${m.build}. Из чего строим — камень, дуб, кирпич? Можно ответить одним материалом, постройку я помню.`); }
@@ -124,7 +133,8 @@
       if (m.coords) return finish('Ты оставлял точку ' + m.coords + '.');
       return finish('Пока не о чем напоминать. Давай сначала договоримся, что обсуждаем.');
     }
-    if (/желез/.test(text)) return finish(id === 'b1' ? 'Да, железо нужно. Если решишь поделиться — отправь именно подарок, не просто название слитка. За это я не обещал алмазы.' : id === 'b4' ? 'Один алмаз стоит три железа. Скажи, сколько алмазов нужно, и договоримся до отправки вещей.' : 'Что именно про железо: нужно найти, подарить или купить за него алмазы у Димона?');
+    if (/желез/.test(text)) return finish(id === 'b1' ? 'Да, железо нужно. Если решишь поделиться — отправь именно подарок, не просто название слитка. За это я не обещал алмазы.' : id === 'b4' ? 'Один алмаз стоит три железа. Скажи, сколько алмазов нужно, и договоримся до отправки вещей.' : 'Что именно про железо: нужно найти, подарить или купить за него алмазы у клана «Чеченцы»?');
+    if(contact.persona && character)return characterReply();
     if (/спасибо|благодар|спс/.test(text)) return finish(id === 'b2' ? 'Если план пригодился — строй. Только вход не забудь.' : 'Обращайся. Вещи, если что, проверяй в карточках подарков.');
     if (exact(text, ['пока', 'до свидания', 'увидимся', 'ушел', 'ушла'])) return finish(id === 'b2' ? 'Увидимся. Я к стройке.' : 'Увидимся. Договорённости в переписке остаются.');
     if (/как (?:дела|ты|сам|сама)|что нового/.test(text)) return finish(id === 'b2' ? 'Строю, как и написано в профиле. Ты со стройкой пришёл или просто поболтать?' : id === 'b4' ? 'Торгую. Курс не поменялся: алмаз за три железа. А ты с чем?' : 'На месте. Железо всё ещё пригодится. Ты как?');

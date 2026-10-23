@@ -1,0 +1,140 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "zitraksmode:item/chigur_shotgun",
+		"particle": "zitraksmode:item/chigur_shotgun"
+	},
+	"elements": [
+		{
+			"name": "shotgun",
+			"from": [5.2, 7.39447, -8.90312],
+			"to": [8.2, 9.46947, -1.72812],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6.95, 6.475, -3.575]},
+			"faces": {
+				"north": {"uv": [3.5, 3.5, 5, 4.5], "texture": "#0"},
+				"east": {"uv": [0, 3.5, 3.5, 4.5], "texture": "#0"},
+				"south": {"uv": [8.5, 3.5, 10, 4.5], "texture": "#0"},
+				"west": {"uv": [5, 3.5, 8.5, 4.5], "texture": "#0"},
+				"up": {"uv": [5, 3.5, 3.5, 0], "texture": "#0"},
+				"down": {"uv": [6.5, 0, 5, 3.5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "shotgun",
+			"from": [6.125, 8.51947, -5.25312],
+			"to": [7.275, 10.01947, -2.05312],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6.95, 6.475, -3.575]},
+			"faces": {
+				"north": {"uv": [1.5, 10, 2, 10.5], "texture": "#0"},
+				"east": {"uv": [0, 10, 1.5, 10.5], "texture": "#0"},
+				"south": {"uv": [3.5, 10, 4, 10.5], "texture": "#0"},
+				"west": {"uv": [2, 10, 3.5, 10.5], "texture": "#0"},
+				"up": {"uv": [2, 10, 1.5, 8.5], "texture": "#0"},
+				"down": {"uv": [2.5, 8.5, 2, 10], "texture": "#0"}
+			}
+		},
+		{
+			"name": "shotgun",
+			"from": [4.95, 7.14447, -1.77812],
+			"to": [8.45, 9.71947, 4.89688],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6.95, 6.475, -3.575]},
+			"faces": {
+				"north": {"uv": [3, 7.5, 4.5, 8.5], "texture": "#0"},
+				"east": {"uv": [0, 7.5, 3, 8.5], "texture": "#0"},
+				"south": {"uv": [7.5, 7.5, 9, 8.5], "texture": "#0"},
+				"west": {"uv": [4.5, 7.5, 7.5, 8.5], "texture": "#0"},
+				"up": {"uv": [4.5, 7.5, 3, 4.5], "texture": "#0"},
+				"down": {"uv": [6, 4.5, 4.5, 7.5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "shotgun",
+			"from": [5.475, 10.83851, -6.52692],
+			"to": [8, 14.58851, -5.00192],
+			"rotation": {"angle": -45, "axis": "x", "origin": [6.95, 6.475, -3.575]},
+			"faces": {
+				"north": {"uv": [4.5, 9, 5.5, 10.5], "texture": "#0"},
+				"east": {"uv": [4, 9, 4.5, 10.5], "texture": "#0"},
+				"south": {"uv": [6, 9, 7, 10.5], "texture": "#0"},
+				"west": {"uv": [5.5, 9, 6, 10.5], "texture": "#0"},
+				"up": {"uv": [5.5, 9, 4.5, 8.5], "texture": "#0"},
+				"down": {"uv": [6.5, 8.5, 5.5, 9], "texture": "#0"}
+			}
+		},
+		{
+			"name": "shotgun",
+			"from": [5.725, 11.4289, -10.15525],
+			"to": [7.85, 13.6539, -8.75525],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [6.95, 6.475, -3.575]},
+			"faces": {
+				"north": {"uv": [7.5, 9, 8.5, 10], "texture": "#0"},
+				"east": {"uv": [7, 9, 7.5, 10], "texture": "#0"},
+				"south": {"uv": [9, 9, 10, 10], "texture": "#0"},
+				"west": {"uv": [8.5, 9, 9, 10], "texture": "#0"},
+				"up": {"uv": [8.5, 9, 7.5, 8.5], "texture": "#0"},
+				"down": {"uv": [9.5, 8.5, 8.5, 9], "texture": "#0"}
+			}
+		},
+		{
+			"name": "shotgun",
+			"from": [6.65, 9.44447, -7.70312],
+			"to": [6.65, 10.91947, -5.52812],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6.95, 6.475, -3.575]},
+			"faces": {
+				"north": {"uv": [10, 5.5, 10, 6], "texture": "#0"},
+				"east": {"uv": [9, 5.5, 10, 6], "texture": "#0"},
+				"south": {"uv": [11, 5.5, 11, 6], "texture": "#0"},
+				"west": {"uv": [10, 5.5, 11, 6], "texture": "#0"},
+				"up": {"uv": [10, 5.5, 10, 4.5], "texture": "#0"},
+				"down": {"uv": [10, 4.5, 10, 5.5], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [178.75, 0, 0],
+			"translation": [1.25, 0, -14.5]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [174.06, -2.04, -0.43],
+			"translation": [-2, 1.75, -13.75]
+		},
+		"firstperson_righthand": {
+			"rotation": [-178.28, 0.15, 1.28],
+			"translation": [-7.75, 5, -15.5]
+		},
+		"firstperson_lefthand": {
+			"rotation": [179.25, 0, 0],
+			"translation": [-10.5, 3.75, -15.5]
+		},
+		"ground": {
+			"rotation": [-180, 0, 0],
+			"translation": [0, 0, -10.25]
+		},
+		"gui": {
+			"rotation": [-111.83, -41.1, 72.45],
+			"translation": [-6.5, 8.75, 0]
+		},
+		"fixed": {
+			"rotation": [-90, 52.5, -90],
+			"translation": [8.25, 7.75, 1.25]
+		},
+		"on_shelf": {
+			"rotation": [124.75, 0, 0],
+			"translation": [0, 3.25, -3.5],
+			"scale": [2, 2, 2]
+		}
+	},
+	"groups": [
+		{
+			"name": "shotgun",
+			"origin": [6.6, 8.675, -3.2],
+			"rotation": [93, 0, 0],
+			"scope": 0,
+			"color": 4,
+			"children": [0, 1, 2, 3, 4, 5]
+		}
+	]
+}
