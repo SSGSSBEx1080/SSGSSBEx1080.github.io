@@ -21,3 +21,43 @@
 .speed-seg button+button{border-left:none}
 .speed-seg button[aria-pressed=true]{color:var(--tone);border-color:var(--tone);background:color-mix(in srgb,var(--tone) 12%,#0d141b)}
 @media(max-width:640px){.speed-seg{margin-left:0}}
+
+/* =====================================================================
+   УСИЛИТЕЛЬ · ночная поляна: прыгающий кролик, полевой журнал, скотч
+   ===================================================================== */
+@font-face{font-family:'Hop';font-weight:400;font-display:swap;src:url('../../assets/fonts/RussoOne-400-cyrillic.woff2')}
+@font-face{font-family:'Hop';font-weight:400;font-display:swap;src:url('../../assets/fonts/RussoOne-400-latin.woff2');unicode-range:U+0000-00FF,U+2000-206F}
+
+.g-title{font:400 clamp(28px,4vw,50px)/1.08 Hop,var(--f-head);color:#ffe9c9;
+  text-shadow:0 0 26px #ffa03a3d,0 2px 0 #0007}
+.g-kicker{color:#ffb768}
+.g-kicker::before{background:#ffa03a;box-shadow:0 0 12px #ffa03a99}
+.g-hero-strip b{color:#ffb768}
+.g-head h2 em{color:#ffb768}
+
+/* ночная поляна вместо конвейерного тёмного */
+.g-hero{background:
+  radial-gradient(90% 70% at 85% 12%,#ffa03a1c 0,#0000 58%),
+  radial-gradient(70% 55% at 10% 90%,#9fe08a16 0,#0000 62%),
+  linear-gradient(165deg,#101c12,#0b130d 58%,#0c1810)}
+
+/* кролик в герое прыгает */
+.g-art{background:radial-gradient(80% 80% at 50% 42%,#16261a,#0b130d 78%);border-color:#9fe08a42}
+.g-art img{animation:rabbit-hop 3.2s cubic-bezier(.5,0,.5,1) infinite;filter:drop-shadow(0 18px 14px #0009)}
+@keyframes rabbit-hop{0%,100%{transform:translateY(0)}18%{transform:translateY(-13px) rotate(-2deg)}36%{transform:translateY(0)}54%{transform:translateY(-7px)}72%{transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.g-art img{animation:none}}
+
+/* панели — листы полевого журнала на скотче */
+.g-panel{background:linear-gradient(170deg,#15211a,#0e1712)}
+.g-panel::before{content:'';position:absolute;top:5px;left:26px;width:76px;height:14px;
+  background:#cfe3c926;border:1px solid #cfe3c938;transform:rotate(-3deg);clip-path:none;border-radius:1px}
+.g-panel::after{content:'';position:absolute;top:5px;right:26px;width:58px;height:14px;
+  background:#cfe3c91e;border:1px solid #cfe3c92e;transform:rotate(2.5deg);clip-path:none;border-radius:1px}
+
+/* полевой стенд */
+#simCanvas{background:radial-gradient(100% 90% at 50% 10%,#14261a,#0b150e 72%);border-color:#9fe08a42;box-shadow:inset 0 0 44px #0009}
+.sim-hud{border-color:#9fe08a33;background:#0d1a12;box-shadow:inset 0 0 22px #0006}
+.sim-hud b{color:#ffd08a}
+.tl-step b{color:#ffa03a}
+.tl-step.tl-last b{color:#b8f688}
+.g-btn.grow{box-shadow:0 0 22px #9fe08a33}
