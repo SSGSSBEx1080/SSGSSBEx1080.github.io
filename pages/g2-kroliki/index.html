@@ -4,7 +4,7 @@
 <title>Гость К · Размножение кроликов — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера К: размножение кроликов в ZitraksMode. Поза «паровозик» на 3 секунды, тряска заднего кролика, отлёт ровно на 2 блока и оглушение вверх ногами на 5–10 секунд.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g2-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g2-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/guest.css"><link rel="stylesheet" href="style.css?v=g2-1">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests2"><link rel="stylesheet" href="style.css?v=g2-2">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -49,12 +49,20 @@
           <span>ДИСТАНЦИЯ: <b id="simDist">—</b></span>
           <span>ТИК: <b id="simTick">0</b></span>
           <span>ОГЛУШЕНИЕ: <b id="simStun">—</b></span>
+          <span>ПОКОЛЕНИЕ: <b id="simGen">1</b></span>
+          <span>НАСЕЛЕНИЕ: <b id="simPop">2</b></span>
         </div>
         <canvas id="simCanvas" aria-label="Стенд размножения кроликов: два кролика, морковки и отлёт заднего"></canvas>
         <div class="sim-controls">
           <button type="button" class="g-btn" id="feedA"><img src="../../assets/textures/p26/v/carrot.png" alt=""> МОРКОВКА КРОЛИКУ А</button>
           <button type="button" class="g-btn" id="feedB"><img src="../../assets/textures/p26/v/carrot.png" alt=""> МОРКОВКА КРОЛИКУ Б</button>
+          <button type="button" class="g-btn grow" id="genBtn" hidden>НОВОЕ ПОКОЛЕНИЕ ▲</button>
           <button type="button" class="g-btn ghost small" id="simReset">НОВЫЙ ПРОГОН ↺</button>
+          <div class="speed-seg" role="group" aria-label="Скорость времени стенда">
+            <button type="button" data-speed="0.5">×½</button>
+            <button type="button" data-speed="1" aria-pressed="true">×1</button>
+            <button type="button" data-speed="2">×2</button>
+          </div>
         </div>
       </div>
       <div class="g-log" id="simLog" role="status" aria-live="polite" style="margin-top:14px"></div>
@@ -113,5 +121,5 @@
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests1"></script><script src="app.js?v=g2-1"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests1"></script><script src="app.js?v=g2-2"></script>
 </body></html>

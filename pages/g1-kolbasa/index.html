@@ -4,7 +4,7 @@
 <title>Гость Б · Докторская колбаса — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера Б: докторская колбаса ZitraksMode. 10 голода, насыщение 0.8, мясо для волков, рецепт отсутствует — только обмен 1 изумруд у любого профессионального жителя.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g1-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g1-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/guest.css"><link rel="stylesheet" href="style.css?v=g1-1">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests2"><link rel="stylesheet" href="style.css?v=g1-2">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -23,9 +23,10 @@
           <span><b>16</b><small>ПОКУПОК ДО ПОПОЛНЕНИЯ</small></span>
         </div>
       </div>
-      <figure class="g-art">
-        <img src="../../assets/textures/guest/gost_doctorskaya_sausage.png" alt="Докторская колбаса — оригинальная текстура предмета из мода" width="256" height="256">
-        <figcaption>ОРИГИНАЛЬНАЯ ТЕКСТУРА · 256×256</figcaption>
+      <figure class="g-art g-art--3d" id="sausageArt">
+        <canvas id="sausage3d" aria-label="Колбаса на разделочной доске — объёмная модель. Перетащи, чтобы повернуть"></canvas>
+        <img class="art-fallback" src="../../assets/textures/guest/gost_doctorskaya_sausage.png" alt="Докторская колбаса — оригинальная текстура предмета из мода" width="256" height="256">
+        <figcaption>ОБЪЁМНАЯ МОДЕЛЬ · ТЕКСТУРА ИЗ МОДА · КРУТИ МЫШЬЮ</figcaption>
       </figure>
       <span class="g-stamp" aria-hidden="true">ГОСТЕВОЙ ПУНКТ</span>
     </div>
@@ -36,6 +37,7 @@
     <a href="#gost"><small>01</small> Паспорт ГОСТ</a>
     <a href="#trade"><small>02</small> Торговый стенд</a>
     <a href="#fine"><small>03</small> Что важно знать</a>
+    <a href="#adv"><small>04</small> Стенд-цели</a>
   </nav>
 
   <section class="g-section" id="gost" aria-labelledby="gostTitle">
@@ -82,7 +84,7 @@
             <span class="g-islot" data-tip="Докторская колбаса" data-tip-sub="zitraksmode:gost_doctorskaya_sausage"><img src="../../assets/textures/guest/gost_doctorskaya_sausage.png" alt="Докторская колбаса"></span>
           </div>
           <div class="deal-info">
-            <span>УРОВЕНЬ: <b>НОВИЧОК</b></span>
+            <span>УРОВЕНЬ: <b id="villagerLevel">НОВИЧОК 1</b></span>
             <span>ОСТАТОК ПОКУПОК: <b id="usesLeft">16</b> / 16</span>
             <span>ОПЫТ ЖИТЕЛЯ: <b id="villagerXp">+0</b></span>
           </div>
@@ -119,8 +121,23 @@
       <div class="g-panel">
         <h3 class="panel-title">ЧЕК ГОСТЯ</h3>
         <div class="g-log receipt" id="receipt"></div>
-        <p class="g-note" style="margin-top:12px">Гостевые пункты не входят в древо достижений: у гостя нет ачивок и XP-прогресса профиля.</p>
+        <p class="g-note" style="margin-top:12px">Стенд-цели гостя Б учитываются в профиле и стоят в общем древе ачивок — наравне с линейкой 1–29.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="g-section" id="adv" aria-labelledby="advTitle">
+    <header class="g-head"><span class="g-eyebrow">04 / СТЕНД-ЦЕЛИ ГОСТЯ</span>
+      <h2 id="advTitle">Ветка <em>Мистера Б</em> в древе</h2>
+      <p>Цепочка целей гостевого пункта: получаются действиями на этом стенде, показываются в общем древе достижений и засчитываются в опыт профиля. Все скрыты до получения — как в игре.</p></header>
+    <div class="g-adv">
+      <div class="adv-board">
+        <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
+        <div class="adv-detail" id="advDetail"></div>
+        <div class="adv-progress"><i id="advBar"></i></div>
+        <div class="adv-bottom"><span id="advTxt"></span><button type="button" id="advReset">Сбросить цели гостя</button></div>
+      </div>
+      <div class="adv-list" id="advList"></div>
     </div>
   </section>
 
@@ -133,5 +150,5 @@
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests1"></script><script src="app.js?v=g1-1"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests1"></script><script src="../../shared/kit.js"></script><script src="../../shared/geo3d.js"></script><script src="../../data/guest_adv.js?v=guests1"></script><script src="app.js?v=g1-2"></script>
 </body></html>

@@ -175,3 +175,10 @@
   .g-hero::after,.g-letter::after{animation:none}
   *{scroll-behavior:auto!important}
 }
+
+/* живой блик по бланку: редкая протяжка в тоне гостя */
+.g-hero:after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(100deg,#0000 0 42%,color-mix(in srgb,var(--tone) 6%,#0000) 48%,color-mix(in srgb,var(--tone) 13%,#0000) 50%,color-mix(in srgb,var(--tone) 6%,#0000) 52%,#0000 58%);
+  background-size:250% 100%;animation:g-sweep 9s linear infinite}
+@keyframes g-sweep{from{background-position:120% 0}to{background-position:-120% 0}}
+@media(prefers-reduced-motion:reduce){.g-hero:after{animation:none;opacity:0}}

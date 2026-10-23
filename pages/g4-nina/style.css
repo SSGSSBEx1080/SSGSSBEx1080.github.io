@@ -108,3 +108,37 @@
 @media(max-width:940px){.knife-cols{grid-template-columns:1fr}.bull-demo{grid-template-columns:1fr;justify-items:center}.unlock-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.farm-plots{grid-template-columns:repeat(3,1fr)}.stab-arena{height:250px}.stab-zone{width:190px;height:190px}}
 @media(pointer:coarse){.g-btn{min-height:44px}.plot{min-height:56px}}
+
+/* ---- 3D-нож в герое ---- */
+.g-art--3d{cursor:grab;touch-action:pan-y}
+.g-art--3d:active{cursor:grabbing}
+.g-art--3d canvas{position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 34px);z-index:2;display:none}
+.g-art--3d.ready canvas{display:block}
+.g-art--3d.ready .art-fallback{display:none}
+.g-art--3d.ready figcaption{z-index:3}
+
+/* ---- солевой фитиль: лампа-приёмник ---- */
+.fuse-grid button.lamp{background:#1a1208;cursor:default}
+.fuse-grid button.lamp>i{position:absolute;inset:18%;background:
+  linear-gradient(#3a2a12 0 38%,#c9873e 38% 62%,#3a2a12 62%),
+  linear-gradient(90deg,#0000 0 30%,#5b4326 30% 70%,#0000 70%);border-radius:2px;image-rendering:pixelated}
+.fuse-grid button.lamp.on{background:#3a2408}
+.fuse-grid button.lamp.on>i{filter:brightness(1.9) saturate(1.4);box-shadow:0 0 14px 4px #ffb02ecc}
+
+/* ---- борщ: обед ---- */
+.eat-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.eat-bar{display:flex;gap:2px;flex:1;min-width:170px;justify-content:flex-end;flex-wrap:wrap}
+.eat-bar img{width:16px;height:16px;image-rendering:pixelated}
+
+/* ---- стенд-цели ---- */
+.g-adv{--ac:var(--tone);--pn:#0d141b;--ln:var(--g-line);--dim:var(--g-dim)}
+.g-adv .adv-board{background:linear-gradient(170deg,#121a22,#0b1119);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--tone) 40%,#1a222c)}
+.g-adv .adv-detail{background:#0a1017}
+.g-adv .adv-row{background:#0d141b;border-color:var(--g-line)}
+.g-adv .adv-progress i{background:var(--tone)}
+.g-adv .adv-bottom{color:var(--g-dim)}
+.g-adv .adv-bottom button{background:none;border:1px solid var(--g-line2);color:var(--g-dim);font:10px var(--f-mono);padding:8px 12px;cursor:pointer}
+.g-adv .adv-bottom button:hover{color:var(--tone);border-color:var(--tone)}
+.g-adv .adv-progress{height:3px;background:#141c26;margin:16px 0}
+.g-adv .adv-progress i{display:block;height:100%;width:0;transition:width .3s}
+.g-adv .adv-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}

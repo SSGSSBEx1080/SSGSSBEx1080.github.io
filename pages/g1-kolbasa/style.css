@@ -22,3 +22,30 @@
 .g-log.receipt{font-size:12px}
 .g-log.receipt div::before{content:'· ';color:var(--tone)}
 @media(pointer:coarse){.prof-grid button,.g-btn{min-height:44px}}
+
+/* ---- 3D-колбаса в герое ---- */
+.g-art--3d{cursor:grab;touch-action:pan-y}
+.g-art--3d:active{cursor:grabbing}
+.g-art--3d canvas{position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 34px);z-index:2;display:none}
+.g-art--3d.ready canvas{display:block}
+.g-art--3d.ready .art-fallback{display:none}
+.g-art--3d.ready figcaption{z-index:3}
+
+/* ---- торговля: полоска сделок и пополнение ---- */
+.deal-info span{display:block;position:relative}
+#usesBar{position:absolute;left:0;bottom:-4px;height:2px;background:var(--tone);transition:width .25s;max-width:100%}
+#restockBtn:not([hidden]){animation:restock-pulse 1.2s ease-in-out infinite}
+@keyframes restock-pulse{0%,100%{box-shadow:0 0 0 0 #ff625700}50%{box-shadow:0 0 0 5px #ff625733}}
+
+/* ---- стенд-цели: доска ачивок в тоне гостя ---- */
+.g-adv{--ac:var(--tone);--pn:#0d141b;--ln:var(--g-line);--dim:var(--g-dim)}
+.g-adv .adv-board{background:linear-gradient(170deg,#121a22,#0b1119);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--tone) 40%,#1a222c)}
+.g-adv .adv-detail{background:#0a1017}
+.g-adv .adv-row{background:#0d141b;border-color:var(--g-line)}
+.g-adv .adv-progress i{background:var(--tone)}
+.g-adv .adv-bottom{color:var(--g-dim)}
+.g-adv .adv-bottom button{background:none;border:1px solid var(--g-line2);color:var(--g-dim);font:10px var(--f-mono);padding:8px 12px;cursor:pointer}
+.g-adv .adv-bottom button:hover{color:var(--tone);border-color:var(--tone)}
+.g-adv .adv-progress{height:3px;background:#141c26;margin:16px 0}
+.g-adv .adv-progress i{display:block;height:100%;width:0;transition:width .3s}
+.g-adv .adv-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}

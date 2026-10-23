@@ -474,3 +474,13 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 @keyframes pc25Sway{50%{transform:translateY(-4px) skewX(-4deg)}}
 .lg-c[data-s="25"]{font-family:'LG Dela';color:#f2f5fb;--d:#ff8800;text-shadow:3px 3px 0 #ff8800,6px 6px 0 rgba(0,0,0,.5)}
 .guests a{color:inherit;text-decoration:none}
+
+/* ---------- гости в общей сетке и дереве ---------- */
+.pc.guest{background:linear-gradient(165deg,color-mix(in srgb,var(--tone) 12%,#111),#111 70%)}
+.pc.guest .pc-n{color:var(--tone);text-shadow:0 2px 12px color-mix(in srgb,var(--tone) 60%,transparent)}
+.pc.guest::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--tone);opacity:.8}
+.pc.guest .pc-d{color:#b9b9c4}
+.pc-st.g-nobranch{position:absolute;top:14px;right:14px;font:400 10px var(--f-pixel);color:#6d6d78;letter-spacing:.1em}
+.pgrid.list .pc-st.g-nobranch{position:static}
+.tw-tab.guest{box-shadow:0 0 0 2px color-mix(in srgb,#8b99ab 55%,transparent),inset 0 0 0 2px #0006}
+.tw-tab.guest.full{box-shadow:0 0 0 2px color-mix(in srgb,#c9e08a 60%,transparent),inset 0 0 0 2px #0006}
