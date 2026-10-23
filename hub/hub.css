@@ -272,9 +272,25 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .tw-rows a i{position:absolute;left:0;bottom:0;height:2px;background:var(--tone)}
 
 /* ---------- гости, история ---------- */
-.guests{display:flex;gap:12px;flex-wrap:wrap}
-.guests div{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:13px;background:rgba(255,255,255,.02)}
-.guests small{display:block;color:var(--dim);font-size:11px}
+/* ---------- гостевые пункты: карточки-пропуска ---------- */
+.guests{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.gcard{position:relative;display:flex;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:14px;
+  background:linear-gradient(170deg,rgba(255,255,255,.045),rgba(255,255,255,.01)),var(--pnl);
+  color:inherit;text-decoration:none;overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s}
+.gcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gtone,#8b8b95)}
+.gcard:hover,.gcard:focus-visible{color:inherit;text-decoration:none;transform:translateY(-2px);
+  border-color:var(--gtone);box-shadow:0 8px 22px -12px var(--gtone)}
+.gc-letter{flex:none;display:grid;justify-items:center;gap:2px;width:52px;padding:10px 0;border:1px dashed color-mix(in srgb,var(--gtone) 55%,transparent);
+  border-radius:10px;font:900 24px/1 var(--f-head);color:var(--gtone);background:color-mix(in srgb,var(--gtone) 9%,transparent)}
+.gc-letter small{font:400 8px var(--f-mono);letter-spacing:.14em;color:var(--dim)}
+.gc-body{min-width:0;display:grid;gap:3px}
+.gc-body b{font:800 15px/1.25 var(--f-head);color:#eee}
+.gc-body small{color:var(--dim);font-size:11.5px}
+.gc-icon{margin-left:auto;width:46px;height:46px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 3px 8px #0009)}
+.gc-soon{position:absolute;right:-34px;top:16px;transform:rotate(38deg);padding:3px 38px;
+  font:400 9px var(--f-mono);letter-spacing:.3em;color:#c7d3dd;background:color-mix(in srgb,var(--gtone) 26%,#0e1116cc);
+  border-top:1px solid color-mix(in srgb,var(--gtone) 55%,transparent);border-bottom:1px solid color-mix(in srgb,var(--gtone) 55%,transparent)}
+.gcard.soon .gc-body b{color:var(--dim)}
 .tl{border-left:2px solid var(--line);margin-left:6px;padding-left:22px;display:flex;flex-direction:column;gap:12px;font-size:13.5px}
 .tl div{position:relative;color:#bbb}
 .tl div::before{content:"";position:absolute;left:-28px;top:6px;width:10px;height:10px;background:#444;border:2px solid #000}
@@ -457,4 +473,4 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
 .pc-25 .pc-bg::before{content:"正義";position:absolute;right:7%;top:12%;font:900 34px/1 serif;color:rgba(255,255,255,.16);letter-spacing:2px;animation:pc25Sway 3.2s ease-in-out infinite}
 @keyframes pc25Sway{50%{transform:translateY(-4px) skewX(-4deg)}}
 .lg-c[data-s="25"]{font-family:'LG Dela';color:#f2f5fb;--d:#ff8800;text-shadow:3px 3px 0 #ff8800,6px 6px 0 rgba(0,0,0,.5)}
-.guests a{color:inherit;text-decoration:none}.guests a:hover,.guests a:focus-visible{color:var(--ac)}
+.guests a{color:inherit;text-decoration:none}

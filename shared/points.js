@@ -37,9 +37,10 @@ ZM.POINTS = [
   { n: 29, title: "Сандевистан",           date: "05.09.2026", confirmed: true, page: "pages/29-sandevistan/index.html", icon: "assets/textures/p29/sandevistan.png", tone: "#eef638" },
 ];
 ZM.GUEST_POINTS = [
-  { title: "Колбаса ГОСТ «Докторская»", from: "от бабушки Вали" },
-  { title: "Соль, редис, борщ и нож",   from: "от прабабушки Нины" },
-  { title: "Антон Чигур",               from: "гостевой пункт" },
+  { letter: "Б", title: "Докторская колбаса",        from: "Мистер Б · торговля и голод",     page: "pages/g1-kolbasa/index.html", tone: "#ff6257" },
+  { letter: "К", title: "Размножение кроликов",      from: "Мистер К · симуляция поля",       page: "pages/g2-kroliki/index.html", tone: "#ffa03a" },
+  { letter: "В", title: "Пункт Мистера В",           from: "Мистер В · сигнал отсутствует",   page: "pages/g3-rezerv/index.html",  tone: "#9db4c4", soon: true },
+  { letter: "П", title: "Соль, нож и редиска",       from: "Мистер П · предметы и блоки",     page: "pages/g4-nina/index.html",    tone: "#e0576b" },
 ];
 ZM.pointNav = (n) => {
   const done = ZM.POINTS.filter((p) => p.page);
