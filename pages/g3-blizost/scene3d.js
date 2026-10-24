@@ -57,7 +57,8 @@ try {
   const A = humanoid('../../assets/textures/mc/p2/entity_steve.png', 0xffffff, false);
   const B = humanoid('../../assets/textures/mc/p2/entity_alex.png', 0xffffff, true);
   A.root.position.x = -.62; B.root.position.x = .62;
-  A.root.rotation.y = Math.PI / 2; B.root.rotation.y = -Math.PI / 2;
+  /* лицом друг к другу и чуть к зрителю: модель смотрит в −Z, Стив слева → +X, Алекс справа → −X */
+  A.root.rotation.y = -Math.PI / 2 - .42; B.root.rotation.y = Math.PI / 2 + .42;
   for (const [m, s] of [[A, 1], [B, -1]]) {           /* поза навстречу: руки вперёд, лёгкий наклон головы */
     m.parts[2].rotation.x = -1.12; m.parts[3].rotation.x = -1.12;
     m.parts[2].rotation.z = -.12 * s; m.parts[3].rotation.z = .12 * s;

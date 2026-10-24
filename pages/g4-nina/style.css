@@ -361,3 +361,207 @@
 }
 /* ===== v9: узкие экраны (общая 400px-сетка guest.css v2 дополняет) ===== */
 @media(max-width:400px){.g-hero-main{grid-template-columns:1fr}.g-metrics span{min-width:calc(50% - 6px)}.g-cols{grid-template-columns:1fr}}
+
+/* =====================================================================
+   v9 · Большая переработка: ПКМ-стенд, мини-мир (рычаг/трава), грядки.
+   ===================================================================== */
+
+/* ---------- ПКМ-стенд v2 ---------- */
+.rcm-row{display:none}                       /* старая сетка не используется */
+.rcm-v2{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(16px,2.4vw,28px);margin-top:16px;align-items:start}
+.rcm-stand{border-left-color:#ffb02e80}
+.rcm-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.rcm-head .panel-title{margin-bottom:0}
+.rcm-dur{display:flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid var(--g-line);border-radius:12px;background:#0b1119;transition:border-color .3s,box-shadow .3s}
+.rcm-dur img{image-rendering:pixelated;filter:drop-shadow(0 3px 5px #000a)}
+.rcm-dur .rd-txt small{display:block;font:8px var(--f-mono);letter-spacing:.14em;color:var(--g-faint)}
+.rcm-dur .rd-txt b{font:700 13px var(--f-mono);color:#ffd76e;white-space:nowrap}
+.rcm-dur .rd-bar{width:120px;height:7px;border-radius:4px;background:#1a222c;overflow:hidden;position:relative;box-shadow:inset 0 1px 3px #000a}
+.rcm-dur .rd-bar em{display:block;height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#9fe08a,#3aa35c);transition:width .3s,background .3s}
+.rcm-dur[data-low="1"]{border-color:#ffb02e80}
+.rcm-dur[data-low="1"] .rd-bar em{background:linear-gradient(90deg,#ffd76e,#ffb02e)}
+.rcm-dur[data-dead="1"]{border-color:#e0576b}
+.rcm-dur[data-dead="1"] .rd-bar em{background:#5c2b33}
+.rcm-dur[data-dead="1"] img{filter:grayscale(1) brightness(.6)}
+.rcm-targets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.rcm-targets button{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-areas:'ic name' 'ic state';gap:2px 10px;align-items:center;
+  border:1px solid var(--g-line);border-radius:14px;background:linear-gradient(180deg,#10161f,#0b1119);
+  color:var(--g-dim);padding:10px 12px;font:700 12px var(--f-head);letter-spacing:.05em;cursor:pointer;overflow:hidden;
+  transition:border-color .2s,box-shadow .25s,translate .2s,filter .2s}
+.rcm-targets button .rt-ic{grid-area:ic;width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#0a0f16;box-shadow:inset 0 0 0 1px #ffffff10}
+.rcm-targets button .rt-ic img{width:26px;height:26px;image-rendering:pixelated;object-fit:contain}
+.rcm-targets button .rt-name{grid-area:name;text-align:left;line-height:1.15}
+.rcm-targets button .rt-name small{display:block;font:8.5px var(--f-mono);letter-spacing:.1em;color:var(--g-faint);margin-top:3px}
+.rcm-targets button .rt-state{grid-area:state;justify-self:start;font:700 8.5px var(--f-mono);letter-spacing:.16em;padding:3px 8px;border-radius:20px;background:#1a222c;color:var(--g-faint);transition:.25s}
+.rcm-targets button:hover{border-color:#ffb02e66;filter:brightness(1.12);translate:0 -2px}
+.rcm-targets button.on{border-color:#ffb02e;color:#ffd76e;background:linear-gradient(180deg,color-mix(in srgb,#ffb02e 16%,#10161f),#0b1119);box-shadow:0 10px 26px -12px #ffb02e80,inset 0 1px 0 #ffffff14}
+.rcm-targets button.on .rt-state{background:#3a2a10;color:#ffd76e}
+.rcm-targets button.done .rt-state{background:#12281c;color:#9fe08a}
+.rcm-targets button.done .rt-ic img{filter:saturate(.4) brightness(.8)}
+.rcm-scene{height:clamp(240px,32vw,320px);border-radius:16px;border:1px solid var(--g-line2);
+  background:radial-gradient(75% 90% at 50% 38%,#232f3c 0,#0b1119 80%),linear-gradient(180deg,#0b1119,#080d13)}
+.rcm-scene:before{inset:10px;border-radius:12px;border:1px dashed #ffb02e26}
+.rcm-scene img{width:132px;height:132px;filter:drop-shadow(0 22px 22px #000b)}
+.rcm-fx{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.rcm-p{position:absolute;left:50%;top:52%;width:var(--sz);height:var(--sz);border-radius:50% 50% 50% 12%;
+  background:radial-gradient(circle at 35% 30%,#fff8,var(--c) 45%);box-shadow:0 2px 5px #0007;
+  animation:rcmFly var(--dl) cubic-bezier(.15,.6,.4,1) forwards}
+@keyframes rcmFly{from{transform:translate(0,0) rotate(0);opacity:1}to{transform:translate(var(--dx),var(--dy)) rotate(220deg);opacity:0}}
+.rcm-cursor{position:absolute;right:16px;top:14px;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 13px;border-radius:12px;
+  background:#0b1119e8;border:1px solid #ffb02e66;box-shadow:0 10px 26px -12px #000c;pointer-events:none}
+.rcm-cursor i{width:22px;height:30px;border:2.5px solid #dfe7ec;border-radius:11px 11px 8px 8px;position:relative;flex:none;
+  background:linear-gradient(180deg,#1a222b,#12161c);box-shadow:0 4px 10px -4px #000d}
+.rcm-cursor i:after{content:'';position:absolute;top:5px;right:-2.5px;width:11px;height:12px;border-radius:0 9px 7px 55%;
+  background:linear-gradient(180deg,#ffc95e,#ffb02e);box-shadow:0 0 12px #ffb02eb0}
+.rcm-cursor span{font:700 10.5px var(--f-mono);letter-spacing:.14em;color:#ffd76e}
+.rcm-cursor.click i:after{animation:rcmPress .35s}
+@keyframes rcmPress{30%{filter:brightness(2.1);box-shadow:0 0 26px #ffd76e}100%{filter:none}}
+.rcm-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:6;white-space:nowrap;
+  font:9px var(--f-mono);letter-spacing:.12em;color:#7e91a3;background:#0b1119cc;padding:5px 12px;border-radius:20px;pointer-events:none}
+.rcm-hint b{color:#ffd76e}
+.rcm-bottom{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.rcm-use{flex:1;min-width:230px;background:linear-gradient(135deg,#ffb02e,#ff8f3a);border:0;color:#221205;
+  box-shadow:0 12px 30px -12px #ffb02e99}
+.rcm-use small{display:block;font:8.5px var(--f-mono);letter-spacing:.12em;opacity:.75;margin-top:2px}
+.rcm-use:not(:disabled):hover{box-shadow:0 16px 36px -12px #ffb02ecc;filter:brightness(1.07)}
+.rcm-inv{display:flex;gap:10px;align-items:center;margin-top:12px;padding:9px 12px;border:1px dashed var(--g-line2);border-radius:12px;min-height:54px;flex-wrap:wrap}
+.rcm-inv .ri-label{font:9px var(--f-mono);letter-spacing:.16em;color:var(--g-faint)}
+.rcm-inv .ri-slots{display:flex;gap:7px;flex-wrap:wrap}
+.rcm-inv .ri-slots .g-islot{animation:rcm-drop .45s cubic-bezier(.2,.7,.3,1.2)}
+.rcm-inv .ri-empty{font:italic 11.5px var(--f-mono);color:var(--g-faint)}
+.rcm-log{margin-top:10px;border-radius:12px;background:#0a0f16;border:1px solid var(--g-line);padding:10px 12px}
+.rcm-log time{color:#5c6f80;margin-right:8px}
+.rcm-log div{font:11px/1.7 var(--f-mono);color:#9fb2c0}
+.rcm-log div:last-child{color:#ffd76e}
+.rcm-legend{margin-top:14px;padding-top:12px;border-top:1px dashed var(--g-line)}
+.rcm-legend .rl-cap{display:block;font:9px var(--f-mono);letter-spacing:.16em;color:var(--g-faint);margin-bottom:8px}
+.rcm-legend .rl-row{display:flex;gap:6px;flex-wrap:wrap}
+.rcm-legend .rl-row i{font:700 10px var(--f-head);letter-spacing:.06em;font-style:normal;color:var(--g-dim);
+  padding:6px 11px;border-radius:20px;background:#0b1119;box-shadow:inset 0 0 0 1px var(--g-line)}
+
+/* ---------- МИНИ-МИР v2: зелёная трава, рычаг, 3D-фаски ---------- */
+.salt-lift .fuse-panel{overflow:hidden}
+.fuse-hud{gap:8px 18px;padding-bottom:2px}
+.fuse-hud .fh-legend{margin-left:auto;font:9px var(--f-mono);letter-spacing:.1em;color:var(--g-faint)}
+.fuse-hud .fh-legend b{color:#ffd76e}
+.fuse-grid-wrap{position:relative;border-radius:14px;padding:12px;
+  background:
+    radial-gradient(120% 130% at 50% -18%,#37596333 0,#0000 55%),
+    linear-gradient(180deg,#0c1a10 0%,#0a140c 60%,#081008 100%);
+  border:1px solid var(--g-line2);
+  box-shadow:inset 0 2px 14px #0009,0 18px 40px -22px #000d}
+.fuse-grid-wrap:after{content:'';position:absolute;inset:12px;border-radius:8px;pointer-events:none;z-index:4;
+  background:radial-gradient(115% 125% at 50% 45%,#0000 62%,#00000066 100%)}
+.world-grid{position:relative;grid-template-columns:repeat(12,minmax(38px,1fr));gap:4px;background:#0b140cdd;border:1px solid #24402a;border-radius:10px;padding:10px;
+  transform:perspective(1400px) rotateX(2.6deg);transform-style:preserve-3d}
+.world-grid button{aspect-ratio:1;border-radius:4px;border:1px solid #00000050;padding:0;cursor:pointer;
+  background:url('../../assets/textures/guest/grass_top_green.png') 0 0/100% 100%;image-rendering:pixelated;
+  box-shadow:inset 2px 2px 0 -1px #ffffff26,inset -2px -1px 0 -1px #00000066,0 2px 0 -1px #000000aa;
+  transition:filter .15s}
+.world-grid button::after{content:'';position:absolute;left:0;right:0;bottom:0;height:26%;border-radius:0 0 4px 4px;pointer-events:none;
+  background:url('../../assets/textures/mc/p2/block_grass_block_side.png') 0 0/16px 100%;
+  box-shadow:inset 0 3px 4px -2px #00000090}
+.world-grid button:hover{filter:brightness(1.22)}
+.world-grid button img{position:absolute;left:50%;top:46%;width:78%;height:78%;transform:translate(-50%,-50%);image-rendering:pixelated;object-fit:contain;z-index:2}
+.world-grid button.lever{cursor:pointer;box-shadow:inset 0 0 0 2px #ffd76e55,inset 2px 2px 0 -1px #ffffff26,inset -2px -1px 0 -1px #00000066;overflow:visible}
+.world-grid button.lever img{width:92%;height:92%;transform:translate(-50%,-38%) rotate(-18deg);transition:transform .18s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 3px 4px #000c)}
+.world-grid button.lever.pulled img{transform:translate(-50%,-30%) rotate(15deg)}
+.world-grid button.lever u{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%) rotate(-2.6deg);z-index:3;
+  font:700 8px var(--f-mono);letter-spacing:.2em;color:#ffd76e;background:#12100ae6;border:1px solid #ffd76e66;border-radius:4px;padding:2px 6px;white-space:nowrap;text-decoration:none}
+.world-grid button.mech{cursor:default;box-shadow:inset 0 0 0 2px #ffffff14,inset 2px 2px 0 -1px #ffffff26,inset -2px -1px 0 -1px #00000066}
+.world-grid button.salt{box-shadow:inset 0 0 0 2px rgba(255,255,255,.22),inset 0 6px 0 -3px rgba(255,255,255,.14),inset 0 -8px 0 -4px rgba(0,0,0,.45),0 3px 8px -3px #ffffff2e}
+.world-grid button.lit{box-shadow:inset 0 0 0 2px rgba(255,176,46,.6),inset 0 6px 0 -3px rgba(255,176,46,.18),inset 0 -8px 0 -4px rgba(0,0,0,.45),0 0 16px 2px #ffb02e66}
+.world-grid button.scorch{background-image:url('../../assets/textures/mc/p2/block_dirt.png');filter:saturate(.45) brightness(.75)}
+.world-grid button.on img{filter:brightness(1.35) drop-shadow(0 0 9px #ffd76ecc)}
+.g-btn#fuseIgnite{background:linear-gradient(135deg,#ffd76e,#ffb02e);color:#221205;box-shadow:0 12px 28px -14px #ffb02eaa}
+.g-btn#fuseIgnite:not(:disabled):hover{box-shadow:0 16px 34px -12px #ffb02ecc}
+
+/* ---------- ГРЯДКИ v2: настоящая ферма ---------- */
+.farm-panel{overflow:hidden}
+.farm-ruler{display:flex;gap:5px;align-items:stretch;margin-bottom:14px;padding:9px 11px;border-radius:14px;
+  background:linear-gradient(180deg,#10161f,#0b1119);border:1px solid var(--g-line);overflow-x:auto;scrollbar-width:thin}
+.farm-ruler .fr-cell{position:relative;flex:1;min-width:44px;display:grid;place-items:end center;padding:6px 4px 20px;border-radius:10px;background:#0a0f16;transition:.25s}
+.farm-ruler .fr-cell img{width:34px;height:34px;image-rendering:pixelated;object-fit:contain;filter:brightness(.55) saturate(.6);transition:.25s}
+.farm-ruler .fr-cell i{position:absolute;bottom:3px;font:700 8.5px var(--f-mono);color:var(--g-faint);font-style:normal;letter-spacing:.1em}
+.farm-ruler .fr-cell.past img{filter:brightness(.85) saturate(.8)}
+.farm-ruler .fr-cell.cur{background:color-mix(in srgb,var(--tone) 14%,#0a0f16);box-shadow:inset 0 0 0 1px #e0576b88,0 0 16px -4px #e0576b66}
+.farm-ruler .fr-cell.cur img{filter:none;transform:scale(1.12)}
+.farm-ruler .fr-cell.cur i{color:#ff9cb0}
+.farm-ruler .fr-arrow{display:grid;place-items:center;padding:0 10px;font:800 15px var(--f-head);color:var(--g-faint);white-space:nowrap}
+.farm-ruler .fr-arrow small{font:8px var(--f-mono);letter-spacing:.14em;margin-left:6px;color:#e0576b}
+.farm-plots{grid-template-columns:repeat(3,1fr);gap:12px}
+.plot{aspect-ratio:1;border-radius:16px;border:1px solid #513a24;display:grid;place-items:center;cursor:pointer;padding:0;position:relative;overflow:hidden;
+  background:url('../../assets/textures/guest/farmland_dark.png') 0 0/100% 100%;image-rendering:pixelated;
+  box-shadow:inset 0 4px 10px -4px #000c,inset 0 -3px 6px -3px #00000090,0 3px 0 -1px #000000aa;
+  transition:translate .18s,box-shadow .25s,filter .2s}
+.plot::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,#0000 0 4px,#00000018 4px 5px)}
+.plot:hover{filter:brightness(1.18);translate:0 -2px}
+.plot img{width:78%;height:78%;object-fit:contain;image-rendering:pixelated;position:relative;z-index:2;filter:drop-shadow(0 6px 8px #0009)}
+.plot.empty{filter:saturate(.75) brightness(.85)}
+.plot .pl-plant{position:absolute;inset:0;display:grid;place-items:center;z-index:2;font:700 9px var(--f-mono);letter-spacing:.12em;color:#9fb2c08c;text-decoration:none;
+  border:1.5px dashed #9fb2c03d;border-radius:14px;margin:8px;transition:.2s}
+.plot:hover .pl-plant{color:#ffd76e;border-color:#ffd76e88}
+.plot .pl-badge{position:absolute;top:7px;left:7px;z-index:3;font:700 8.5px var(--f-mono);letter-spacing:.1em;color:#0d1b12;
+  background:#cfe3c2;border-radius:6px;padding:2.5px 7px;box-shadow:0 2px 5px #0008}
+.plot .pl-bar{position:absolute;left:9px;right:9px;bottom:8px;height:6px;border-radius:4px;background:#00000090;z-index:3;overflow:hidden;box-shadow:inset 0 1px 2px #000}
+.plot .pl-bar em{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#8fce6a,#e0576b);transition:width .4s}
+.plot .pl-take{position:absolute;top:7px;right:7px;z-index:3;font:700 8px var(--f-mono);letter-spacing:.12em;color:#fff;
+  background:linear-gradient(135deg,#e0576b,#c23b2e);border-radius:6px;padding:3px 7px;text-decoration:none;box-shadow:0 3px 8px -2px #e0576bcc}
+.plot.ready{border-color:#e0576b;box-shadow:inset 0 0 0 2px #e0576b66,inset 0 4px 10px -4px #000c,0 0 24px -6px #e0576baa}
+.plot.ready img{animation:ripePulse 1.6s ease-in-out infinite}
+@keyframes ripePulse{50%{transform:scale(1.07) rotate(1.5deg)}}
+.plot.pop img{animation:growPop .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes growPop{40%{transform:scale(1.18)}}
+.farm-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.farm-inventory{margin-top:12px}
+.cook-box{display:flex;align-items:center;gap:10px;flex:1;min-width:210px}
+.cook-bar{height:12px;border-radius:8px;background:#0b1119;border:1px solid var(--g-line);position:relative;flex:1;overflow:hidden;box-shadow:inset 0 2px 4px #000a}
+.cook-bar i{position:absolute;inset:1px;width:0;border-radius:7px;background:linear-gradient(90deg,#ff8f3a,#ffd76e,#ffb02e);background-size:200% 100%;animation:cookShine 1.2s linear infinite;transition:width .1s linear}
+@keyframes cookShine{to{background-position:-200% 0}}
+.cook-bar em{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;font-style:normal;filter:drop-shadow(0 0 4px #ffb02e);animation:flame .5s ease-in-out infinite}
+@keyframes flame{50%{transform:translateY(-50%) scale(1.25) rotate(4deg)}}
+
+/* ---------- Ползунок «куда смотрит цель» и переключатели рецептов ---------- */
+.stab-controls input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:#0000;cursor:pointer}
+.stab-controls input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:6px;
+  background:linear-gradient(90deg,#e0576b 0 25%,#ffb02e 25% 50%,#e0576b 50% 75%,#e0576b33 75% 100%),#1a222c;
+  box-shadow:inset 0 2px 4px #000a}
+.stab-controls input[type=range]::-moz-range-track{height:10px;border-radius:6px;
+  background:linear-gradient(90deg,#e0576b 0 25%,#ffb02e 25% 50%,#e0576b 50% 75%,#e0576b33 75% 100%),#1a222c}
+.stab-controls input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff,#ffd76e 45%,#ffb02e);border:2px solid #221205;box-shadow:0 0 0 3px #ffb02e44,0 4px 10px -2px #000c;transition:box-shadow .2s,transform .15s}
+.stab-controls input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 5px #ffb02e66,0 4px 12px -2px #000c;transform:scale(1.08)}
+.stab-controls input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff,#ffd76e 45%,#ffb02e);border:2px solid #221205;box-shadow:0 0 0 3px #ffb02e44}
+.stab-scale{display:flex;justify-content:space-between;font:8.5px var(--f-mono);color:var(--g-faint);margin-top:2px;letter-spacing:.08em}
+.unlock-card label{position:relative;padding:7px 10px 7px 40px;border-radius:10px;transition:background .2s;user-select:none}
+.unlock-card label:hover{background:#ffffff08}
+.unlock-card label:before{content:'';position:absolute;left:8px;top:50%;translate:0 -50%;width:22px;height:12px;border-radius:8px;background:#1a222c;box-shadow:inset 0 1px 3px #000a;transition:.25s}
+.unlock-card label:after{content:'';position:absolute;left:10px;top:50%;translate:0 -50%;width:8px;height:8px;border-radius:50%;background:#5c6f80;transition:.25s}
+.unlock-card label:has(input:checked):before{background:linear-gradient(90deg,#3aa35c,#9fe08a);box-shadow:0 0 10px -2px #3aa35caa}
+.unlock-card label:has(input:checked):after{left:26px;background:#fff;box-shadow:0 0 6px #9fe08a}
+.unlock-card input{position:absolute;opacity:0;pointer-events:none}
+.unlock-card label:has(input:checked){color:#cfe3c2}
+
+/* ---------- Адаптив v9 ---------- */
+@media(max-width:1080px){.rcm-v2{grid-template-columns:1fr}}
+@media(max-width:940px){
+  .rcm-targets{grid-template-columns:repeat(2,1fr)}
+  .farm-plots{grid-template-columns:repeat(2,1fr)}
+  .salt-lift ~ .g-cols{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .fuse-grid-wrap{overflow-x:auto}
+  .world-grid{min-width:540px;transform:none}
+  .world-grid button.lever u{transform:translateX(-50%)}
+  .rcm-scene{height:230px}
+  .rcm-scene img{width:104px;height:104px}
+  .rcm-dur .rd-bar{width:82px}
+  .rcm-use{min-width:100%}
+}
+@media(max-width:400px){
+  .rcm-targets{grid-template-columns:1fr 1fr}
+  .farm-plots{gap:8px}
+  .farm-ruler .fr-cell{min-width:36px}
+  .farm-ruler .fr-cell img{width:26px;height:26px}
+}

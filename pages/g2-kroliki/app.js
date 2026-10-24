@@ -99,8 +99,21 @@
   /* ---------- логика тика (20 тпс × скорость) ---------- */
   const rnd = (a, b) => a + Math.random() * (b - a);
   function hop(r, v, restKey, hopKey) {
+    /* партнёр: в любви кролик ищет пару и идёт навстречу — как ищет ИИ в игре */
+    const mate = r === S.a ? S.b : S.a;
+    const inLove = S.phase === 'idle' && r.love && mate.love;
     if (S[restKey] > 0) { S[restKey]--; if (!S[restKey]) { v.x = 0; v.z = 0; } }
-    else if (Math.random() < 0.02) { S[restKey] = 12 + (Math.random() * 26 | 0); const ang = rnd(0, Math.PI * 2), sp = rnd(.03, .07); v.x = Math.cos(ang) * sp; v.z = Math.sin(ang) * sp; S[hopKey] = 1; }
+    else if (Math.random() < (inLove ? 0.16 : 0.02)) {
+      S[restKey] = inLove ? 2 + (Math.random() * 4 | 0) : 12 + (Math.random() * 26 | 0);
+      let ang;
+      if (inLove) {
+        /* курс на партнёра с живым разбросом — спешат, но прыгают по-кроличьи */
+        const want = Math.atan2(mate.z - r.z, mate.x - r.x);
+        ang = want + rnd(-.55, .55);
+      } else ang = rnd(0, Math.PI * 2);
+      const sp = inLove ? rnd(.09, .14) : rnd(.03, .07);
+      v.x = Math.cos(ang) * sp; v.z = Math.sin(ang) * sp; S[hopKey] = 1;
+    }
     r.x = Math.min(FIELD_W - 1, Math.max(1, r.x + v.x)); r.z = Math.min(FIELD_H - 1, Math.max(1, r.z + v.z));
     if (v.x) r.dir = v.x > 0 ? 1 : -1;
     if (S[hopKey] > 0 && Math.random() < .12) S[hopKey] = 0;
@@ -234,6 +247,16 @@
       g.beginPath(); g.arc(lone.x * CELL, lone.z * CELL, FIND_R * CELL, 0, Math.PI * 2); g.stroke(); g.setLineDash([]);
       g.font = '9px "JetBrains Mono",monospace'; g.fillStyle = '#ffa03a99'; g.textAlign = 'center';
       g.fillText('ПОИСК ПАРТНЁРА · 3 БЛОКА', lone.x * CELL, lone.z * CELL - FIND_R * CELL - 6);
+    }
+    /* оба в любви и ещё не рядом — стрелка сближения */
+    if (S.phase === 'idle' && S.a.love && S.b.love) {
+      const dist = Math.hypot(S.a.x - S.b.x, S.a.z - S.b.z);
+      if (dist > FIND_R) {
+        g.strokeStyle = '#ffd76e55'; g.lineWidth = 1.5; g.setLineDash([3, 7]);
+        g.beginPath(); g.moveTo(S.a.x * CELL, S.a.z * CELL); g.lineTo(S.b.x * CELL, S.b.z * CELL); g.stroke(); g.setLineDash([]);
+        g.font = '700 10px "JetBrains Mono",monospace'; g.fillStyle = '#ffd76e'; g.textAlign = 'center';
+        g.fillText('ИДУТ НАВСТРЕЧУ · ' + dist.toFixed(1) + ' БЛ.', (S.a.x + S.b.x) / 2 * CELL, (S.a.z + S.b.z) / 2 * CELL - 10);
+      }
     }
     /* линия дистанции во время позы */
     if (S.phase === 'train') {
