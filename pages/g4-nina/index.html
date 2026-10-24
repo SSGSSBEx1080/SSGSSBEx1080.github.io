@@ -4,7 +4,7 @@
 <title>Гость П · Соль, нож и редиска — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера П: нож с ударом в спину ×2, солевой фитиль с сигналом 15, редиска с восемью стадиями и борщ, который возвращает миску. Механики из исходников ZitraksMode.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g4-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g4-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests7"><link rel="stylesheet" href="style.css?v=g4-8">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests7"><link rel="stylesheet" href="style.css?v=g4-9">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -86,7 +86,7 @@
             <span class="stab-hint">Скаляр ≤ −0.5 — красный сектор, спина (×2) · |скаляр| &lt; 0.5 — янтарные бока (×1.5) · остальное — лицо (×1). Подсвечивается сектор, в который бьёшь.</span>
           </div>
           <div class="stab-controls">
-            <label>КУДА СМОТРИТ ЦЕЛЬ · <b id="stabDeg2">0°</b><input type="range" id="stabRange" min="0" max="360" step="5" value="0"></label>
+            <label>КУДА СМОТРИТ ЦЕЛЬ · <b id="stabDeg2">0°</b><input type="range" id="stabRange" min="0" max="360" step="5" value="0"><</label><span class="stab-scale"><i>0° ЛИЦО</i><i>90° БОК</i><i>180° СПИНА</i><i>270° БОК</i><i>360°</i></span>
             <button type="button" class="g-btn" id="stabHit">УДАР НОЖОМ</button>
             <button type="button" class="g-btn ghost small" id="takeKnife">ЗАБРАТЬ НОЖ В ИНВЕНТАРЬ</button>
           </div>
@@ -94,44 +94,53 @@
         </div>
       </div>
     </div>
-    <!-- ===== ПКМ-стенд: все функции ножа правой кнопкой ===== -->
-    <div class="rcm-row">
+    <!-- ===== ПКМ-стенд v2: все функции ножа правой кнопкой ===== -->
+    <div class="rcm-v2">
       <div class="g-panel rcm-stand">
-        <h3 class="panel-title">ПКМ · ВСЕ ФУНКЦИИ НОЖА</h3>
-        <div class="rcm-main">
-          <div class="rcm-mouse" id="rcmMouse" aria-hidden="true"><i></i><span>ПРАВАЯ<br>КНОПКА</span></div>
-          <div class="rcm-game">
-            <div class="rcm-targets" id="rcmTargets" role="tablist" aria-label="Цель для правой кнопки">
-              <button type="button" class="on" data-t="sheep"><img src="../../assets/textures/hub/av/sheep.png" alt="">ОВЦА</button>
-              <button type="button" data-t="bull"><img src="../../assets/textures/hub/av/cow.png" alt="">БЫК</button>
-              <button type="button" data-t="berries"><img src="../../assets/textures/p21/i/sweet_berries.png" alt="">ЯГОДЫ</button>
-              <button type="button" data-t="log"><img src="../../assets/textures/mc/p2/block_oak_log.png" alt="">БРЕВНО</button>
-            </div>
-            <div class="rcm-scene" id="rcmScene">
-              <canvas id="rcm3d" aria-label="Объёмная цель для ножа — крути мышью"></canvas>
-              <img id="rcmImg" src="../../assets/textures/hub/av/sheep.png" alt="Цель для ножа">
-              <b class="rcm-cap" id="rcmCap">ОВЦА · ЖДЁТ</b>
-              <div class="rcm-drop" id="rcmDrop" aria-hidden="true"></div>
-            </div>
-            <div class="rcm-controls">
-              <button type="button" class="g-btn rcm-use" id="rcmUse">ПРИМЕНИТЬ ПКМ</button>
-              <button type="button" class="g-btn ghost small" id="rcmReset">ВОССТАНОВИТЬ ЦЕЛЬ ↺</button>
-            </div>
-            <div class="rcm-dur">ПРОЧНОСТЬ НОЖА <b id="rcmDur">500 / 500</b><i><em id="rcmDurBar"></em></i></div>
-            <div class="g-log rcm-log" id="rcmLog" role="status" aria-live="polite"></div>
+        <div class="rcm-head">
+          <h3 class="panel-title">ПКМ · ВСЕ ФУНКЦИИ НОЖА</h3>
+          <div class="rcm-dur" id="rcmDurBox">
+            <img src="../../assets/textures/guest/nina_knife.png" alt="" width="30" height="30">
+            <div class="rd-txt"><small>ПРОЧНОСТЬ НОЖА</small><b id="rcmDur">500 / 500</b></div>
+            <i class="rd-bar"><em id="rcmDurBar"></em></i>
           </div>
         </div>
+        <div class="rcm-targets" id="rcmTargets" role="tablist" aria-label="Цель для правой кнопки">
+          <button type="button" class="on" data-t="sheep"><span class="rt-ic"><img src="../../assets/textures/hub/av/sheep.png" alt=""></span><span class="rt-name">ОВЦА<small>СТРИЖКА · ШЕРСТЬ</small></span><span class="rt-state" data-state>ЖДЁТ</span></button>
+          <button type="button" data-t="bull"><span class="rt-ic"><img src="../../assets/textures/hub/av/cow.png" alt=""></span><span class="rt-name">БЫК<small>МЕДЬ ИЛИ ЛЫСЫЙ</small></span><span class="rt-state" data-state>ЖДЁТ</span></button>
+          <button type="button" data-t="berries"><span class="rt-ic"><img src="../../assets/textures/p21/i/sweet_berries.png" alt=""></span><span class="rt-name">ЯГОДЫ<small>СБОР · ОТРАСТУТ</small></span><span class="rt-state" data-state>ЖДЁТ</span></button>
+          <button type="button" data-t="log"><span class="rt-ic"><img src="../../assets/textures/mc/p2/block_oak_log.png" alt=""></span><span class="rt-name">БРЕВНО<small>СНЯТЬ КОРУ</small></span><span class="rt-state" data-state>ЖДЁТ</span></button>
+        </div>
+        <div class="rcm-scene" id="rcmScene">
+          <canvas id="rcm3d" aria-label="Объёмная цель для ножа — крути мышью"></canvas>
+          <img id="rcmImg" src="../../assets/textures/hub/av/sheep.png" alt="Цель для ножа">
+          <b class="rcm-cap" id="rcmCap">ОВЦА · ЖДЁТ</b>
+          <div class="rcm-drop" id="rcmDrop" aria-hidden="true"></div>
+          <div class="rcm-fx" id="rcmFx" aria-hidden="true"></div>
+          <div class="rcm-cursor" id="rcmMouse" aria-hidden="true"><i></i><span>ПКМ</span></div>
+          <div class="rcm-hint">ТЯНИ — КРУТИТЬ · <b>ПРАВАЯ КНОПКА ПО ЦЕЛИ — ПРИМЕНИТЬ</b></div>
+        </div>
+        <div class="rcm-bottom">
+          <button type="button" class="g-btn rcm-use" id="rcmUse">ПРИМЕНИТЬ ПКМ <small>ИЛИ ПРАВЫЙ КЛИК ПО СЦЕНЕ</small></button>
+          <button type="button" class="g-btn ghost small" id="rcmReset">ВОССТАНОВИТЬ ЦЕЛЬ ↺</button>
+        </div>
+        <div class="rcm-inv"><span class="ri-label">СОБРАНО:</span><div class="ri-slots" id="rcmInv"><em class="ri-empty">пока пусто — остриги что-нибудь</em></div></div>
+        <div class="g-log rcm-log" id="rcmLog" role="status" aria-live="polite"></div>
         <p class="g-note" style="margin-top:14px">Ещё ПКМ: стрижёт грибных коров и вырезает тыквы. Медный бык открывает достижение <b>№22 «Медный бык»</b> в родной ветке дойки. Стрижка работает только на обычном быке.</p>
       </div>
-              <div class="g-panel" style="margin-top:16px">
-          <h3 class="panel-title">ЧЕМ ЕЩЁ ПОЛЕЗЕН</h3>
-          <ul class="actions-list">
-            <li><img src="../../assets/textures/hub/av/sheep.png" alt=""><span><b>Стрижёт овец</b> и грибных коров — как ножницами, с уроном прочности</span></li>
-            <li><img src="../../assets/textures/hub/av/cow.png" alt=""><span><b>Стрижёт быка:</b> обычный становится медным или лысым, лысый роняет 1–2 кожи</span></li>
-            <li><img src="../../assets/textures/p22/i/leather.png" alt=""><span><b>Быстро ломает</b> листву, шерсть и паутину; дроп с шерсти, паутины и блока травы</span></li>
-            <li><img src="../../assets/textures/p26/v/carrot.png" alt=""><span><b>Собирает ягоды</b> и вырезает тыквы, снимает кору как топор</span></li>
-          </ul>
+      <div class="g-panel">
+        <h3 class="panel-title">ЧЕМ ЕЩЁ ПОЛЕЗЕН</h3>
+        <ul class="actions-list">
+          <li><img src="../../assets/textures/hub/av/sheep.png" alt=""><span><b>Стрижёт овец</b> и грибных коров — как ножницами, с уроном прочности</span></li>
+          <li><img src="../../assets/textures/hub/av/cow.png" alt=""><span><b>Стрижёт быка:</b> обычный становится медным или лысым, лысый роняет 1–2 кожи</span></li>
+          <li><img src="../../assets/textures/p22/i/leather.png" alt=""><span><b>Быстро ломает</b> листву, шерсть и паутину; дроп с шерсти, паутины и блока травы</span></li>
+          <li><img src="../../assets/textures/p26/v/carrot.png" alt=""><span><b>Собирает ягоды</b> и вырезает тыквы, снимает кору как топор</span></li>
+        </ul>
+        <div class="rcm-legend">
+          <span class="rl-cap">ОДИН ПРЕДМЕТ — ЧЕТЫРЕ ИНСТРУМЕНТА:</span>
+          <span class="rl-row"><i>ножницы</i><i>топор</i><i>секатор</i><i>кирка для ягод</i></span>
         </div>
+      </div>
     </div>
 
   </section>
@@ -141,7 +150,28 @@
     <header class="g-head"><span class="g-eyebrow">02 / СОЛЬ</span>
       <h2 id="saltTitle">Руда, фитиль и <em>сигнал 15</em></h2>
       <p>Соляная руда живёт на высоте 48–128 блоков и всегда отдаёт ровно четыре соли — даже если её взорвали или снесли ультой катаны. А сама соль кладётся trails-полосой и горит, как одноразовый бикфордов шнур.</p></header>
-    <div class="g-cols">
+    <div class="salt-lift">
+      <div class="g-panel fuse-panel">
+        <h3 class="panel-title">СТЕНД: МИНИ-МИР С СОЛЬЮ</h3>
+        <div class="fuse-wrap">
+          <div class="fuse-hud">
+            <span>СОЛИ ПОЛОЖЕНО: <b id="fusePlaced">0</b></span>
+            <span>СГОРЕЛО: <b id="fuseBurned">0</b></span>
+            <span>СОЛИ В КАРМАНЕ: <b id="saltOwned">0</b></span>
+            <span class="sig" id="fuseSignal">СИГНАЛ: —</span>
+            <span class="fh-legend">КЛИК ПО ТРАВЕ — ПОЛОЖИТЬ СОЛЬ · ПО СОЛИ — СНЯТЬ · <b>ДЁРНИ РЫЧАГ</b></span>
+          </div>
+          <div class="fuse-grid-wrap"><div class="fuse-grid world-grid" id="fuseGrid" role="application" aria-label="Мини-мир: прокладывай солевую дорожку по траве до блоков-механизмов и рычага"></div></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button type="button" class="g-btn" id="fuseIgnite">⚡ ДЁРНУТЬ РЫЧАГ</button>
+            <button type="button" class="g-btn ghost small" id="fuseNew">НОВОЕ ПОЛЕ</button>
+            <button type="button" class="g-btn ghost small" id="fuseClear">СМЕСТИ СОЛЬ</button>
+          </div>
+          <p class="g-note">Мини-мир на травяных блоках: рычаг и четыре случайных блока-механизма из пула — поршень, липкий поршень, динамит, раздатчик со стрелой, дроппер, наблюдатель, красная лампа, нотный блок, мишень. Кликай по траве — кладёшь соль из кармана (одна соль = одна клетка, руду добывай ниже); клик по соли — снять и вернуть в карман. Дёрни рычаг — огонь побежит по дорожке: два тика на клетку, сигнал 15, — и запустит каждый механизм, до которого доберётся.</p>
+        </div>
+      </div>
+    </div>
+    <div class="g-cols" style="margin-top:16px">
       <div class="g-panel mine-panel">
         <h3 class="panel-title">СТЕНД: ДОБЫЧА РУДЫ</h3>
         <div class="mine-stage">
@@ -161,24 +191,6 @@
             <div class="mine-bar" aria-hidden="true"><i id="mineFill"></i></div>
             <p class="g-note" id="mineNote">Дроп одинаковый для кирки, ТНТ и ульты катаны — ровно 4 соли; опыт 2–5 начисляется только за ручную добычу игроком.</p>
           </div>
-        </div>
-      </div>
-      <div class="g-panel">
-        <h3 class="panel-title">СТЕНД: МИНИ-МИР С СОЛЬЮ</h3>
-        <div class="fuse-wrap">
-          <div class="fuse-hud">
-            <span>СОЛИ ПОЛОЖЕНО: <b id="fusePlaced">0</b></span>
-            <span>СГОРЕЛО: <b id="fuseBurned">0</b></span>
-            <span>СОЛИ В КАРМАНЕ: <b id="saltOwned">0</b></span>
-            <span class="sig" id="fuseSignal">СИГНАЛ: —</span>
-          </div>
-          <div class="fuse-grid world-grid" id="fuseGrid" role="application" aria-label="Мини-мир: прокладывай солевую дорожку по траве до блоков-механизмов и рычага"></div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button type="button" class="g-btn" id="fuseIgnite">ДЁРНУТЬ РЫЧАГ</button>
-            <button type="button" class="g-btn ghost small" id="fuseNew">НОВОЕ ПОЛЕ</button>
-            <button type="button" class="g-btn ghost small" id="fuseClear">СМЕСТИ СОЛЬ</button>
-          </div>
-          <p class="g-note">Мини-мир на травяных блоках: рычаг и четыре случайных блока-механизма из пула — поршень, липкий поршень, динамит, раздатчик со стрелой, дроппер, наблюдатель, красная лампа, редстоун-факел, нотный блок, мишень. Кликай по траве — кладёшь соль из кармана (одна соль = одна клетка, руду добывай выше); клик по соли — снять и вернуть в карман. Дёрни рычаг — огонь побежит по дорожке: два тика на клетку, сигнал 15, — и запустит каждый механизм, до которого доберётся.</p>
         </div>
       </div>
       <div>
@@ -214,10 +226,11 @@
       <h2 id="radishTitle">Восемь стадий <em>до хруста</em></h2>
       <p>Редиска — одновременно еда и семя: съел три единицы голода или посадил на грядку — выбор твой. Пожарить можно в печи, коптильне и на костре: сто тиков, десятая доля опыта.</p></header>
     <div class="g-cols">
-      <div class="g-panel">
-        <h3 class="panel-title">СТЕНД: ГРЯДКА</h3>
+      <div class="g-panel farm-panel">
+        <h3 class="panel-title">СТЕНД: ГРЯДКА · <span id="farmStageNow">СТАДИЯ — ИЗ 7</span></h3>
+        <div class="farm-ruler" id="farmRuler" aria-hidden="true"></div>
         <div class="farm-plots" id="farmPlots"></div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center">
+        <div class="farm-controls">
           <button type="button" class="g-btn small" id="tickBtn">СЛУЧАЙНЫЕ ТИКИ ×10</button>
           <button type="button" class="g-btn small" id="mealBtn">КОСТНАЯ МУКА</button>
           <button type="button" class="g-btn ghost small" id="harvestAll">СОБРАТЬ СПЕЛЫЕ</button>
@@ -225,11 +238,13 @@
         </div>
         <div class="farm-inventory">
           <span class="g-islot" data-tip="Редиска" data-tip-sub="zitraksmode:radish"><img src="../../assets/textures/guest/radish.png" alt="Редиска"><b id="radCount">1</b></span>
-          <button type="button" class="g-btn small" id="cookBtn" disabled>ПОЖАРИТЬ (100 ТИКОВ)</button>
-          <span class="cook-bar"><i id="cookFill"></i></span>
+          <div class="cook-box">
+            <button type="button" class="g-btn small" id="cookBtn" disabled>ПОЖАРИТЬ <small>100 ТИКОВ</small></button>
+            <span class="cook-bar"><i id="cookFill"></i><em id="cookFlame">🔥</em></span>
+          </div>
           <span class="g-islot" data-tip="Жареная редиска" data-tip-sub="zitraksmode:fried_radish"><img src="../../assets/textures/guest/fried_radish.png" alt="Жареная редиска"><b id="friedCount">0</b></span>
         </div>
-        <p class="g-note" style="margin-top:12px" id="farmNote">Спелая грядка подсвечена красным. Первая редиска уже в кармане — посадить можно сразу. Костная мука прыгает через стадию, тики — честные случайные.</p>
+        <p class="g-note" style="margin-top:12px" id="farmNote">Клик по пустой грядке — посадить, по спелой — собрать. Первая редиска уже в кармане. Костная мука прыгает через стадию, тики — честные случайные.</p>
       </div>
       <div class="g-kv">
         <div><dt>ИДЕНТИФИКАТОР</dt><dd><b>zitraksmode:radish</b></dd></div>
@@ -332,6 +347,6 @@
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests3"></script><script src="app.js?v=g4-8"></script><script src="../../shared/guest.js?v=guests1"></script>
-<script type="module" src="scene3d.js?v=g4-3"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests3"></script><script src="app.js?v=g4-9"></script><script src="../../shared/guest.js?v=guests1"></script>
+<script type="module" src="scene3d.js?v=g4-4"></script>
 </body></html>

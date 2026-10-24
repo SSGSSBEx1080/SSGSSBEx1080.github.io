@@ -19,7 +19,7 @@ const webgl2 = (() => { try { return !!document.createElement('canvas').getConte
 function orbit(cv, yaw0, pitch0) {
   let yaw = yaw0, pitch = pitch0, drag = null, idleAt = 0;
   cv.style.touchAction = 'none';
-  cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, yaw, pitch }; idleAt = performance.now(); try { cv.setPointerCapture(e.pointerId); } catch (_) { } });
+  cv.addEventListener('pointerdown', e => { if (e.button !== 0) return; drag = { x: e.clientX, y: e.clientY, yaw, pitch }; idleAt = performance.now(); try { cv.setPointerCapture(e.pointerId); } catch (_) { } });
   cv.addEventListener('pointermove', e => {
     if (!drag) return; idleAt = performance.now();
     yaw = drag.yaw + (e.clientX - drag.x) * .008;

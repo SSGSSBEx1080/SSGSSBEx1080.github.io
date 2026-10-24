@@ -64,20 +64,62 @@
   });
   stabRender();
 
-  /* ============ 01б. ПКМ-стенд: все функции ножа правой кнопкой ============ */
+  /* ============ 01б. ПКМ-стенд v2: все функции ножа правой кнопкой ============ */
   (() => {
     const A = 'assets/textures/';
     const T = {
-      sheep:   { img: U(A + 'hub/av/sheep.png'), cap: 'ОВЦА', done: 'ОВЦА · ОСТРИЖЕНА' },
-      bull:    { img: U(A + 'hub/av/cow.png'), cap: 'БЫК', done: 'БЫК · ОБРАБОТАН' },
-      berries: { img: U(A + 'p21/i/sweet_berries.png'), cap: 'КУСТ ЯГОД', done: 'КУСТ · СОБРАН, ОТРАСТЁТ' },
-      log:     { img: U(A + 'mc/p2/block_oak_log.png'), cap: 'ДУБ-БРЕВНО', done: 'БРЕВНО · БЕЗ КОРЫ' },
+      sheep:   { img: U(A + 'hub/av/sheep.png'), cap: 'ОВЦА', done: 'ОВЦА · ОСТРИЖЕНА', fx: 'wool' },
+      bull:    { img: U(A + 'hub/av/cow.png'), cap: 'БЫК', done: 'БЫК · ОБРАБОТАН', fx: 'dust' },
+      berries: { img: U(A + 'p21/i/sweet_berries.png'), cap: 'КУСТ ЯГОД', done: 'КУСТ · СОБРАН, ОТРАСТЁТ', fx: 'spark' },
+      log:     { img: U(A + 'mc/p2/block_oak_log.png'), cap: 'ДУБ-БРЕВНО', done: 'БРЕВНО · БЕЗ КОРЫ', fx: 'bark' },
     };
     const st = { sheep: false, bull: 'normal', berries: false, log: false, t: 'sheep', dur: 500 };
-    const img = $('#rcmImg'), cap = $('#rcmCap'), drop = $('#rcmDrop'), logEl = $('#rcmLog');
-    const put = (t) => { const d = document.createElement('div'); d.textContent = t; logEl.appendChild(d); while (logEl.children.length > 8) logEl.firstChild.remove(); logEl.scrollTop = logEl.scrollHeight; };
+    const img = $('#rcmImg'), cap = $('#rcmCap'), drop = $('#rcmDrop'), logEl = $('#rcmLog'), fxEl = $('#rcmFx');
+    const inv = {};   /* собранный дроп: {src,tip} → n */
+    let tickN = 0;
+    const put = (t) => {
+      tickN += Math.ceil(Math.random() * 3);
+      const d = document.createElement('div');
+      d.innerHTML = `<time>${String(tickN).padStart(3, '0')}т</time> ${t}`;
+      logEl.appendChild(d);
+      while (logEl.children.length > 7) logEl.firstChild.remove();
+      logEl.scrollTop = logEl.scrollHeight;
+    };
     const slot = (src, tip, n) => `<span class="g-islot" data-tip="${tip}"><img src="${src}" alt=""><b>${n || ''}</b></span>`;
-    const durRender = () => { $('#rcmDur').textContent = st.dur + ' / 500'; $('#rcmDurBar').style.width = (st.dur / 5) + '%'; };
+    const invRender = () => {
+      const box = $('#rcmInv'); if (!box) return;
+      const keys = Object.keys(inv);
+      box.innerHTML = keys.length
+        ? keys.map((k) => { const it = inv[k]; return `<span class="g-islot" data-tip="${it.tip}"><img src="${it.src}" alt=""><b>×${it.n}</b></span>`; }).join('')
+        : '<em class="ri-empty">пока пусто — остриги что-нибудь</em>';
+    };
+    const invAdd = (src, tip, n) => { const k = tip; inv[k] = inv[k] || { src, tip, n: 0 }; inv[k].n += n; inv[k].src = src; invRender(); };
+    const durRender = () => {
+      $('#rcmDur').textContent = st.dur + ' / 500';
+      const p = st.dur / 5;
+      $('#rcmDurBar').style.width = p + '%';
+      $('#rcmDurBar').parentElement.parentElement.dataset.low = st.dur < 100 ? '1' : '';
+      $('#rcmDurBox').dataset.low = st.dur < 100 ? '1' : '';
+      $('#rcmDurBox').dataset.dead = st.dur <= 0 ? '1' : '';
+    };
+    /* частицы на сцене: шерсть, стружка, искры */
+    const burst = (kind) => {
+      if (!fxEl || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const conf = {
+        wool:  { n: 16, c: ['#f4f0e6', '#e8e2d4', '#fff'], sz: [5, 11] },
+        bark:  { n: 12, c: ['#6e5230', '#8a6a3e', '#4c3a22'], sz: [4, 9] },
+        spark: { n: 14, c: ['#e0576b', '#ffb02e', '#ff8f6a'], sz: [3, 7] },
+        dust:  { n: 12, c: ['#c9a27e', '#a06040', '#d09090'], sz: [4, 9] },
+      }[kind] || { n: 10, c: ['#fff'], sz: [4, 8] };
+      for (let i = 0; i < conf.n; i++) {
+        const p = document.createElement('i');
+        p.className = 'rcm-p';
+        const ang = Math.random() * Math.PI * 2, dist = 60 + Math.random() * 120;
+        p.style.cssText = `--c:${conf.c[(Math.random() * conf.c.length) | 0]};--sz:${conf.sz[0] + Math.random() * (conf.sz[1] - conf.sz[0])}px;--dx:${Math.cos(ang) * dist}px;--dy:${Math.sin(ang) * dist - 60}px;--dl:${.55 + Math.random() * .5}s`;
+        fxEl.appendChild(p);
+        setTimeout(() => p.remove(), 1200);
+      }
+    };
     const scene = () => {
       const t = st.t;
       if (t === 'bull') img.src = st.bull === 'normal' ? T.bull.img : U(A + 'hub/av/cow.png');
@@ -87,6 +129,14 @@
       if (t === 'log' && st.log) img.src = U(A + 'guest/stripped_oak_log.png');
       const done = t === 'bull' ? st.bull !== 'normal' : st[t];
       cap.textContent = done ? T[t].done : T[t].cap + ' · ЖДЁТ';
+      /* карточки целей: состояние */
+      for (const b of $('#rcmTargets').children) {
+        const stEl = b.querySelector('[data-state]');
+        const k = b.dataset.t;
+        const d = k === 'bull' ? st.bull !== 'normal' : st[k];
+        stEl.textContent = d ? 'ГОТОВО' : 'ЖДЁТ';
+        b.classList.toggle('done', !!d);
+      }
       try { const d = { t: st.t, sheep: st.sheep, bull: st.bull, berries: st.berries, log: st.log, dur: st.dur }; window.__G4RCM = d; dispatchEvent(new CustomEvent('g4rcm', { detail: d })); } catch (e) {}
     };
     $('#rcmTargets').addEventListener('click', (e) => {
@@ -95,40 +145,47 @@
       for (const x of $('#rcmTargets').children) x.classList.toggle('on', x === b);
       drop.innerHTML = ''; scene();
     });
-    $('#rcmUse').addEventListener('click', () => {
-      if (st.dur <= 0) { put('Нож сломался: 0 из 500. Нужен новый.'); return; }
+    const use = () => {
+      if (st.dur <= 0) { put('Нож сломался: 0 из 500. Скрафти новый — слиток, самородок и палка.'); return; }
       const t = st.t;
       if (t === 'bull' && st.bull !== 'normal') { put('Этот бык уже обработан — сначала «восстановить цель».'); return; }
       if (t !== 'bull' && st[t]) { put('Цель уже обработана — восстанови, чтобы повторить.'); return; }
       st.dur--; durRender();
       $('#rcmMouse').classList.remove('click'); void $('#rcmMouse').offsetWidth; $('#rcmMouse').classList.add('click');
       if (t === 'sheep') {
-        st.sheep = true; ZM.sfx('cloth', .6, 1.1);
+        st.sheep = true; ZM.sfx('cloth', .6, 1.1); burst('wool');
         const n = 1 + (Math.random() * 3 | 0);
         drop.innerHTML = slot(U(A + 'p13/i/white_wool.png'), 'Шерсть', '×' + n);
+        invAdd(U(A + 'p13/i/white_wool.png'), 'Шерсть', n);
         put(`Овца острижена как ножницами: ${n} шерсти. Прочность −1.`);
       } else if (t === 'bull') {
-        const copper = Math.random() < 0.5; ZM.sfx('cloth', .6, 1.1);
+        const copper = Math.random() < 0.5; ZM.sfx('cloth', .6, 1.1); burst('dust');
         st.bull = copper ? 'copper' : 'bald';
         if (copper) { drop.innerHTML = slot(U(A + 'hub/av/cow.png'), 'Медный бык'); put('Бык стал медным — 50 из 50. Ачивка №22 в родной ветке дойки.'); }
-        else { const n = 1 + (Math.random() * 2 | 0); drop.innerHTML = slot(U(A + 'p22/i/leather.png'), 'Кожа', '×' + n); put(`Бык стал лысым и роняет ${n} кожи. Прочность −1.`); }
+        else { const n = 1 + (Math.random() * 2 | 0); drop.innerHTML = slot(U(A + 'p22/i/leather.png'), 'Кожа', '×' + n); invAdd(U(A + 'p22/i/leather.png'), 'Кожа', n); put(`Бык стал лысым и роняет ${n} кожи. Прочность −1.`); }
       } else if (t === 'berries') {
-        st.berries = true; ZM.sfx('pop', .5, 1.2);
-        drop.innerHTML = slot(U(A + 'p21/i/sweet_berries.png'), 'Ягоды', '+');
-        put('Куст отдал ягоды и отрастёт заново — поведение как у ножниц.');
+        st.berries = true; ZM.sfx('pop', .5, 1.2); burst('spark');
+        const n = 1 + (Math.random() * 2 | 0);
+        drop.innerHTML = slot(U(A + 'p21/i/sweet_berries.png'), 'Ягоды', '×' + n);
+        invAdd(U(A + 'p21/i/sweet_berries.png'), 'Ягоды', n);
+        put(`Куст отдал ${n} ягоды и отрастёт заново — поведение как у ножниц.`);
       } else {
-        st.log = true; ZM.sfx('wood', .6, .9);
+        st.log = true; ZM.sfx('wood', .6, .9); burst('bark');
         drop.innerHTML = '';
         put('Кора снята, как топором: бревно дуба стало бревном без коры.');
       }
       scene();
-    });
+    };
+    $('#rcmUse').addEventListener('click', use);
+    /* настоящий ПКМ: правая кнопка прямо по сцене */
+    $('#rcmScene').addEventListener('contextmenu', (e) => { e.preventDefault(); use(); });
     $('#rcmReset').addEventListener('click', () => {
       st.sheep = false; st.bull = 'normal'; st.berries = false; st.log = false;
       drop.innerHTML = ''; ZM.sfx('click', .3); scene();
       put('Цель восстановлена. Прочность ножа не возвращается.');
     });
-    durRender(); scene(); put('Выбери цель и примени ПКМ. Прочность честная: 500 использований.');
+    durRender(); invRender(); scene();
+    put('Выбери цель и нажми ПКМ — прямо по сцене или кнопкой. Прочность честная: 500.');
   })();
 
   /* ============ 02. СОЛЬ: добыча руды + мини-мир с дорожкой ============ */
@@ -216,7 +273,6 @@
     { k: 'dropper', n: 'ДРОППЕР', tex: VAN + 'dropper_front.png' },
     { k: 'observer', n: 'НАБЛЮДАТЕЛЬ', tex: VAN + 'observer_front.png' },
     { k: 'lamp', n: 'КРАСНАЯ ЛАМПА', tex: VAN + 'redstone_lamp.png', texOn: VAN + 'redstone_lamp_on.png' },
-    { k: 'rtorch', n: 'РЕДСТОУН-ФАКЕЛ', tex: VAN + 'redstone_torch_off.png', texOn: VAN + 'redstone_torch.png' },
     { k: 'note', n: 'НОТНЫЙ БЛОК', tex: VAN + 'note_block.png' },
     { k: 'target', n: 'МИШЕНЬ', tex: VAN + 'target_top.png' },
   ];
@@ -255,7 +311,7 @@
     taken.push([lever.r, lever.c]);
     const lb = btns[lever.r][lever.c];
     lb.classList.add('lever');
-    lb.innerHTML = `<img src="${VAN}lever.png" alt="Рычаг">`;
+    lb.innerHTML = `<img src="${VAN}lever.png" alt="Рычаг"><u>РЫЧАГ</u>`;
     lb.setAttribute('aria-label', 'Рычаг: дёрнуть, чтобы поджечь дорожку');
     const pick = [...POOL].sort(() => Math.random() - .5).slice(0, 4);
     for (const def of pick) {
@@ -344,7 +400,8 @@
     const pad = 2.6;   /* перекрыть зазор сетки, чтобы дорожка была сплошной */
     for (let r = 0; r < WROWS; r++) for (let c = 0; c < WCOLS; c++) {
       if (!salt(r, c)) continue;
-      const b = btns[r][c], x = b.offsetLeft - grid.clientLeft, y = b.offsetTop - grid.clientTop, bw = b.offsetWidth, bh = b.offsetHeight;
+      const b = btns[r][c], gr = trail.getBoundingClientRect(), br = b.getBoundingClientRect();
+      const x = br.left - gr.left, y = br.top - gr.top, bw = br.width, bh = br.height;
       const cx = x + bw / 2, cy = y + bh / 2;
       const lit = cells[r][c] === 2;
       const line = lit ? TR.lineL : TR.lineW, dot = lit ? TR.dotL : TR.dotW;
@@ -489,11 +546,33 @@
     });
     plots.appendChild(b); stage.push(-1);
   }
+  /* линейка всех восьми стадий — рост виден сразу */
+  const ruler = $('#farmRuler');
+  if (ruler) ruler.innerHTML = Array.from({ length: 8 }, (_, k) =>
+    `<span class="fr-cell" data-k="${k}"><img src="${U('assets/textures/guest/radish_crop/stage' + k + '.png')}" alt=""><i>${k}</i></span>`).join('')
+    + '<span class="fr-arrow">→<small>ХРУСТ</small></span>';
   function farmRender() {
+    let maxSt = -1, growing = 0, ripe = 0;
     [...plots.children].forEach((b, i) => {
-      b.classList.toggle('ready', stage[i] === 7);
-      b.innerHTML = stage[i] >= 0 ? `<img src="${U('assets/textures/guest/radish_crop/stage' + stage[i] + '.png')}" alt="Редиска, стадия ${stage[i]}">` : '';
+      const stI = stage[i];
+      b.className = 'plot' + (stI === 7 ? ' ready' : stI >= 0 ? ' growing' : ' empty');
+      b.innerHTML = stI >= 0
+        ? `<img src="${U('assets/textures/guest/radish_crop/stage' + stI + '.png')}" alt="Редиска, стадия ${stI}">` +
+          `<b class="pl-badge">${stI === 7 ? 'СПЕЛАЯ' : 'S' + stI}</b>` +
+          `<i class="pl-bar"><em style="width:${(stI / 7 * 100).toFixed(0)}%"></em></i>` +
+          (stI === 7 ? '<u class="pl-take">СОБРАТЬ</u>' : '')
+        : '<u class="pl-plant">+ ПОСАДИТЬ</u>';
+      if (stI > maxSt) maxSt = stI;
+      if (stI >= 0 && stI < 7) growing++;
+      if (stI === 7) ripe++;
     });
+    if (ruler) for (const c of ruler.querySelectorAll('.fr-cell')) {
+      const k = +c.dataset.k;
+      c.classList.toggle('cur', stage.includes(k) && (k === maxSt || (k === 7 && ripe > 0)));
+      c.classList.toggle('past', stage.some((x) => x > k));
+    }
+    const sn = $('#farmStageNow');
+    if (sn) sn.textContent = maxSt < 0 ? 'ПУСТО · ПОСАДИ РЕДИСКУ' : `ЗРЕЕТ: ${growing} · СПЕЛЫХ: ${ripe} · МАКС. СТАДИЯ ${maxSt} ИЗ 7`;
     $('#radCount').textContent = radCount;
     $('#friedCount').textContent = friedCount;
     $('#cookBtn').disabled = cooking !== null || radCount < 1;
@@ -508,6 +587,7 @@
     const [, i] = growing[(Math.random() * growing.length) | 0];
     stage[i]++;
     ZM.sfx('cloth', .45, .8); farmRender();
+    const pb = plots.children[i]; if (pb) { pb.classList.remove('pop'); void pb.offsetWidth; pb.classList.add('pop'); }
     $('#farmNote').textContent = 'Костная мука: грядка ' + (i + 1) + ' перескочила на стадию ' + stage[i] + '.';
   });
   $('#harvestAll').addEventListener('click', () => {
