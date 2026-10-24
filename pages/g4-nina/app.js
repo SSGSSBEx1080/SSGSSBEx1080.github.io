@@ -89,9 +89,20 @@
     const invRender = () => {
       const box = $('#rcmInv'); if (!box) return;
       const keys = Object.keys(inv);
-      box.innerHTML = keys.length
-        ? keys.map((k) => { const it = inv[k]; return `<span class="g-islot" data-tip="${it.tip}"><img src="${it.src}" alt=""><b>×${it.n}</b></span>`; }).join('')
-        : '<em class="ri-empty">пока пусто — остриги что-нибудь</em>';
+      if (!keys.length) { box.innerHTML = '<em class="ri-empty">пока пусто — остриги что-нибудь</em>'; return; }
+      box.querySelectorAll('.ri-empty').forEach((e) => e.remove());
+      for (const k of keys) {
+        const it = inv[k];
+        let el = box.querySelector('.g-islot[data-tip="' + (window.CSS && CSS.escape ? CSS.escape(it.tip) : it.tip) + '"]');
+        if (!el) {   /* новая ячейка — только она и прилетает с анимацией */
+          el = document.createElement('span');
+          el.className = 'g-islot is-new';
+          el.dataset.tip = it.tip;
+          el.innerHTML = `<img src="${it.src}" alt=""><b></b>`;
+          box.appendChild(el);
+        }
+        el.querySelector('b').textContent = '×' + it.n;
+      }
     };
     const invAdd = (src, tip, n) => { const k = tip; inv[k] = inv[k] || { src, tip, n: 0 }; inv[k].n += n; inv[k].src = src; invRender(); };
     const durRender = () => {
@@ -123,7 +134,9 @@
     const scene = () => {
       const t = st.t;
       if (t === 'bull') img.src = st.bull === 'normal' ? T.bull.img : U(A + 'hub/av/cow.png');
+      else if (t === 'berries') img.src = U(A + 'mc/van/sweet_berry_bush_stage' + (st.berries ? '1' : '2') + '.png');
       else img.src = T[t].img;
+      img.classList.toggle('rcm-bald', t === 'bull' && st.bull === 'bald');
       img.classList.toggle('rcm-dim', (t === 'sheep' && st.sheep) || (t === 'berries' && st.berries));
       img.classList.toggle('rcm-strip', t === 'log' && st.log);
       if (t === 'log' && st.log) img.src = U(A + 'guest/stripped_oak_log.png');
@@ -218,6 +231,7 @@
       crackG.imageSmoothingEnabled = false;
       crackG.drawImage(DST[Math.min(9, Math.floor(mineStage))], 0, 0, 16, 16);
     }
+    try { dispatchEvent(new CustomEvent('g4mine', { detail: { stage: mineStage } })); } catch (e) {}
   };
   const saltSync = () => { $('#saltOwned').textContent = saltOwned; const m = $('#saltOwned2'); if (m) m.textContent = saltOwned; };
   const mineFinish = () => {
@@ -235,7 +249,7 @@
   let holding = false, lastHit = 0, shakeOn = false;
   const setShake = (on) => { if (on === shakeOn) return; shakeOn = on; mineBlock.style.setProperty('--shake', on ? ((Math.random() - .5) * 2 + 'px') : '0px'); };
   const mineStep = (dt, now) => {
-    mineStage = Math.min(10, mineStage + dt * 5.2);
+    mineStage = Math.min(10, mineStage + dt * 8);
     drawCracks();
     /* как в игре: удар раз в 4 тика с pitch 0.5, искры с каждой стадии */
     if (now - lastHit > 200) { lastHit = now; ZM.sfx('hit', .5, .5); mineParticles(2, .5); }

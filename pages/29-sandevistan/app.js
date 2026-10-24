@@ -1,6 +1,10 @@
 (()=>{'use strict';
  const{$,$$,esc}=ZM,K=ZM.kit,Core=P29Core,store='p29.lab',fmt=(n,d=1)=>Number(n).toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});
- ZM.topbar({crumb:'№29 · Сандевистан',...ZM.pointNav(29)});K.finNav(29,$('#finNav'));document.addEventListener('DOMContentLoaded',()=>document.querySelector('.zm-route')?.remove());
+ ZM.topbar({crumb:'№29 · Сандевистан',...ZM.pointNav(29)});K.finNav(29,$('#finNav'));
+  K.timeline($('#tl'), [
+    { date: '05.09.2026', ver: '1.1.9', t: 'Секретный пункт: Сандевистан', d: 'Сандевистан вошёл в мод как секретный пункт новой версии: ускорение мира, рывки и имплант вместо нагрудника.', c: '#eef638' },
+    { date: '13.09.2026', ver: '1.2.0', t: 'Финальный апдейт', d: 'Последнее обновление перед глобальным релизом и игрой в выживание. Дальше — только правки.', c: '#2e6fd8' },
+  ]);document.addEventListener('DOMContentLoaded',()=>document.querySelector('.zm-route')?.remove());
  let model=new Core.Model(ZM.store.get(store,null)),motion=!matchMedia('(prefers-reduced-motion: reduce)').matches,status='',lastLog='',lastSave=0,implantShown=false;
  const history=[];
  const adv=K.adv({list:ZM.P29.advancements,store:'p29.adv',icon:a=>'../../assets/textures/p29/i/'+a.icon+'.png',intro:'Шесть скрытых достижений оригинального мода. Описания — цитаты из исходных JSON.',onGrant:a=>{P29Sound.play(a.key);}});

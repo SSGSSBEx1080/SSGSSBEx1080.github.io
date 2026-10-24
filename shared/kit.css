@@ -111,3 +111,17 @@ main{position:relative;z-index:1}
 /* тултип как в игре */
 .mc-tt{display:inline-block;background:rgba(16,0,16,.94);padding:6px 9px 7px;font:400 15px/1.35 var(--f-pixel);color:#fff;text-shadow:2px 2px 0 #3f3f3f;box-shadow:inset 0 0 0 2px #25015b,inset 0 0 0 3px rgba(80,0,255,.5),0 0 0 1px #100010;text-align:left}
 .mc-tt .n{display:block}
+
+/* ---- ветка ачивок в футере: едина для всех страниц ---- */
+.fin-branch{display:flex;flex-direction:column;align-items:center;gap:12px;margin:30px 0 2px}
+.fin-branch .fb-cap{font:400 11px var(--f-mono);letter-spacing:.2em;color:var(--dim,#8f9aa6);text-transform:uppercase}
+.fin-branch .fb-cap b{color:var(--ac,#fff);font-weight:400}
+.fin-branch .fb-chain{display:flex;align-items:center;min-width:max-content;max-width:100%;overflow-x:auto;padding:2px 4px;scrollbar-width:none}
+.fin-branch .fb-chain::-webkit-scrollbar{display:none}
+.fin-branch .adv-node{width:44px;height:44px;cursor:pointer;opacity:.95;transition:transform .16s ease,opacity .16s ease}
+.fin-branch .adv-node:hover{opacity:1;transform:translateY(-2px)}
+.fin-branch .adv-node.no,.fin-branch .adv-node:not(:has(.ic)){opacity:.6}
+.fin-branch .adv-node .ic img{width:26px;height:26px}
+.fin-branch .adv-link{width:32px}
+.fin-branch .adv-more{font:400 12px var(--f-pixel);color:#9aa}
+@media (prefers-reduced-motion: reduce){.fin-branch .adv-node:hover{transform:none}}

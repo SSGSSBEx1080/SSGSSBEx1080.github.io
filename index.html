@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/home-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="assets/favicons/home-64.png">
 <link rel="stylesheet" href="shared/core.css">
-<link rel="stylesheet" href="hub/hub.css?v=p30-20261024">
+<link rel="stylesheet" href="hub/hub.css?v=hub4">
 </head>
 <body class="hub-body">
 <main>
@@ -62,11 +62,13 @@
             <button role="tab" class="on" data-tab="save" type="button">Сохранение</button>
             <button role="tab" data-tab="profiles" type="button">Профили</button>
             <button role="tab" data-tab="feed" type="button">Недавнее</button>
+            <button role="tab" data-tab="admin" type="button" id="adTab" hidden>Админ</button>
           </div>
           <div class="pf-pane" data-pane="save">
             <p class="pf-p">Прогресс живёт в этом браузере. Чтобы перенести его на телефон или другой комп, скопируй код или скачай файл и загрузи там.</p>
             <div class="pf-btns">
               <button class="mcb" id="svCopy" type="button">Скопировать код</button>
+              <button class="mcb" id="svLink" type="button">Скопировать ссылку-перенос</button>
               <button class="mcb" id="svFile" type="button">Скачать файл</button>
             </div>
             <textarea id="svCode" rows="3" spellcheck="false" placeholder="Вставь код ZM1.… или содержимое файла .zmsave"></textarea>
@@ -77,6 +79,9 @@
             <label class="pf-chk"><input type="checkbox" id="svNew"> загрузить отдельным профилем</label>
             <div class="pf-msg" id="svMsg" role="status"></div>
             <button class="pf-danger" id="svReset" type="button">Сбросить весь прогресс профиля</button>
+            <details class="ad-unlock" id="adUnlock"><summary>Код создателя</summary>
+              <form id="adForm" class="ad-form"><input id="adCode" type="password" placeholder="код" autocomplete="off"><button class="mcb" type="submit">Войти</button></form>
+            </details>
           </div>
           <div class="pf-pane" data-pane="profiles" hidden>
             <p class="pf-p">Несколько игроков на одном компе: у каждого свои ачивки, инвентари и настройки.</p>
@@ -85,6 +90,21 @@
           </div>
           <div class="pf-pane" data-pane="feed" hidden>
             <div class="pf-feed" id="pfFeed"></div>
+          </div>
+          <div class="pf-pane" data-pane="admin" hidden>
+            <p class="pf-p">Панель создателя: выдача и снятие любых достижений, сброс веток и полный контроль прогресса. Изменения сразу видны в древе и на карточках.</p>
+            <div class="ad-row">
+              <label class="ad-lab">Ветка</label>
+              <select id="adPoint" class="ad-sel"></select>
+            </div>
+            <div class="ad-keys" id="adKeys"></div>
+            <div class="pf-btns">
+              <button class="mcb" id="adAll" type="button">Выдать ветку</button>
+              <button class="mcb" id="adClear" type="button">Очистить ветку</button>
+              <button class="mcb" id="adFull" type="button">Выдать всё</button>
+              <button class="mcb" id="adUnadmin" type="button">Выйти из админа</button>
+            </div>
+            <div class="pf-msg" id="adMsg" role="status"></div>
           </div>
         </div>
       </div>
@@ -183,6 +203,6 @@
 <script src="data/voxel_atlas.js"></script>
 <script src="shared/voxel.js"></script>
 <script src="hub/pano.js"></script>
-<script src="hub/hub.js?v=hub5"></script>
+<script src="hub/hub.js?v=hub4"></script>
 </body>
 </html>

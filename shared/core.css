@@ -231,3 +231,16 @@ img[src*="assets/textures/"]:not([src$=".jpg"]):not([src$=".jpeg"]):not([src$=".
 .zm-fact-body{padding:4px 16px 18px 16px;line-height:1.65;border-top:1px solid var(--line,#484848)}
 .zm-fact-body p{margin:8px 0}.zm-fact-body>*:last-child{margin-bottom:0}
 @media(max-width:600px){.zm-fact summary{min-height:54px;padding:10px 12px;font-size:14px}.zm-fact-body{padding-inline:12px}.zm-facts-ctrl{flex-wrap:wrap}}
+
+/* ---- ветка ачивок в футере (для страниц без kit.css — базовые стили) ---- */
+.fin-branch{display:flex;flex-direction:column;align-items:center;gap:12px;margin:30px 0 2px}
+.fin-branch .fb-cap{font:400 11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.2em;color:#8f9aa6;text-transform:uppercase}
+.fin-branch .fb-cap b{color:#fff;font-weight:400}
+.fin-branch .fb-chain{display:flex;align-items:center;min-width:max-content;max-width:100%;overflow-x:auto;padding:2px 4px;scrollbar-width:none}
+.fin-branch .fb-chain::-webkit-scrollbar{display:none}
+.fin-branch .adv-node{width:44px;height:44px;cursor:pointer;opacity:.95;transition:transform .16s ease,opacity .16s ease}
+.fin-branch .adv-node:hover{opacity:1;transform:translateY(-2px)}
+.fin-branch .adv-node .ic img{width:26px;height:26px}
+.fin-branch .adv-link{width:32px}
+.fin-branch .adv-more{font:12px/1.4 ui-monospace,monospace;color:#9aa}
+@media (prefers-reduced-motion: reduce){.fin-branch .adv-node:hover{transform:none}}

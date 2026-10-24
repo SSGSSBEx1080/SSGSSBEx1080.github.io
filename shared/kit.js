@@ -78,5 +78,33 @@
     st.idle = () => !drag && performance.now() - st.last > 1500;
     return st;
   }
-  ZM.kit = { MC, mcHtml, plural, pad2, say, chat, sounds, adv, craft, timeline, finNav, dl, spinner };
+  /* ветка ачивок в самом низу страницы — зеркало цепочки из #advChain,
+   * одинаковая на всех страницах: и на обычных, и на гостевых */
+  function finBranch(el) {
+    if (!el) return;
+    const render = () => {
+      const src = document.querySelector("#advChain");
+      if (!src || !src.children.length) return;
+      const clone = src.cloneNode(true);
+      clone.querySelectorAll(".adv-node").forEach((n) => n.classList.remove("sel", "pulse"));
+      const total = clone.querySelectorAll(".adv-node").length;
+      const got = clone.querySelectorAll(".adv-frame:not(.locked)").length;
+      if (el.querySelector(".fb-chain")) {   /* без лишних перерисовок: сравниваем разметку */
+        if (el.dataset.sig === got + "/" + total + "/" + clone.innerHTML.length) return;
+      }
+      el.dataset.sig = got + "/" + total + "/" + clone.innerHTML.length;
+      el.innerHTML = `<div class="fin-branch"><span class="fb-cap">ВЕТКА АЧИВОК · <b>${got}/${total}</b></span><div class="fb-chain">${clone.innerHTML}</div></div>`;
+    };
+    render();
+    setInterval(render, 1500);
+    el.addEventListener("click", (e) => {
+      const n = e.target.closest(".adv-node");
+      if (n && n.dataset && n.dataset.k) { const o = document.querySelector('#advChain .adv-node[data-k="' + n.dataset.k + '"]'); if (o) o.click(); }
+      const a = document.getElementById("adv"); if (a) a.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+  const bootFB = () => finBranch(document.querySelector("#finBranch"));
+  if (document.readyState === "loading") addEventListener("DOMContentLoaded", bootFB); else bootFB();
+
+  ZM.kit = { MC, mcHtml, plural, pad2, say, chat, sounds, adv, craft, timeline, finNav, finBranch, dl, spinner };
 })();

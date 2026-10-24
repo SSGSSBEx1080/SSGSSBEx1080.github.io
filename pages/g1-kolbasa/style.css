@@ -84,13 +84,13 @@
 .g-log{max-height:220px}
 
 /* ---- 3D-диорама в герое ---- */
-.g-art--3d{cursor:grab;touch-action:none}
-.g-art--3d:active{cursor:grabbing}
-.g-art--3d canvas{position:absolute;inset:10px;width:calc(100% - 20px);height:calc(100% - 32px);z-index:2;display:none}
-.g-art--3d.ready canvas{display:block}
-.g-art--3d.ready.drawn .art-fallback{display:none}
-.g-art--3d.no3d figcaption::after{content:' · 3D НЕДОСТУПНО, ТЕКСТУРА ИЗ МОДА'}
-.g-art--3d.ready figcaption{z-index:3}
+/* рамка с большой 2D-текстурой — как нож в гостевом пункте П */
+.g-art--tex{display:grid;place-items:center;padding:22px 18px}
+.g-art--tex .art-fallback{image-rendering:pixelated;width:min(62%,225px);
+  filter:drop-shadow(0 14px 22px rgba(0,0,0,.55)) drop-shadow(0 0 26px color-mix(in srgb,var(--tone) 22%,#0000));
+  animation:sausageFloat 5.6s ease-in-out infinite}
+@keyframes sausageFloat{0%,100%{transform:translateY(0) rotate(-2.4deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@media(prefers-reduced-motion:reduce){.g-art--tex .art-fallback{animation:none}}
 
 /* ---- стенд-цель: доска ачивок в тоне гостя ---- */
 .g-adv{--ac:var(--tone);--pn:#0d141b;--ln:var(--g-line);--dim:var(--g-dim)}

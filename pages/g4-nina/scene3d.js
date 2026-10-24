@@ -6,9 +6,14 @@
  *    тело inflate 1.375, голова 1.0 с открытым лицом, на ногах — короткие
  *    шерстяные «штанишки» 4×6×4 (низ ног открыт). У быка рога и морда
  *    не перекрашиваются при стрижке — отдельный материал без тонировки.
- *    Куст ягод и дуб-бревно с реальными текстурами блока. Состояниями
- *    управляет app.js через событие 'g4rcm' — механики и прочность
- *    ножа честные и числятся в app.js, тут только картинка. */
+ *    КУСТ ЯГОД — как в игре: крест из двух плоскостей с настоящими
+ *    текстурами sweet_berry_bush_stage, стоит НА БЛОКЕ СНЕГА; после сбора
+ *    показывает стадию 1 (в ваниле собранный куст отрастает с неё).
+ *    БРЕВНО — полноразмерный блок: кора по бокам, спилы по торцам;
+ *    после ПКМ — отёсанное бревно с настоящими текстурами.
+ * 3) ШАХТА: соляная руда объёмным блоком, трещины — подлинные
+ *    destroy_stage_0..9 на накладном кубе. Состояниями управляет app.js
+ *    ('g4rcm' / 'g4mine') — механики честные, тут только картинка. */
 import * as T from '../../shared/vendor/three/three.module.js';
 import { MODELS } from '../../shared/entity_models.js';
 
@@ -143,25 +148,31 @@ try {
   const bullG = new T.Group(); bullG.add(bull.root); scene.add(bullG);
   const bullMat = bull.mat;
 
-  /* КУСТ ЯГОД: зелёные кубы + красные ягоды */
+  /* КУСТ ЯГОД — как в игре: крест из двух плоскостей со стадийными
+   * текстурами, стоит на настоящем блоке снега. Собран → стадия 1. */
   const berG = new T.Group();
-  berG.add(box(.92, .74, .92, 0x2e5b2e, 0, .5, 0), box(.6, .5, .6, 0x3a6e34, .18, .86, -.1), box(.5, .44, .5, 0x33612f, -.24, .82, .14));
-  const berries = [];
-  for (let i = 0; i < 12; i++) {
-    const a = i / 12 * Math.PI * 2;
-    const b = box(.11, .11, .11, 0xc62828, Math.cos(a) * .5, .35 + (i % 4) * .19, Math.sin(a) * .5);
-    berries.push(b); berG.add(b);
+  const snowMat = new T.MeshLambertMaterial({ map: texOf('../../assets/textures/p25/i/snow_block.png') });
+  const snowBlock = new T.Mesh(new T.BoxGeometry(1, 1, 1), snowMat);
+  snowBlock.position.y = .5; berG.add(snowBlock);
+  const bushTex = (st) => texOf(`../../assets/textures/mc/van/sweet_berry_bush_stage${st}.png`);
+  const bushMat = new T.MeshLambertMaterial({ map: bushTex(3), alphaTest: .5, side: T.DoubleSide });
+  const bushCross = new T.Group();
+  for (const a of [Math.PI / 4, -Math.PI / 4]) {
+    const q = new T.Mesh(new T.PlaneGeometry(1, 1), bushMat);
+    q.rotation.y = a; q.position.y = 1.5;
+    bushCross.add(q);
   }
+  berG.add(bushCross);
   scene.add(berG);
 
-  /* ДУБ-БРЕВНО: текстуры блока, кора снимается как топором */
+  /* ДУБ-БРЕВНО: полноразмерный блок — кора по бокам, спилы по торцам */
   const logG = new T.Group();
   const barkMat = new T.MeshLambertMaterial({ map: texOf('../../assets/textures/mc/p2/block_oak_log.png') });
   const topMat = new T.MeshLambertMaterial({ map: texOf('../../assets/textures/mc/p2/block_oak_log_top.png') });
   const stripMat = new T.MeshLambertMaterial({ map: texOf('../../assets/textures/guest/stripped_oak_log.png') });
-  const stripTop = new T.MeshLambertMaterial({ color: 0xb09050 });
-  const logMesh = new T.Mesh(new T.BoxGeometry(.86, .86, 1.4), [barkMat, barkMat, topMat, topMat, barkMat, barkMat]);
-  logMesh.position.y = .43; logMesh.rotation.y = .5;
+  const stripTop = new T.MeshLambertMaterial({ map: texOf('../../assets/textures/mc/van/stripped_oak_log_top.png') });
+  const logMesh = new T.Mesh(new T.BoxGeometry(1, 1, 1), [barkMat, barkMat, topMat, topMat, barkMat, barkMat]);
+  logMesh.position.y = .5; logMesh.rotation.y = .5;
   logG.add(logMesh);
   scene.add(logG);
 
@@ -169,7 +180,6 @@ try {
   const tweens = [];
   const tw = (obj) => { obj.userData.tw = { v: obj.scale.x, vt: obj.scale.x }; tweens.push(obj.userData.tw); return obj.userData.tw; };
   woolMeshes.forEach(m => tw(m));
-  berries.forEach(b => tw(b));
 
   const groups = { sheep: sheepG, bull: bullG, berries: berG, log: logG };
   let cur = 'sheep', lastDur = 500, pokeT = 0;
@@ -182,8 +192,8 @@ try {
     for (const u of tweens.slice(0, woolMeshes.length)) u.vt = d.sheep ? .001 : 1;
     /* бык: normal → корова, copper → медь, bald → розовая кожа */
     bullMat.color.setHex(d.bull === 'copper' ? 0xa06040 : d.bull === 'bald' ? 0xd09090 : 0xffffff);
-    /* ягоды собраны */
-    for (const b of berries) b.userData.tw.vt = d.berries ? .001 : 1;
+    /* ягоды собраны: куст отрастает со стадии 1, как в ваниле */
+    bushMat.map = bushTex(d.berries ? 1 : 3); bushMat.needsUpdate = true;
     /* кора снята */
     logMesh.material = d.log ? [stripMat, stripMat, stripTop, stripTop, stripMat, stripMat] : [barkMat, barkMat, topMat, topMat, barkMat, barkMat];
     if (d.dur !== undefined && d.dur < lastDur) poke();
@@ -198,19 +208,73 @@ try {
     fit(cv, renderer, camera);
     for (const u of tweens) u.v += (u.vt - u.v) * Math.min(1, dt * 9);
     for (const m of woolMeshes) { const v = Math.max(.001, m.userData.tw.v); m.scale.set(m.userData.base[0] * v, m.userData.base[1] * v, m.userData.base[2] * v); }
-    for (const b of berries) b.scale.setScalar(Math.max(.001, b.userData.tw.v));
     /* живость: головы кивают, куст дышит, бревно покачивается */
     if (cur === 'sheep') { sheepSkin.bones.head.rotation.x = Math.sin(t * 1.7) * .07; sheepWool.bones.head.rotation.x = sheepSkin.bones.head.rotation.x; }
     if (cur === 'bull') bull.bones.head.rotation.x = Math.sin(t * 1.3) * .06;
-    if (cur === 'berries') { const s = 1 + Math.sin(t * 2.2) * .02; berG.scale.set(s, 1 / s, s); }
+    if (cur === 'berries') { bushCross.rotation.z = Math.sin(t * 1.6) * .045; bushCross.rotation.x = Math.cos(t * 1.1) * .03; }
     if (cur === 'log') logMesh.rotation.y = .5 + Math.sin(t * .9) * .06;
     if (pokeT > 0) { pokeT -= dt; if (groups[cur]) groups[cur].position.y = Math.sin(pokeT * 12) * .06 * pokeT; }
     else if (groups[cur]) groups[cur].position.y = 0;
 
     const { yaw, pitch } = ob.step(dt);
-    const dist = 4.35;
-    camera.position.set(Math.sin(yaw) * Math.cos(pitch) * dist, 1.0 + Math.sin(pitch) * dist, Math.cos(yaw) * Math.cos(pitch) * dist);
-    camera.lookAt(0, .95, 0);
+    const dist = 4.6;
+    camera.position.set(Math.sin(yaw) * Math.cos(pitch) * dist, 1.05 + Math.sin(pitch) * dist, Math.cos(yaw) * Math.cos(pitch) * dist);
+    camera.lookAt(0, 1.0, 0);
     renderer.render(scene, camera);
   });
 } catch (e) { /* стенд остаётся на плоских иконках */ }
+
+/* текстуры для шахты (свой загрузчик — вне области первой сцены) */
+const texOf2 = (p) => { const t = new T.TextureLoader().load(p); t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter; return t; };
+
+
+/* =====================================================================
+ * 2. ШАХТА: соляная руда — объёмный блок с настоящими трещинами
+ * ===================================================================== */
+try {
+  const btn = document.querySelector('#mineBlock'), cv = document.querySelector('#mine3d');
+  if (!btn || !cv) throw Error('нет места под шахту');
+  if (!webgl2) throw Error('WebGL2 недоступен');
+  const renderer = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: 'low-power' });
+  renderer.setPixelRatio(DPR);
+  const scene = new T.Scene();
+  const camera = new T.PerspectiveCamera(30, 1, .1, 30);
+  scene.add(new T.HemisphereLight(0xfff4e2, 0x241319, 1.45));
+  const key = new T.DirectionalLight(0xffffff, .95); key.position.set(2.4, 3.4, 2.2); scene.add(key);
+  const back = new T.DirectionalLight(0xe0576b, .3); back.position.set(-2.4, 1.4, -2.4); scene.add(back);
+
+  const G = new T.Group(); scene.add(G);
+  /* руда: блок соли в камне — текстура блока из мода на все грани */
+  const ore = new T.Mesh(new T.BoxGeometry(1, 1, 1),
+    new T.MeshLambertMaterial({ map: texOf2('../../assets/textures/guest/salt_ore.png') }));
+  G.add(ore);
+  /* под ним — каменный постамент, как жила в глубине */
+  const bed = new T.Mesh(new T.BoxGeometry(1.24, .3, 1.24),
+    new T.MeshLambertMaterial({ map: texOf2('../../assets/textures/mc/stone.png') }));
+  bed.position.y = -.62; G.add(bed);
+
+  /* трещины: подлинные destroy_stage_0..9 на чуть увеличенном кубе */
+  const crackTex = Array.from({ length: 10 }, (_, i) => texOf2(`../../assets/textures/mc/destroy_stage_${i}.png`));
+  const crackMat = new T.MeshBasicMaterial({ map: crackTex[0], transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+  const cracks = new T.Mesh(new T.BoxGeometry(1.004, 1.004, 1.004), crackMat);
+  cracks.visible = false; G.add(cracks);
+
+  let stage = 0;
+  addEventListener('g4mine', (e) => {
+    stage = e.detail && e.detail.stage || 0;
+    const show = stage > 0.15;
+    cracks.visible = show;
+    if (show) crackMat.map = crackTex[Math.min(9, Math.floor(stage))];
+  });
+
+  btn.classList.add('ready3d');
+  looper(cv, (dt, t, w, h) => {
+    fit(cv, renderer, camera);
+    /* лёгкое «дыхание» жилы: медленный поворот, не мешает прицеливанию */
+    G.rotation.y = Math.sin(t * .34) * .3;
+    G.position.y = Math.sin(t * .8) * .018;
+    camera.position.set(1.9, 1.55, 2.7);
+    camera.lookAt(0, -.06, 0);
+    renderer.render(scene, camera);
+  });
+} catch (e) { /* шахта остаётся на плоской текстуре с 2D-трещинами */ }

@@ -6,6 +6,9 @@
   document.addEventListener('DOMContentLoaded',()=>document.querySelector('.zm-route')?.remove());
   const $=ZM.$,K=ZM.kit,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),reduced=matchMedia('(prefers-reduced-motion: reduce)');
   ZM.topbar({crumb:'№27 · Антон Чигур',...ZM.pointNav(27)});K.finNav(27,$('#finNav'));
+  K.timeline($('#tl'), [
+    { date: '15.08.2026', ver: '1.1.7', t: 'Антон Чигур', d: 'Вместе с четырьмя гостевыми пунктами в мод вошёл Антон Чигур со своим оружием и манерой. Версия 1.1.7 — по дневнику разработчика.', c: '#b3936d' },
+  ]);
   const help={first_meeting:'Подойти к живому Чигуру на пять блоков. Одного появления недостаточно.',dialogue_mistake:'Спросить «Откуда ты?». Начинается личная тихая охота.',night_visit:'Попытаться уснуть во время личной ночной охоты.',coin_luck:'Угадать сторону монеты. После броска дождаться окончания пятисекундной реплики.',hunter:'В моде — победить Чигура и забрать выпавший дробовик. Здесь — открыть отдельно обозначенный исход победы.'};
   const adv=K.adv({list:ZM.P27.advancements.map(a=>({...a,how:help[a.key]})),store:'p27.adv',icon:a=>'../../assets/textures/p27/i/'+a.icon+'.png',intro:'Названия и описания — из мода; очки XP — за исследование вики.'});
   const snd=(name,volume=.5)=>P27Audio.play(name,volume);

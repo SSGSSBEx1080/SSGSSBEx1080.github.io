@@ -532,3 +532,122 @@ html[data-theme="night"] .ts-stars,html[data-theme="end"] .ts-stars{opacity:1}
   .tw-title{max-width:46%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pc-ic{width:40px;height:40px}
 }
+
+/* =====================================================================
+   hub.css v4 · админ-панель, детальные карточки 23+, резкое древо
+   ===================================================================== */
+
+/* ---- #15: древо не должно мылить надписи при зуме.
+   will-change:transform растянул растрированный слой — убираем,
+   браузер перерисовывает текст в каждом масштабе. ---- */
+.tw-map{will-change:auto;transform-origin:0 0;backface-visibility:visible}
+.tw-lab{font-size:13px}
+.tw-node i{text-shadow:1px 1px 0 #0008}
+
+/* ---- #14: админ-панель ---- */
+.ad-unlock{margin-top:12px;border-top:1px dashed var(--line);padding-top:8px}
+.ad-unlock summary{cursor:pointer;font-size:11px;color:#8b8b95;letter-spacing:.08em}
+.ad-form{display:flex;gap:8px;margin-top:8px}
+.ad-form input{flex:1;min-width:0;background:#0d0d11;border:1px solid var(--line);color:#eee;padding:8px 10px;font:13px var(--f-mono)}
+.ad-badge{display:inline-block;margin-left:10px;padding:2px 8px;font:700 10px var(--f-mono);letter-spacing:.18em;color:#0c0c0f;background:linear-gradient(90deg,#ffd84a,#ff9d1a);border-radius:4px;vertical-align:middle}
+.ad-row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.ad-lab{font-size:11.5px;color:#8b8b95}
+.ad-sel{flex:1;min-width:0;background:#0d0d11;border:1px solid var(--line);color:#eee;padding:8px 10px;font:13px var(--f-mono)}
+.ad-keys{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;max-height:280px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:8px;background:#101014}
+.ad-key{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;background:#141418;border:1px solid var(--line);cursor:pointer;font-size:12.5px;color:#ccc}
+.ad-key img{width:22px;height:22px;image-rendering:pixelated;object-fit:contain;flex:none}
+.ad-key span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ad-key em{font:400 11px var(--f-pixel);color:#ffd84a;font-style:normal}
+.ad-key.has{border-color:#3f7a3a;color:#cfe8cf;background:#12251a}
+.ad-key input{accent-color:#5dbb63}
+
+/* ---- #13: карточки 23–29 и гости — второй слой деталей ---- */
+.pc-23 .pc-bg{background:
+    radial-gradient(circle at 78% 22%,rgba(108,92,255,.5),transparent 42%),
+    radial-gradient(circle at 12% 78%,rgba(88,72,220,.28),transparent 46%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 2px,transparent 2px 26px),
+    linear-gradient(160deg,#241f4d,#0d0b22)}
+.pc-23 .pc-bg::before{content:"";position:absolute;right:9%;top:14%;width:46px;height:18px;background:#6c5cff;border-radius:10px 10px 10px 3px;
+  box-shadow:-14px 24px 0 -1px #8f7dff,26px 40px 0 -3px #4b3fae,0 0 22px #6c5cff88;animation:maxBub 3.2s ease-in-out infinite}
+.pc-24 .pc-bg{background:
+    radial-gradient(circle at 26% 24%,rgba(0,224,160,.35),transparent 45%),
+    radial-gradient(ellipse at 86% 12%,rgba(255,255,255,.16),transparent 40%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 3px,transparent 3px 34px),
+    linear-gradient(180deg,#0d2018 0%,#123024 46%,#0a130e)}
+.pc-24 .pc-bg::before{content:"";position:absolute;left:0;right:0;bottom:18%;height:3px;
+  background:repeating-linear-gradient(90deg,#eafff5 0 26px,transparent 26px 48px);opacity:.9;animation:road24 .8s linear infinite;
+  box-shadow:0 26px 0 -1px #17251d,0 27px 0 0 #0b120e}
+.pc-25 .pc-bg{background:
+    radial-gradient(ellipse 60% 70% at 74% 16%,rgba(255,136,0,.35),transparent 65%),
+    radial-gradient(circle at 16% 70%,rgba(119,217,255,.22),transparent 38%),
+    repeating-linear-gradient(115deg,rgba(58,34,8,.75) 0 13px,rgba(74,44,10,.75) 13px 26px),
+    linear-gradient(160deg,#241305,#0d0803)}
+.pc-25 .pc-bg::before{content:"";position:absolute;left:50%;top:24%;width:46px;height:58px;margin-left:-23px;
+  background:linear-gradient(180deg,#ff9d24,#b35304);clip-path:polygon(50% 0,100% 22%,82% 100%,18% 100%,0 22%);
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));animation:tw 3.4s ease-in-out infinite;
+  box-shadow:-34px 20px 0 -6px #d97b1e,34px 26px 0 -8px #8a4c0e}
+.pc-26 .pc-bg{background:
+    radial-gradient(circle at 70% 38%,rgba(165,239,216,.35),transparent 45%),
+    radial-gradient(circle at 12% 80%,rgba(165,239,216,.12) 0 2px,transparent 3px),
+    radial-gradient(circle at 30% 66%,rgba(255,255,255,.2) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 52% 84%,rgba(255,255,255,.16) 0 1.5px,transparent 2.5px),
+    repeating-conic-gradient(from 20deg at 70% 38%,rgba(165,239,216,.07) 0 8deg,transparent 8deg 24deg),
+    linear-gradient(160deg,#0f1f24,#060d10)}
+.pc-26 .pc-bg::before{content:"";position:absolute;left:calc(70% - 36px);top:calc(38% - 36px);width:72px;height:72px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 38%,rgba(165,239,216,.55) 50%,transparent 62% 100%);
+  -webkit-mask:radial-gradient(circle,transparent 32%,#000 42%);mask:radial-gradient(circle,transparent 32%,#000 42%);animation:sbSpin 2.2s linear infinite}
+.pc-27 .pc-bg{background:
+    radial-gradient(circle at 72% 34%,rgba(229,188,121,.32),transparent 46%),
+    repeating-linear-gradient(0deg,transparent 0 8px,rgba(229,188,121,.06) 8px 9px,transparent 9px 22px),
+    linear-gradient(160deg,#1c1a14,#0a0906)}
+.pc-27 .pc-bg::before{content:"";position:absolute;left:calc(72% - 16px);top:calc(34% - 16px);width:32px;height:32px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#ffe9b0,#c99a3f 72%);box-shadow:0 0 16px rgba(229,188,121,.55),-30px 22px 0 -6px rgba(201,154,63,.5),26px 30px 0 -8px rgba(160,116,42,.45);
+  animation:coinT 2.6s ease-in-out infinite}
+.pc-28 .pc-bg{background:
+    repeating-conic-gradient(from 0deg at 74% 36%,rgba(125,255,154,.1) 0 6deg,transparent 6deg 18deg),
+    radial-gradient(circle at 74% 36%,rgba(125,255,154,.4),transparent 52%),
+    repeating-linear-gradient(94deg,transparent 0 26px,rgba(125,255,154,.05) 26px 27px),
+    radial-gradient(circle at 18% 74%,rgba(125,255,154,.14),transparent 40%),
+    linear-gradient(160deg,#0c2415,#050d08)}
+.pc-28 .pc-bg::before{content:"";position:absolute;left:calc(74% - 21px);top:calc(36% - 12px);width:42px;height:24px;border-radius:50%;
+  background:radial-gradient(circle,#7dff9a 0 5px,#0a1f10 6px);box-shadow:0 0 18px rgba(125,255,154,.6),-13px 26px 0 -6px rgba(125,255,154,.25),15px 34px 0 -8px rgba(125,255,154,.18);
+  animation:medEye 3.2s ease-in-out infinite}
+.pc-29 .pc-bg{background:
+    radial-gradient(circle at 70% 30%,rgba(238,246,56,.4),transparent 50%),
+    repeating-linear-gradient(0deg,rgba(238,246,56,.05) 0 1px,transparent 1px 9px),
+    repeating-linear-gradient(90deg,rgba(57,233,218,.05) 0 1px,transparent 1px 14px),
+    linear-gradient(160deg,#1c1e08,#0a0b04)}
+.pc-29 .pc-bg::before{content:"";position:absolute;left:-12%;right:-12%;top:22%;height:26px;
+  background:repeating-linear-gradient(90deg,transparent 0 18px,rgba(238,246,56,.5) 18px 54px,transparent 54px 72px);
+  transform:skewX(-24deg);animation:sdv .5s linear infinite;opacity:.85;
+  box-shadow:0 34px 0 -8px rgba(57,233,218,.28),0 62px 0 -14px rgba(238,246,56,.16)}
+
+/* гости: свои миры, второй слой */
+.g-Б .pc-bg{background:
+    repeating-linear-gradient(45deg,rgba(255,98,87,.14) 0 12px,transparent 12px 24px),
+    radial-gradient(circle at 72% 32%,rgba(255,98,87,.42),transparent 55%),
+    repeating-linear-gradient(0deg,rgba(255,222,210,.05) 0 2px,transparent 2px 18px),
+    linear-gradient(160deg,#301416,#120708)}
+.g-К .pc-bg{background:
+    radial-gradient(circle at 20% 16%,rgba(255,236,200,.16) 0 12px,transparent 13px),
+    radial-gradient(circle at 80% 66%,rgba(255,255,255,.14) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 12% 74%,rgba(255,255,255,.12) 0 1.5px,transparent 2.5px),
+    repeating-linear-gradient(90deg,transparent 0 30px,rgba(122,190,90,.12) 30px 31px),
+    radial-gradient(circle at 76% 26%,rgba(255,160,58,.45),transparent 52%),
+    linear-gradient(160deg,#20160e,#0b0705)}
+.g-В .pc-bg{background:
+    radial-gradient(circle at 50% 42%,rgba(240,86,140,.32),transparent 48%),
+    radial-gradient(circle at 18% 26%,rgba(240,86,140,.2) 0 10px,transparent 11px),
+    radial-gradient(circle at 84% 30%,rgba(240,86,140,.2) 0 10px,transparent 11px),
+    linear-gradient(160deg,#2a1020,#10060c)}
+.g-В .pc-bg::before{content:"♥";position:absolute;left:50%;top:22%;transform:translateX(-50%);
+  font:400 30px/1 var(--f-pixel);color:rgba(255,140,180,.9);text-shadow:0 0 18px rgba(240,86,140,.8);animation:tw 1.6s ease-in-out infinite}
+.g-П .pc-bg{background:
+    radial-gradient(circle at 74% 30%,rgba(224,87,107,.4),transparent 50%),
+    radial-gradient(circle at 16% 20%,rgba(255,255,255,.35) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 40% 12%,rgba(255,255,255,.3) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 64% 16%,rgba(255,255,255,.35) 0 1.5px,transparent 2.5px),
+    linear-gradient(160deg,#251017,#0c0609)}
+.g-П .pc-bg::before{content:"";position:absolute;left:8%;right:8%;top:46%;height:2px;
+  background:linear-gradient(90deg,transparent,#fff 30%,#e0576b 55%,transparent 85%);
+  transform:rotate(-9deg);box-shadow:0 0 12px #e0576b;animation:ktCut 3.4s cubic-bezier(.2,.8,.2,1) infinite}

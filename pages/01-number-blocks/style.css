@@ -263,3 +263,15 @@ main{position:relative;z-index:2;padding-top:var(--topbar-h)}
   main .scroll-cue span,
   main .f-hint span{font-size:11.5px!important;line-height:1.35}
 }
+
+/* ---- ветка ачивок в футере (локальная копия стилей kit, страница без kit.css) ---- */
+.fin-branch{display:flex;flex-direction:column;align-items:center;gap:12px;margin:26px 0 6px}
+.fin-branch .fb-cap{font:11px var(--f-mono);letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.fin-branch .fb-cap b{color:#fff;font-weight:400}
+.fin-branch .fb-chain{display:flex;align-items:center;min-width:max-content;max-width:100%;overflow-x:auto;padding:2px 4px;scrollbar-width:none}
+.fin-branch .fb-chain::-webkit-scrollbar{display:none}
+.fin-branch .adv-node{width:44px;height:44px;cursor:pointer;opacity:.95;transition:transform .16s ease,opacity .16s ease}
+.fin-branch .adv-node:hover{opacity:1;transform:translateY(-2px)}
+.fin-branch .adv-node .ic img{width:26px;height:26px}
+.fin-branch .adv-link{width:32px}
+.fin-branch .adv-more{font:12px var(--f-mono);color:var(--dim)}
