@@ -26,7 +26,8 @@
   const LS = (() => { try { const k = "zmp:t"; localStorage.setItem(k, 1); localStorage.removeItem(k); return localStorage; } catch (e) { return null; } })();
   const AV_MOD = { one: "assets/textures/block/one_inv.png", tnt_helmet: "assets/textures/item/tnt_helmet.png", sniper: "assets/textures/p3/icons/iron_sniper.png",
     labubu: "assets/textures/p6/icons/red.png", ender: "assets/textures/p7/iso/ender_safe.png", mih: "assets/textures/p8/made_in_heaven.png",
-    casted: "assets/textures/p10/casted_face.png", miner: "assets/textures/p4/models/miner_helmet.png", printer: "assets/textures/p13/printer_iso.png" };
+    casted: "assets/textures/p10/casted_face.png", miner: "assets/textures/p4/models/miner_helmet.png", printer: "assets/textures/p13/printer_iso.png",
+    rabbit_pair: "assets/textures/hub/av/rabbit_pair.png" };
   const AV_MOB = ["steve", "alex", "zombie", "skeleton", "wither_skeleton", "creeper", "enderman", "blaze", "pig", "villager", "witch", "iron_golem", "piglin", "adun"];
   const zmKeys = () => { const r = []; if (!LS) return r; for (let i = 0; i < LS.length; i++) { const k = LS.key(i); if (k && k.startsWith("zm:")) r.push(k); } return r; };
   const meta = () => { try { return JSON.parse(LS.getItem("zmp:profiles")) || null; } catch (e) { return null; } };
@@ -39,8 +40,13 @@
   }
   const utf8b64 = (str) => { const b = new TextEncoder().encode(str); let s = ""; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
   const b64utf8 = (b64) => { const s = atob(b64), b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return new TextDecoder().decode(b); };
+  /* Код создателя: знает его только владелец сайта. Вводится в профиле. */
+  const ADMIN_CODE = "SSGSSBEx1080";
   ZM.profile = {
-    ok: !!LS, AV_MOB, AV_MOD,
+    ok: !!LS, AV_MOB, AV_MOD, ADMIN_CODE,
+    isAdmin() { const me = this.me(); return !!me && me.role === "admin"; },
+    setAdmin(on) { this.update({ role: on ? "admin" : "" }); },
+    tryAdmin(code) { if (String(code || "").trim() !== ADMIN_CODE) return false; this.setAdmin(true); return true; },
     avatarUrl(av) { av = av || "steve"; return av.startsWith("data:") ? av : AV_MOD[av] ? ZM.url(AV_MOD[av]) : ZM.url(`assets/textures/hub/av/${av}.png`); },
     list() { return LS ? ensure().list : [{ id: "x", nick: "Игрок", avatar: "steve", created: Date.now() }]; },
     me() { if (!LS) return this.list()[0]; const m = ensure(); return m.list.find((p) => p.id === m.active) || m.list[0]; },

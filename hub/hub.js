@@ -144,6 +144,10 @@
   const msg = (t, ok) => { const m = $("#svMsg"); m.textContent = t; m.className = "pf-msg " + (ok ? "ok" : "bad"); };
   $("#svCopy").addEventListener("click", () => { const c = PF.exportCode(); $("#svCode").value = c; ZM.copy(c).then(() => msg(`Код скопирован (${Math.ceil(c.length / 1024)} КБ). Вставь его на другом устройстве`, true)); });
   $("#svFile").addEventListener("click", () => { PF.download(); msg("Файл .zmsave скачан", true); });
+  $("#svLink") && ($("#svLink").addEventListener("click", () => {
+    const link = location.origin + location.pathname + "#import=" + encodeURIComponent(PF.exportCode());
+    ZM.copy(link).then(() => msg("Ссылка скопирована. Открой её на другом устройстве — прогресс загрузится", true));
+  }));
   function doImport(text) {
     try { const o = PF.importCode(text, $("#svNew").checked); msg(`Загружено: ${o.p && o.p.nick ? o.p.nick : "профиль"}. Перезагружаю…`, true); sfx("levelup", 0.5); setTimeout(() => location.reload(), 900); }
     catch (e) { msg("Не получилось: " + e.message, false); sfx("anvil", 0.3); }
@@ -154,6 +158,83 @@
     if (!confirm(`Сбросить весь прогресс профиля «${PF.me().nick}»? Ачивки, инвентари и настройки всех страниц пропадут.`)) return;
     PF.restore({}); location.reload();
   });
+
+  /* ================= админ: аккаунт создателя ================= */
+  const adMsg = (t, ok) => { const m = $("#adMsg"); if (m) { m.textContent = t; m.className = "pf-msg " + (ok ? "ok" : "bad"); } };
+  function syncAdminUI() {
+    const admin = PF.isAdmin();
+    const tab = $("#adTab"); if (tab) tab.hidden = !admin;
+    const un = $("#adUnlock"); if (un) un.hidden = admin;
+    const t = $("#pfTitle");
+    if (t && admin && !t.querySelector(".ad-badge")) { const b = document.createElement("b"); b.className = "ad-badge"; b.textContent = "СОЗДАТЕЛЬ"; t.appendChild(b); }
+    else if (t && !admin) { const b = t.querySelector(".ad-badge"); if (b) b.remove(); }
+    if (admin) fillAdminPoint();
+  }
+  function fillAdminPoint() {
+    const sel = $("#adPoint"); if (!sel) return;
+    const st = stats();
+    sel.innerHTML = HUB.map((pt) => `<option value="${pt.n}">${pt.guest ? "G-" + pt.letter : "№" + pad2(pt.n)} · ${esc(pt.title)} — ${st.per[pt.n].got}/${st.per[pt.n].all}</option>`).join("");
+    fillAdminKeys();
+  }
+  function fillAdminKeys() {
+    const sel = $("#adPoint"), box = $("#adKeys"); if (!sel || !box) return;
+    const pt = HUB.find((x) => String(x.n) === sel.value); if (!pt) return;
+    const got = gotSet(pt);
+    box.innerHTML = pt.adv.map((a) => {
+      const has = got.has(a.key);
+      const name = a.t ? a.t.replace(/§[kr]/g, "") : a.key;
+      return `<label class="ad-key ${has ? "has" : ""}"><input type="checkbox" data-k="${esc(a.key)}" ${has ? "checked" : ""}><img src="${U(a.icon)}" alt=""><span>${esc(name)}</span><em>+${a.xp}</em></label>`;
+    }).join("");
+  }
+  function adApply(keys) {
+    const sel = $("#adPoint"); const pt = HUB.find((x) => String(x.n) === sel.value);
+    S.set(pt.store, keys); fillAdminPoint(); renderAll(); adMsg(`${pt.guest ? "Ветка G-" + pt.letter : "Ветка №" + pad2(pt.n)} обновлена: ${keys.length}/${pt.adv.length}`, true);
+    sfx("levelup", .4);
+  }
+  $("#adKeys") && ($("#adKeys").addEventListener("change", (e) => {
+    const inp = e.target.closest("input[data-k]"); if (!inp) return;
+    const sel = $("#adPoint"), pt = HUB.find((x) => String(x.n) === sel.value);
+    const keys = new Set(S.get(pt.store, []));
+    inp.checked ? keys.add(inp.dataset.k) : keys.delete(inp.dataset.k);
+    adApply([...keys]);
+  }));
+  $("#adPoint") && ($("#adPoint").addEventListener("change", fillAdminKeys));
+  $("#adAll") && ($("#adAll").addEventListener("click", () => {
+    const sel = $("#adPoint"), pt = HUB.find((x) => String(x.n) === sel.value);
+    adApply(pt.adv.map((a) => a.key));
+  }));
+  $("#adClear") && ($("#adClear").addEventListener("click", () => {
+    const sel = $("#adPoint"), pt = HUB.find((x) => String(x.n) === sel.value);
+    if (!confirm(`Очистить всю ветку «${pt.title}»?`)) return;
+    adApply([]);
+  }));
+  $("#adFull") && ($("#adFull").addEventListener("click", () => {
+    if (!confirm("Выдать ВСЕ достижения всех веток этому профилю?")) return;
+    for (const pt of HUB) S.set(pt.store, pt.adv.map((a) => a.key));
+    fillAdminPoint(); renderAll(); adMsg("Все достижения выданы. Древо зелёное.", true); sfx("levelup", .6);
+  }));
+  $("#adUnadmin") && ($("#adUnadmin").addEventListener("click", () => { PF.setAdmin(false); location.reload(); }));
+  $("#adForm") && ($("#adForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const code = $("#adCode").value;
+    if (PF.tryAdmin(code)) { msg("Код принят: панель создателя открыта во вкладке «Админ».", true); $("#adCode").value = ""; syncAdminUI(); sfx("levelup", .6); }
+    else { msg("Код не подошёл.", false); sfx("anvil", .3); syncAdminUI(); }
+  }));
+  syncAdminUI();
+
+  /* ссылка-перенос: index.html#import=ZM1.… — прогресс по одной ссылке */
+  (function importLink() {
+    const m = /^#import=(.+)$/.exec(location.hash);
+    if (!m) return;
+    try {
+      const o = PF.parse(decodeURIComponent(m[1]));
+      if (confirm(`Загрузить прогресс «${o.p && o.p.nick ? o.p.nick : "профиля"}» из ссылки? Текущий прогресс этого браузера заменится.`)) {
+        PF.importCode(decodeURIComponent(m[1]));
+        history.replaceState(null, "", location.pathname + location.search);
+        location.reload();
+      } else history.replaceState(null, "", location.pathname + location.search);
+    } catch (e) { console.warn("Ссылка-перенос не сработала:", e.message); history.replaceState(null, "", location.pathname + location.search); }
+  })();
   $("#pfList").addEventListener("click", (e) => {
     const sw = e.target.closest("[data-sw]"), del = e.target.closest("[data-del]");
     if (sw) { PF.switchTo(sw.dataset.sw); location.reload(); }
@@ -211,7 +292,7 @@
     }).join("");
     const guestHtml = glist.map((g) => {
       const ga = (ZM.GUEST_ADV || []).find((x) => x.page === g.page), p = ga && st.per[ga.n];
-      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/hub/av/rabbit.png", "В": "assets/textures/hub/av/couple.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
+      const ic = { "Б": "assets/textures/guest/gost_doctorskaya_sausage.png", "К": "assets/textures/hub/av/rabbit_pair.png", "В": "assets/textures/hub/av/couple.png", "П": "assets/textures/guest/nina_knife.png" }[g.letter];
       return `<a class="pc live guest g-${esc(g.letter || "?")} ${p && p.got === p.all ? "full" : ""}" href="${g.page}" style="--tone:${g.tone || "#8b8b95"}">
         <span class="pc-bg"></span>
         <span class="pc-n">${esc(g.letter || "?")}</span>${ic ? `<img class="pc-ic" src="${ic}" alt="">` : ""}

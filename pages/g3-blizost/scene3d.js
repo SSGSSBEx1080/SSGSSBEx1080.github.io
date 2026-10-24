@@ -56,14 +56,20 @@ try {
   /* настоящая пара: Стив и Алекс, как на аватарке пункта */
   const A = humanoid('../../assets/textures/mc/p2/entity_steve.png', 0xffffff, false);
   const B = humanoid('../../assets/textures/mc/p2/entity_alex.png', 0xffffff, true);
-  A.root.position.x = -.62; B.root.position.x = .62;
-  /* лицом друг к другу и чуть к зрителю: модель смотрит в −Z, Стив слева → +X, Алекс справа → −X */
+  A.root.position.x = -.74; B.root.position.x = .74;
+  /* тела лицом друг к другу и чуть к зрителю: модель смотрит в −Z,
+   * Стив слева → лицом к +X, Алекс справа → лицом к −X */
   A.root.rotation.y = -Math.PI / 2 - .42; B.root.rotation.y = Math.PI / 2 + .42;
-  for (const [m, s] of [[A, 1], [B, -1]]) {           /* поза навстречу: руки вперёд, лёгкий наклон головы */
-    m.parts[2].rotation.x = -1.12; m.parts[3].rotation.x = -1.12;
-    m.parts[2].rotation.z = -.12 * s; m.parts[3].rotation.z = .12 * s;
-    m.parts[1].rotation.z = -.08 * s;
-  }
+  /* поза «держатся за руки»: внутренние руки (правая Стива, левая Алекса)
+   * вытянуты вперёд-вниз навстречу и сцеплены в середине, внешние свободно.
+   * Знак важен: rotation.x = + поднимает руку ВПЕРЁД (−Z), минус — за спину. */
+  A.parts[2].rotation.x = 1.02; A.parts[2].rotation.z = -.16;   /* правая Стива — внутренняя */
+  B.parts[3].rotation.x = 1.02; B.parts[3].rotation.z = .16;    /* левая Алекса — внутренняя */
+  A.parts[3].rotation.x = .1; A.parts[3].rotation.z = -.1;      /* внешние чуть от тела */
+  B.parts[2].rotation.x = .1; B.parts[2].rotation.z = .1;
+  /* головы: смотрят друг на друга, лёгкий наклон к партнёру */
+  A.parts[1].rotation.y = -.16; A.parts[1].rotation.z = -.07;
+  B.parts[1].rotation.y = .16; B.parts[1].rotation.z = .07;
 
   /* ---- сердца: спрайты с пиксельной текстурой, пульс 5 Гц (OSC_HZ) ---- */
   const HEART = ['.HH.HH.', 'HHHHHHH', 'HHHHHHH', '.HHHHH.', '..HHH..', '...H...'];
@@ -104,6 +110,10 @@ try {
     camera.lookAt(target);
     const sec = t / 1000;
     A.root.position.y = Math.sin(sec * 1.9) * .015; B.root.position.y = Math.sin(sec * 1.9 + 1.6) * .015;
+    /* головы чуть кивают друг другу, сцепленные руки легко покачиваются */
+    A.parts[1].rotation.y = -.16 + Math.sin(sec * .9) * .07; B.parts[1].rotation.y = .16 - Math.sin(sec * .9 + .4) * .07;
+    A.parts[1].rotation.x = Math.sin(sec * 1.3) * .05; B.parts[1].rotation.x = Math.sin(sec * 1.3 + .9) * .05;
+    A.parts[2].rotation.x = 1.02 + Math.sin(sec * 1.1) * .05; B.parts[3].rotation.x = 1.02 + Math.sin(sec * 1.1 + .5) * .05;
     if (t - heartAt > 380) { heartAt = t; spawnHeart(); }
     for (let i = hearts.length - 1; i >= 0; i--) {
       const s = hearts[i]; s.userData.t += .033;

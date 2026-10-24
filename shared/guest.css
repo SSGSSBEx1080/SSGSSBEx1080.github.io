@@ -304,3 +304,20 @@
   .g-chapters a{padding:11px 14px}
   .g-art:hover{border-color:var(--g-line);box-shadow:none}
 }
+
+/* =====================================================================
+   guest.css v3 · футер как у основной линейки
+   Ветка ачивок внизу — общая #finBranch (kit.css), старая мини-ветка
+   убрана; меню переходов — компактный ряд в стиле fin-nav.
+   ===================================================================== */
+.g-foot nav{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;grid-column:1/-1;margin-top:2px}
+.g-foot nav a{font:11.5px var(--f-mono);letter-spacing:.05em;padding:6px 11px;gap:7px;background:var(--g-panel)}
+.g-foot nav a b{font:700 12px var(--f-head);width:auto}
+.g-foot nav a.g-all{border-style:solid}
+.g-branch:not(.gb-none){display:none}
+.g-branch.gb-none{grid-column:1/-1;justify-content:center;text-align:center;flex-direction:column;gap:6px;padding:10px 14px}
+.g-branch.gb-none .gb-label{letter-spacing:.22em}
+.g-branch.gb-none .gb-empty{max-width:64ch}
+.fin-branch{grid-column:1/-1}
+.fin-branch .fb-cap{color:var(--g-faint)}
+.fin-branch .fb-cap b{color:var(--tone)}

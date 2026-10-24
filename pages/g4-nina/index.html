@@ -4,7 +4,7 @@
 <title>Гость П · Соль, нож и редиска — ZitraksMode Wiki</title>
 <meta name="description" content="Гостевой пункт Мистера П: нож с ударом в спину ×2, солевой фитиль с сигналом 15, редиска с восемью стадиями и борщ, который возвращает миску. Механики из исходников ZitraksMode.">
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/g4-32.png"><link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/g4-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css"><link rel="stylesheet" href="../../shared/guest.css?v=guests7"><link rel="stylesheet" href="style.css?v=g4-9">
+<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css?v=kit2"><link rel="stylesheet" href="../../shared/guest.css?v=guests8"><link rel="stylesheet" href="style.css?v=g4-10">
 </head><body class="guest-body">
 <main class="guest-main">
 
@@ -176,6 +176,7 @@
         <h3 class="panel-title">СТЕНД: ДОБЫЧА РУДЫ</h3>
         <div class="mine-stage">
           <button type="button" class="mine-block" id="mineBlock" aria-label="Соляная руда: зажми и держи, чтобы добыть киркой">
+            <canvas id="mine3d" aria-hidden="true"></canvas>
             <img src="../../assets/textures/guest/salt_ore.png" alt="" aria-hidden="true">
             <canvas id="mineCrack" width="16" height="16" aria-hidden="true"></canvas>
             <svg class="mine-ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="bg" cx="18" cy="18" r="16.5"></circle><circle class="fg" id="mineRing" cx="18" cy="18" r="16.5" pathLength="1"></circle></svg>
@@ -343,10 +344,10 @@
       <h3>Соль, нож и редиска</h3>
       <p>Гостевой пункт №4 из 4. Механики, текстуры и числа — из исходников мода (SaltTrailBlock, SaltOreBlock, RadishCropBlock, NinaKnifeItem и обработчики). Стенды иллюстрируют правила, не заменяя игру.</p>
     </div>
-    <div class="g-branch" id="gBranch" aria-label="Мини-ветка ачивок гостя"></div>
+    <div id="finBranch" aria-label="Ветка ачивок внизу страницы"></div>
     <nav id="guestNav" aria-label="Другие гостевые пункты"></nav>
   </footer>
 </main>
-<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js"></script><script src="../../data/guest_adv.js?v=guests3"></script><script src="app.js?v=g4-9"></script><script src="../../shared/guest.js?v=guests1"></script>
-<script type="module" src="scene3d.js?v=g4-4"></script>
+<script src="../../shared/core.js"></script><script src="../../shared/points.js?v=guests2"></script><script src="../../shared/kit.js?v=kit2"></script><script src="../../data/guest_adv.js?v=guests3"></script><script src="app.js?v=g4-10"></script><script src="../../shared/guest.js?v=guests1"></script>
+<script type="module" src="scene3d.js?v=g4-5"></script>
 </body></html>

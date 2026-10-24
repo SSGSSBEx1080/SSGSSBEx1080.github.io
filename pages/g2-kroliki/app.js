@@ -222,6 +222,8 @@
   function frame() {
     requestAnimationFrame(frame);
     if (document.hidden || !seen) return;
+    /* 3D-стенд подхватил отрисовку: состояние уходит туда, 2D молчит */
+    if (cv.classList.contains('g2-sim-2d-off')) { if (window.__g2sim3d) window.__g2sim3d(S); return; }
     g.fillStyle = '#0f1d14'; g.fillRect(0, 0, W, H);
     const ox = (W - FIELD_W * CELL) / 2, oy = (H - FIELD_H * CELL) / 2;
     g.save(); g.translate(ox, oy);

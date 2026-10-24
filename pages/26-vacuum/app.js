@@ -7,6 +7,9 @@
   const T='../../assets/textures/p26/', icon=id=>T+(id==='vacuum_icon'?'vacuum_icon':'v/'+id)+'.png';
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   ZM.topbar({crumb:'№26 · Пылесос',...ZM.pointNav(26)});K.finNav(26,$('#finNav'));
+  K.timeline($('#tl'), [
+    { date: '07.08.2026', t: 'Пылесос', d: 'Пункт №26: пылесос, который всасывает предметы и существ. Отдельной версии в дневнике нет — вошёл сразу после плащей, между 1.1.3 и 1.1.7.', c: '#86d8c6' },
+  ]);
   const ITEMS=[['diamond','Алмаз','ore'],['coal','Уголь','ore'],['raw_iron','Сырое железо','ore'],['emerald','Изумруд','ore'],['copper_ingot','Медь','ore'],['iron_ingot','Железо','ore'],['raw_gold','Сырое золото','ore'],['stone','Камень','block'],['cobblestone','Булыжник','block'],['dirt','Земля','block'],['oak_log','Дуб','block'],['apple','Яблоко','food'],['bread','Хлеб','food'],['carrot','Морковь','food'],['potato','Картофель','food'],['wheat','Пшеница','wheat'],['dropper','Выбрасыватель','misc'],['feather','Перо','misc'],['stick','Палка','misc'],['arrow','Стрела','misc'],['redstone','Редстоун','misc'],['chest','Сундук','misc'],['hopper','Воронка','misc'],['anvil','Наковальня','misc'],['enchanted_book','Книга чар','misc']].map(([id,name,category])=>({id,name,category,max:id==='enchanted_book'?1:64}));
   const byId=id=>ITEMS.find(x=>x.id===id);
   const MODES=[['ores','Руды','diamond'],['blocks','Блоки','stone'],['food','Еда','bread'],['custom','Свой предмет','name_tag']];

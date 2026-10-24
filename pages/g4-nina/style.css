@@ -565,3 +565,69 @@
   .farm-ruler .fr-cell{min-width:36px}
   .farm-ruler .fr-cell img{width:26px;height:26px}
 }
+
+
+/* ===================== v10 (2026-10-24): единый пол, шахта 3D, тон фоном ===================== */
+
+/* --- мини-мир: травяные клетки = один сплошной газон сверху, «толщина» один раз у всего поля --- */
+.world-grid{gap:2px;background:#0a130b;position:relative;border-bottom-color:#1e2b1f}
+.fuse-grid-wrap{padding-bottom:34px}
+.world-grid::after{content:'';position:absolute;left:9px;right:9px;top:100%;height:18px;
+  background:url('../../assets/textures/mc/p2/block_grass_block_side.png') 0 0/16px 18px repeat-x;
+  image-rendering:pixelated;border-radius:0 0 3px 3px;
+  box-shadow:0 18px 0 -2px #3e2f20,0 20px 14px rgba(0,0,0,.5);
+  -webkit-mask:linear-gradient(#000 82%,transparent);mask:linear-gradient(#000 82%,transparent)}
+.world-grid button{border:1px solid rgba(0,0,0,.16);border-radius:1px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.045)}
+.world-grid button::after{display:none}   /* боковая текстура на каждой клетке убрана */
+.world-grid button.salt{box-shadow:inset 0 0 0 2px rgba(255,255,255,.17),inset 0 4px 6px rgba(0,0,0,.35)}
+
+/* --- шахта: симметричный просторный стенд + 3D-блок руды --- */
+.mine-stage{grid-template-columns:1fr;gap:16px;justify-items:center;padding:6px 0 2px}
+.mine-block{width:176px;height:176px;border-radius:14px;box-shadow:0 0 0 1px var(--g-line),0 14px 30px -18px #000}
+.mine-block img,.mine-block canvas#mineCrack{inset:28px;width:calc(100% - 56px);height:calc(100% - 56px)}
+.mine-block canvas#mine3d{position:absolute;inset:0;width:100%;height:100%;display:none;border-radius:14px}
+.mine-block.ready3d canvas#mine3d{display:block}
+.mine-block.ready3d img{display:none}
+.mine-block.ready3d canvas#mineCrack{display:none}
+.mine-block.ready3d .mine-ring,.mine-block .mine-ring{opacity:0}
+.mine-side{align-items:center;text-align:center;width:100%;gap:12px}
+.mine-hud{justify-content:center;row-gap:6px}
+.mine-bar{width:min(320px,100%);margin:0 auto}
+.mine-block.broke canvas#mine3d{animation:mineBreak3d .5s cubic-bezier(.3,1.6,.4,1)}
+@keyframes mineBreak3d{0%{transform:scale(1)}35%{transform:scale(.82) rotate(-4deg)}70%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1)}}
+
+/* --- инвентарь ПКМ: анимация прилёта только у новой ячейки --- */
+.rcm-inv .ri-slots .g-islot{animation:none}
+.rcm-inv .ri-slots .g-islot.is-new{animation:rcm-drop .45s cubic-bezier(.2,.7,.3,1.2)}
+.g-islot b{min-width:14px;text-align:right;line-height:1}
+
+/* --- 2D-фолбэк: лысый бык --- */
+#rcmImg.rcm-bald{filter:saturate(.22) sepia(.35) hue-rotate(-28deg) brightness(1.12)}
+
+/* --- тон-градиент живёт фоном всей страницы: анимированная аура + соляная пыль --- */
+body{--tone:#e0576b;--tone2:#e0576b24;--tone-ink:#2a0b10;--tone-dim:#8f4a55}
+body::before{content:'';position:fixed;inset:-22%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(46% 36% at 16% 10%, color-mix(in srgb,var(--tone) 15%, transparent), transparent 70%),
+    radial-gradient(40% 32% at 86% 84%, color-mix(in srgb,var(--tone) 12%, transparent), transparent 72%),
+    radial-gradient(30% 26% at 72% 16%, color-mix(in srgb,#ffd76e 7%, transparent), transparent 70%),
+    radial-gradient(34% 30% at 12% 88%, color-mix(in srgb,#9fd8ff 6%, transparent), transparent 72%);
+  animation:g4aura 26s ease-in-out infinite alternate;filter:blur(2px)}
+@keyframes g4aura{0%{transform:translate3d(-2%,-1.5%,0) scale(1) rotate(0deg)}
+  50%{transform:translate3d(1.5%,1%,0) scale(1.07) rotate(1.2deg)}
+  100%{transform:translate3d(2%,2.5%,0) scale(1.03) rotate(-1deg)}}
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(255,255,255,.13) 1px, transparent 1.6px),
+    radial-gradient(circle at 68% 62%, rgba(255,255,255,.10) 1px, transparent 1.6px),
+    radial-gradient(circle at 44% 82%, color-mix(in srgb,var(--tone) 22%, #fff) 1px, transparent 1.7px),
+    radial-gradient(circle at 84% 18%, color-mix(in srgb,var(--tone) 26%, #fff) 1px, transparent 1.7px);
+  background-size:190px 190px,240px 240px,300px 300px,170px 170px;
+  animation:g4dust 60s linear infinite;opacity:.55;
+  -webkit-mask:radial-gradient(120% 90% at 50% 40%,#000 40%,transparent 78%);
+  mask:radial-gradient(120% 90% at 50% 40%,#000 40%,transparent 78%)}
+@keyframes g4dust{to{background-position:190px 380px,-240px 240px,300px -600px,-170px 510px}}
+@media (prefers-reduced-motion: reduce){
+  body::before,body::after{animation:none}
+}

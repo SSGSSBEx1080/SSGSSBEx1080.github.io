@@ -76,3 +76,13 @@
   .g-art{animation:twinkle 6s ease-in-out infinite}
   @keyframes twinkle{50%{background-position:0 0,3px -4px,-5px 6px,4px 8px,-6px -7px,7px 3px,0 0}}
 }
+/* ---- 3D-стенд симулятора (scene3d.js) ---- */
+.sim-wrap{position:relative}
+#sim3dCanvas{display:block;width:100%;height:430px;background:radial-gradient(100% 90% at 50% 10%,#1a3320,#0b150e 72%);
+  border:1px solid #9fe08a42;box-shadow:inset 0 0 44px #0009;cursor:grab;touch-action:none}
+#sim3dCanvas:active{cursor:grabbing}
+.g2-sim-2d-off{display:none!important}
+.sim3d-cap{position:absolute;left:12px;top:56px;z-index:3;pointer-events:none;
+  font:700 11px var(--f-mono);letter-spacing:.14em;color:#ffd08a;
+  text-shadow:0 2px 6px #000c;background:#0d1a12b8;border:1px solid #9fe08a33;padding:6px 10px}
+@media(max-width:600px){#sim3dCanvas{height:330px}.sim3d-cap{top:96px;font-size:9.5px}}

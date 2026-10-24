@@ -9,6 +9,9 @@
   const scrollTo = el => el.scrollIntoView({behavior:reduce.matches ? 'instant' : 'smooth', block:'start'});
   ZM.topbar({crumb:'№24 · Электросамокат', ...ZM.pointNav(24)});
   K.finNav(24, $('#finNav'));
+  K.timeline($('#tl'), [
+    { date: '28.07.2026', ver: '1.1.2', t: 'Электросамокат и зарядная станция', d: 'Новый предмет — электрический самокат: скорость, заряд, пассажир. Рядом зарядная станция с тремя портами. Механики пункта №24 появились в версии 1.1.2.', c: '#b8f655' },
+  ]);
   const adv = K.adv({list:ZM.P24.advancements, store:'p24.adv', icon:a=>ZM.url(({scooter:'assets/textures/p24/scooter_item.png',station:'assets/textures/p24/charging_port_item.png',speed:'assets/textures/p3/vanilla/item_barrier.png'})[a.icon]), intro:'Три сувенира из одной поездки. Условия — из настоящих достижений мода.'});
   const TYPES = [
     ['iron_golem','Железный голем',8,'iron_golem'], ['villager','Житель',1.1,'villager'],

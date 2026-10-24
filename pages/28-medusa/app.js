@@ -2,6 +2,9 @@
  'use strict';
  const {$,$$,esc}=ZM,K=ZM.kit,C=P28Core,store='p28.lab',fmt=(n,d=1)=>Number(n).toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});
  ZM.topbar({crumb:'№28 · Медуза',...ZM.pointNav(28)});K.finNav(28,$('#finNav'));
+  K.timeline($('#tl'), [
+    { date: '17.08.2026', ver: '1.1.8', t: 'Медуза', d: 'Пункт №28 — Медуза из аниме «Доктор Стоун»: окаменение, наука и возвращение к жизни. С этой версией мод вырос до 1.1.8.', c: '#7deebe' },
+  ]);
  document.addEventListener('DOMContentLoaded',()=>document.querySelector('.zm-route')?.remove());
  let model=new C.Model(ZM.store.get(store,null)),selected='owner',press=null,feedback='',lastSave=0,lastLog='';
  const armor={none:[0,0],iron:[15,0],diamond:[20,8],netherite:[20,12]};
