@@ -14,8 +14,8 @@ try {
   const camera = new T.PerspectiveCamera(38, 1, .1, 60), target = new T.Vector3(0, 1, 0);
 
   /* свет: тёплый верх, маджента между игроками */
-  scene.add(new T.HemisphereLight(0xffd9e8, 0x2a1220, 1.7));
-  const glow = new T.PointLight(0xf0568c, 2.4, 9); glow.position.set(0, 1.35, 0); scene.add(glow);
+  scene.add(new T.HemisphereLight(0xffd9e8, 0x2a1220, 3.6));
+  const glow = new T.PointLight(0xf0568c, 6.5, 9); glow.position.set(0, 1.35, 0); scene.add(glow);
 
   /* пол: тёмный диск, сетка и кольцо RADIUS=2 */
   const floor = new T.Mesh(new T.CircleGeometry(3.4, 48), new T.MeshLambertMaterial({ color: 0x170b12 }));

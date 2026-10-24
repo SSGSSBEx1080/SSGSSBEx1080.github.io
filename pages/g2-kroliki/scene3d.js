@@ -76,9 +76,9 @@ function makeScene(cv, o) {
   const camera = new T.PerspectiveCamera(40, 1, .1, 90);
   const night = !!o.night;
 
-  scene.add(new T.HemisphereLight(night ? 0xd9f0c8 : 0xeaf6dd, night ? 0x0e1a10 : 0x2a1e12, night ? 1.35 : 1.55));
-  const moon = new T.DirectionalLight(night ? 0xcfe8ff : 0xfff3d8, night ? 1.0 : 1.15); moon.position.set(-4, 6, 3); scene.add(moon);
-  const warm = new T.PointLight(0xffa03a, night ? 1.5 : .9, 8); warm.position.set(0, 1.0, .6); scene.add(warm);
+  scene.add(new T.HemisphereLight(night ? 0xd9f0c8 : 0xeaf6dd, night ? 0x0e1a10 : 0x2a1e12, night ? 3.0 : 3.4));
+  const moon = new T.DirectionalLight(night ? 0xcfe8ff : 0xfff3d8, night ? 2.3 : 2.6); moon.position.set(-4, 6, 3); scene.add(moon);
+  const warm = new T.PointLight(0xffa03a, night ? 4.2 : 2.6, 8); warm.position.set(0, 1.0, .6); scene.add(warm);
 
   /* поле 16×9 как в app.js */
   const FW = 16, FH = 9, OX = FW / 2, OZ = FH / 2;
