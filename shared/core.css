@@ -193,8 +193,9 @@ a{color:inherit}
 .zm-route-links a{flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:10px 12px;text-decoration:none;color:#eee;background:#272727;border:1px solid #555;font:12px var(--f-mono);transition:background .2s,transform .2s}
 .zm-route-links a:hover,.zm-route-links a:focus-visible{background:#393939;transform:translateY(-2px);outline-color:var(--ac,#bada55)}
 .zm-route-links small{font:18px var(--f-pixel);color:var(--ac,#a8df50)}.zm-route-links a span{opacity:.5}
-.zm-branch-sync{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 18px;margin:22px 0 16px;color:#eee;background:linear-gradient(105deg,rgba(255,255,255,.09),transparent 55%),#1d1d1d;border:2px solid #444;box-shadow:5px 5px 0 rgba(0,0,0,.24)}
-.zm-branch-mark{display:grid;place-items:center;width:50px;height:50px;flex:none;background:#353535;border:2px solid #777}
+/* Панель ветки: тёмная майнкрафт-основа + оттенок акцента страницы (--ac). */
+.zm-branch-sync{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 18px;margin:22px 0 16px;color:#eee;background:linear-gradient(105deg,rgba(255,255,255,.09),transparent 55%),linear-gradient(105deg,color-mix(in srgb,var(--ac,#7cfc00) 12%,transparent),transparent 62%),#1d1d1d;border:2px solid color-mix(in srgb,var(--ac,#7cfc00) 38%,#4a4a4a);box-shadow:5px 5px 0 rgba(0,0,0,.24),0 0 22px color-mix(in srgb,var(--ac,#7cfc00) 10%,transparent)}
+.zm-branch-mark{display:grid;place-items:center;width:50px;height:50px;flex:none;background:color-mix(in srgb,var(--ac,#7cfc00) 10%,#353535);border:2px solid color-mix(in srgb,var(--ac,#7cfc00) 45%,#7a7a7a)}
 .zm-branch-mark img{width:36px;height:36px;object-fit:contain;image-rendering:pixelated}
 .zm-branch-copy{flex:1 1 230px;display:grid;gap:3px;min-width:0}.zm-branch-copy strong{font:500 15px/1.3 var(--f-head);color:#fff}.zm-branch-copy span{font:12px/1.5 var(--f-mono);color:#aaa}
 .zm-branch-count{font:24px var(--f-pixel);white-space:nowrap;color:var(--ac,#7cfc00)}
@@ -205,14 +206,14 @@ section > p.zm-story::before{content:"В ДЕТАЛЯХ  /  ZM";display:block;ma
 /* MC-ассеты не размываются при масштабировании; фотографии/арт остаются гладкими. */
 img[src*="assets/textures/"]:not([src$=".jpg"]):not([src$=".jpeg"]):not([src$=".webp"]),.m3d-f{image-rendering:pixelated}
 @media(max-width:700px){.zm-route{grid-template-columns:1fr;gap:10px;margin-bottom:28px}.zm-branch-sync{gap:10px}.zm-branch-copy{flex-basis:calc(100% - 70px)}.zm-branch-sync a{width:100%;text-align:center}}
-.zm-branch-map{flex:1 0 100%;display:flex;align-items:center;gap:0;min-width:0;overflow-x:auto;padding:12px 2px 4px;border-top:1px solid #484848;scrollbar-width:thin;scrollbar-color:#888 #222}
+.zm-branch-map{flex:1 0 100%;display:flex;align-items:center;gap:0;min-width:0;overflow-x:auto;padding:12px 2px 4px;border-top:1px solid color-mix(in srgb,var(--ac,#7cfc00) 26%,#484848);scrollbar-width:thin;scrollbar-color:#888 #222}
 .zm-branch-root,.zm-branch-node{position:relative;display:grid;place-items:center;flex:none;width:46px;height:46px;color:#fff;font:22px var(--f-pixel)}
-.zm-branch-root{background:#555;border:2px solid #fff;box-shadow:0 0 0 2px #111}
+.zm-branch-root{background:color-mix(in srgb,var(--ac,#7cfc00) 20%,#555);border:2px solid color-mix(in srgb,var(--ac,#7cfc00) 55%,#fff);box-shadow:0 0 0 2px #111}
 .zm-branch-root img{width:30px;height:30px;object-fit:contain;image-rendering:pixelated}
 .zm-branch-node img,.zm-branch-node b{position:relative;z-index:1;width:28px;height:28px;object-fit:contain;image-rendering:pixelated}
 .zm-branch-node.locked{opacity:.68}.zm-branch-node:hover,.zm-branch-node:focus-visible{transform:translateY(-3px);outline-color:#fff}
-.zm-branch-edge{flex:none;width:24px;height:5px;background:#363636;border-block:1px solid #000}
-.zm-branch-edge.on{background:#eee}
+.zm-branch-edge{flex:none;width:24px;height:5px;background:color-mix(in srgb,var(--ac,#7cfc00) 15%,#363636);border-block:1px solid #000}
+.zm-branch-edge.on{background:color-mix(in srgb,var(--ac,#7cfc00) 70%,#fff)}
 
 /* Интерактивная картотека «Тонкостей» (обычный HTML details, работает без мыши). */
 .zm-facts-ctrl{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;color:var(--ac,#bada55);font:12px var(--f-mono)}

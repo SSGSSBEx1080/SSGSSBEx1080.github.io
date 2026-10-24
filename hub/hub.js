@@ -530,7 +530,7 @@
   document.documentElement.style.scrollBehavior = "smooth";
   applyCfg(); layout(); tl(); renderAll();
   const followBranchLink = () => {
-    const m = /^#tree\/(\d{1,2})$/.exec(location.hash);
+    const m = /^#tree\/(\d{1,3})$/.exec(location.hash);
     if (m && HUB.some((pt) => pt.n === +m[1])) {
       setTab(+m[1]);
       requestAnimationFrame(() => document.getElementById('tree').scrollIntoView({ block: 'start', behavior: 'instant' }));

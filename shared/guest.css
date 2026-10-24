@@ -321,3 +321,21 @@
 .fin-branch{grid-column:1/-1}
 .fin-branch .fb-cap{color:var(--g-faint)}
 .fin-branch .fb-cap b{color:var(--tone)}
+
+/* ---------- панель ветки древа (core.js) в стиле гостевого пропуска ----------
+   Та же майнкрафт-панель, что на страницах основной линейки, но в тонах
+   гостевого пропуска: тонкие рамки, моно-шрифт, акцент --tone страницы. */
+.guest-body .zm-branch-sync{background:linear-gradient(105deg,color-mix(in srgb,var(--tone) 12%,#0000),#0000 62%),var(--g-panel);border:1px solid color-mix(in srgb,var(--tone) 34%,var(--g-line));box-shadow:4px 4px 0 color-mix(in srgb,var(--tone) 12%,rgba(0,0,0,.34));padding:12px 16px;margin:18px 0 14px}
+.guest-body .zm-branch-mark{width:44px;height:44px;background:color-mix(in srgb,var(--tone) 10%,var(--g-panel2));border:1px solid color-mix(in srgb,var(--tone) 45%,var(--g-line2))}
+.guest-body .zm-branch-mark img{width:30px;height:30px}
+.guest-body .zm-branch-copy strong{color:var(--g-txt)}
+.guest-body .zm-branch-copy span{color:var(--g-dim)}
+.guest-body .zm-branch-count{color:var(--tone)}
+.guest-body .zm-branch-sync a{border:1px solid color-mix(in srgb,var(--tone) 60%,var(--g-line2))}
+.guest-body .zm-branch-sync a:hover{background:var(--tone);color:var(--tone-ink)}
+.guest-body .zm-branch-map{border-top:1px dashed color-mix(in srgb,var(--tone) 30%,var(--g-line));padding:10px 2px 4px}
+.guest-body .zm-branch-root{background:color-mix(in srgb,var(--tone) 16%,var(--g-panel2));border:1px solid color-mix(in srgb,var(--tone) 55%,var(--g-line2));box-shadow:none}
+.guest-body .zm-branch-node{width:42px;height:42px;font:18px var(--f-mono)}
+.guest-body .zm-branch-node img,.guest-body .zm-branch-node b{width:26px;height:26px}
+.guest-body .zm-branch-edge{background:color-mix(in srgb,var(--tone) 10%,#182530);border-block:1px solid #0000}
+.guest-body .zm-branch-edge.on{background:color-mix(in srgb,var(--tone) 65%,#fff)}
