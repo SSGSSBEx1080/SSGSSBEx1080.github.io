@@ -91,17 +91,31 @@
   };
 
   /* Единый маршрут по пункту и ссылка на ту же ветку главного дерева.
-     Число/прогресс читаются из того же zm:pNN.adv, что использует страница. */
+     Число/прогресс читаются из того же zm:pNN.adv / zm:gN.adv, что использует страница.
+     Работает и на гостевых пунктах: ветка ищется в GUEST_ADV по адресу страницы. */
   document.addEventListener("DOMContentLoaded", () => {
-    const m = /\/pages\/(\d\d)-/.exec(location.pathname), n = m && +m[1];
-    if (!n || !ZM.POINTS) return;
-    const pt = ZM.POINTS.find((p) => p.n === n), branch = ZM.HUB_ADV?.find((p) => p.n === n), adv = ZM["P" + m[1]]?.advancements;
+    const m = /\/pages\/(\d\d)-/.exec(location.pathname);
+    const gdir = !m && /\/pages\/(g\d)-[^\/]+\//.exec(location.pathname);
+    if ((!m && !gdir) || !ZM.POINTS) return;
     const main = document.querySelector("main"), target = document.querySelector("#adv") || document.querySelector("#tree");
-    if (!main || !pt || !target || !adv || !branch) return;
-    const store = `p${m[1]}.adv`, treeUrl = ZM.url(`index.html#tree/${n}`);
+    if (!main || !target) return;
+    const n = m ? +m[1] : 0;
+    let pt, branch, label, markIcon;
+    if (m) {
+      pt = ZM.POINTS.find((p) => p.n === n); branch = ZM.HUB_ADV?.find((p) => p.n === n);
+      if (!pt || !branch || !ZM["P" + m[1]]?.advancements) return;
+      label = `Ветка №${m[1]}`; markIcon = pt.icon;
+    } else {
+      const dir = "/" + gdir[1] + "-";
+      pt = (ZM.GUEST_POINTS || []).find((p) => p.page && p.page.includes(dir));
+      branch = (ZM.GUEST_ADV || []).find((p) => p.page && p.page.includes(dir));
+      if (!pt || !branch || !branch.adv?.length) return;
+      label = `Ветка G-${branch.letter}`; markIcon = branch.icon || pt.icon;
+    }
+    const store = branch.store, treeUrl = ZM.url(`index.html#tree/${branch.n}`);
     const board = target.querySelector(".adv-board");
     const panel = document.createElement("div"); panel.className = "zm-branch-sync";
-    panel.innerHTML = `<div class="zm-branch-mark"><img src="${ZM.url(pt.icon)}" alt=""></div><div class="zm-branch-copy"><strong>Ветка №${m[1]} · ${ZM.esc(pt.title)}</strong><span>Тот же прогресс, что в общем древе. Достижения сохраняются в активном профиле.</span></div><b class="zm-branch-count" aria-live="polite"></b><a href="${treeUrl}">Открыть в главном древе${n >= 23 ? "" : " ↗"}</a>`;
+    panel.innerHTML = `<div class="zm-branch-mark"><img src="${ZM.url(markIcon)}" alt=""></div><div class="zm-branch-copy"><strong>${label} · ${ZM.esc(pt.title)}</strong><span>Тот же прогресс, что в общем древе. Достижения сохраняются в активном профиле.</span></div><b class="zm-branch-count" aria-live="polite"></b><a href="${treeUrl}">Открыть в главном древе${!m || n >= 23 ? "" : " ↗"}</a>`;
     // A point can wrap the advancement board in its own thematic frame.
     if (board) board.before(panel); else target.appendChild(panel);
     const map = document.createElement("div"); map.className = "zm-branch-map"; map.setAttribute("aria-label", "Ветка достижений пункта в главном древе");
@@ -109,7 +123,7 @@
     const refresh = () => {
       const got = new Set(ZM.store.get(store, []));
       panel.querySelector(".zm-branch-count").textContent = `${branch.adv.filter((a) => got.has(a.key)).length} / ${branch.adv.length}`;
-      map.innerHTML = `<span class="zm-branch-root" title="Корень ветки ${ZM.esc(pt.title)}"><img src="${ZM.url(pt.icon)}" alt=""></span>` + branch.adv.map((a) => {
+      map.innerHTML = `<span class="zm-branch-root" title="Корень ветки ${ZM.esc(pt.title)}"><img src="${ZM.url(markIcon)}" alt=""></span>` + branch.adv.map((a) => {
         const has = got.has(a.key), show = has || !a.hidden, parent = branch.adv.find((p) => p.key === a.parent);
         return `<span class="zm-branch-edge ${has ? "on" : ""}" aria-hidden="true"></span><button type="button" data-adv-key="${ZM.esc(a.key)}" class="zm-branch-node ${has ? "has" : "locked"} ${a.frame}" title="${show ? ZM.esc(a.t.replace(/§[kr]/g, "")) : "Скрытое достижение"}${parent ? ` · после ${got.has(parent.key) ? ZM.esc(parent.t) : "???"}` : ""}" aria-label="${show ? ZM.esc(a.t.replace(/§[kr]/g, "")) : "Скрытое достижение"}${has ? ", получено" : ", не получено"}"><span class="adv-frame ${show ? a.frame : "task"}${has ? "" : " locked"}"></span>${show ? `<img src="${ZM.url(a.icon)}" alt="">` : "<b>?</b>"}</button>`;
       }).join("");
@@ -128,16 +142,19 @@
       // Возврат из главного дерева после смены профиля: старые страницы держат
       // ачивки в памяти и иначе перезапишут прогресс нового профиля.
       const current = JSON.stringify(ZM.store.get(store, []));
-      if (e.persisted && n < 14 && current !== knownProgress) { location.reload(); return; }
+      if (e.persisted && m && n < 14 && current !== knownProgress) { location.reload(); return; }
       knownProgress = current; refresh();
     });
     addEventListener("storage", (e) => {
-      if (e.key === `zm:${store}` || (e.key === "zmp:profiles" && n < 14)) {
+      if (e.key === `zm:${store}` || (m && n < 14 && e.key === "zmp:profiles")) {
         // Для №01–13 перечитываем собственный массив got внутри app.js.
-        if (n < 14) { location.reload(); return; }
+        if (m && n < 14) { location.reload(); return; }
         knownProgress = JSON.stringify(ZM.store.get(store, [])); refresh();
       }
     });
+
+    // Гостевые пункты заканчивают на панели ветки: у них свой маршрут и вёрстка.
+    if (!m) return;
 
     // №22 и №23 сохраняют восстановленный дизайн и механику без общей переразметки.
     if (n === 22 || n === 23) return;
