@@ -3,28 +3,32 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090f13">
-  <meta name="description" content="Электросамокат ZitraksMode: прокати четырёх големов, почувствуй спуск и найди настоящую зарядную станцию из мода.">
+  <meta name="description" content="Электросамокат ZitraksMode: пять мест, масса экипажа, спуск без ограничителя, зарядная станция с оригинальной структуры. Все числа — из исходников мода.">
   <title>№24 · Электросамокат — ZitraksMode Wiki</title>
   <link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicons/p24-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="../../assets/favicons/p24-64.png">
-<link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css?v=kit2">
-  <link rel="stylesheet" href="style.css?v=20261024-r3">
+  <link rel="stylesheet" href="../../shared/core.css"><link rel="stylesheet" href="../../shared/kit.css?v=kit2">
+  <link rel="stylesheet" href="style.css?v=20261024-r4">
 </head>
 <body>
 <main>
   <aside class="route-rail" id="routeRail" aria-hidden="true"><span class="rr-cap">15 000</span><i class="rr-track"><i class="rr-fill" id="rrFill"></i><span class="rr-bike" id="rrBike"><img src="../../assets/textures/p24/scooter_side.png" alt=""></span></i><span class="rr-cap" id="rrNow">0 м</span></aside>
+
+  <!-- ============ HERO ============ -->
   <section class="departure" aria-labelledby="title">
-    <div class="departure-top"><span>ПУНКТ №24 <i>/</i> ТРАНСПОРТ</span><nav aria-label="По странице"><a href="#trip">Заезд</a><a href="#station">Станция</a><a href="#adv">Достижения</a></nav><span class="stamp">ZITRAKSMODE</span></div>
+    <div class="departure-top"><span>ПУНКТ №24 <i>/</i> ТРАНСПОРТ</span><nav aria-label="По странице"><a href="#trip">Заезд</a><a href="#mass">Масса</a><a href="#station">Станция</a><a href="#adv">Достижения</a></nav><span class="stamp">ZITRAKSMODE</span></div>
     <div class="departure-copy"><p class="eyebrow"><span class="power-dot"></span> ЭЛЕКТРОПРИВОД / ПЯТЬ МЕСТ</p><h1 id="title" aria-label="Электросамокат"><span>ЭЛЕКТРО</span><strong>САМОКАТ</strong></h1><p class="lead">Водитель и четыре пассажира. Масса экипажа влияет на разгон, торможение и скорость на спуске.</p><button type="button" class="go" id="startTrip">Испытательный заезд <span>↗</span></button><a class="small-link" href="#station">Зарядная станция ↓</a></div>
     <div class="hero-road" aria-hidden="true"><span></span></div>
     <div class="hero-live" id="heroLive"><i class="hl-led" id="hlLed"></i><span class="hl-km"><b id="hlSpeed">000</b><small>км/ч</small></span><span class="hl-sep"></span><span class="hl-cell"><b id="hlDist">0</b><small>метров</small></span><span class="hl-sep"></span><span class="hl-cell"><b id="hlBatt">100</b><small>% заряда</small></span></div>
     <div class="scooter-product"><img class="product-fallback" src="../../assets/textures/p24/scooter_side.png" alt="Оригинальный самокат из мода"><canvas id="hero3d" aria-label="Самокат из мода. Перетащи, чтобы рассмотреть" tabindex="0"></canvas><span class="model-label">SCOOTER / ORIGINAL MODEL</span><button type="button" class="turn-model" id="heroSpin" aria-pressed="true">↔ Вращать модель</button></div>
     <div class="round-note"><strong>05</strong><span>ПОСАДОЧНЫХ<br>МЕСТ</span></div>
-    <div class="departure-bottom"><span>80 км/ч по ровной</span><i>✳</i><span>15 000 блоков на полном заряде</span><a href="#trip">Характеристики и заезд ↓</a></div>
+    <div class="departure-bottom"><span>80 км/ч по ровной</span><i>⚡</i><span>15 000 блоков на полном заряде</span><a href="#trip">Характеристики и заезд ↓</a></div>
   </section>
 
-  <section class="trip section" id="trip" aria-labelledby="tripTitle">
-    <header class="section-head reveal"><span class="mile">01<br><small>ЗАЕЗД</small></span><div><p class="eyebrow">ДИНАМИКА ДВИЖЕНИЯ</p><h2 id="tripTitle">Испытательный <em>заезд</em></h2></div><p>Рельеф, покрытие и пассажиры меняют поведение самоката. Показания приборов связаны с поездкой.</p></header>
+  <!-- ============ 01 ЗАЕЗД ============ -->
+  <section class="sec" id="trip">
+    <header class="sec-head reveal"><span class="sec-n">01<small>ЗАЕЗД</small></span><div class="sec-t"><span class="sec-k">scooter entity · движение по правилам мода</span><h2 id="tripTitle">Испытательный <em>заезд</em></h2></div><span class="sec-q">Рельеф, покрытие и пассажиры меняют поведение самоката</span></header>
+    <p class="sec-p reveal">Стенд повторяет формулы из <code>ScooterEntity</code>: разгон <b>0.032</b> за тик, трение <b>0.965</b>, тормозная сила <b>0.085</b>. Рельеф переключается кнопками, покрытие под колёсами — отдельной группой, экипаж добавляется в места 02–05. Показания HUD связаны с поездкой, а не нарисованы.</p>
     <div class="ride-shell reveal" id="experiment">
       <div class="ride-tabs" role="group" aria-label="Рельеф дороги"><button type="button" data-slope="level" aria-pressed="true"><span>―</span> Ровная</button><button type="button" data-slope="climb" aria-pressed="false"><span>↗</span> В горку</button><button type="button" data-slope="descent" aria-pressed="false"><span>↘</span> С горки</button><span id="routeLabel">Ровный участок</span></div>
       <div class="road-stage"><canvas id="roadCanvas" tabindex="0" role="img" aria-label="Живая дорога: W или кнопка «Газ» — разгон; S — тормоз; A и D — поворот"></canvas><div class="road-sign" id="roadSign">80<br><small>ПО РОВНОЙ</small></div><div class="speedo"><svg viewBox="0 0 200 124" aria-hidden="true"><path class="dial-track" d="M20 104 A80 80 0 0 1 180 104"/><path id="dialArc" d="M20 104 A80 80 0 0 1 180 104"/><g id="dialNeedle"><path d="M100 104 L42 70"/><circle cx="100" cy="104" r="6"/></g></svg><strong id="hudSpeed">000</strong><span>км/ч · HUD</span></div><div class="trip-ticket"><small>ЭТОТ ЗАЕЗД</small><b id="hudDistance">0 м</b><span><i id="batteryFill"></i></span><em id="hudBattery">100%</em></div><p class="road-caption" id="terrainText">На ровной — до 80. Сними палец с газа: инерция никуда не делась.</p></div>
@@ -35,24 +39,80 @@
     <p class="simulation-note">Это небольшой заезд по правилам мода, не полный Minecraft: без столкновений и разрушения блоков. Показания HUD, масса, разгон, накат, расход и покрытия связаны друг с другом. Можешь рулить A/D, когда дорога в фокусе.</p>
   </section>
 
+  <!-- ============ 02 МАССА ============ -->
+  <section class="sec" id="mass">
+    <header class="sec-head reveal"><span class="sec-n">02<small>МАССА</small></span><div class="sec-t"><span class="sec-k">scootermasshelper · масса пассажиров</span><h2>Кто сидит <em>сзади</em></h2></div><span class="sec-q">Тяжёлый экипаж ускоряет спуск и тормозит разгон</span></header>
+    <p class="sec-p reveal">Масса считается как сумма: игрок — <b>1.0</b>, самокат — ещё единица. Дальше всё решает <code>ScooterMassHelper</code>: у каждого вида моба своя цифра. Тяжёлый пассажир урезает разгон, но усиливает накат с горы — в коде это <code>massAccelMul</code> против <code>massDownMul</code>.</p>
+    <div class="spec-grid reveal">
+      <article class="spec-card"><h3>Как меняется тяга</h3><p>«Тяжесть» считается как <code>(масса − 1) / 24</code> и упирается в единицу.</p><ul><li>разгон по ровной: <b>×0.45</b> на полной тяжести</li><li>накат с горы: <b>×1.85</b></li><li>в гору: <b>×0.35</b></li><li>руль: <b>×0.40</b></li></ul></article>
+      <article class="spec-card"><h3>Зависимость от мест</h3><p>Число пассажиров меняет и наклон, и поворот, и расход заряда.</p><ul><li>4 пассажира: поворот <b>×0.90</b>, шаг в блок <b>0.6</b></li><li>5 пассажиров: поворот <b>×0.72</b></li><li>на спуске коэффициент растёт на <b>0.25</b> за пассажира</li><li>расход: <b>+20%</b> на крутом подъёме, <b>+10%</b> при массе от 5</li></ul></article>
+      <article class="spec-card"><h3>Посадка</h3><p>Места считаются от геометрии <code>scooter</code>: водитель, второй, третий — вдоль рамы.</p><ul><li>места 04 и 05 — <b>вбок под 45°</b>, тело смотрит наружу</li><li>хитбокс: <b>1.35 × 0.5 × 1.70</b></li><li>на спине — <b>500</b> прочности, отдельно от заряда</li></ul></article>
+    </div>
+    <div class="reveal" style="margin-top:22px">
+      <table class="mass-table">
+        <caption>МАССА СУЩЕСТВ ИЗ SCOOTERMASSHELPER · ФРАГМЕНТ ТАБЛИЦЫ МОДА</caption>
+        <thead><tr><th>Существо</th><th>Масса</th><th>Существо</th><th>Масса</th></tr></thead>
+        <tbody>
+          <tr><td>Страж</td><td>12.0</td><td>Железный голем</td><td>8.0</td></tr>
+          <tr><td>Разоритель</td><td>7.0</td><td>Зоглин / hoglin</td><td>6.0</td></tr>
+          <tr><td>Нюктер</td><td>5.5</td><td>Верблюд</td><td>5.0</td></tr>
+          <tr><td>Лошадь / ослик / мул</td><td>4.5</td><td>Панда</td><td>4.0</td></tr>
+          <tr><td>Корова</td><td>3.5</td><td>Эндермен</td><td>2.5</td></tr>
+          <tr><td>Свинья / овца</td><td>2.2</td><td>Житель</td><td>1.1</td></tr>
+          <tr><td>Зомби / скелет / крипер</td><td>1.2</td><td>Волк / кот / лиса</td><td>0.5</td></tr>
+          <tr><td>Курица / кролик / попугай</td><td>0.2</td><td>Игрок</td><td>1.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <div class="road-divider reveal" aria-hidden="true"><span>05 МЕСТ / ЭЛЕКТРОПРИВОД / ЗАВИСИМОСТЬ ОТ МАССЫ</span></div>
 
-  <section class="station section" id="station" aria-labelledby="stationTitle">
-    <header class="section-head reveal"><span class="mile">02<br><small>СТАНЦИЯ</small></span><div><p class="eyebrow">СТРУКТУРА ИЗ МОДА</p><h2 id="stationTitle">Зарядная <em>станция</em></h2></div><p>Оригинальная структура: 198 блоков, три зарядных порта, две настенные таблички и подвесной фонарь.</p></header>
-    <div class="station-layout reveal"><div class="station-view" id="stationView"><!-- Fallback rendered from this same NBT and original textures, not replacement artwork. --><img class="station-still" src="../../assets/textures/p24/station_preview.png" alt="Зарядная станция из оригинальной структуры мода: три порта, две таблички и фонарь" loading="lazy" width="901" height="529"><canvas id="station3d" tabindex="0" aria-label="Зарядная станция. Перетащи для обзора, нажми на порт для выбора"></canvas><p class="station-fail" hidden>3D недоступно. Выбери один из трёх портов на терминале — зарядка всё равно работает.</p><div class="station-tools"><button type="button" id="stationReset">Вся станция</button><button type="button" id="stationSign">Таблички</button><button type="button" id="stationLamp">Фонарь</button></div><p id="stationFocus">Потяни для обзора · колесо — приблизить · клик по порту — выбрать</p></div>
+  <!-- ============ 03 СТАНЦИЯ ============ -->
+  <section class="sec" id="station">
+    <header class="sec-head reveal"><span class="sec-n">03<small>СТАНЦИЯ</small></span><div class="sec-t"><span class="sec-k">structure · charging_port</span><h2>Зарядная <em>станция</em></h2></div><span class="sec-q">Оригинальная структура: 198 блоков, три порта, две таблички, фонарь</span></header>
+    <p class="sec-p reveal">Станции расставляет <code>ScooterStationSpawner</code> по сетке <b>768 × 768</b> блоков с разбросом <b>±120</b>. Шанс, что на станции окажется самокат: <b>2%</b> на три, <b>6%</b> на два, <b>15%</b> на один. Заряд у найденного самоката случайный — от половины до полного бака.</p>
+    <div class="station-layout reveal"><div class="station-view" id="stationView"><img class="station-still" src="../../assets/textures/p24/station_preview.png" alt="Зарядная станция из оригинальной структуры мода: три порта, две таблички и фонарь" loading="lazy" width="901" height="529"><canvas id="station3d" tabindex="0" aria-label="Зарядная станция. Перетащи для обзора, нажми на порт для выбора"></canvas><p class="station-fail" hidden>3D недоступно. Выбери один из трёх портов на терминале — зарядка всё равно работает.</p><div class="station-tools"><button type="button" id="stationReset">Вся станция</button><button type="button" id="stationSign">Таблички</button><button type="button" id="stationLamp">Фонарь</button></div><p id="stationFocus">Потяни для обзора · колесо — приблизить · клик по порту — выбрать</p></div>
       <div class="charger"><div class="charger-top"><img src="../../assets/textures/p24/charging_port_item.png" alt="Зарядный порт"><span>ПОРТ <b id="portIndex">01</b><small>ДЛЯ ЭЛЕКТРОСАМОКАТА</small></span><i id="chargingLight"></i></div><div class="ports" role="group" aria-label="Выбор зарядного порта"><button type="button" data-port="0" aria-pressed="true">01</button><button type="button" data-port="1" aria-pressed="false">02</button><button type="button" data-port="2" aria-pressed="false">03</button></div><div class="charger-screen"><small>ОСТАЛОСЬ ЗАРЯДА</small><strong id="terminalPct">100%</strong><div><i id="terminalFill"></i></div><span>+1% В СЕКУНДУ</span></div><button type="button" class="plug" id="chargeHere" disabled>Подключить</button><button type="button" class="arrive" id="skipRoute">Перенести самокат к порту</button><p id="chargeHelp" role="status">Проедь немного, а потом припаркуйся у порта.</p><button type="button" class="port-take" id="takePort">Получить порт в инвентарь ↗</button></div>
     </div>
     <div class="station-postscript reveal"><span class="station-spec">+1% / СЕКУНДУ</span><p>В игре порт ищет самокат совсем рядом: до двух блоков по горизонтали и одного по высоте. Зарядка не чинит прочность. Вода снижает прочность независимо от уровня заряда.</p></div>
   </section>
 
-  <section class="travel-notes section" aria-labelledby="notesTitle"><div class="reveal"><p class="eyebrow">УСТРОЙСТВО И УПРАВЛЕНИЕ</p><h2 id="notesTitle">Механика <em>самоката</em></h2></div><div class="note-list reveal"><details><summary>Скорость и масса на спуске</summary><p>Ограничение ровной дороги не работает на спуске. Тяжёлые пассажиры замедляют обычный разгон и торможение, зато усиливают накат с горы. Выбери спуск и отпусти газ — гравитация продолжит работу.</p></details><details><summary>Порог достижения «320 км/ч peek»</summary><p>Так называется достижение в моде. Его реальный порог — 99,5 на HUD, то есть примерно 100. Догонять 320 для награды не нужно.</p></details><details><summary>Покрытия и износ</summary><p>Мёд умножает скорость на 0,55, сено — на 0,75. Вода гасит ход и отнимает по единице прочности каждые пять игровых тиков. На стенде эти эффекты действуют, пока выбрано покрытие. Прочность — 500, отдельно от заряда.</p></details><details><summary>Управление и взаимодействия</summary><p>WASD — движение, Shift — слезть; можно посадить четырёх пассажиров. В мире самокат также реагирует на столкновения, мягкие блоки и слизь. Этот заезд намеренно не изображает эти сложные взаимодействия.</p></details></div></section>
+  <!-- ============ 04 ЧТО ЛОМАЕТ ============ -->
+  <section class="sec" id="wear">
+    <header class="sec-head reveal"><span class="sec-n">04<small>ИЗНОС</small></span><div class="sec-t"><span class="sec-k">durability · покрытия · столкновения</span><h2>Что его <em>убивает</em></h2></div><span class="sec-q">Прочность 500, заряд 1 000 000 — это разные вещи</span></header>
+    <p class="sec-p reveal">Заряд и прочность — независимые шкалы. Заряд кончился — самокат просто не едет, цел он или нет. А вот прочность уходит от воды, стен и копания.</p>
+    <div class="rules-grid reveal">
+      <article class="rule"><img src="../../assets/textures/p24/station/tuff.png" alt=""><b>Стена на скорости</b><p>Выше <b>20 км/ч</b> удар о стену считается аварией: самокат отскакивает, часть прочности уходит. Скорость при этом частично сохраняется — в коде это отражение вектора движения, а не обнуление.</p></article>
+      <article class="rule"><img src="../../assets/textures/mc/p2/block_sand.png" alt=""><b>Копание</b><p>Чтобы копать, нужна скорость от <b>22 км/ч</b>. Глубже ровь — больше урон. Разрушенный блок отнимает прочность по формуле <b>ceil(количество × 5)</b>.</p></article>
+      <article class="rule"><img src="../../assets/textures/p26/v/wheat.png" alt=""><b>Мёд и сено</b><p>Мёд умножает скорость на <b>0.55</b>, сено — на <b>0.75</b>. Это не замедление «на глаз»: множитель применяется к накопленной скорости и к вектору движения.</p></article>
+      <article class="rule"><img src="../../assets/textures/p26/v/apple.png" alt=""><b>Вода</b><p>Трение в воде — <b>0.88</b>, а прочность уходит по единице каждые <b>5 тиков</b>. Из 500 единиц это примерно <b>50 секунд</b> езды по воде.</p></article>
+      <article class="rule"><img src="../../assets/textures/p21/i/sweet_berries.png" alt=""><b>Слизь</b><p>Отражение от стены на слизи сохраняет модуль скорости целиком — угол падения равен углу отражения. Звук — удар слизью.</p></article>
+      <article class="rule"><img src="../../assets/textures/p22/i/leather.png" alt=""><b>Пробег</b><p>Один блок пути съедает <code>MAX_CHARGE / 15000</code> заряда. На крутом подъёме и при тяжёлом экипаже расход умножается — до <b>+30%</b> суммарно.</p></article>
+    </div>
+    <div class="notes-list reveal" style="margin-top:34px">
+      <details open><summary>Что записано в NBT самоката</summary><p>Три ключа: <code>ScooterCharge</code>, <code>ScooterDurability</code> и <code>ScooterSpeed</code>. При загрузке отсутствующий ключ берёт максимум: заряд — 1 000 000, прочность — 500. Скорость в NBT хранится «в нуле», чтобы при выгрузке не было рывка.</p></details>
+      <details><summary>Порог достижения «320 км/ч peek»</summary><p>Так называется достижение в моде. Его реальный порог — 99,5 на HUD, то есть примерно 100. Догонять 320 для награды не нужно. Спидометр пересчитывает скорость по формуле <code>1 единица = 72 км/ч</code>.</p></details>
+      <details><summary>Управление и взаимодействия</summary><p>WASD — движение, Shift — слезть; можно посадить четырёх пассажиров. Порог для копания, удары о стены и разрушение блоков считаются на сервере, поэтому в стенде показаны только разгон, накат, покрытия и расход.</p></details>
+    </div>
+  </section>
 
-  <section class="souvenirs section" id="adv" aria-labelledby="advTitle"><header><div><p class="eyebrow">03 / ПРОГРЕСС</p><h2 id="advTitle">Достижения</h2></div><span id="advQ"></span></header><div class="adv-board reveal"><div class="adv-chain" id="advChain"></div><div class="adv-detail" id="advDetail"></div><div class="adv-progress"><span id="advBar"></span></div><div class="adv-bottom"><span id="advTxt"></span><button type="button" id="advReset">Сбросить достижения</button></div><div class="adv-list" id="advList"></div></div></section>
-    <section class="souvenirs section" id="hist" aria-labelledby="histTitle"><header class="reveal"><div><p class="eyebrow">04 / CHANGELOG</p><h2 id="histTitle">Версии</h2></div></header><div class="k-tl reveal" id="tl"></div></section>
-<footer class="journey-end reveal" id="finale"><p>ЭЛЕКТРО<span>САМОКАТ</span></p><a href="#trip">Вернуться к заезду ↑</a><div id="finBranch" aria-label="Ветка ачивок внизу страницы"></div>
+  <!-- ============ 05 ДОСТИЖЕНИЯ ============ -->
+  <section class="sec" id="adv">
+    <header class="sec-head reveal"><span class="sec-n">05<small>ПРОГРЕСС</small></span><div class="sec-t"><span class="sec-k">advancements/24_scooter</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <div class="adv-board reveal"><div class="adv-chain" id="advChain"></div><div class="adv-detail" id="advDetail"></div><div class="adv-progress"><span id="advBar"></span></div><div class="adv-bottom"><span id="advTxt"></span><button type="button" id="advReset">Сбросить достижения</button></div><div class="adv-list" id="advList"></div></div>
+  </section>
+
+  <!-- ============ 06 ВЕРСИИ ============ -->
+  <section class="sec" id="hist">
+    <header class="sec-head reveal"><span class="sec-n">06<small>CHANGELOG</small></span><div class="sec-t"><span class="sec-k">история мода</span><h2>Версии</h2></div><span class="sec-q">Пункт появился вместе с обновлением 1.1.2</span></header>
+    <div class="k-tl reveal" id="tl"></div>
+  </section>
+
+  <footer class="journey-end reveal" id="finale"><p>ЭЛЕКТРО<span>САМОКАТ</span></p><a href="#trip">Вернуться к заезду ↑</a><div id="finBranch" aria-label="Ветка ачивок внизу страницы"></div>
     <nav id="finNav" aria-label="Другие пункты"></nav><small>Механики и модели — из исходников ZitraksMode. Заезд — интерактивная иллюстрация вики.</small></footer>
 </main>
 <script src="../../shared/core.js"></script><script src="../../data/tex_data.js"></script><script src="../../shared/points.js"></script><script src="../../shared/kit.js?v=kit2"></script><script src="../../shared/geo3d.js"></script>
 <script src="../../data/p24_geo.js"></script><script src="../../data/p24_station.js"></script><script src="../../data/p24_adv.js"></script>
-<script src="app.js?v=20261024-r3"></script><script src="road.js?v=20261024-r3"></script><script src="../../shared/vendor/three/three.global.js"></script><script src="station3d.js?v=20261023-r2"></script><script src="../../data/hub_adv.js"></script>
+<script src="app.js?v=20261024-r4"></script><script src="road.js?v=20261024-r4"></script><script src="../../shared/vendor/three/three.global.js"></script><script src="station3d.js?v=20261023-r2"></script><script src="../../data/hub_adv.js"></script>
 </body></html>
