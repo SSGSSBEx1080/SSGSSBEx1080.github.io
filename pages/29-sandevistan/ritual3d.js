@@ -22,9 +22,10 @@ try {
   const camera = new T.PerspectiveCamera(42, 1, .1, 120);
 
   /* ---- свет: холод Энда + тёплый прожектор на субъекта ---- */
-  scene.add(new T.HemisphereLight(0xcfd8ff, 0x1a0e26, 1.05));
-  const key = new T.DirectionalLight(0xffffff, .85); key.position.set(3, 6, 4); scene.add(key);
-  const rim = new T.DirectionalLight(0x7a5cff, .5); rim.position.set(-4, 3, -5); scene.add(rim);
+  /* физические единицы света нового three.js: было в 2.4 раза темнее задуманного */
+  scene.add(new T.HemisphereLight(0xcfd8ff, 0x1a0e26, 2.5));
+  const key = new T.DirectionalLight(0xffffff, 2.1); key.position.set(3, 6, 4); scene.add(key);
+  const rim = new T.DirectionalLight(0x7a5cff, 1.25); rim.position.set(-4, 3, -5); scene.add(rim);
   const auraLight = new T.PointLight(0x39e9da, 0, 14); auraLight.position.set(0, 2.2, .8); scene.add(auraLight);
 
   const loader = new T.TextureLoader();
@@ -249,7 +250,7 @@ try {
     implantG.scale.setScalar(.01);
     burstRings.forEach(r => r.userData.t = 0);
     rays.forEach(r => r.userData.on = 1);
-    auraLight.intensity = 3;
+    auraLight.intensity = 9;
     for (let i = 0; i < 40; i++) spawnSpark(i % 2 ? 0x39e9da : 0xeef638);
   };
   const resetScene = () => {
@@ -304,7 +305,7 @@ try {
           const m = rowItems[i];
           m.position.lerp(new T.Vector3(m.position.x * (1 - x), .0, -x * .8), 1);
           m.scale.setScalar(1 - x * .85); m.material.opacity = 1 - x;
-          if (x >= 1 && !equipped[k]) { m.visible = false; setEquip(k, 1); auraLight.intensity = Math.max(auraLight.intensity, .7); }
+          if (x >= 1 && !equipped[k]) { m.visible = false; setEquip(k, 1); auraLight.intensity = Math.max(auraLight.intensity, 2.2); }
         }
       });
     }
@@ -333,7 +334,7 @@ try {
     if (installed) {
       implantG.scale.setScalar(Math.min(1, implantG.scale.x + dt * 2.2));
       camBehind = Math.min(1, camBehind + dt * .5);
-      auraLight.intensity += ((.9 + Math.sin(sec * 6) * .35) - auraLight.intensity) * Math.min(1, dt * 3);
+      auraLight.intensity += ((2.7 + Math.sin(sec * 6) * 1.0) - auraLight.intensity) * Math.min(1, dt * 3);
       if (Math.random() < .35) spawnSpark(Math.random() < .5 ? 0x39e9da : 0xeef638);
     }
     /* если имплант уже стоял при загрузке — сразу эпический кадр */

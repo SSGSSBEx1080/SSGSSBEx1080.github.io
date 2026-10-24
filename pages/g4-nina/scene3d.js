@@ -67,9 +67,10 @@ try {
   const camera = new T.PerspectiveCamera(34, 1, .1, 40);
   const ob = orbit(cv, -.55, .36);
 
-  scene.add(new T.HemisphereLight(0xfff0dd, 0x2a141a, 1.5));
-  const key = new T.DirectionalLight(0xffffff, 1.0); key.position.set(2.2, 3.6, 2.8); scene.add(key);
-  const rose = new T.DirectionalLight(0xe0576b, .38); rose.position.set(-2.6, 1.1, -2.2); scene.add(rose);
+  /* новый three.js считает свет в физических единицах: яркость ×~2.3 от старых значений */
+  scene.add(new T.HemisphereLight(0xfff0dd, 0x2a141a, 3.4));
+  const key = new T.DirectionalLight(0xffffff, 2.5); key.position.set(2.2, 3.6, 2.8); scene.add(key);
+  const rose = new T.DirectionalLight(0xe0576b, .95); rose.position.set(-2.6, 1.1, -2.2); scene.add(rose);
 
   /* подиум: низкополигональная ступень */
   const floor = new T.Mesh(new T.CylinderGeometry(1.85, 2.0, .16, 12), new T.MeshLambertMaterial({ color: 0x241319 }));
@@ -182,7 +183,7 @@ try {
   woolMeshes.forEach(m => tw(m));
 
   const groups = { sheep: sheepG, bull: bullG, berries: berG, log: logG };
-  let cur = 'sheep', lastDur = 500, pokeT = 0;
+  let cur = 'sheep', lastDur = 500, pokeT = 0, camDist = 4.6;
   const poke = () => (pokeT = .5);
   const apply = (d) => {
     if (!d) return;
@@ -217,7 +218,8 @@ try {
     else if (groups[cur]) groups[cur].position.y = 0;
 
     const { yaw, pitch } = ob.step(dt);
-    const dist = 4.6;
+    camDist += (((cur === 'berries' || cur === 'log') ? 3.35 : 4.6) - camDist) * Math.min(1, dt * 3);
+    const dist = camDist;
     camera.position.set(Math.sin(yaw) * Math.cos(pitch) * dist, 1.05 + Math.sin(pitch) * dist, Math.cos(yaw) * Math.cos(pitch) * dist);
     camera.lookAt(0, 1.0, 0);
     renderer.render(scene, camera);
@@ -239,9 +241,9 @@ try {
   renderer.setPixelRatio(DPR);
   const scene = new T.Scene();
   const camera = new T.PerspectiveCamera(30, 1, .1, 30);
-  scene.add(new T.HemisphereLight(0xfff4e2, 0x241319, 1.45));
-  const key = new T.DirectionalLight(0xffffff, .95); key.position.set(2.4, 3.4, 2.2); scene.add(key);
-  const back = new T.DirectionalLight(0xe0576b, .3); back.position.set(-2.4, 1.4, -2.4); scene.add(back);
+  scene.add(new T.HemisphereLight(0xfff4e2, 0x241319, 3.2));
+  const key = new T.DirectionalLight(0xffffff, 2.3); key.position.set(2.4, 3.4, 2.2); scene.add(key);
+  const back = new T.DirectionalLight(0xe0576b, .75); back.position.set(-2.4, 1.4, -2.4); scene.add(back);
 
   const G = new T.Group(); scene.add(G);
   /* руда: блок соли в камне — текстура блока из мода на все грани */
