@@ -25,7 +25,7 @@
  * нагрудник → удар ауры, пролёт за спину с видом на голову дракона.
  * Механики остаются в app.js, здесь только картинка. */
 
-import * as T from '../../shared/vendor/three/three.module.js';
+const T = window.THREE;
 
 const stage = document.querySelector('#ritualStage'), cv = document.querySelector('#ritual3d');
 try {
@@ -47,7 +47,7 @@ try {
   const auraLight = new T.PointLight(0x39e9da, 0, 16); auraLight.position.set(0, 2.2, .8); scene.add(auraLight);
 
   const loader = new T.TextureLoader();
-  const texOf = (p) => { const t = loader.load(p); t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter; return t; };
+  const texOf = (p) => { const t = loader.load(ZM.tex(p)); t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter; return t; };
   const A = '../../assets/textures/';
 
   /* =================================================================

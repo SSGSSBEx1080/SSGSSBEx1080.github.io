@@ -182,7 +182,7 @@
   reset();gunHUD();
   const cv=$('#character3d');
   if(window.ZMGeo?.supported())try{
-    model=ZMGeo.create(cv,{geo:ZM.P27G.geo,anim:ZM.P27G.anim,tex:'../../assets/textures/p27/anton_chigur.png',idle:'animation.chigur.idle',lit:.45,mip:true,exclusive:true,cam:{yaw:195,pitch:3,dist:88,target:[0,16,0],fov:40}});
+    model=ZMGeo.create(cv,{geo:ZM.P27G.geo,anim:ZM.P27G.anim,tex:ZM.tex('../../assets/textures/p27/anton_chigur.png'),idle:'animation.chigur.idle',lit:.45,mip:true,exclusive:true,cam:{yaw:195,pitch:3,dist:88,target:[0,16,0],fov:40}});
     if(model){const image=new Image();image.onload=()=>$('#character').classList.add('model-ready');image.src='../../assets/textures/p27/anton_chigur.png';let seen=true,old=0;new IntersectionObserver(es=>seen=es[0].isIntersecting).observe(cv);
       function frame(t){requestAnimationFrame(frame);if(t-old<45)return;const dt=Math.min(.07,(t-old)/1000);old=t;if(!seen||document.hidden)return;const target=58+s.distance*1.65;model.cam.dist+=(target-model.cam.dist)*(reduced.matches?1:.15);if(!reduced.matches)model.tick(dt);model.render();}requestAnimationFrame(frame);
     }

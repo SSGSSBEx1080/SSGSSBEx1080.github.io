@@ -1,7 +1,7 @@
 /* №26 · камера: исходная Bedrock-геометрия и атлас в Three.js, а не абстрактная замена модели.
    Группы костей и коробочная UV-развёртка преобразованы из vacuum.geo.json.
    Физика предметов — НАГЛЯДНАЯ браузерная модель конуса/фильтра из VacuumServerEvents.java. */
-import * as THREE from '../../shared/vendor/three/three.module.js';
+const THREE = window.THREE;
 
 const host=document.querySelector('#chamberCanvas'),chamber=document.querySelector('#chamber');
 if(host&&chamber&&window.P26APP&&window.ZM?.P26G){

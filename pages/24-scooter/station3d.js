@@ -2,7 +2,7 @@
    Vanilla block/lantern/sign textures: official Minecraft 1.19.2; charging_port_*: user's mod.
    Roof, stairs (including outer corners), walls, bars, signs and hanging lantern are 3D.
    Only the small pedestal and atmospheric particles are presentation, not part of the NBT. */
-import * as THREE from '../../shared/vendor/three/three.module.js';
+const THREE = window.THREE;
 
 const host=document.querySelector('#stationView'),canvas=document.querySelector('#station3d');
 if(host&&canvas&&window.ZM?.P24ST){
@@ -10,13 +10,13 @@ if(host&&canvas&&window.ZM?.P24ST){
   if(!window.ZMGeo?.supported())throw new Error('WebGL недоступен');
   const source=ZM.P24ST,root='../../assets/textures/p24/station/';
   const loader=new THREE.TextureLoader();
-  function texture(file){const t=loader.load(root+file+'.png');t.colorSpace=THREE.SRGBColorSpace;t.magFilter=THREE.NearestFilter;t.minFilter=THREE.NearestMipmapNearestFilter;return t;}
+  function texture(file){const t=loader.load(ZM.tex(root+file+'.png'));t.colorSpace=THREE.SRGBColorSpace;t.magFilter=THREE.NearestFilter;t.minFilter=THREE.NearestMipmapNearestFilter;return t;}
   const materials={};
   for(const name of ['cobblestone','polished_andesite','iron_block','tuff','light_gray_concrete','stone_bricks','polished_diorite','iron_bars','oak_planks']){
    materials[name]=new THREE.MeshStandardMaterial({map:texture(name),roughness:1,metalness:0,side:name==='iron_bars'?THREE.DoubleSide:THREE.FrontSide,alphaTest:name==='iron_bars'?.45:0});
   }
   const S={cobblestone:materials.cobblestone,polished_andesite:materials.polished_andesite,iron_block:materials.iron_block,tuff:materials.tuff,light_gray_concrete:materials.light_gray_concrete,stone_brick_stairs:materials.stone_bricks,cobblestone_stairs:materials.cobblestone,polished_diorite_stairs:materials.polished_diorite,diorite_wall:materials.polished_diorite,stone_brick_wall:materials.stone_bricks,stone_brick_slab:materials.stone_bricks,iron_bars:materials.iron_bars};
-  const modTexture=name=>{const t=loader.load('../../assets/textures/p24/charging_port_'+name+'.png');t.colorSpace=THREE.SRGBColorSpace;t.magFilter=THREE.NearestFilter;return t;};
+  const modTexture=name=>{const t=loader.load(ZM.tex('../../assets/textures/p24/charging_port_'+name+'.png'));t.colorSpace=THREE.SRGBColorSpace;t.magFilter=THREE.NearestFilter;return t;};
   const portMat={side:new THREE.MeshStandardMaterial({map:modTexture('side'),roughness:.78}),front:new THREE.MeshStandardMaterial({map:modTexture('front'),roughness:.78}),top:new THREE.MeshStandardMaterial({map:modTexture('top'),roughness:.78}),bottom:new THREE.MeshStandardMaterial({map:modTexture('bottom'),roughness:.78})};
   // THREE.BoxGeometry face order is +x, -x, +y, -y, +z, -z. Minecraft east = +x.
   const portFaces={east:[portMat.front,portMat.side,portMat.top,portMat.bottom,portMat.side,portMat.side],west:[portMat.side,portMat.front,portMat.top,portMat.bottom,portMat.side,portMat.side],south:[portMat.side,portMat.side,portMat.top,portMat.bottom,portMat.front,portMat.side],north:[portMat.side,portMat.side,portMat.top,portMat.bottom,portMat.side,portMat.front]};
@@ -103,7 +103,7 @@ if(host&&canvas&&window.ZM?.P24ST){
     if(image.complete&&image.naturalWidth)ctx.drawImage(image,2,2,24,12,0,0,384,192);
     ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#242016';ctx.font='36px Pixel,monospace';
     lines.forEach((text,i)=>ctx.fillText(text,192,39+i*35));signTex.needsUpdate=true;}
-   image.onload=paint;image.src=root+'oak_sign.png';paint();
+   image.onload=paint;image.src=ZM.tex(root+'oak_sign.png');paint();
    document.fonts.load('36px Pixel').then(paint);
    group.userData={position:[x,y,z],facing:props.facing,attachment:-7/16};
    scene.add(group);signBoards.push(group);

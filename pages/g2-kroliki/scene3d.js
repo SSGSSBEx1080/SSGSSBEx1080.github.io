@@ -9,8 +9,8 @@
  * Состояние S приходит из app.js через window.__g2sim3d(S) на каждом
  * кадре — механики (прыжки, сердца, «паровозик» 0.45, отлёт на 2
  * блока, XRot 180°, детёныш) остаются в app.js, тут только картинка. */
-import * as T from '../../shared/vendor/three/three.module.js';
-import { MODELS } from '../../shared/entity_models.js';
+const T = window.THREE;
+const MODELS = window.ZM_MODELS;
 
 const DPR = Math.min(devicePixelRatio || 1, 1.5);
 const webgl2 = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })();
@@ -34,7 +34,7 @@ function boxUV(geo, uv, size) {
   }
 }
 function rabbitOf(texPath) {
-  const tex = loader.load(texPath);
+  const tex = loader.load(ZM.tex(texPath));
   tex.colorSpace = T.SRGBColorSpace; tex.magFilter = T.NearestFilter; tex.minFilter = T.NearestMipmapNearestFilter;
   const mat = new T.MeshLambertMaterial({ map: tex, alphaTest: .4 });
   const root = new T.Group(), bones = {};

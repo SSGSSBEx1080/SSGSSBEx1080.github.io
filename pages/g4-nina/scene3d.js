@@ -14,8 +14,8 @@
  * 3) ШАХТА: соляная руда объёмным блоком, трещины — подлинные
  *    destroy_stage_0..9 на накладном кубе. Состояниями управляет app.js
  *    ('g4rcm' / 'g4mine') — механики честные, тут только картинка. */
-import * as T from '../../shared/vendor/three/three.module.js';
-import { MODELS } from '../../shared/entity_models.js';
+const T = window.THREE;
+const MODELS = window.ZM_MODELS;
 
 const DPR = Math.min(devicePixelRatio || 1, 1.5);
 const webgl2 = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })();
@@ -85,7 +85,7 @@ try {
 
   /* ---- сборка сущности из ванильного geo: боксы + java-раскладка UV ---- */
   const loader = new T.TextureLoader();
-  const texOf = (p) => { const t = loader.load(p); t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter; return t; };
+  const texOf = (p) => { const t = loader.load(ZM.tex(p)); t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter; return t; };
   function animalOf(model, texPath, tint = 0xffffff, inflate = 0, untint) {
     const [TW, TH] = model.tex;
     const mat = new T.MeshLambertMaterial({ map: texOf(texPath), color: tint, alphaTest: .4 });
@@ -227,7 +227,7 @@ try {
 } catch (e) { /* стенд остаётся на плоских иконках */ }
 
 /* текстуры для шахты (свой загрузчик — вне области первой сцены) */
-const texOf2 = (p) => { const t = new T.TextureLoader().load(p); t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter; return t; };
+const texOf2 = (p) => { const t = new T.TextureLoader().load(ZM.tex(p)); t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter; return t; };
 
 
 /* =====================================================================

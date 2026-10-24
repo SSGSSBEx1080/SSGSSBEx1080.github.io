@@ -1,10 +1,12 @@
-import {buildItem,makeItemView} from './item-model.js';
 /* Both items use the complete native geometry/UVs. Back faces are real cube faces,
  * including the zero-thickness trigger guard, not CSS planes with hidden backs. */
 const gunHost=document.querySelector('#weaponModel'),coinHost=document.querySelector('#coinDisc');
 const source=ZM.P27ITEMS;
 let gunView=null,coinView=null,pitch=10,yaw=70,drag=null,coinStart=0,coinToss=false;
 function fallback(host,url,alt){host.innerHTML='';const image=new Image();image.src=url;image.alt=alt;image.className='native-item-fallback';host.append(image);host.dataset.renderer='image';}
+(async () => {
+ const buildItem = window.P27_ITEM_MODEL.buildItem;
+ const makeItemView = window.P27_ITEM_MODEL.makeItemView;
 try{
  const item=await buildItem(source.shotgun),canvas=document.createElement('canvas');gunHost.innerHTML='';canvas.setAttribute('aria-label','Оригинальная модель дробовика: все текстурированные грани');gunHost.append(canvas);gunView=makeItemView(canvas,item);item.group.rotation.z=Math.PI;gunHost.dataset.renderer='webgl';
  const pose=()=>gunView.setAngles(-yaw,pitch);
@@ -21,6 +23,8 @@ try{
  new MutationObserver(update).observe(coinHost,{attributes:true,attributeFilter:['class']});update();
  window.P27CoinViewer={view:coinView,source:source.coin,get stats(){return{renderer:'webgl',faces:item.faces.length,nativeThickness:(source.coin.elements[0].to[2]-source.coin.elements[0].from[2])/16,atlas:false};}};
 }catch(error){fallback(coinHost,'../../assets/textures/p27/coin_model_heads.png','Оригинальная текстурированная модель монеты');new MutationObserver(()=>{coinHost.querySelector('img').src='../../assets/textures/p27/coin_model_'+(coinHost.classList.contains('tails-up')?'tails':'heads')+'.png';}).observe(coinHost,{attributes:true,attributeFilter:['class']});window.P27CoinViewer={stats:{renderer:'image',atlas:false}};console.warn('Coin model snapshot fallback:',error.message);}
+
+})();
 let last=0;
 function frame(now){requestAnimationFrame(frame);if(document.hidden||now-last<40)return;last=now;
  if(gunView){const r=gunHost.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)gunView.render();}
@@ -31,4 +35,4 @@ function frame(now){requestAnimationFrame(frame);if(document.hidden||now-last<40
 }
 requestAnimationFrame(frame);
 // Tooling renders the same meshes for static views and unsupported GPU browsers.
-window.P27NativeItems={buildItem,makeItemView};
+window.P27NativeItems={buildItem:window.P27_ITEM_MODEL.buildItem,makeItemView:window.P27_ITEM_MODEL.makeItemView};

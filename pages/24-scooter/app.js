@@ -169,7 +169,7 @@
   const cv=$('#hero3d'), product=cv.parentElement;
   if (!window.ZMGeo?.supported()) {cv.hidden=true;$('#heroSpin').hidden=true;return;}
   try {
-    const g=ZMGeo.create(cv,{geo:ZM.P24G,tex:ZM.url('assets/textures/p24/scooters.png'),mip:true});
+    const g=ZMGeo.create(cv,{geo:ZM.P24G,tex:ZM.tex(ZM.url('assets/textures/p24/scooters.png')),mip:true});
     if (!g) {cv.hidden=true;$('#heroSpin').hidden=true;return;}
     const box=g.bbox(Object.keys(g.bones).filter(n=>g.bones[n].n));
     Object.assign(g.cam,{target:[box.c[0],box.c[1],box.c[2]],dist:Math.max(box.size[2]*1.65,box.size[1]*2.3,48),yaw:-58,pitch:15,fov:40});

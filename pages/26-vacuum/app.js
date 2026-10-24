@@ -135,7 +135,7 @@
   const cv=$('#heroModel'),gpu=window.ZMGeo?.supported();
   if(!gpu)cv.hidden=true;
   if(gpu)try{
-    const model=ZMGeo.create(cv,{geo:ZM.P26G.geo,anim:ZM.P26G.anim,tex:T+'vacuum.png',nearest:true,lit:.65,idle:'idle',exclusive:true,cam:{yaw:33,pitch:20,dist:35,target:[0,3,0],fov:41}});
+    const model=ZMGeo.create(cv,{geo:ZM.P26G.geo,anim:ZM.P26G.anim,tex:ZM.tex(T+'vacuum.png'),nearest:true,lit:.65,idle:'idle',exclusive:true,cam:{yaw:33,pitch:20,dist:35,target:[0,3,0],fov:41}});
     if(!model)cv.hidden=true;
     if(model){const tex=new Image();tex.onload=()=>$('#heroVisual').classList.add('model-ready');tex.src=T+'vacuum.png';let seen=true,old=0,drag=null;new IntersectionObserver(es=>seen=es[0].isIntersecting).observe(cv);
       cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return;drag={x:e.clientX,y:e.clientY,yaw:model.cam.yaw,pitch:model.cam.pitch};cv.setPointerCapture(e.pointerId);});cv.addEventListener('pointermove',e=>{if(drag){model.cam.yaw=drag.yaw+(e.clientX-drag.x)*.5;model.cam.pitch=clamp(drag.pitch+(e.clientY-drag.y)*.25,-15,55);}});['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,()=>drag=null));cv.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();model.cam.yaw+=e.key==='ArrowLeft'?-12:12;}});

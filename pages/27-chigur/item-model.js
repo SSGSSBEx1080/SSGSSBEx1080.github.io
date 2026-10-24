@@ -1,25 +1,26 @@
 /* Java/Blockbench item JSON -> real meshes. No CSS-face matrices or cropped atlas
  * planes. Minecraft UVs are normalized to 16, independent of texture_size. */
-import * as THREE from '../../shared/vendor/three/three.module.js';
-export { THREE };
+(function () {
+const THREE = window.THREE;
+
 const directions=['east','west','up','down','south','north'];
-export function faceUV(rect,u,v,rotation=0){
+function faceUV(rect,u,v,rotation=0){
  let x=u,y=1-v;
  for(let i=0;i<((rotation/90)%4+4)%4;i++)[x,y]=[y,1-x];
  return[(rect[0]+x*(rect[2]-rect[0]))/16,1-(rect[1]+y*(rect[3]-rect[1]))/16];
 }
-export function elementMatrix(element){
+function elementMatrix(element){
  const r=element.rotation||{},p=(r.origin||[8,8,8]).map(x=>x/16),axis=r.axis||'y',angle=(r.angle||0)*Math.PI/180;
  const rotation=new THREE.Matrix4()[axis==='x'?'makeRotationX':axis==='z'?'makeRotationZ':'makeRotationY'](angle);
  const scale=[1,1,1];if(r.rescale){const sec=1/Math.cos(angle);for(let i=0;i<3;i++)if(i!=={x:0,y:1,z:2}[axis])scale[i]=sec;}
  // FaceBakery rescales the rotated coordinates, then translates the pivot back.
  return new THREE.Matrix4().makeTranslation(...p).multiply(new THREE.Matrix4().makeScale(...scale)).multiply(rotation).multiply(new THREE.Matrix4().makeTranslation(...p.map(x=>-x)));
 }
-export async function buildItem(model,textureRoot='../../assets/textures/p27/'){
+async function buildItem(model,textureRoot='../../assets/textures/p27/'){
  const group=new THREE.Group(),content=new THREE.Group();group.add(content);
  const loader=new THREE.TextureLoader(),textures=new Map(),materials=new Map(),faces=[];
  const resolve=id=>{let name=model.textures[id.replace(/^#/,'')];let guard=0;while(name?.startsWith('#')&&guard++<20)name=model.textures[name.slice(1)];return name?.split('/').at(-1);};
- for(const e of model.elements){for(const f of Object.values(e.faces||{})){const name=resolve(f.texture||'#0');if(name&&!textures.has(name))textures.set(name,loader.loadAsync(textureRoot+name+'.png'));}}
+ for(const e of model.elements){for(const f of Object.values(e.faces||{})){const name=resolve(f.texture||'#0');if(name&&!textures.has(name))textures.set(name,loader.loadAsync(ZM.tex(textureRoot+name+'.png')));}}
  for(const[name,request]of textures){const map=await request;map.colorSpace=THREE.SRGBColorSpace;map.magFilter=THREE.NearestFilter;map.minFilter=THREE.LinearMipmapLinearFilter;map.anisotropy=4;
   materials.set(name,new THREE.MeshLambertMaterial({map,alphaTest:.1,side:THREE.FrontSide}));}
  const invisible=new THREE.MeshBasicMaterial({visible:false});
@@ -38,7 +39,7 @@ export async function buildItem(model,textureRoot='../../assets/textures/p27/'){
  group.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(content),center=box.getCenter(new THREE.Vector3());content.position.sub(center);group.updateMatrixWorld(true);
  return{group,content,faces,textures:materials,source:model,get bounds(){group.updateMatrixWorld(true);return new THREE.Box3().setFromObject(group);}};
 }
-export function makeItemView(canvas,item,{alpha=true}={}){
+function makeItemView(canvas,item,{alpha=true}={}){
  const renderer=new THREE.WebGLRenderer({canvas,alpha,antialias:true,preserveDrawingBuffer:true,powerPreference:'low-power'});renderer.setClearColor(0,0);renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene();scene.add(item.group);scene.add(new THREE.HemisphereLight(0xffffff,0x647475,2));const light=new THREE.DirectionalLight(0xfff5e4,2.2);light.position.set(-3,5,6);scene.add(light);
  const camera=new THREE.OrthographicCamera(-1,1,1,-1,.01,50);let yaw=180,pitch=8;
@@ -52,3 +53,7 @@ export function makeItemView(canvas,item,{alpha=true}={}){
  }
  return{renderer,scene,camera,item,render,setAngles(y,p){yaw=y;pitch=p;render();},get angles(){return[yaw,pitch];},dispose(){renderer.dispose();}};
 }
+
+window.P27_ITEM_MODEL = { faceUV, elementMatrix, buildItem, makeItemView };
+
+})();

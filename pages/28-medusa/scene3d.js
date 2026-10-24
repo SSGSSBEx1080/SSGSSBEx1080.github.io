@@ -1,14 +1,14 @@
 /* Spatial illustration of the source sphere. Exactly 48×32 segments, the native
  * medusa_wave.png, RGB(125,238,190), alpha 170 and both sides, as in Java.
  * The small vanilla-style specimen rigs/terrain are the wiki's diagnostic stand. */
-import * as THREE from '../../shared/vendor/three/three.module.js';
+const THREE = window.THREE;
 const host=document.querySelector('#worldViewport'),cv=document.querySelector('#world3d');
 try{
  if(!document.createElement('canvas').getContext('webgl2'))throw Error('WebGL2 unavailable');
  const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x101d17);scene.fog=new THREE.FogExp2(0x101d17,.012);
  const camera=new THREE.PerspectiveCamera(42,1,.08,1800),loader=new THREE.TextureLoader();
- const texture=(url,pixel=true)=>{const t=loader.load(url);t.colorSpace=THREE.SRGBColorSpace;t.magFilter=pixel?THREE.NearestFilter:THREE.LinearFilter;t.minFilter=pixel?THREE.NearestMipmapNearestFilter:THREE.LinearMipmapLinearFilter;return t;};
+ const texture=(url,pixel=true)=>{const t=loader.load(ZM.tex(url));t.colorSpace=THREE.SRGBColorSpace;t.magFilter=pixel?THREE.NearestFilter:THREE.LinearFilter;t.minFilter=pixel?THREE.NearestMipmapNearestFilter:THREE.LinearMipmapLinearFilter;return t;};
  const stoneTex=texture('../../assets/textures/p28/petrified_stone.png',false),stoneMat=new THREE.MeshLambertMaterial({map:stoneTex});
  const skin={player:texture('../../assets/textures/mc/p2/entity_steve.png'),mob:texture('../../assets/textures/mc/p2/entity_zombie_zombie.png'),zombieVillager:texture('../../assets/textures/p28/zombie_villager.png'),villager:texture('../../assets/textures/mc/p2/entity_villager_villager.png')};
  const skinMats=Object.fromEntries(Object.entries(skin).map(([key,map])=>[key,new THREE.MeshLambertMaterial({map,alphaTest:.3})]));

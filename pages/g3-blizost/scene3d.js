@@ -3,7 +3,7 @@
  * что у арены p29), поза навстречу друг другу, сердца всплывают и пульсируют
  * на 5 Гц — как OSC_HZ из IntimacyManager.java. Розовое кольцо на полу —
  * RADIUS=2 блока. Сцена иллюстрирует правила, механики числятся в app.js. */
-import * as T from '../../shared/vendor/three/three.module.js';
+const T = window.THREE;
 const fig = document.querySelector('#loveArt'), cv = document.querySelector('#love3d');
 try {
   if (!fig || !cv) throw Error('нет места под сцену');
@@ -43,7 +43,7 @@ try {
   const defsSlim = defs.map(d => (d.name === 'rightArm' || d.name === 'leftArm') ? Object.assign({}, d, { size: [3, 12, 4] }) : d);   /* у Алекс руки тоньше */
   const loader = new T.TextureLoader();
   function skin(path, tint) {
-    const t = loader.load(path);
+    const t = loader.load(ZM.tex(path));
     t.colorSpace = T.SRGBColorSpace; t.magFilter = T.NearestFilter; t.minFilter = T.NearestMipmapNearestFilter;
     return new T.MeshLambertMaterial({ map: t, alphaTest: .15, color: tint });
   }
