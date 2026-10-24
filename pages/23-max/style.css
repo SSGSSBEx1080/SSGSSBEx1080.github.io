@@ -1,4 +1,4 @@
-/* №23 · Мессенджер MAX. Ночной мессенджер: почти чёрный #0C1015 экрана мода, сине-фиолетовый градиент иконки,
+@font-face{font-family:Code;src:url('../../assets/fonts/JetBrainsMono-400-cyrillic.woff2')}@font-face{font-family:Code;src:url('../../assets/fonts/JetBrainsMono-400-latin.woff2');unicode-range:U+0000-024F}/* №23 · Мессенджер MAX. Ночной мессенджер: почти чёрный #0C1015 экрана мода, сине-фиолетовый градиент иконки,
    синие пузыри #2B6EE6. Симулятор — пиксельный шрифт и точные цвета MaxMessengerScreen. */
 @font-face{font-family:'MX Logo';font-weight:900;font-display:swap;src:url(../../assets/fonts/Unbounded-900-cyrillic.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
 @font-face{font-family:'MX Logo';font-weight:900;font-display:swap;src:url(../../assets/fonts/Unbounded-900-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F}
@@ -11,7 +11,7 @@
 :root{--bg:#0c1015;--pn:#111821;--pn2:#151c24;--ln:#223040;--tx:#e8eef6;--dim:#94a3b5;--ac:#3c89ff;--ac2:#8a5cff;--on-ac:#fff;--own:#2b6ee6;--oth:#283342;--ok:#3aa35c;--bad:#d63b3b;
   --grad:linear-gradient(135deg,#35c6ff 0%,#3c6cff 45%,#8a3dff 100%);
   --f-t:'MX Text',system-ui,sans-serif;--f-l:'MX Logo','MX Text',sans-serif;--f-px:'MX Px',monospace;
-  --topbar-bg:rgba(12,16,21,.88);--topbar-line:#1e2a38;--topbar-fg:#e8eef6}
+  --topbar-bg:rgba(12,16,21,.88);--topbar-line:#1e2a38;--topbar-fg:#e8eef6;--f-mono:Code,ui-monospace,monospace;--f-pixel:Code,'Tiny5',monospace;}
 ::selection{background:#3c6cff;color:#fff}
 body{font-family:var(--f-t);background:var(--bg);color:var(--tx)}
 .mx-bg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
@@ -502,3 +502,9 @@ code{font-family:var(--f-mono,monospace);font-size:.9em;background:rgba(60,137,2
 .mx-profile-shelf{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:20px 0 13px}.mx-profile-shelf button{display:flex;align-items:center;gap:10px;min-width:0;padding:10px;background:#152236;color:#e2eaf8;border:1px solid #34445f;border-radius:10px;text-align:left;cursor:pointer}.mx-profile-shelf button:hover{border-color:#77a9e7;background:#1b2d47}.mx-profile-shelf img{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none}.mx-profile-shelf span{min-width:0}.mx-profile-shelf b{font:600 11px/1.3 var(--f-t);display:block;overflow-wrap:anywhere}.mx-profile-shelf small{font:9px var(--f-t);display:block;margin-top:4px;color:#83acd9}.mx-open-profile{padding:6px 9px!important;font:10px var(--f-t)!important;border-radius:6px!important;color:#a5c8fa!important;background:#213957!important;border:1px solid #38577c!important;flex:none;margin-left:auto}.mx-head .mx-sbox{margin-left:0}.mx-who{min-width:0}.mx-who>span{min-width:0}.mx-who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}.mx-modal.prof[data-theme=violet]{--profile-accent:#d5b7ff;--profile-color:#4d365f}.mx-modal.prof[data-theme=forest]{--profile-accent:#a1d8c1;--profile-color:#2c5b4e}.mx-modal.prof[data-persona=pv] .mx-profile-cover{background:linear-gradient(120deg,#4d365f,#1d223c)}.mx-modal.prof[data-persona=pc] .mx-profile-cover{background:linear-gradient(120deg,#2f6253,#172b2b)}.mx-modal.prof .mx-profile-face canvas{image-rendering:auto}.mx-modal.prof .mx-profile-login{font-size:11px}.mx-demo-notice{font:11px/1.8 var(--f-t);max-width:900px;text-align:center;color:#758ba6;margin:35px auto;padding:0 24px}.mx-profile-shelf button:focus-visible,.mx-open-profile:focus-visible{outline:2px solid #a0c9ff;outline-offset:3px}
 @media(max-width:900px){.mx-profile-shelf{display:flex;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:5px}.mx-profile-shelf button{flex:0 0 155px;scroll-snap-align:start}.mx-profile-shelf img{width:40px;height:40px}}
 @media(max-width:560px){.mx-profile-shelf{margin-top:16px;gap:6px}.mx-profile-shelf button{flex-basis:140px;padding:9px;gap:8px}.mx-profile-shelf img{width:36px;height:36px}.mx-profile-shelf b{font-size:10px}.mx-profile-shelf small{font-size:8px}.mx-open-profile{font-size:8px!important;padding:6px 7px!important}.mx-head .mx-who{flex:1}.mx-head .mx-sbox{flex:none}.mx-who b{max-width:100px}.mx-demo-notice{font-size:9px}}
+
+/* ===== v3: тач ===== */
+@media (pointer:coarse){
+  button:not(:disabled):hover{filter:none}
+  .mx-send{min-height:44px}.mx-plus{min-height:44px;min-width:44px}.mx-chip{min-height:40px}
+}

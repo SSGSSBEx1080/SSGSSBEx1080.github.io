@@ -114,4 +114,29 @@
   for(let i=0;i<n;i++){model.movement(0,0);model.tick();if(model.state.t%10===0){history.push(model.state.psychosis);if(history.length>160)history.shift();}}
   consume();render();drawGraph();if(now-lastSave>1000)save();
  },25);addEventListener('pagehide',save);
+
+ /* ================= fx5: обложка синхронизируется с состоянием субъекта ================= */
+ (function osSync(){
+  if('IntersectionObserver' in window)ZM.reveal();else $$('.reveal').forEach(el=>el.classList.add('in'));
+  const mode=$('#osMode'),value=$('#osValue'),led=$('#osLed');
+  if(!mode)return;
+  let lastKey='';
+  function sync(){
+   if(!window.P29||document.hidden)return;
+   const s=window.P29.model.state,installed=s.chest==='sandevistan',active=!!s.accelerating,critical=!!s.psychosisActive;
+   document.body.classList.toggle('accel',active);
+   document.body.classList.toggle('psycho',critical);
+   document.body.classList.toggle('flatline',!s.alive);
+   let key,text,val,cls;
+   if(!s.alive){key='dead';text='СИГНАЛ ПОТЕРЯН';val='субъект погиб · психоз забрал имплант';cls='dead';}
+   else if(critical){key='psycho';text='КИБЕРПСИХОЗ';val='нагрузка '+Math.round(s.psychosis)+'% · фаза необратима';cls='psycho';}
+   else if(active){key='accel';text='УСКОРЕНИЕ АКТИВНО';val=Math.ceil((100-s.accelerationTicks)/20)+' из 5 с · мир замедлен';cls='accel';}
+   else if(s.inCutscene){key='install';text='УСТАНОВКА ИМПЛАНТА';val='100 тиков · появляется на 99-м';cls='install';}
+   else if(s.cooldown>0){key='cool';text='ОТКАТ';val=Math.ceil(s.cooldown/20)+' с до следующего рывка';cls='cool';}
+   else if(installed){key='ready';text='СИСТЕМА ГОТОВА';val='V — запуск · 5 секунд рывка';cls='ready';}
+   else{key='idle';text='СИСТЕМА ОЖИДАЕТ';val='имплант не установлен';cls='';}
+   if(key!==lastKey){lastKey=key;mode.textContent=text;value.textContent=val;led.className='os-led '+cls;}
+  }
+  setInterval(sync,200);sync();
+ })();
 })();

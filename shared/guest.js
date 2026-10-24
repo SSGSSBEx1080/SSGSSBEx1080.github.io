@@ -35,7 +35,7 @@
   [].slice.call(d.querySelectorAll('.g-head h2')).forEach(function (h) {
     h.style.transition = 'text-shadow .5s ease';
     new IntersectionObserver(function (es, obs) {
-      if (es[0].isIntersecting) { h.style.textShadow = '0 0 26px color-mix(in srgb,var(--tone) 38%,#0000)'; obs.disconnect(); }
+      if (es[0].isIntersecting) { h.style.textShadow = '0 0 26px color-mix(in srgb,var(--tone) 38%,#0000)'; if (obs) obs.disconnect(); }
     }, { threshold: .4 }).observe(h);
   });
 })();

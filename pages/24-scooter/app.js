@@ -162,6 +162,7 @@
   roster(); hud();
 
   // Original geo + atlas, with a real image fallback. Do not mark ready until the image loads.
+  (function heroModel() {
   const cv=$('#hero3d'), product=cv.parentElement;
   if (!window.ZMGeo?.supported()) {cv.hidden=true;$('#heroSpin').hidden=true;return;}
   try {
@@ -181,4 +182,53 @@
     function frame(t) {requestAnimationFrame(frame);if(t-old<40)return;const dt=Math.min(.08,(t-old)/1000);old=t;if(!seen||document.hidden)return;if(spin&&!drag&&!reduce.matches)g.cam.yaw+=dt*5;g.render();}
     requestAnimationFrame(frame);
   } catch(e) {cv.hidden=true;$('#heroSpin').hidden=true;console.warn('Scooter model fallback',e);}
+  })();
+
+  /* ================= v3: reveal-каскад, живой hero, маршрутная лента ================= */
+  // Reveal: домовый каскад, как на эталонных страницах вики.
+  if ('IntersectionObserver' in window) ZM.reveal();
+  else document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+
+  // Живой прибор на обложке: те же показания, что и в заезде, — второй симуляции нет.
+  const hl = { spd: $('#hlSpeed'), dist: $('#hlDist'), batt: $('#hlBatt'), led: $('#hlLed') };
+  const rail = { fill: $('#rrFill'), now: $('#rrNow'), bike: $('#rrBike'), el: $('#routeRail') };
+  let lastLive = 0;
+  function heroLive() {
+    const speed = Math.round(s.speed*72), pct = Math.round(s.charge/10000), m = Math.round(s.distance);
+    hl.spd.textContent = String(speed).padStart(3,'0');
+    hl.dist.textContent = m.toLocaleString('ru-RU');
+    hl.batt.textContent = pct;
+    const mode = s.charging ? 'charge' : speed > 0 ? 'ride' : 'idle';
+    hl.led.className = 'hl-led ' + mode;
+    hl.led.parentElement.dataset.mode = mode;
+    const km = clamp(m/15000, 0, 1);
+    rail.fill.style.height = (km*100).toFixed(2) + '%';
+    rail.bike.style.bottom = 'calc(' + (km*100).toFixed(2) + '% - 14px)';
+    rail.now.textContent = m >= 1000 ? (m/1000).toFixed(1).replace('.', ',') + ' км' : m + ' м';
+    rail.el.dataset.mode = mode;
+  }
+  setInterval(() => { const t = Date.now(); if (t - lastLive < 180) return; lastLive = t; if (!document.hidden) heroLive(); }, 200);
+  heroLive();
+
+  // Скорость страницы: когда едем — обложка и приборы оживают (только визуал, без второй физики).
+  let wasFast = false, wasRiding = false;
+  const fastProbe = setInterval(() => {
+    const riding = s.speed*72 > .5, fast = s.speed*72 > 65;
+    if (riding !== wasRiding) { wasRiding = riding; document.body.classList.toggle('riding', riding); }
+    if (fast !== wasFast) { wasFast = fast; document.body.classList.toggle('fast', fast); if (fast) adv.grant('speed_100'); }
+  }, 250);
+
+  // Параллакс обложки: дорога и модель чуть плывут за курсором (только точный указатель, без reduce).
+  const dep = document.querySelector('.departure');
+  if (dep && matchMedia('(pointer:fine)').matches && !reduce.matches) {
+    let px = 0, py = 0, cx = 0, cy = 0, raf = 0;
+    const layerRoad = dep.querySelector('.hero-road'), layerProd = dep.querySelector('.scooter-product'), layerNote = dep.querySelector('.round-note');
+    dep.addEventListener('pointermove', e => { const r = dep.getBoundingClientRect(); px = (e.clientX - r.left)/r.width - .5; py = (e.clientY - r.top)/r.height - .5; if (!raf) raf = requestAnimationFrame(step); }, { passive: true });
+    function step() { cx += (px - cx)*.08; cy += (py - cy)*.08;
+      if (layerRoad) layerRoad.style.transform = `rotate(-13deg) skewX(-20deg) translate(${cx*-26}px,${cy*-12}px)`;
+      if (layerProd) layerProd.style.transform = `translate(${cx*18}px,${cy*10}px)`;
+      if (layerNote) layerNote.style.transform = `skewY(-3deg) translate(${cx*8}px,${cy*5}px)`;
+      raf = (Math.abs(px-cx) > .001 || Math.abs(py-cy) > .001) ? requestAnimationFrame(step) : 0;
+    }
+  }
 })();

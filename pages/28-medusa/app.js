@@ -87,4 +87,32 @@
  let last=performance.now(),accum=0;
  setInterval(()=>{const now=performance.now(),dt=Math.min(250,now-last);last=now;if(document.hidden){accum=0;press=null;return;}accum+=dt;const n=Math.floor(accum/50);if(!n)return;accum-=n*50;model.tick(n);consume();render();if(now-lastSave>1000)persist();},25);
  addEventListener('pagehide',persist);
+
+ /* ================= v2: обложка дышит вместе со стендом ================= */
+ (function heroSync(){
+  if('IntersectionObserver' in window)ZM.reveal();else $$('.reveal').forEach(el=>el.classList.add('in'));
+  const mode=$('#hpMode'),value=$('#hpValue'),unit=$('#hpUnit'),led=$('#hpLed'),pulse=$('#heroPulse'),artifact=$('#heroArtifact');
+  const fmtT=t=>{const s=Math.max(0,t)/20;return s>=60?Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0'):fmt(s,1)+' с';};
+  function sync(){
+   if(!window.P28)return;
+   const s=window.P28.model.state,remaining=window.P28.model.remaining(),wave=s.waves.find(w=>!w.done),owner=window.P28.model.owner;
+   const armed=remaining>0,active=!!wave;
+   document.body.classList.toggle('armed',armed);
+   document.body.classList.toggle('wave',active);
+   document.body.classList.toggle('owner-stoned',!!owner.stone);
+   if(mode){
+    if(active){mode.textContent='ЗЕЛЁНАЯ ВОЛНА';value.textContent=fmt(wave.current,1)+' бл.';unit.textContent='сфера расширяется · 32 бл/с';led.className='hp-led wave';}
+    else if(armed){mode.textContent='ОТСЧЁТ ИДЁТ';value.textContent=fmtT(remaining);unit.textContent='необратимо · до активации сферы';led.className='hp-led armed';}
+    else if(!owner.alive){mode.textContent='СТЕНД ОСТАНОВЛЕН';value.textContent='—';unit.textContent='владелец погиб';led.className='hp-led dead';}
+    else if(owner.stone){mode.textContent='ВЛАДЕЛЕЦ В КАМНЕ';value.textContent=fmtT(Math.max(0,owner.endAt-s.time));unit.textContent='восстанавливается · 15% HP/с';led.className='hp-led stoned';}
+    else if(!s.item.owned&&!s.orb){mode.textContent='СТЕНД ЖДЁТ';value.textContent='—';unit.textContent='настрой параметры и запусти';led.className='hp-led';}
+    else if(s.orb){mode.textContent='МЕДУЗА В ПОЛЁТЕ';value.textContent=s.orb.charged?'заряжена':'разряжена';unit.textContent='отскоки · подбор — ПКМ';led.className='hp-led'+(s.orb.charged?' armed':'');}
+    else{mode.textContent='ГОТОВА К АКТИВАЦИИ';value.textContent='R '+s.item.radius+' · '+fmt(s.item.delay/20)+' с';unit.textContent='запуск в руке или бросок';led.className='hp-led ready';}
+    pulse.dataset.mode=led.className.replace('hp-led','').trim()||'idle';
+   }
+   if(artifact)artifact.classList.toggle('live',armed||active);
+  }
+  setInterval(()=>{if(!document.hidden)sync();},200);
+  sync();
+ })();
 })();
