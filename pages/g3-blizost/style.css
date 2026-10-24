@@ -151,7 +151,7 @@
 /* жетон-буква пульсирует как сердце */
 .g-letter{animation:heart-pulse 1.15s ease-in-out infinite}
 @keyframes heart-pulse{0%,100%{box-shadow:0 0 22px #f0568c2b}12%{box-shadow:0 0 46px #f0568c5e}24%{box-shadow:0 0 26px #f0568c33}}
-@media(prefers-reduced-motion:reduce){.g-letter{animation:none}}
+@media(prefers-reduced-motion:reduce){.g-letter{animation:none}.g-letter:after,.g-letter:before{animation:none}}
 
 /* терминал чата и логи — розовое стекло */
 .g-log{background:linear-gradient(180deg,#1c0e16,#120a0f);border-color:#f0568c33}
@@ -172,3 +172,8 @@
 .art-love.ready .keys-grid{inset:auto;left:10px;right:10px;bottom:9px;display:flex;gap:6px;padding:0;z-index:4}
 .art-love.ready .key2{flex:1;justify-content:center;font-size:10.5px;padding:6px 4px;border-radius:7px;border-bottom-width:3px;white-space:nowrap}
 .art-love figcaption{z-index:5}
+/* ===== v3: пульс ===== */
+.g-letter{animation:gIn .75s var(--ease-out) both .06s, gBeat 2.8s ease-in-out infinite .9s}
+@keyframes gBeat{0%,100%{scale:1 1}6%{scale:1.05 1.05}12%{scale:.99 .99}18%{scale:1.04 1.04}24%{scale:1 1}}
+.g-art{background:radial-gradient(80% 80% at 50% 45%,#f0568c1c,#0000 70%),#100a10}
+@media(prefers-reduced-motion:reduce){.g-letter{animation:none}.g-letter:after,.g-letter:before{animation:none}}

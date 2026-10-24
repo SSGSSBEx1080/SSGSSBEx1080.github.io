@@ -359,3 +359,5 @@
   .mpt{display:none}
   .stab-arena.hit .stab-zone,.stab-dummy.flinch{animation:none}
 }
+/* ===== v9: узкие экраны (общая 400px-сетка guest.css v2 дополняет) ===== */
+@media(max-width:400px){.g-hero-main{grid-template-columns:1fr}.g-metrics span{min-width:calc(50% - 6px)}.g-cols{grid-template-columns:1fr}}

@@ -669,7 +669,7 @@
     const tries = [];
     for (const t of [192, 160, 128, 96, 80, 64]) {
       const c = document.createElement("canvas"); c.width = c.height = t; const g = c.getContext("2d"); g.imageSmoothingQuality = "high"; g.drawImage(img, sx, sy, ss, ss, 0, 0, t, t);
-      const b = c.toDataURL("image/png").split(",")[1]; tries.push([t, b.length]); if (b.length < 30000) return { id: "image:" + b, tries };
+      const b = String(c.toDataURL("image/png") || "").split(",")[1] || ""; tries.push([t, b.length]); if (b.length < 30000) return { id: "image:" + b, tries };
     }
     return { id: null, tries };
   }

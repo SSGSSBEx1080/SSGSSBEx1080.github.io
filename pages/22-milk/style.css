@@ -1,4 +1,4 @@
-/* №22 · Дойка быка и разорителя: молочная ферма. Белый #f2f2f2 (тон пункта), пятна голштинки, молочно-синий, розовое вымя; медь и кровь для ветки сапог */
+@font-face{font-family:Code;src:url('../../assets/fonts/JetBrainsMono-400-cyrillic.woff2')}@font-face{font-family:Code;src:url('../../assets/fonts/JetBrainsMono-400-latin.woff2');unicode-range:U+0000-024F}/* №22 · Дойка быка и разорителя: молочная ферма. Белый #f2f2f2 (тон пункта), пятна голштинки, молочно-синий, розовое вымя; медь и кровь для ветки сапог */
 @font-face{font-family:'ML Script';font-weight:400;font-display:swap;src:url(../../assets/fonts/Pacifico-400-cyrillic.woff2) format('woff2');unicode-range:U+0400-045F,U+2116}
 @font-face{font-family:'ML Script';font-weight:400;font-display:swap;src:url(../../assets/fonts/Pacifico-400-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F}
 @font-face{font-family:'ML Big';font-weight:400;font-display:swap;src:url(../../assets/fonts/RubikMonoOne-400-cyrillic.woff2) format('woff2');unicode-range:U+0400-045F,U+2116}
@@ -9,7 +9,7 @@
   --ink:#1d1a17;--mute:#5b534c;--milk:#fbfaf6;--blue:#2e6fd8;--blue-d:#1b4fa8;--pink:#f29bb2;--pink-d:#d9607f;--copper:#c8733a;--copper-d:#8e4a1f;--blood:#9e1b1b;--grass:#5d9b3a;
   --card:#fffdf8;--cline:#1d1a17;
   --f-s:'ML Script','Pacifico',cursive;--f-big:'ML Big','Rubik Mono One',sans-serif;--f-t:'ML Text','Rubik',system-ui,sans-serif;
-  --topbar-bg:rgba(250,249,245,.86);--topbar-line:rgba(29,26,23,.14);--topbar-fg:#1d1a17;--adv-bg:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),#2a211c}
+  --topbar-bg:rgba(250,249,245,.86);--topbar-line:rgba(29,26,23,.14);--topbar-fg:#1d1a17;--adv-bg:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),#2a211c;--f-mono:Code,ui-monospace,monospace;--f-pixel:Code,'Tiny5',monospace;}
 html,body{overflow-x:clip}
 ::selection{background:var(--blue);color:#fff}
 body{font-family:var(--f-t);background:#f2f2f2;color:var(--ink)}
@@ -336,4 +336,25 @@ h3{font:800 20px var(--f-t);color:var(--ink);margin-bottom:8px}
   .k-dl div{grid-template-columns:118px minmax(0,1fr)}
   .ml-log{left:8px;bottom:8px}
   .ml-log div{font-size:12px}
+}
+
+/* ===== v3: самые узкие экраны и тач ===== */
+@media (max-width:420px){
+  .ml-l1{font-size:clamp(44px,13vw,64px)}
+  .ml-stats{grid-template-columns:1fr 1fr;gap:8px}
+  .ml-stage{height:340px}
+  .sec-n{width:38px;height:38px;font-size:12px}
+  .ml-pen-stage{height:300px}
+  .ml-hotbar{gap:4px}
+  .ml-hotbar button{padding:5px 7px}
+  .ml-herd{gap:6px}
+  .ml-rv-stage{height:260px}
+  .ml-bk-item{padding:8px}
+  .ml-tree{min-width:0}
+}
+@media (pointer:coarse){
+  .ml-heroSw button{min-height:44px;min-width:44px}
+  .ml-hotbar button{min-height:48px}
+  button:not(:disabled):hover{filter:none}
+  a:hover{text-decoration-thickness:1px}
 }

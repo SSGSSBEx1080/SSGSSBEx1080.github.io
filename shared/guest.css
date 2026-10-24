@@ -10,8 +10,11 @@
 @font-face{font-family:'RubikVar';font-display:swap;src:url(../assets/fonts/Rubik-var-cyrillic.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;}
 @font-face{font-family:'RubikVar';font-display:swap;src:url(../assets/fonts/Rubik-var-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;}
 
+@font-face{font-family:GuestCode;src:url(../assets/fonts/JetBrainsMono-400-cyrillic.woff2);font-display:swap}@font-face{font-family:GuestCode;src:url(../assets/fonts/JetBrainsMono-400-latin.woff2);font-display:swap;unicode-range:U+0000-024F}
 .guest-body{
   --tone:#4fd0c7; --tone-ink:#06211f; --tone-dim:#2b6f6a;
+  --f-t:var(--f-head); --f-mono:GuestCode,ui-monospace,monospace; --f-pixel:GuestCode,monospace;
+  --ac:var(--tone); --ac2:var(--g-warn); --pn:var(--g-panel); --ln:var(--g-line); --tx:var(--g-txt); --dim:var(--g-dim);
   --g-bg:#0a0e13; --g-bg2:#0d131b; --g-panel:#0e151d; --g-panel2:#111a24;
   --g-line:#223241; --g-line2:#2e4356; --g-txt:#c9d6de; --g-dim:#7e91a3; --g-faint:#54687a;
   --g-warn:#ffb02e;
@@ -231,4 +234,73 @@
 @media(prefers-reduced-motion:reduce){
   .guest-body .rv{opacity:1;transform:none;transition:none}
   .g-panel:hover,.g-islot:hover,.g-chapters a:hover{box-shadow:none;transform:none}
+}
+/* =====================================================================
+   guest.css v2 · переработка гостевых пунктов
+   Вход обложки, живая буква, слэм штампа, липкие главы, узкие экраны.
+   ===================================================================== */
+/* Вход обложки: волна по элементам */
+@media (prefers-reduced-motion:no-preference){
+  .g-hero-strip,.g-letter,.g-kicker,.g-title,.g-sub,.g-metrics,.g-art,.g-sign,.g-stamp{animation:gIn .75s var(--ease-out) both}
+  .g-letter{animation-delay:.06s}.g-kicker{animation-delay:.12s}.g-title{animation-delay:.17s}
+  .g-sub{animation-delay:.23s}.g-metrics{animation-delay:.3s}.g-art{animation-delay:.2s}
+  .g-sign{animation-delay:.4s}.g-stamp{animation-name:gStamp;animation-delay:.55s;animation-duration:.65s}
+  .g-metrics span{animation:gIn .6s var(--ease-out) both}
+  .g-metrics span:nth-child(1){animation-delay:.34s}.g-metrics span:nth-child(2){animation-delay:.4s}
+  .g-metrics span:nth-child(3){animation-delay:.46s}.g-metrics span:nth-child(4){animation-delay:.52s}
+}
+@keyframes gIn{from{opacity:0;translate:0 24px}to{opacity:1;translate:0 0}}
+@keyframes gStamp{0%{opacity:0;scale:2.2 2.2;rotate:15deg}55%{opacity:1;scale:.94 .94;rotate:-1.5deg}100%{opacity:1;scale:1 1;rotate:0deg}}
+/* Живая буква: свечение тона и скан-полоса */
+.g-letter{overflow:hidden}
+.g-letter:after{content:'';position:absolute;left:0;right:0;top:-140%;height:70%;background:linear-gradient(180deg,#0000,color-mix(in srgb,var(--tone) 20%,#ffffff26),#0000);animation:gScan 4.2s linear infinite;pointer-events:none}
+@keyframes gScan{to{top:160%}}
+.g-letter:before{content:'';position:absolute;inset:-38%;z-index:-1;background:radial-gradient(closest-side,color-mix(in srgb,var(--tone) 26%,#0000),#0000 72%);animation:gGlow 3.4s ease-in-out infinite}
+@keyframes gGlow{50%{opacity:.4}}
+@media (prefers-reduced-motion:reduce){.g-letter:after,.g-letter:before{animation:none;opacity:.5}}
+/* Рамка арта: угол тона при наведении */
+.g-art{transition:border-color .3s,box-shadow .3s}
+.g-art:hover{border-color:color-mix(in srgb,var(--tone) 55%,var(--g-line));box-shadow:0 24px 60px #0007,inset 0 0 40px color-mix(in srgb,var(--tone) 7%,#0000)}
+/* Главы: липкая лента под топбаром */
+.g-chapters{position:sticky;top:var(--topbar-h);z-index:30;background:color-mix(in srgb,var(--g-bg) 88%,#0000);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--g-line);border-bottom:1px solid var(--g-line);padding:9px 12px;display:flex;gap:3px;flex-wrap:wrap;justify-content:center}
+.g-chapters a{padding:8px 13px;border-radius:8px;font:600 12px var(--f-mono);letter-spacing:.04em;color:var(--g-dim);transition:color .25s,background .25s}
+.g-chapters a:hover{color:var(--tone);background:color-mix(in srgb,var(--tone) 10%,#0000)}
+.g-chapters a small{color:var(--tone);margin-right:6px;font-weight:700}
+/* Кнопки: срез угла в домовом стиле v2 */
+.g-btn{border-radius:7px;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%);transition:filter .25s,box-shadow .25s,translate .25s}
+.g-btn:not(:disabled):hover{filter:brightness(1.12);box-shadow:0 0 22px color-mix(in srgb,var(--tone) 45%,#0000)}
+.g-btn:not(:disabled):active{translate:0 1px}
+/* Панель: уголок-маркер тона */
+.g-panel{clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+/* Узкие экраны */
+@media(max-width:400px){
+  .g-hero-strip{font-size:8.5px;gap:10px;flex-wrap:wrap}
+  .g-hero-strip span:nth-child(4){display:none}
+  .g-hero-main{grid-template-columns:1fr;gap:16px;padding:18px 13px 26px}
+  .g-letter{width:88px;font-size:46px}
+  .g-title{font-size:clamp(30px,9.5vw,40px)}
+  .g-sub{font-size:13.5px}
+  .g-metrics{gap:12px}
+  .g-metrics span{min-width:calc(50% - 6px);flex:1}
+  .g-metrics b{font-size:21px}
+  .g-metrics small{font-size:8px}
+  .g-art{min-height:180px}
+  .g-stamp{right:8px;top:6px;padding:5px 14px;font-size:9.5px}
+  .g-chapters{gap:1px;padding:6px 8px}
+  .g-chapters a{padding:7px 9px;font-size:10.5px}
+  .g-section{padding:38px 12px}
+  .g-panel{padding:13px}
+  .g-btn{width:100%}
+  .g-kv div{grid-template-columns:1fr;padding:9px 0}
+  .g-cols{grid-template-columns:1fr}
+  .tl-strip{grid-template-columns:1fr}
+  .g-sign{font-size:12px}
+  .g-facts summary{font-size:13px}
+}
+/* Тач */
+@media(pointer:coarse){
+  .g-btn{min-height:46px}
+  .g-btn:not(:disabled):hover{box-shadow:none}
+  .g-chapters a{padding:11px 14px}
+  .g-art:hover{border-color:var(--g-line);box-shadow:none}
 }

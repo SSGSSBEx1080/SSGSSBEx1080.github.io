@@ -70,3 +70,9 @@
 .art-hop.ready canvas{display:block}
 .art-hop.ready .art-fallback{display:none}
 .art-hop figcaption{z-index:3}
+/* ===== v3: ночная поляна ===== */
+.g-art{background:radial-gradient(80% 80% at 50% 45%,#ffa03a14,#0000 70%),radial-gradient(1.5px 1.5px at 18% 26%,#ffdfae 50%,#0000 51%),radial-gradient(1.5px 1.5px at 74% 18%,#ffdfae 50%,#0000 51%),radial-gradient(1px 1px at 52% 40%,#ffe9c9 50%,#0000 51%),radial-gradient(1px 1px at 84% 56%,#ffdfae 50%,#0000 51%),radial-gradient(1.5px 1.5px at 33% 12%,#ffd894 50%,#0000 51%),#0b0a14}
+@media(prefers-reduced-motion:no-preference){
+  .g-art{animation:twinkle 6s ease-in-out infinite}
+  @keyframes twinkle{50%{background-position:0 0,3px -4px,-5px 6px,4px 8px,-6px -7px,7px 3px,0 0}}
+}
