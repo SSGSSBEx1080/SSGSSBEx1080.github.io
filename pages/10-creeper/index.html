@@ -177,8 +177,42 @@
   </section>
 
   <!-- ============ VII · ПОЛИГОН ============ -->
-  <section class="sec sec-storm" id="range">
-    <header class="sec-head reveal"><span class="sec-n red">VII</span><div class="sec-t"><span class="sec-k">Explosion · LightningBolt</span><h2>Полигон</h2></div><span class="sec-q red" id="rangeQ">срез мира</span></header>
+    <section class="sec" id="numbers">
+    <header class="sec-head reveal"><span class="sec-n">VII</span><div class="sec-t"><span class="sec-k">creeper_eggs · super_tnt</span><h2>Точные <em>числа</em></h2></div><span class="sec-q">урон, радиусы, тайминги</span></header>
+    <p class="sec-p reveal">Операция, яйца и Супер-TNT работают на конкретных величинах. Ниже — все значения, которые считает игра: сколько яиц падает с пациента, какая сила у взрыва и что происходит с водой вокруг.</p>
+    <div class="crq-grid reveal">
+      <article class="crq-spec"><span>ОПЕРАЦИЯ</span><b>1–2 яйца</b><p>За один раз реза с крипера падает одно или два яйца. Инструмент при этом теряет <b>1 прочности</b>.</p></article>
+      <article class="crq-spec"><span>СУПЕР-TNT</span><b>сила 20</b><p>В пять раз сильнее обычного: у ванильного TNT сила <b>4</b>. Фитиль горит <b>80 тиков</b> — это 4 секунды.</p></article>
+      <article class="crq-spec"><span>ОСУШКА</span><b>радиус 20</b><p>Все жидкости и блоки с водой в этой сфере становятся воздухом. Озеро исчезает целиком.</p></article>
+      <article class="crq-spec"><span>МОЛНИИ</span><b>10 штук</b><p>По одной каждые <b>3 тика</b>. Цель — случайное живое существо в пределах <b>±15 блоков</b>.</p></article>
+    </div>
+    <div class="crq-table reveal">
+      <div class="crq-row crq-row--head"><span>Предмет</span><span>Еда</span><span>Насыщение</span><span>Прочее</span></div>
+      <div class="crq-row"><span>Яйца Крипера</span><span>2</span><span>0,3</span><span>20 % шанса тошноты на 10 секунд</span></div>
+      <div class="crq-row"><span>Жареные Яйца Крипера</span><span>8</span><span>0,8</span><span>без побочных эффектов</span></div>
+      <div class="crq-row crq-row--mark"><span>Заряженные Яйца Крипера</span><span>—</span><span>—</span><span>редкость RARE, свечение чар, стак 64</span></div>
+      <div class="crq-row crq-row--mark"><span>Сытость в игре</span><span>—</span><span>1,2 / 12,8</span><span>считается как еда × множитель × 2</span></div>
+    </div>
+    <div class="crq-table reveal">
+      <div class="crq-row crq-row--two crq-row--head"><span>Параметр</span><span>Значение</span></div>
+      <div class="crq-row crq-row--two"><span>Сила взрыва</span><span>20 (обычный TNT — 4)</span></div>
+      <div class="crq-row crq-row--two"><span>Фитиль</span><span>80 тиков · 4 с</span></div>
+      <div class="crq-row crq-row--two"><span>Осушка</span><span>сфера радиусом 20 блоков</span></div>
+      <div class="crq-row crq-row--two crq-row--mark"><span>Молнии</span><span>10 штук, по одной каждые 3 тика</span></div>
+      <div class="crq-row crq-row--two"><span>Куда бьёт молния</span><span>случайное живое существо в ±15 блоков, иначе — случайная точка по heightmap</span></div>
+      <div class="crq-row crq-row--two"><span>Вагонетка</span><span>сила 20 + случайные до 2 за единицу скорости — от 20 до 30</span></div>
+      <div class="crq-row crq-row--two"><span>Цепной фитиль</span><span>случайные 20 + 10 тиков</span></div>
+    </div>
+    <div class="crq-notes reveal">
+      <details open><summary>Как выглядит кастрированный крипер</summary><p>Он больше не взрывается: у него убирают задачу взрыва, и вместо обычной модели рисуется отдельная текстура — <b>casted_creeper.png</b>. Сама операция звучит как стрижка овцы.</p></details>
+      <details><summary>Кухня: сколько жарить</summary><p>Печь — <b>200 тиков</b> (10 секунд), коптильня — <b>100 тиков</b> вдвое быстрее. За жарку капает <b>0,35</b> опыта. Жареные яйца по сытости ровно как стейк.</p></details>
+      <details><summary>Статуя Крипера</summary><p>Два блока, смотрит туда, куда её поставили. Правильная кирка — и получаешь статую, любая другая — девять сырых яиц обратно. Рецепт — три на три из сырых яиц.</p></details>
+      <details><summary>Чем поджечь Супер-TNT</summary><p>Редстоун, огонь или лава рядом, огниво, горящий снаряд, раздатчик с зажжённым блоком. Ачивка достаётся поджигателю или ближайшему игроку в <b>16 блоках</b>.</p></details>
+    </div>
+  </section>
+
+<section class="sec sec-storm" id="range">
+    <header class="sec-head reveal"><span class="sec-n red">VIII</span><div class="sec-t"><span class="sec-k">Explosion · LightningBolt</span><h2>Полигон</h2></div><span class="sec-q red" id="rangeQ">срез мира</span></header>
     <p class="sec-p reveal">Разрез местности: озеро, деревья, мобы. Честные лучи ванильного взрыва, потом осушка и молнии, как в коде. Сравни с обычным TNT.</p>
     <div class="pnl10 range reveal">
       <canvas id="rangeCv" width="960" height="440" aria-label="Полигон"></canvas>
@@ -203,7 +237,7 @@
 
   <!-- ============ VIII · ВАГОНЕТКА ============ -->
   <section class="sec sec-storm" id="cart">
-    <header class="sec-head reveal"><span class="sec-n red">VIII</span><div class="sec-t"><span class="sec-k">zitraksmode:super_tnt_minecart</span><h2>Вагонетка с Супер-TNT</h2></div><span class="sec-q">1.1.0 · стак 1</span></header>
+    <header class="sec-head reveal"><span class="sec-n red">IX</span><div class="sec-t"><span class="sec-k">zitraksmode:super_tnt_minecart</span><h2>Вагонетка с Супер-TNT</h2></div><span class="sec-q">1.1.0 · стак 1</span></header>
     <p class="sec-p reveal">Внутри едет целый блок Супер-TNT. Разгонишь сильнее, рванёт сильнее: к силе 20 прибавляется до двух за каждый блок скорости в тик.</p>
     <div class="cartbox reveal">
       <div class="pnl10 cart-ic"><img src="../../assets/textures/p10/mod/super_tnt_minecart.png" alt="Вагонетка с Супер-TNT"></div>
@@ -220,7 +254,7 @@
   <!-- ============ IX · КРЕАТИВ ============ -->
   </div>
   <section class="sec" id="creative">
-    <header class="sec-head reveal"><span class="sec-n">IX</span><div class="sec-t"><span class="sec-k">creative tab</span><h2>Креатив</h2></div><span class="sec-q">клик: взять</span></header>
+    <header class="sec-head reveal"><span class="sec-n">X</span><div class="sec-t"><span class="sec-k">creative tab</span><h2>Креатив</h2></div><span class="sec-q">клик: взять</span></header>
     <p class="sec-p reveal">Вкладка ZitraksMode, всё из этого пункта. Клик кладёт предмет в хотбар. Ачивки за «получить в инвентарь» засчитываются и отсюда, как в игре.</p>
     <div class="ctab reveal">
       <div class="ctab-head"><img src="../../assets/textures/p10/creeper_face.png" alt=""><span>ZitraksMode · №10</span></div>
@@ -230,7 +264,7 @@
 
   <!-- ============ X · ПРАВИЛА ============ -->
   <section class="sec" id="rules">
-    <header class="sec-head reveal"><span class="sec-n">X</span><div class="sec-t"><span class="sec-k">как это работает</span><h2>Правила</h2></div></header>
+    <header class="sec-head reveal"><span class="sec-n">XI</span><div class="sec-t"><span class="sec-k">как это работает</span><h2>Правила</h2></div></header>
     <div class="rules10 reveal" id="ruGrid"></div>
   </section>
 
@@ -238,13 +272,13 @@
 
   <!-- ============ XII · ИСТОРИЯ ============ -->
   <section class="sec" id="history">
-    <header class="sec-head reveal"><span class="sec-n">XI</span><div class="sec-t"><span class="sec-k">changelog</span><h2>История</h2></div></header>
+    <header class="sec-head reveal"><span class="sec-n">XII</span><div class="sec-t"><span class="sec-k">changelog</span><h2>История</h2></div></header>
     <div class="timeline reveal" id="timeline"></div>
   </section>
 
   <!-- ============ ФИНАЛ ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">XII</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">XIII</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <p class="sec-p reveal">Скрытые, как в игре: пока не получишь, не видно, что это. Вся ветка целиком живёт в общем древе мода на главной.</p>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
