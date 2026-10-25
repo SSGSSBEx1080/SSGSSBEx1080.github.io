@@ -64,9 +64,48 @@
   </section>
 
   <!-- ============ ТИР ============ -->
-  <section class="sec" id="range">
+    <section class="sec" id="numbers">
+    <header class="sec-head reveal"><span class="sec-n">03.2</span><h2>Точные числа</h2><p>Урон, кулдауны, дальность и прочность — всё как в бою. Ниже ровно те величины, которые видит игрок в игре.</p></header>
+    <div class="snq-grid reveal">
+      <article class="snq-spec"><span>ПУЛЯ</span><b>8 блоков / тик</b><p>Без гравитации и без разброса. Живёт <b>100 тиков</b> — это около <b>800 блоков</b> полёта.</p></article>
+      <article class="snq-spec"><span>ПРИЦЕЛ</span><b>FOV 30</b><p>Пока ПКМ зажата: оверлей на весь экран, остальной HUD спрятан. Вход и выход из прицела — со звуком.</p></article>
+      <article class="snq-spec"><span>УЛЬТА</span><b>64 пули</b><p>Только у незеритовой. Луч <b>200 блоков</b>, по <b>400 урона</b> каждому живому на линии, кулдаун <b>30 с</b>.</p></article>
+      <article class="snq-spec"><span>АЧИВКА</span><b>100 блоков</b><p>Убил живое существо с расстояния не меньше <b>100 блоков</b> — засчитано.</p></article>
+    </div>
+    <div class="snq-table reveal">
+      <div class="snq-row snq-row--head"><span>Тир</span><span>Урон пули</span><span>Кулдаун</span><span>Прочность</span></div>
+      <div class="snq-row"><span>Железная</span><span>20</span><span>40 тиков · 2 с</span><span>500</span></div>
+      <div class="snq-row"><span>Золотая</span><span>35</span><span>30 тиков · 1,5 с</span><span>300</span></div>
+      <div class="snq-row"><span>Алмазная</span><span>45</span><span>50 тиков · 2,5 с</span><span>1800</span></div>
+      <div class="snq-row snq-row--mark"><span>Незеритовая</span><span>100</span><span>60 тиков · 3 с</span><span>2200</span></div>
+    </div>
+    <div class="snq-table reveal">
+      <div class="snq-row snq-row--three snq-row--head"><span>Заклинание</span><span>Что делает</span><span>Уровни</span><span>Сила</span></div>
+      <div class="snq-row snq-row--three"><span>Двойное проникновение</span><span>две пули по 60 % урона, вторая уходит через 2 тика — всего 120 %</span><span>I</span><span>15 – 40</span></div>
+      <div class="snq-row snq-row--three"><span>Как он меня пробил</span><span>пуля появляется сразу за ближним блоком, если живых целей до него нет</span><span>I</span><span>12 – 35</span></div>
+      <div class="snq-row snq-row--three snq-row--mark"><span>Ловкие пальцы</span><span>перезарядка короче: ×0,95 / ×0,90 / ×0,85 — работает и на ульту</span><span>I – III</span><span>8 – 49</span></div>
+    </div>
+    <div class="snq-table reveal">
+      <div class="snq-row snq-row--head"><span>Параметр ульты</span><span>Значение</span><span>Зачем</span><span>Кто может</span></div>
+      <div class="snq-row"><span>Клавиша</span><span>R</span><span>пакет уходит на сервер</span><span>только незеритовая</span></div>
+      <div class="snq-row"><span>Патроны</span><span>64 пули</span><span>в креативе не требуются</span><span>только незеритовая</span></div>
+      <div class="snq-row snq-row--mark"><span>Длина луча</span><span>200 блоков</span><span>ломает всё на линии, кроме бедрока</span><span>только незеритовая</span></div>
+      <div class="snq-row"><span>Урон</span><span>100 × 4 = 400</span><span>всем живым, чей хитбокс пересекает луч</span><span>только незеритовая</span></div>
+      <div class="snq-row"><span>Поджог</span><span>8 секунд</span><span>горит после попадания</span><span>только незеритовая</span></div>
+      <div class="snq-row"><span>Отбрасывание</span><span>1,2 по взгляду и 0,12 вверх</span><span>сносит с линии</span><span>только незеритовая</span></div>
+      <div class="snq-row"><span>Кулдаун</span><span>600 тиков · 30 с</span><span>«Ловкие пальцы» укорачивают и его</span><span>только незеритовая</span></div>
+    </div>
+    <div class="snq-notes reveal">
+      <details open><summary>Как выглядит прицел</summary><p>Пока ПКМ зажата, поле зрения сужается до <b>30</b>, поверх экрана ложится текстура прицела из мода, а весь остальной интерфейс убирается. Отпустил кнопку — всё вернулось. Выстрел звучит с громкостью 4 и понижением тона: звук AWP перенесён один в один.</p></details>
+      <details><summary>Что берёт «Как он меня пробил»</summary><p>Если на линии взгляда (<b>200 блоков</b>) первым стоит блок, а живых целей до него нет, пуля появляется <b>сразу за этим блоком</b>. Не берёт: бедрок, барьер, укреплённый глубинный сланец, рамку портала Энда, обсидиан и плачущий обсидиан.</p></details>
+      <details><summary>Пуля не возвращается в инвентарь</summary><p>Подобрать её после выстрела нельзя — она тратится сразу. При попадании в моба работает урон снаряда, а звук стоит тот же, что у обычной стрелы.</p></details>
+      <details><summary>Прочность у снайперок есть, но не тратится</summary><p>У каждого тира своя прочность — от 300 у золотой до 2200 у незеритовой. Но в бою она не уходит: снайперки живут вечно, а «∞» на странице арсенала — это не украшение.</p></details>
+    </div>
+  </section>
+
+<section class="sec" id="range">
     <header class="sec-head reveal">
-      <span class="sec-n">03.2</span>
+      <span class="sec-n">03.3</span>
       <h2>Тир</h2>
       <p>Полигон на 320 блоков. Мобы, стены, мишени, всё как в игре. Нажми «Начать», и мышь захватится, как в игре: двигаешь мышью, крутится камера. <b>ЛКМ или ПКМ</b> стреляют сразу в момент нажатия, а прицел держится, пока кнопка зажата. Esc отпускает мышь. На телефоне тяни экран, чтобы целиться, и зажимай кнопку «огонь».</p>
     </header>
@@ -106,7 +145,7 @@
   <!-- ============ ПУЛЯ ============ -->
   <section class="sec" id="bullet">
     <header class="sec-head reveal">
-      <span class="sec-n">03.3</span>
+      <span class="sec-n">03.4</span>
       <h2>Пуля</h2>
       <p>Пуля собрана из 141 элемента. Летит по прямой без гравитации и разброса, <b>8 блоков за тик</b>. Подобрать её после выстрела нельзя.</p>
     </header>
@@ -129,7 +168,7 @@
   <!-- ============ ЗАЧАРОВАНИЯ ============ -->
   <section class="sec" id="ench">
     <header class="sec-head reveal">
-      <span class="sec-n">03.4</span>
+      <span class="sec-n">03.5</span>
       <h2>Зачарования</h2>
       <p>Три своих зачарования, только для снайперок. Все совместимы друг с другом, падают из книг и со стола зачарований, но не относятся к сокровищам.</p>
     </header>
@@ -139,7 +178,7 @@
   <!-- ============ УЛЬТА ============ -->
   <section class="sec ult-sec" id="ult">
     <header class="sec-head reveal">
-      <span class="sec-n">03.5</span>
+      <span class="sec-n">03.6</span>
       <h2>Ульта незеритовой</h2>
       <p>Только у незеритовой снайперки. Нажми <kbd>R</kbd>, и из ствола бьёт луч на <b>200 блоков</b>. Он ломает всё на своём пути, кроме бедрока, и сносит каждому мобу на линии <b>400 урона</b>.</p>
     </header>
@@ -157,7 +196,7 @@
   <!-- ============ КРАФТ ============ -->
   <section class="sec" id="craft">
     <header class="sec-head reveal">
-      <span class="sec-n">03.6</span>
+      <span class="sec-n">03.7</span>
       <h2>Крафт</h2>
       <p>Каждая следующая снайперка собирается из предыдущей. Незеритовая требует <b>все три</b> младшие сразу. Внизу есть полный подсчёт ресурсов с нуля.</p>
     </header>
@@ -182,7 +221,7 @@
   <!-- ============ ХРОНОЛОГИЯ ============ -->
   <section class="sec" id="history">
     <header class="sec-head reveal">
-      <span class="sec-n">03.7</span>
+      <span class="sec-n">03.8</span>
       <h2>Хронология</h2>
     </header>
     <div class="tl reveal" id="timeline"></div>
@@ -191,7 +230,7 @@
   <!-- ============ ФИНАЛ ============ -->
   <section class="sec" id="adv">
     <header class="sec-head reveal">
-      <span class="sec-n">03.8</span>
+      <span class="sec-n">03.9</span>
       <h2>Достижения</h2>
       <p>Ветка снайперок. Как в игре: ачивку не видно, пока не получишь. <b>Нажми на рамку</b>, чтобы посмотреть условие. Получить можно прямо в тире.</p>
     </header>
