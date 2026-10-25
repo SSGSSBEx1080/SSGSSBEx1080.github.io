@@ -386,3 +386,86 @@ body.flatline .hero-os b{color:#5c6570}
 h2{position:relative}
 h2 em{position:relative}
 h2 em::after{content:'';position:absolute;left:0;right:0;bottom:-.08em;height:2px;background:repeating-linear-gradient(90deg,#39e9da 0 8px,transparent 8px 13px);opacity:.55}
+
+/* ==========================================================================
+   Единый каркас разделов — как на №22/№25/№26/№27/№28, но под неоновой
+   палитрой раздела: кислотный жёлтый, циан, глубокий синий.
+   ========================================================================== */
+.sec{max-width:1330px;margin:auto;padding:96px 52px;position:relative}
+.sec-head{display:grid;grid-template-columns:86px minmax(0,1fr) minmax(0,.9fr);gap:28px;align-items:start;margin-bottom:34px}
+.sec-n{font:800 44px/.88 var(--f-mono);color:transparent;-webkit-text-stroke:1.4px var(--ac);letter-spacing:-.02em;padding-top:4px}
+.sec-n small{display:block;font:400 7px var(--f-mono);-webkit-text-stroke:0;color:var(--dim);letter-spacing:.16em;margin-top:10px}
+.sec-k{display:block;font:400 10px var(--f-mono);color:var(--ac);letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px}
+.sec-t h2{margin:0;font:400 clamp(30px,3.8vw,52px)/1.06 var(--f-head);letter-spacing:-.01em;color:var(--txt)}
+.sec-t h2 em{font-style:normal;color:var(--ac)}
+.sec-q{align-self:start;margin-left:auto;font:400 11px/1.55 var(--f-mono);color:#9fd4d8;border:1px solid var(--ln);padding:7px 12px;max-width:330px;background:rgba(255,255,255,.02)}
+.sec-p{max-width:840px;color:#9db8bd;font-size:14px;line-height:1.85;margin:-8px 0 26px}
+.sec-p b{color:var(--ac);font-weight:400}
+.sec-p code{font:12px var(--f-mono);color:var(--ac2);background:rgba(57,233,218,.1);padding:1px 5px}
+
+/* ---- карточки механики ---- */
+.mx-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:24px}
+.mx-spec{border:1px solid var(--ln);background:rgba(255,255,255,.026);padding:17px 18px 18px;position:relative;overflow:hidden}
+.mx-spec:before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ac)}
+.mx-spec>span{display:block;font:400 9px var(--f-mono);letter-spacing:.14em;color:var(--dim);margin-bottom:9px}
+.mx-spec>b{display:block;font:400 19px/1.3 var(--f-mono);color:var(--txt);margin-bottom:8px;letter-spacing:-.01em}
+.mx-spec>p{font:400 12.5px/1.75 var(--f-mono);color:#93aeb4;margin:0}
+.mx-spec code{color:var(--ac2)}
+
+/* ---- таблицы ---- */
+.mx-table{border:1px solid var(--ln);background:rgba(255,255,255,.026);margin-bottom:24px}
+.mx-row{display:grid;grid-template-columns:1.35fr 1fr 1fr 1fr;border-bottom:1px solid var(--ln)}
+.mx-row:last-child{border-bottom:0}
+.mx-row>span{padding:9px 14px;font:400 12px var(--f-mono);color:#a7c2c6;border-right:1px solid var(--ln)}
+.mx-row>span:last-child{border-right:0}
+.mx-row--head{background:rgba(238,246,56,.06)}
+.mx-row--head>span{font-size:10px;letter-spacing:.12em;color:#9fc3b6;text-transform:uppercase}
+.mx-row--note{background:rgba(245,77,98,.06)}
+.mx-row--note>span{color:#ff8a99}
+.mx-row--ok{background:rgba(57,233,218,.06)}
+.mx-row--ok>span{color:var(--ac2)}
+
+/* ---- нюансы ---- */
+.mx-notes{display:grid;gap:0;border-top:1px solid var(--ln)}
+.mx-notes details{border-bottom:1px solid var(--ln);padding:16px 0}
+.mx-notes summary{cursor:pointer;font:400 15px var(--f-head);color:var(--txt);list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:baseline}
+.mx-notes summary::-webkit-details-marker{display:none}
+.mx-notes summary:after{content:'+';font:400 15px var(--f-mono);color:var(--ac)}
+.mx-notes details[open] summary:after{content:'−'}
+.mx-notes details p{font:400 13px/1.85 var(--f-mono);color:#93aeb4;margin:12px 0 0;max-width:940px}
+.mx-notes details p b{color:var(--ac);font-weight:400}
+
+/* ---- адаптив ---- */
+@media(max-width:1100px){
+  .mx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:820px){
+  .sec{padding:70px 24px}
+  .sec-head{grid-template-columns:64px minmax(0,1fr);gap:18px;margin-bottom:26px}
+  .sec-q{grid-column:2;margin-left:0;max-width:none;justify-self:start}
+  .sec-n{font-size:34px}
+  .sec-n small{font-size:6px}
+  .sec-k{font-size:9px;margin-bottom:8px}
+  .sec-t h2{font-size:32px}
+  .sec-p{font-size:13px;line-height:1.8;margin:-6px 0 22px}
+  .mx-grid{grid-template-columns:1fr}
+  .mx-row{grid-template-columns:1fr 1fr}
+  .mx-row>span{border-bottom:1px solid var(--ln)}
+  .mx-row--head{grid-template-columns:1fr 1fr}
+  .mx-notes summary{font-size:14px}
+  .mx-notes details p{font-size:12px}
+}
+@media(max-width:560px){
+  .sec{padding:54px 15px}
+  .sec-head{grid-template-columns:48px minmax(0,1fr);gap:14px;margin-bottom:22px}
+  .sec-n{font-size:27px;padding-top:2px}
+  .sec-n small{font-size:5.5px;margin-top:7px}
+  .sec-k{font-size:8px}
+  .sec-t h2{font-size:26px}
+  .sec-q{font-size:9.5px;padding:6px 9px}
+  .sec-p{font-size:12.5px;line-height:1.78}
+  .mx-spec{padding:14px 15px}
+  .mx-spec>b{font-size:17px}
+  .mx-spec>p{font-size:11.5px}
+  .mx-row>span{padding:8px 11px;font-size:11px}
+}
