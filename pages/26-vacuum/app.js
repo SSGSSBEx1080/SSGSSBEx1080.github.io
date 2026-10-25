@@ -12,7 +12,7 @@
   ]);
   const ITEMS=[['diamond','Алмаз','ore'],['coal','Уголь','ore'],['raw_iron','Сырое железо','ore'],['emerald','Изумруд','ore'],['copper_ingot','Медь','ore'],['iron_ingot','Железо','ore'],['raw_gold','Сырое золото','ore'],['stone','Камень','block'],['cobblestone','Булыжник','block'],['dirt','Земля','block'],['oak_log','Дуб','block'],['apple','Яблоко','food'],['bread','Хлеб','food'],['carrot','Морковь','food'],['potato','Картофель','food'],['wheat','Пшеница','wheat'],['dropper','Выбрасыватель','misc'],['feather','Перо','misc'],['stick','Палка','misc'],['arrow','Стрела','misc'],['redstone','Редстоун','misc'],['chest','Сундук','misc'],['hopper','Воронка','misc'],['anvil','Наковальня','misc'],['enchanted_book','Книга чар','misc']].map(([id,name,category])=>({id,name,category,max:id==='enchanted_book'?1:64}));
   const byId=id=>ITEMS.find(x=>x.id===id);
-  const MODES=[['ores','Руды','diamond'],['blocks','Блоки','stone'],['food','Еда','bread'],['custom','Свой предмет','name_tag']];
+  const MODES=[['ores','Руды','diamond'],['blocks','Блоки','stone'],['food','Еда','bread'],['misc','Разное','stick'],['custom','Свой предмет','name_tag']];
   const defaults={power:5,mode:'ores',custom:'diamond',history:[],upgrades:0,enchant:0,inventory:[],caught:0};
   const specimenKeys=Object.keys(defaults);
   function clean(input={}) {
@@ -32,7 +32,7 @@
   const snapshot=()=>Object.fromEntries(specimenKeys.map(k=>[k,structuredClone(S[k])]));
   function persist(){S.specimens[S.exemplar]=snapshot();ZM.store.set('p26.lab',Object.assign(snapshot(),{exemplar:S.exemplar,specimens:S.specimens,playerCount:S.playerCount,crafted:S.crafted}));}
   const capacity=()=>27+S.upgrades*10, range=()=>S.power+S.enchant*5, free=()=>capacity()-S.inventory.length;
-  function matches(item){if(!item)return false;return S.mode==='ores'?item.category==='ore':S.mode==='blocks'?item.category==='block':S.mode==='food'?['food','wheat'].includes(item.category):S.mode==='custom'&&item.id===S.custom;}
+  function matches(item){if(!item)return false;return S.mode==='ores'?item.category==='ore':S.mode==='blocks'?item.category==='block':S.mode==='food'?['food','wheat'].includes(item.category):S.mode==='misc'?item.category==='misc':S.mode==='custom'&&item.id===S.custom;}
   const log=text=>$('#labLog').textContent=text;
   const adv=K.adv({list:ZM.P26.advancements,store:'p26.adv',icon:a=>icon(a.icon),intro:'Три настоящих достижения мода. Имена и описания оставлены без прикрас.'});
   function ensureItem(){S.crafted=true;adv.grant('crafted');}
