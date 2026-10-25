@@ -205,7 +205,7 @@ section > p.zm-story{max-width:860px;padding:22px clamp(18px,3vw,32px);margin-bl
 section > p.zm-story::before{content:"В ДЕТАЛЯХ  /  ZM";display:block;margin-bottom:9px;font:700 10px var(--f-mono);letter-spacing:.16em;color:var(--ac,#7cfc00)}
 /* MC-ассеты не размываются при масштабировании; фотографии/арт остаются гладкими. */
 img[src*="assets/textures/"]:not([src$=".jpg"]):not([src$=".jpeg"]):not([src$=".webp"]),.m3d-f{image-rendering:pixelated}
-@media(max-width:700px){.zm-route{grid-template-columns:1fr;gap:10px;margin-bottom:28px}.zm-branch-sync{gap:10px}.zm-branch-copy{flex-basis:calc(100% - 70px)}.zm-branch-sync a{width:100%;text-align:center}}
+@media(max-width:700px){.zm-route{grid-template-columns:minmax(0,1fr);gap:10px;margin-bottom:28px}.zm-route-links{min-width:0}.zm-branch-sync{gap:10px}.zm-branch-copy{flex-basis:calc(100% - 70px)}.zm-branch-sync a{width:100%;text-align:center}}
 .zm-branch-map{flex:1 0 100%;display:flex;align-items:center;gap:0;min-width:0;overflow-x:auto;padding:12px 2px 4px;border-top:1px solid color-mix(in srgb,var(--ac,#7cfc00) 26%,#484848);scrollbar-width:thin;scrollbar-color:#888 #222}
 .zm-branch-root,.zm-branch-node{position:relative;display:grid;place-items:center;flex:none;width:46px;height:46px;color:#fff;font:22px var(--f-pixel)}
 .zm-branch-root{background:color-mix(in srgb,var(--ac,#7cfc00) 20%,#555);border:2px solid color-mix(in srgb,var(--ac,#7cfc00) 55%,#fff);box-shadow:0 0 0 2px #111}
@@ -234,10 +234,13 @@ img[src*="assets/textures/"]:not([src$=".jpg"]):not([src$=".jpeg"]):not([src$=".
 @media(max-width:600px){.zm-fact summary{min-height:54px;padding:10px 12px;font-size:14px}.zm-fact-body{padding-inline:12px}.zm-facts-ctrl{flex-wrap:wrap}}
 
 /* ---- ветка ачивок в футере (для страниц без kit.css — базовые стили) ---- */
-.fin-branch{display:flex;flex-direction:column;align-items:center;gap:12px;margin:30px 0 2px}
+.fin-branch{display:flex;flex-direction:column;align-items:center;gap:12px;margin:30px 0 2px;width:100%;min-width:0;max-width:100%}
+#finBranch{min-width:0;max-width:100%;width:100%}
+body .fin-branch{width:100%;min-width:0;max-width:100%;overflow:visible}
+body .fin-branch .fb-chain{min-width:0;width:100%;max-width:100%;justify-content:safe center}
 .fin-branch .fb-cap{font:400 11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.2em;color:#8f9aa6;text-transform:uppercase}
 .fin-branch .fb-cap b{color:#fff;font-weight:400}
-.fin-branch .fb-chain{display:flex;align-items:center;min-width:max-content;max-width:100%;overflow-x:auto;padding:2px 4px;scrollbar-width:none}
+.fin-branch .fb-chain{display:flex;align-items:center;min-width:0;width:100%;max-width:100%;overflow-x:auto;padding:2px 4px;scrollbar-width:none}
 .fin-branch .fb-chain::-webkit-scrollbar{display:none}
 .fin-branch .adv-node{width:44px;height:44px;cursor:pointer;opacity:.95;transition:transform .16s ease,opacity .16s ease}
 .fin-branch .adv-node:hover{opacity:1;transform:translateY(-2px)}
