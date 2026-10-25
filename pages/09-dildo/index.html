@@ -202,8 +202,46 @@
   </section>
 
   <!-- ============ VII · ПРАВИЛА ============ -->
-  <section class="sec" id="rules">
-    <header class="sec-head reveal"><span class="sec-n">VII</span><div class="sec-t"><span class="sec-k">как это работает</span><h2>Правила</h2></div></header>
+    <section class="sec" id="numbers">
+    <header class="sec-head reveal"><span class="sec-n">VII</span><div class="sec-t"><span class="sec-k">dildomaterial · dildoseatentity</span><h2>Точные <em>числа</em></h2></div><span class="sec-q">прочность, взрыв, таймеры</span></header>
+    <p class="sec-p reveal">Девять блоков, у каждого своя прочность и своя взрывостойкость, а сиденье работает по таймеру. Ниже — все значения, по которым можно прикинуть стройку и не сесть случайно.</p>
+    <div class="dlq-grid reveal">
+      <article class="dlq-spec"><span>МАТЕРИАЛЫ</span><b>9 штук</b><p>Восемь крафтятся из пяти блоков буквой «⊥». Незеритовый выпадает только с <b>Газана</b>.</p></article>
+      <article class="dlq-spec"><span>ХИТБОКС</span><b>6 × 12 × 6</b><p>Блок чуть меньше, чем нарисованная модель. Ставится на все грани, NBT предмета сохраняется.</p></article>
+      <article class="dlq-spec"><span>TNT-ДИЛДО</span><b>80 тиков</b><p>Фитиль — <b>4 секунды</b>. В креативе не взрывается, в выживании срабатывает, и сам блок ещё выпадает.</p></article>
+      <article class="dlq-spec"><span>СИДЕНЬЕ</span><b>каждые 5 тиков</b><p>Блок проверяет сиденье и пересоздаёт его, если оно пропало. Моб садится сам с <b>0,9 блока</b>.</p></article>
+    </div>
+    <div class="dlq-table reveal">
+      <div class="dlq-row dlq-row--head"><span>Материал</span><span>Прочность</span><span>Взрыв</span><span>Инструмент</span><span>Ресурс «БЭД Варс»</span></div>
+      <div class="dlq-row"><span>Грязь</span><span>0,5</span><span>0,5</span><span>не нужен</span><span>земля</span></div>
+      <div class="dlq-row"><span>Камень</span><span>1,5</span><span>6</span><span>нужен</span><span>камень</span></div>
+      <div class="dlq-row"><span>Железо</span><span>5</span><span>6</span><span>нужен</span><span>железный слиток</span></div>
+      <div class="dlq-row"><span>Золото</span><span>3</span><span>6</span><span>нужен</span><span>золотой слиток</span></div>
+      <div class="dlq-row"><span>Алмаз</span><span>5</span><span>6</span><span>нужен</span><span>алмаз</span></div>
+      <div class="dlq-row"><span>Изумруд</span><span>5</span><span>6</span><span>нужен</span><span>изумруд</span></div>
+      <div class="dlq-row dlq-row--mark"><span>Обсидиан</span><span>50</span><span>1200</span><span>нужен</span><span>обсидиан</span></div>
+      <div class="dlq-row dlq-row--mark"><span>Незерит</span><span>50</span><span>1200</span><span>нужен</span><span>незеритовый слиток</span></div>
+      <div class="dlq-row"><span>TNT</span><span>0</span><span>0</span><span>не нужен</span><span>порох</span></div>
+    </div>
+    <div class="dlq-table reveal">
+      <div class="dlq-row dlq-row--two dlq-row--head"><span>Этап</span><span>Что происходит</span></div>
+      <div class="dlq-row dlq-row--two"><span>0 – 99 тиков</span><span>сидит, никаких эффектов</span></div>
+      <div class="dlq-row dlq-row--two dlq-row--mark"><span>100 тиков</span><span>«Моричёк»: Сопротивление I и Удача V, обновление каждые 10 тиков, без частиц</span></div>
+      <div class="dlq-row dlq-row--two"><span>200 тиков</span><span>каждые 2 тика FALLING_LAVA и CRIMSON_SPORE по пять штук, крик эндермена каждые 60 тиков</span></div>
+      <div class="dlq-row dlq-row--two"><span>Ресурс</span><span>каждые 1200 – 1600 тиков, делённое на множитель седка</span></div>
+      <div class="dlq-row dlq-row--two"><span>Смена седка</span><span>таймер сбрасывается с нуля</span></div>
+      <div class="dlq-row dlq-row--two"><span>Множитель</span><span>игрок и мирные ×1, нейтральные ×1,1, враждебные ×1,2</span></div>
+    </div>
+    <div class="dlq-notes reveal">
+      <details open><summary>Рецепт</summary><p>Пять базовых предметов буквой «⊥» — блок в центре, по блоку сверху и по бокам, на выход <b>один</b> дилдо-блок. Незеритовый так не собрать: он выпадает только с Газана за <b>67</b>.</p></details>
+      <details><summary>Как ведёт себя TNT-дилдо</summary><p>Сломал в выживании — поджигается TNT с фитилём <b>80 тиков</b> и фирменным звуком, а сам блок ещё выпадает. В креативе — просто выпадает. Подожжён огнём или горящим снарядом — тоже становится TNT. Если его задело чужой взрыв, фитиль случайный: <b>0,5 – 1,5 с</b>, и начинается цепная реакция. Сломал игроком — летит ачивка «Ловушка Джокушкера».</p></details>
+      <details><summary>Кто кого сажает</summary><p>Игрок садится по ПКМ. Моб — сам, если подошёл ближе чем на <b>0,9</b> блока; сиденье стоит на высоте <b>+0,5</b> и пересоздаётся каждые 5 тиков, если кто-то его снёс.</p></details>
+      <details><summary>Что значит «⊥»</summary><p>Пять предметов в форме буквы «⊥»: один в центре, по одному сверху и по бокам. Восемь блоков из набора собираются одинаково — меняется только материал.</p></details>
+    </div>
+  </section>
+
+<section class="sec" id="rules">
+    <header class="sec-head reveal"><span class="sec-n">VIII</span><div class="sec-t"><span class="sec-k">как это работает</span><h2>Правила</h2></div></header>
     <div class="rules reveal" id="ruGrid"></div>
   </section>
 
@@ -211,13 +249,13 @@
 
   <!-- ============ IX · ИСТОРИЯ ============ -->
   <section class="sec" id="history">
-    <header class="sec-head reveal"><span class="sec-n">VIII</span><div class="sec-t"><span class="sec-k">changelog</span><h2>История</h2></div></header>
+    <header class="sec-head reveal"><span class="sec-n">IX</span><div class="sec-t"><span class="sec-k">changelog</span><h2>История</h2></div></header>
     <div class="timeline reveal" id="timeline"></div>
   </section>
 
   <!-- ============ ФИНАЛ ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">IX</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">X</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <p class="sec-p reveal">Скрытое, как в игре: пока не получишь, не видно, что это.</p>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
