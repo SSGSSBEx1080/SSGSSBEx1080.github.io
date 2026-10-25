@@ -53,13 +53,13 @@
 .g-hero-strip b{color:var(--tone);font-weight:400}
 .g-hero-main{display:grid;grid-template-columns:auto 1fr minmax(200px,330px);gap:clamp(18px,3vw,40px);
   padding:clamp(22px,3.4vw,40px) clamp(18px,3vw,36px);align-items:center}
-.g-letter{position:relative;width:clamp(96px,11vw,150px);aspect-ratio:1;display:grid;place-items:center;
+.g-letter{position:relative;width:clamp(96px,11vw,150px);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
   font:900 clamp(54px,7vw,92px)/1 var(--f-head);color:var(--tone);
   border:2px solid var(--tone);background:
     repeating-linear-gradient(45deg,#0000 0 9px,color-mix(in srgb,var(--tone) 7%,#0000) 9px 18px)}
 .g-letter::after{content:'';position:absolute;inset:7px;border:1px dashed color-mix(in srgb,var(--tone) 55%,#0000)}
-.g-letter small{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
-  background:var(--g-panel);padding:2px 8px;font:11px var(--f-mono);letter-spacing:.2em;color:var(--g-dim);white-space:nowrap}
+.g-letter small{position:static;transform:none;margin-top:2px;
+  background:var(--g-panel);padding:2px 8px;font:11px var(--f-mono);letter-spacing:.2em;color:var(--g-dim);white-space:nowrap;max-width:96%;overflow:hidden;text-overflow:ellipsis}
 .g-kicker{display:block;font:12.5px var(--f-mono);letter-spacing:.22em;color:var(--tone);margin-bottom:16px}
 .g-kicker::before{content:'';display:inline-block;width:34px;height:2px;background:var(--tone);vertical-align:middle;margin-right:12px;box-shadow:0 0 10px color-mix(in srgb,var(--tone) 60%,#0000)}
 .g-kicker em{font-style:normal;color:var(--g-faint)}
@@ -76,7 +76,7 @@
 .g-art img{max-width:72%;max-height:230px;object-fit:contain;margin:auto;filter:drop-shadow(0 14px 22px #000a)}
 .g-art figcaption,.g-art .g-art-cap{position:absolute;bottom:9px;left:12px;right:12px;text-align:center;
   font:10px var(--f-mono);letter-spacing:.18em;color:var(--g-faint)}
-.g-stamp{position:absolute;top:14px;right:-34px;transform:rotate(9deg);z-index:6;
+.g-stamp{position:absolute;top:72px;right:18px;transform:rotate(9deg);z-index:6;
   background:color-mix(in srgb,var(--tone) 14%,#0c1218);color:var(--tone);
   border:2px solid var(--tone);padding:7px 38px;font:700 12.5px var(--f-mono);letter-spacing:.3em;
   box-shadow:0 0 18px #0006 inset,0 0 26px color-mix(in srgb,var(--tone) 35%,#0000)}
@@ -284,8 +284,9 @@
   .g-metrics span{min-width:calc(50% - 6px);flex:1}
   .g-metrics b{font-size:21px}
   .g-metrics small{font-size:8px}
-  .g-art{min-height:180px}
-  .g-stamp{right:8px;top:6px;padding:5px 14px;font-size:9.5px}
+  .g-art{min-height:180px;width:100%;justify-self:stretch}
+  .g-stamp{right:20px;top:58px;padding:4px 9px;font-size:7.5px;letter-spacing:.14em;transform:rotate(6deg);max-width:calc(100% - 40px)}
+  .g-letter small{font-size:8px;letter-spacing:.12em;padding:1px 5px;max-width:100%}
   .g-chapters{gap:1px;padding:6px 8px}
   .g-chapters a{padding:7px 9px;font-size:10.5px}
   .g-section{padding:38px 12px}

@@ -15,7 +15,7 @@
       <div>
         <span class="g-kicker">ГОСТЕВОЙ ПУНКТ 3 / 4 <em>· КОМАНДЫ СЕРВЕРА</em></span>
         <h1 class="g-title" id="title">Команды близости</h1>
-        <p class="g-sub">Четыре команды мода: /sex и /blowjob отправляют приглашение, /yes и /no отвечают на него. Живые цели просят согласия, мобы — нет. Ветка из 19 ачивок 00_guest — вся про это.</p>
+        <p class="g-sub">Четыре команды мода: /sex и /blowjob отправляют приглашение, /yes и /no отвечают на него. Живые цели просят согласия, мобы — нет. Ветка из 19 ачивок 00_guest — вся про это. Чат-полигон, сводка констант и разбор сценария по шагам.</p>
         <div class="g-metrics">
           <span><b>2</b><small>БЛОКА — РАДИУС ЦЕЛИ</small></span>
           <span><b>10</b><small>СЕКУНД ДЛИТСЯ СЕССИЯ</small></span>
@@ -41,7 +41,8 @@
     <a href="#chat"><small>01</small> Чат-полигон</a>
     <a href="#rules"><small>02</small> Правила системы</a>
     <a href="#stats"><small>03</small> Счётчики и эффекты</a>
-    <a href="#adv"><small>04</small> Стенд-цели</a>
+    <a href="#summary"><small>04</small> Сводка</a>
+    <a href="#adv"><small>05</small> Стенд-цели</a>
   </nav>
 
   <section class="g-section" id="chat" aria-labelledby="chatTitle">
@@ -76,7 +77,7 @@
   <section class="g-section" id="rules" aria-labelledby="rulesTitle">
     <header class="g-head"><span class="g-eyebrow">02 / ПРАВИЛА СИСТЕМЫ</span>
       <h2 id="rulesTitle">Как это <em>работает в моде</em></h2>
-      <p>Цепочка от команды до рефрактерного периода — без изменений, константа в константу.</p></header>
+      <p>Цепочка от команды до рефрактерного периода — без изменений, константа в константу. Ниже видно, где игра перестаёт спрашивать разрешение, а где всё ещё ждёт ответа в чате.</p></header>
     <div class="g-cols">
       <div class="g-kv">
         <div><dt>КОМАНДЫ</dt><dd><b>/sex &lt;цель&gt;</b>, <b>/blowjob &lt;цель&gt;</b>, <b>/yes</b>, <b>/no</b></dd></div>
@@ -123,8 +124,48 @@
     </div>
   </section>
 
+  <section class="g-section" id="summary" aria-labelledby="sumTitle">
+    <header class="g-head"><span class="g-eyebrow">04 / СВОДКА</span>
+      <h2 id="sumTitle">Все числа <em>на одной странице</em></h2>
+      <p>Система маленькая, но констант в ней много. Ниже — полный список значений из IntimacyManager и IntimacyCommand, чтобы ничего не приходилось вылавливать из абзацев.</p></header>
+    <div class="g-cols">
+      <div class="g-panel">
+        <h3 class="panel-title">ПАРАМЕТРЫ СИСТЕМЫ</h3>
+        <div class="g-kv" style="margin-top:12px">
+          <div><dt>КОМАНДЫ</dt><dd><b>/sex</b>, <b>/blowjob</b>, <b>/yes</b>, <b>/no</b></dd></div>
+          <div><dt>РАДИУС ЦЕЛИ</dt><dd><b>2 блока</b> — иначе цель не находится</dd></div>
+          <div><dt>РАДИУС ПРИЁМА</dt><dd><b>3 блока</b> — согласие принимается рядом</dd></div>
+          <div><dt>КУЛДАУН</dt><dd><b>5 секунд</b> между приглашениями</dd></div>
+          <div><dt>ЖИЗНЬ ПРИГЛАШЕНИЯ</dt><dd><b>30 секунд</b> в чате</dd></div>
+          <div><dt>СЕССИЯ</dt><dd><b>10 секунд</b> — 200 тиков, 5 колебаний в секунду</dd></div>
+          <div><dt>РЕФРАКТЕРНОСТЬ</dt><dd><b>60 секунд</b> после сессии, обе стороны</dd></div>
+          <div><dt>ЭФФЕКТЫ</dt><dd>Замедление 255 и слепота, <b>200 тиков</b></dd></div>
+          <div><dt>ЧАСТИЦЫ</dt><dd><b>30 сердечек + 15 искр</b> каждой стороне</dd></div>
+          <div><dt>ЗВУК</dt><dd>intimate / blowjob, громкость 3.0</dd></div>
+          <div><dt>ЖИТЕЛЬ</dt><dd>Звук сделки: trade, 0.5F / 1.5F</dd></div>
+          <div><dt>ЗАЩИТА</dt><dd>Неуязвимость на всё время сессии</dd></div>
+        </div>
+      </div>
+      <div class="g-panel">
+        <h3 class="panel-title">19 ЦЕЛЕЙ ПО ГРУППАМ</h3>
+        <div class="g-kv" style="margin-top:12px">
+          <div><dt>ПЕРВОЕ ЗНАКОМСТВО</dt><dd>Две цели: свои и чужие — 20 XP</dd></div>
+          <div><dt>ЖИВОТНЫЕ И ФЕРМА</dt><dd>Две цели: зверьё и фермер — 60 XP</dd></div>
+          <div><dt>ДИПЛОМАТИЯ И ГОРОД</dt><dd>Две цели: дипломат и мэр — 60 XP</dd></div>
+          <div><dt>ОТКАЗЫ И ПОСЛЕДСТВИЯ</dt><dd>Семь целей: отказ, обещание, усталость, доверие, суета — 85 XP</dd></div>
+          <div><dt>ЛЕС</dt><dd>Две цели: король леса и защитник природы — 80 XP</dd></div>
+          <div><dt>ЛОКАЦИИ МИРА</dt><dd>Четыре цели: Край, Незер, вода и пещера — 80 XP</dd></div>
+        </div>
+        <div class="g-facts" style="margin-top:14px">
+          <details open><summary>Как открываются цели</summary><p>Каждая из 19 целей ставится в моде конкретным действием: сессия в определённом месте, отказ, обещание, ферма или дипломатический разговор. На стенде цели засчитываются прямо в чате — поэтому список можно пройти, не выходя из вики.</p></details>
+          <details><summary>Что значит «скрыто до получения»</summary><p>Цели из папки 00_guest скрыты, как и в игре: в общем дереве они видны только после получения. Поэтому в профиле гостя сначала пусто, а после первого действия появляются названия и цвета из мода.</p></details>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="g-section" id="adv" aria-labelledby="advTitle">
-    <header class="g-head"><span class="g-eyebrow">04 / СТЕНД-ЦЕЛИ ГОСТЯ</span>
+    <header class="g-head"><span class="g-eyebrow">05 / СТЕНД-ЦЕЛИ ГОСТЯ</span>
       <h2 id="advTitle">Ветка <em>Мистера В</em> в древе</h2>
       <p>Все 19 целей — дословно из папки 00_guest мода: названия, цвета, описания и XP без изменений. Открываются действиями на полигоне, встают в общее древо и профиль.</p></header>
     <div class="g-adv">

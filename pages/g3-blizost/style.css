@@ -6,7 +6,11 @@
   radial-gradient(120% 90% at 85% 10%, #f0568c1c 0%, transparent 55%),
   radial-gradient(90% 70% at 10% 90%, #f0568c14 0%, transparent 60%)}
 .art-keys{background:#12080d;border-color:#f0568c55;overflow:hidden}
-.keys-grid{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px;z-index:2;place-content:center}
+.keys-grid{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;padding:16px;z-index:2;place-items:start}
+.keys-grid .key2:nth-child(1){justify-self:start;align-self:start}
+.keys-grid .key2:nth-child(2){justify-self:end;align-self:start}
+.keys-grid .key2:nth-child(3){justify-self:start;align-self:end;margin-bottom:40px}
+.keys-grid .key2:nth-child(4){justify-self:end;align-self:end;margin-bottom:40px}
 .key2{
   display:flex;align-items:center;justify-content:center;
   font:700 15px var(--f-mono);letter-spacing:.02em;color:#fff;
@@ -169,7 +173,7 @@
 .art-love canvas:active{cursor:grabbing}
 .art-love.ready canvas{display:block}
 .art-love .keys-float{z-index:3}
-.art-love.ready .keys-grid{inset:auto;left:10px;right:10px;bottom:9px;display:flex;gap:6px;padding:0;z-index:4}
+.art-love.ready .keys-grid{inset:auto;left:10px;right:10px;bottom:36px;display:flex;gap:6px;padding:0;z-index:4}
 .art-love.ready .key2{flex:1;justify-content:center;font-size:10.5px;padding:6px 4px;border-radius:7px;border-bottom-width:3px;white-space:nowrap}
 .art-love figcaption{z-index:5}
 /* ===== v3: пульс ===== */
@@ -177,3 +181,9 @@
 @keyframes gBeat{0%,100%{scale:1 1}6%{scale:1.05 1.05}12%{scale:.99 .99}18%{scale:1.04 1.04}24%{scale:1 1}}
 .g-art{background:radial-gradient(80% 80% at 50% 45%,#f0568c1c,#0000 70%),#100a10}
 @media(prefers-reduced-motion:reduce){.g-letter{animation:none}.g-letter:after,.g-letter:before{animation:none}}
+
+@media(max-width:700px){
+  .chat-form{flex-direction:column;gap:10px}
+  .chat-form input{width:100%;min-width:0}
+  .chat-form .g-btn{width:100%}
+}
