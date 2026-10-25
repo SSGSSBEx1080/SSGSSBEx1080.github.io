@@ -139,7 +139,51 @@
   </section>
 
   <!-- ============ IV · КРАФТ ============ -->
-  <section class="sec" id="craft">
+    <section class="sec" id="rules">
+    <header class="sec-head reveal"><span class="sec-n">刃</span><div class="sec-t"><span class="sec-k">katana · worldslash · miningindustry</span><h2>Правила <em>из кода</em></h2></div><span class="sec-q">тайминги, урон, пороги</span></header>
+    <p class="sec-p reveal">У катаны три разных движения, и у каждого — свои числа. Ниже они ровно те, что заданы в моде: сколько длится окно парирования, сколько прочности съедает ульта и что дуга вообще режет.</p>
+    <div class="ktq-grid reveal">
+      <article class="ktq-spec"><span>ПАРИРОВАНИЕ</span><b>0,45 с</b><p>Столько живёт окно, в которое ловится удар. Откат после удачного парирования — <b>0,35 с</b>.</p></article>
+      <article class="ktq-spec"><span>УЛЬТА</span><b>67 прочности</b><p>Столько списывает каждый разрез. Замах надо держать не меньше <b>20 тиков</b>, иначе ульта не полетит.</p></article>
+      <article class="ktq-spec"><span>ДУГА</span><b>25 урона</b><p>Моб в дуге получает <b>25</b>. Обычный удар катаной по мобам — <b>7</b>. Летит дуга 4,5 блока за тик.</p></article>
+      <article class="ktq-spec"><span>ЗАЧАРОВАНИЯ</span><b>I – V</b><p>«Мировой разрез» бывает от I до V, а «Mining Industry» только I. Оба — только в основной руке.</p></article>
+    </div>
+    <div class="ktq-table reveal">
+      <div class="ktq-row ktq-row--head"><span>Параметр дуги</span><span>Значение</span><span>Как считается</span></div>
+      <div class="ktq-row ktq-row--mark"><span>Дальность</span><span>35 + 5 × уровень</span><span>каждый уровень зачарования отодвигает разрез ещё на 5 блоков</span></div>
+      <div class="ktq-row ktq-row--mark"><span>Высота</span><span>10 + 2 × уровень</span><span>столько блоков вверх достаёт дуга</span></div>
+      <div class="ktq-row"><span>Полуширина</span><span>1,5 блока</span><span>по бокам от направления взгляда</span></div>
+      <div class="ktq-row"><span>Изгиб</span><span>3,5</span><span>насколько дуга заворачивает по дуге</span></div>
+      <div class="ktq-row"><span>Толщина</span><span>1,1</span><span>сколько блоков вглубь бьёт разрез</span></div>
+      <div class="ktq-row"><span>Скорость</span><span>4,5 блока / тик</span><span>дуга проходит мимо цели почти мгновенно</span></div>
+      <div class="ktq-row"><span>Урон</span><span>25</span><span>по мобам, попавшим в дугу</span></div>
+    </div>
+    <div class="ktq-table reveal">
+      <div class="ktq-row ktq-row--head"><span>Блок</span><span>Что с ним будет</span><span>Почему</span></div>
+      <div class="ktq-row"><span>Твёрдость 0 – 39</span><span>режется</span><span>обычный камень, руда, дерево</span></div>
+      <div class="ktq-row"><span>Твёрдость 40 и выше</span><span>не режется</span><span>обсидиан и всё крепче него</span></div>
+      <div class="ktq-row ktq-row--mark"><span>Хранилища и важные блоки</span><span>режутся всегда, дроп не теряется</span><span>сундук не пропадёт из-под разреза</span></div>
+      <div class="ktq-row"><span>Остальные блоки</span><span>падают с шансом 50 %</span><span>как если бы их сломали незеритовой киркой</span></div>
+      <div class="ktq-row"><span>Mining Industry</span><span>руды всегда, с опытом; остальное — без дропа</span><span>зачарование превращает катану в бурильщик</span></div>
+    </div>
+    <div class="ktq-table reveal">
+      <div class="ktq-row ktq-row--head"><span>Зачарование</span><span>Уровень</span><span>Сила на столе зачарования</span></div>
+      <div class="ktq-row"><span>Мировой разрез</span><span>I</span><span>10 – 40</span></div>
+      <div class="ktq-row"><span>Мировой разрез</span><span>II</span><span>20 – 50</span></div>
+      <div class="ktq-row"><span>Мировой разрез</span><span>III</span><span>30 – 60</span></div>
+      <div class="ktq-row"><span>Мировой разрез</span><span>IV</span><span>40 – 70</span></div>
+      <div class="ktq-row ktq-row--mark"><span>Мировой разрез</span><span>V</span><span>50 – 80</span></div>
+      <div class="ktq-row"><span>Mining Industry</span><span>I</span><span>15 – 40</span></div>
+    </div>
+    <div class="ktq-notes reveal">
+      <details open><summary>Удар левой кнопкой</summary><p>Три удара на выбор, и следующий никогда не повторяет предыдущий — комбинации не зацикливаются. По мобам это <b>7</b> урона. По блоку удар отменён: катана не копает и не ломает блоки сама, только дуга ульты.</p></details>
+      <details><summary>Что именно ловит парирование</summary><p>Снаряды, ближний урон и взрывы — всё это можно поймать. Успех рисует кольцо из <b>30</b> частиц CRIT и ENCHANTED_HIT радиусом 1, а атакующий получает ровно столько урона, сколько хотел нанести тебе. Скелета можно убить его же стрелами — за это есть отдельная ачивка.</p></details>
+      <details><summary>Семь анимаций</summary><p>В модели их семь: <b>idle</b>, <b>diagonal_left</b>, <b>diagonal_right</b>, <b>swing_horizontal</b>, <b>parry</b>, <b>ultimate_charge</b> и <b>ultimate_release</b>. Стойка на странице показывает все семь по очереди.</p></details>
+      <details><summary>Крафт и что нужно</summary><p>Железный меч, два щита и два железных слитка. Ульта дополнительно требует готового кулдауна и <b>67</b> прочности: с почти сломанной катаной она просто не запустится.</p></details>
+    </div>
+  </section>
+
+<section class="sec" id="craft">
     <header class="sec-head reveal"><span class="sec-n">鍛</span><div class="sec-t"><span class="sec-k">IV · crafting_shaped</span><h2>Крафт</h2></div><span class="sec-q">стак 1</span></header>
     <p class="sec-p reveal">Железный меч в угол, два щита, два слитка по диагонали. Клинок куётся из меча, щиты уходят на гарду.</p>
     <div class="crf reveal">

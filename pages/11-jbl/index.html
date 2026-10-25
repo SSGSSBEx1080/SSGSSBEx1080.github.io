@@ -143,8 +143,42 @@
   </section>
 
   <!-- ============ V · КРАФТ ============ -->
-  <section class="sec" id="craft">
-    <header class="sec-head reveal"><span class="sec-n">V</span><div class="sec-t"><span class="sec-k">crafting_shaped</span><h2>Крафт</h2></div><span class="sec-q">любая кнопка</span></header>
+    <section class="sec" id="numbers">
+    <header class="sec-head reveal"><span class="sec-n">V</span><div class="sec-t"><span class="sec-k">jbl_speaker · jbl_speaker_channel</span><h2>Цифры <em>из кода</em></h2></div><span class="sec-q">пиксели, тайминги, протокол</span></header>
+    <p class="sec-p reveal">Плеер нарисован не «на глаз»: у экрана, плашки и сети есть свои размеры и свои задержки. Ниже — ровно те числа, что заданы в коде мода.</p>
+    <div class="jbq-grid reveal">
+      <article class="jbq-spec"><span>HUD</span><b>140 × 35</b><p>Плашка внизу слева: фон <b>0xAA000000</b>, рамка <b>0xFF00FF00</b>. Нота мигает зелёным и бирюзовым раз в <b>500 мс</b>.</p></article>
+      <article class="jbq-spec"><span>ЭКРАН</span><b>308 px</b><p>Высота списка треков. Строки по <b>288 × 36</b> пикселей, полоса перемотки — <b>330 × 6</b>.</p></article>
+      <article class="jbq-spec"><span>СЕТЬ</span><b>10 пакетов</b><p>Загрузка и синхронизация: UploadTrackStart / Chunk / Finish, Request / SyncSpeakerLibrary, Select / Pause / Seek / Like / Delete.</p></article>
+      <article class="jbq-spec"><span>АЧИВКА</span><b>300 тиков</b><p>Полная громкость без паузы <b>15 секунд</b> подряд. Пауза или громкость ниже 100 % — счётчик сбрасывается.</p></article>
+    </div>
+    <div class="jbq-table reveal">
+      <div class="jbq-row jbq-row--head"><span>Поле NBT</span><span>Что значит</span><span>Где видно</span></div>
+      <div class="jbq-row"><span>Playing</span><span>идёт ли воспроизведение</span><span>тултип предмета</span></div>
+      <div class="jbq-row"><span>Paused</span><span>поставлено ли на паузу</span><span>тултип предмета</span></div>
+      <div class="jbq-row"><span>CurrentTrackId / Title / Author</span><span>что именно играет</span><span>подсказка и HUD</span></div>
+      <div class="jbq-row jbq-row--mark"><span>Volume</span><span>громкость, по умолчанию 1.0</span><span>ползунок в плеере</span></div>
+      <div class="jbq-row"><span>PlaybackStartGameTime</span><span>с какого момента игры считать трек</span><span>команда /data get</span></div>
+      <div class="jbq-row"><span>PlaybackDurationMs</span><span>длительность трека в миллисекундах</span><span>время в плеере</span></div>
+      <div class="jbq-row"><span>PlaybackPositionMs</span><span>текущая позиция</span><span>полоса перемотки</span></div>
+    </div>
+    <div class="jbq-table reveal">
+      <div class="jbq-row jbq-row--head"><span>Элемент</span><span>Правило</span><span>Зачем</span></div>
+      <div class="jbq-row"><span>Сортировка списка</span><span>лайки ↓, потом дата ↓, потом название</span><span>свежие и любимые всегда сверху</span></div>
+      <div class="jbq-row"><span>Двойной клик</span><span>не дольше <b>250 мс</b> — и трек играет</span><span>случайный тап не запускает песню</span></div>
+      <div class="jbq-row jbq-row--mark"><span>Бегущая строка</span><span>60 кадров ожидания, потом 1 px за 20 кадров, зазор 30</span><span>длинное название не наезжает на громкость</span></div>
+      <div class="jbq-row"><span>Полоска громкости</span><span>8 px: больше 66 % — зелёная, больше 33 % — жёлтая, ниже — красная</span><span>видно одним взглядом</span></div>
+      <div class="jbq-row"><span>Перетаскивание файла</span><span>.ogg и .mp3 в окно — файл уходит на сервер</span><span>своя музыка без модов</span></div>
+    </div>
+    <div class="jbq-notes reveal">
+      <details open><summary>Рецепт колонки</summary><p>Три ряда: <b>Ж Р Ж / Б Н Б / Ж К Ж</b>, где Ж — железный слиток, Р — редстоун, Б — бамбук, Н — нотный блок, а К — предмет из тега <b>zitraksmode:jbl_buttons</b>. Кнопки нужны, чтобы поднять колонку в воздух.</p></details>
+      <details><summary>Что уходит по сети</summary><p>Файл режется на куски и уходит пакетами <b>UploadTrackStart</b>, <b>Chunk</b> и <b>Finish</b>. Дальше — <b>Request</b> и <b>SyncSpeakerLibrary</b> на запрос и синхронизацию библиотеки, а <b>Select</b>, <b>Pause</b>, <b>Seek</b>, <b>Like</b> и <b>Delete</b> — обычные действия с треком.</p></details>
+      <details><summary>Статусы экрана</summary><p>Плеер честно пишет, что происходит: «Импорт...», «Обновление...», «Играет: X» или «Выбери трек». Пока файл едет на сервер, список ждёт — и не даёт выбрать трек, которого ещё нет в библиотеке.</p></details>
+    </div>
+  </section>
+
+<section class="sec" id="craft">
+    <header class="sec-head reveal"><span class="sec-n">VI</span><div class="sec-t"><span class="sec-k">crafting_shaped</span><h2>Крафт</h2></div><span class="sec-q">любая кнопка</span></header>
     <p class="sec-p reveal">Железо по углам, редстоун сверху, бамбук по бокам, нотный блок в центре и снизу кнопка. Подойдёт любая: тег <code>zitraksmode:jbl_buttons</code>, поэтому в слоте они сменяют друг друга.</p>
     <div class="crf reveal">
       <div class="cg11" id="craftGrid"></div>
@@ -160,13 +194,13 @@
 
   <!-- ============ VII · ИСТОРИЯ ============ -->
   <section class="sec" id="history">
-    <header class="sec-head reveal"><span class="sec-n">VI</span><div class="sec-t"><span class="sec-k">changelog</span><h2>История</h2></div></header>
+    <header class="sec-head reveal"><span class="sec-n">VII</span><div class="sec-t"><span class="sec-k">changelog</span><h2>История</h2></div></header>
     <div class="timeline reveal" id="timeline"></div>
   </section>
 
   <!-- ============ ФИНАЛ ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">VII</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">VIII</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <p class="sec-p reveal">Скрытые, как в игре: пока не получишь, не видно, что это. Вся ветка целиком живёт в общем древе мода на главной.</p>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
