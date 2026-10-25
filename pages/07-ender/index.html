@@ -189,14 +189,51 @@
   <!-- ============ ДОСТИЖЕНИЯ ============ -->
 
   <!-- ============ ХРОНОЛОГИЯ ============ -->
-  <section class="sec" id="history">
-    <header class="sec-head reveal"><span class="sec-n">07.7</span><h2>Хронология</h2><span class="sec-q">HISTORY.md</span></header>
+    <section class="sec" id="numbers">
+    <header class="sec-head reveal"><span class="sec-n">07.7</span><h2>Точные <em>числа</em></h2><span class="sec-q">прочность, взрыв, рецепты</span></header>
+    <p class="sec-p reveal">У набора семь блоков, и у каждого своя прочность, своя взрывозащита и свой рецепт. Ниже — полный счёт, чтобы можно было прикинуть стройку до того, как полезешь копать.</p>
+    <div class="enq-grid reveal">
+      <article class="enq-spec"><span>СТЕКЛО</span><b>1200</b><p>Закалённое эндер-стекло держит взрыв как обсидиан, а прочность у него всего <b>25</b>. Хозяина не запоминает.</p></article>
+      <article class="enq-spec"><span>СЕЙФ</span><b>600</b><p>Взрывозащита <b>600</b>, прочность <b>36,25</b> — самая крепкая в наборе. 54 слота хранятся у игрока.</p></article>
+      <article class="enq-spec"><span>ДВЕРЬ И ЛЮК</span><b>1000</b><p>Прочность <b>27,5</b> у обоих, взрывозащита <b>1000</b>. Люк вообще не реагирует на редстоун.</p></article>
+      <article class="enq-spec"><span>ЧУЖАК</span><b>¼ здоровья</b><p>Молния в ноги и <b>25 %</b> от максимального здоровья. Так отвечают печь и сейф.</p></article>
+    </div>
+    <div class="enq-table reveal">
+      <div class="enq-row enq-row--head"><span>Блок</span><span>Прочность</span><span>Взрыв</span><span>Инструмент</span><span>Прочее</span></div>
+      <div class="enq-row enq-row--mark"><span>Закалённое эндер-стекло</span><span>25</span><span>1200</span><span>нужен</span><span>звук стекла, без хозяина</span></div>
+      <div class="enq-row"><span>Эндер-печь</span><span>26,75</span><span>1200</span><span>нужен</span><span>свет 13, когда горит</span></div>
+      <div class="enq-row"><span>Эндер-сейф</span><span>36,25</span><span>600</span><span>не нужен</span><span>54 слота у игрока</span></div>
+      <div class="enq-row"><span>Эндер-дверь</span><span>27,5</span><span>1000</span><span>нужен</span><span>записывает UUID хозяина</span></div>
+      <div class="enq-row"><span>Эндер-люк</span><span>27,5</span><span>1000</span><span>нужен</span><span>звуки деревянного люка</span></div>
+      <div class="enq-row"><span>Эндер-кнопка</span><span>25,25</span><span>1000</span><span>нужен</span><span>записывает UUID хозяина</span></div>
+      <div class="enq-row"><span>Эндер-нажимная плита</span><span>25,25</span><span>1000</span><span>нужен</span><span>сигнал 15 только пока хозяин рядом</span></div>
+    </div>
+    <div class="enq-table reveal">
+      <div class="enq-row enq-row--three enq-row--head"><span>Блок</span><span>Слотов</span><span>Рецепт</span></div>
+      <div class="enq-row enq-row--three"><span>Печь, сейф, дверь, люк, кнопка, плита</span><span>X</span><span>OEO / OXO / OOO — O обсидиан, E око Эндера, X слот под нужный блок</span></div>
+      <div class="enq-row enq-row--three enq-row--mark"><span>Закалённое эндер-стекло</span><span>1</span><span>OOO / GGG / OOO или OGO три раза</span></div>
+    </div>
+    <div class="enq-notes reveal">
+      <details open><summary>Что пишет чужаку</summary><p>Тексты из мода, дословно:<br>
+        <span class="enq-say">Печь: «Это не твоя печка! Пошёл нахуй отсюда!!!»</span><br>
+        <span class="enq-say">Сейф: «Пошёл нахуй!! Это не твой сейф!»</span><br>
+        <span class="enq-say">Дверь: «Доступ запрещён! Ты не владелец этой двери.»</span><br>
+        <span class="enq-say">Люк: «Ты похож на пидораса! Тебя не звали уёбище!»</span><br>
+        <span class="enq-say">Кнопка: «Эта кнопка подчиняется только хозяину!»</span></p></details>
+      <details><summary>Как работает нажимная плита</summary><p>Сигнал <b>15</b> плита даёт только пока хозяин внутри её области. Другие сущности — мобы, игроки — не считаются, и сообщений при этом никто не видит.</p></details>
+      <details><summary>Люк и редстоун</summary><p>Никак. Проверка соседей у люка пустая, так что редстоун, повторятели и всё прочее на него не влияют — открывается только хозяину.</p></details>
+      <details><summary>Кто такой «чужак»</summary><p>Тот, у кого UUID не совпал с записанным в <b>Owner</b>. Печь и сейф при этом бьют молнией в ноги и отнимают четверть здоровья, а хозяину, если он в сети, уходит отдельный сигнал.</p></details>
+    </div>
+  </section>
+
+<section class="sec" id="history">
+    <header class="sec-head reveal"><span class="sec-n">07.8</span><h2>Хронология</h2><span class="sec-q">HISTORY.md</span></header>
     <div class="tl7 reveal" id="timeline"></div>
   </section>
 
   <!-- ============ ФИНАЛ ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">07.8</span><h2>Достижения</h2><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">07.9</span><h2>Достижения</h2><span class="sec-q" id="advQ"></span></header>
     <p class="sec-p reveal">Три скрытые ачивки. Одна за то, что собрал весь набор, и две за один и тот же неудачный взлом: хозяину за то, что поймал, взломщику за то, что попался. Хозяин при этом должен быть в игре.</p>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
