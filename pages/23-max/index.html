@@ -21,7 +21,7 @@
       <div class="mx-tag"><span>№23</span>18.07.2026<i></i>версия 1.1.1<i></i>предмет · интерфейс</div>
       <h1 class="mx-logo"><span class="mx-l1">MAX</span><span class="mx-l2">мессенджер, который не заблокируют</span></h1>
       <p class="mx-sub">Правый клик — и поверх мира открывается полноценный мессенджер: личка с любым игроком сервера, «Избранное» для заметок, файлы прямо с компьютера, подарки из инвентаря с возвратом и антицензура, которая переписывает каждое сообщение. Причём исключительно в худшую сторону.</p>
-      <div class="mx-cta"><a class="k-btn" href="#app">Открыть MAX</a><a class="k-btn2" href="#censor">Антицензура</a><a class="k-btn2" href="#gifts">Подарки</a></div>
+      <div class="mx-cta"><a class="k-btn" href="#app">Открыть MAX</a><a class="k-btn2" href="#censor">Антицензура</a><a class="k-btn2" href="#gifts">Подарки</a><a class="k-btn2" href="#limits">Лимиты</a></div>
       <div class="mx-stats">
         <a href="#app"><b>4000</b><span>символов в сообщении</span></a>
         <a href="#gifts"><b>4</b><span>слота в подарке</span></a>
@@ -154,8 +154,43 @@
   </section>
 
   <!-- ============ 06 ПРОФИЛЬ ============ -->
-  <section class="sec" id="profile">
-    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">max_user_profile</span><h2>Профиль</h2></div><span class="sec-q">ава, ник, витрина</span></header>
+    <section class="sec" id="limits">
+    <header class="sec-head reveal"><span class="sec-n">06</span><div class="sec-t"><span class="sec-k">maxmessengersaveddata · maxattachmentstorage</span><h2>Лимиты <em>и правила</em></h2></div><span class="sec-q">всё считает сервер</span></header>
+    <p class="sec-p reveal">MAX — не отдельный сервер, а слой поверх мира: сообщения, профили, подарки и файлы живут в <b>SavedData</b> прямо на диске. Поэтому у каждого поля есть потолок, и он не «мягкий» — лишнее просто отрезается.</p>
+    <div class="mxq-grid reveal">
+      <article class="mxq-spec"><span>СООБЩЕНИЕ</span><b>4000 символов</b><p>Лишний хвост отрезается на лету. Счётчик отправленных сообщений растёт до <b>100</b> — это порог ачивки.</p></article>
+      <article class="mxq-spec"><span>ПОДАРОК</span><b>4 слота</b><p>До четырёх стаков из инвентаря плюс подпись. Всё, что не влезло, остаётся у отправителя.</p></article>
+      <article class="mxq-spec"><span>ВЛОЖЕНИЯ</span><b>500 МБ</b><p>Общее хранилище файлов на сервере. Подпись к файлу проходит через тот же словарь, что и сообщения.</p></article>
+      <article class="mxq-spec"><span>СЛОВАРЬ</span><b>47 · 626</b><p>Столько фраз и словоформ в серверном фильтре. Выключить его нельзя — живые цели видят переписанный текст.</p></article>
+      <article class="mxq-spec"><span>ПРОФИЛЬ</span><b>24 / 120 / 256</b><p>Имя — до 24 символов, статус — до 120, витрина и аватар — до 256. Пустое имя заменяется базовым.</p></article>
+      <article class="mxq-spec"><span>ВЫДАЧА</span><b>один раз</b><p>MAX выдаётся один раз за жизнь персонажа: в девятый слот, в любой свободный, иначе под ноги.</p></article>
+    </div>
+    <div class="mxq-table reveal">
+      <div class="mxq-row mxq-row--head"><span>Поле</span><span>Потолок</span><span>Что будет, если больше</span></div>
+      <div class="mxq-row"><span>Текст сообщения</span><span>4000 символов</span><span>хвост отрезается</span></div>
+      <div class="mxq-row"><span>Имя в профиле</span><span>24 символа</span><span>обрезается, пустое — базовое имя</span></div>
+      <div class="mxq-row"><span>Статус профиля</span><span>120 символов</span><span>обрезается</span></div>
+      <div class="mxq-row"><span>Витрина (id предмета)</span><span>256 символов</span><span>обрезается</span></div>
+      <div class="mxq-row mxq-row--note"><span>Аватар</span><span>256 символов</span><span>откат к стандартному стикеру</span></div>
+    </div>
+    <div class="mxq-table reveal">
+      <div class="mxq-row mxq-row--head"><span>Момент</span><span>Что происходит</span><span>Где лежит</span></div>
+      <div class="mxq-row"><span>Отправка подарка</span><span>вещи списываются с отправителя сразу, подпись уходит через фильтр</span><span>эскроу сервера</span></div>
+      <div class="mxq-row"><span>Ожидание</span><span>у получателя горит принять и отклонить</span><span>эскроу сервера</span></div>
+      <div class="mxq-row"><span>Принял</span><span>всё падает в инвентарь, лишнее — под ноги</span><span>инвентарь получателя</span></div>
+      <div class="mxq-row"><span>Отклонил</span><span>возврат отправителю</span><span>эскроу сервера</span></div>
+      <div class="mxq-row mxq-row--note"><span>Отправителя нет в сети</span><span>возврат ждёт его следующего входа</span><span>эскроу сервера</span></div>
+    </div>
+    <div class="mxq-notes reveal">
+      <details open><summary>Где всё это хранится</summary><p>Переписка, профили, подарки и служебные флаги лежат в <b>SavedData</b> <b>zitraksmode_max_messenger</b> прямо в мире. Перезагрузка сервера их не стирает. Файлы, которые ты перетащил в окно, уезжают на диск отдельным хранилищем с потолком <b>500 МБ</b>.</p></details>
+      <details><summary>Что словарь не трогает</summary><p>Только текст: сообщения, правки, подписи к файлам и подаркам. Содержимое самих файлов, названия предметов и ники не проходят через фильтр — он работает со строками, а не с байтами.</p></details>
+      <details><summary>Почему подарок нельзя отозвать</summary><p>Потому что вещи уходят в эскроу сразу при отправке: они уже не у отправителя, а ещё не у получателя. Отмена была бы обменом предметами на пустом месте — поэтому вместо неё есть отклонение с возвратом. Если отправитель офлайн, возврат просто ждёт его следующего входа.</p></details>
+      <details><summary>Состояния подарка</summary><p>У подарка четыре состояния: <b>PENDING</b> — ждёт ответа, <b>ACCEPTED</b> — принят, <b>REJECTED</b> — отклонён, <b>FAILED</b> — что-то сломалось. Возврат отправителю ставят флагом и в списке держат до его следующего входа: если в инвентаре не хватило места, лишнее падает под ноги, а подарок запоминает последнюю ошибку.</p></details>
+    </div>
+  </section>
+
+<section class="sec" id="profile">
+    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">max_user_profile</span><h2>Профиль</h2></div><span class="sec-q">ава, ник, витрина</span></header>
     <p class="sec-p reveal">При первом открытии MAX просит зарегистрироваться: выбрать аватарку, подписать ник и описание, поставить в витрину трофей. Пять стоковых аватарок мод рисует прямо кодом, прямоугольниками, без единой текстуры. Можно и свою картинку с компьютера: её обрезают квадратом и ужимают, пока строка не влезет в пакет.</p>
     <div class="mx-prof reveal">
       <div class="mx-avas" id="avas"></div>
@@ -166,13 +201,13 @@
 
   <!-- ============ 07 ТОНКОСТИ ============ -->
   <section class="sec" id="notes">
-    <header class="sec-head reveal"><span class="sec-n">07</span><div class="sec-t"><span class="sec-k">secret chat</span><h2>Шесть секретов MAX</h2></div><span class="sec-q">выбери чат и нажми на действие</span></header>
+    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">secret chat</span><h2>Шесть секретов MAX</h2></div><span class="sec-q">выбери чат и нажми на действие</span></header>
     <div class="mx-notes reveal" id="notesBox"></div>
   </section>
 
   <!-- ============ 08 АЧИВКИ ============ -->
   <section class="sec" id="adv">
-    <header class="sec-head reveal"><span class="sec-n">08</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
+    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">advancements</span><h2>Достижения</h2></div><span class="sec-q" id="advQ"></span></header>
     <div class="adv-board reveal" id="advBoard">
       <div class="adv-scroll"><div class="adv-chain" id="advChain"></div></div>
       <div class="adv-detail" id="advDetail"></div>
@@ -183,7 +218,7 @@
 
   <!-- ============ 09 ВЕРСИИ ============ -->
   <section class="sec" id="hist">
-    <header class="sec-head reveal"><span class="sec-n">09</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
+    <header class="sec-head reveal"><span class="sec-n">10</span><div class="sec-t"><span class="sec-k">changelog</span><h2>Версии</h2></div></header>
     <div class="k-tl reveal" id="tl"></div>
   </section>
 
