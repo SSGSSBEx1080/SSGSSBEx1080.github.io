@@ -374,6 +374,14 @@
     addEventListener("keydown", go, { once: true, capture: true });
   };
 
+  /* Страховка: страница, забывшая вызвать ZM.reveal(), не должна
+     оставлять половину контента навсегда невидимой (opacity:0). */
+  document.addEventListener("DOMContentLoaded", () => setTimeout(() => {
+    if (!document.querySelector(".reveal")) return;
+    if (document.querySelector(".reveal.in")) return;
+    ZM.reveal();
+  }, 1200));
+
   // своя кнопка звука, если страница не подключила свою
   document.addEventListener("DOMContentLoaded", () => setTimeout(() => {
     if (sfxGetter || document.querySelector(".zm-sfx")) return;

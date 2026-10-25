@@ -131,6 +131,7 @@
   function renderAll(){renderFilters();renderStats();renderBag();renderEnchantment();renderTimer();document.querySelectorAll('[data-specimen]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.specimen===S.exemplar)));}
   window.P26APP={state:S,items:ITEMS,byId,icon,matches,range,capacity,free,insert,hold,stop,setPower,log,renderStats};
   renderAll();renderRecipe();
+  ZM.reveal && ZM.reveal();
   // Original GeckoLib model; ornament motion pauses out of view and respects reduced motion.
   const cv=$('#heroModel'),gpu=window.ZMGeo?.supported();
   if(!gpu)cv.hidden=true;

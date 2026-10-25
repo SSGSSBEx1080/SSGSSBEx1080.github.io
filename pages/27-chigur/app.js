@@ -180,6 +180,7 @@
   },50);
   window.P27SCENE={state:s,gun}; // observable state for the page and regression tests
   reset();gunHUD();
+  ZM.reveal && ZM.reveal();
   const cv=$('#character3d');
   if(window.ZMGeo?.supported())try{
     model=ZMGeo.create(cv,{geo:ZM.P27G.geo,anim:ZM.P27G.anim,tex:ZM.tex('../../assets/textures/p27/anton_chigur.png'),idle:'animation.chigur.idle',lit:.45,mip:true,exclusive:true,cam:{yaw:195,pitch:3,dist:88,target:[0,16,0],fov:40}});
