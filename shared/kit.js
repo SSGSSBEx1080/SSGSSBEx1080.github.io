@@ -78,28 +78,64 @@
     st.idle = () => !drag && performance.now() - st.last > 1500;
     return st;
   }
-  /* ветка ачивок в самом низу страницы — зеркало цепочки из #advChain,
-   * одинаковая на всех страницах: и на обычных, и на гостевых */
+  /* Ветка пункта в самом низу страницы: своя сцена с фоном-панорамой,
+   * как в главном древе, но только достижения этого пункта. */
+  function branchData() {
+    const m = /\/pages\/(\d\d)-/.exec(location.pathname);
+    const g = /\/pages\/(g\d)-/.exec(location.pathname);
+    if (m) {
+      const n = +m[1];
+      const b = (ZM.HUB_ADV || []).find((x) => x.n === n);
+      if (b) return { b, mark: (ZM.POINTS || []).find((p) => p.n === n)?.icon, label: "№" + String(n).padStart(2, "0") };
+    }
+    if (g) {
+      const b = (ZM.GUEST_ADV || []).find((x) => (x.page || "").indexOf("/" + g[1] + "-") >= 0);
+      if (b) return { b, mark: b.icon, label: "ГОСТЬ " + (b.letter || g[1].toUpperCase()) };
+    }
+    return null;
+  }
   function finBranch(el) {
     if (!el) return;
+    const data = branchData();
     const render = () => {
+      if (data && data.b && data.b.adv && data.b.adv.length) { renderStage(el, data); return; }
       const src = document.querySelector("#advChain");
       if (!src || !src.children.length) return;
       const clone = src.cloneNode(true);
       clone.querySelectorAll(".adv-node").forEach((n) => n.classList.remove("sel", "pulse"));
       const total = clone.querySelectorAll(".adv-node").length;
       const got = clone.querySelectorAll(".adv-frame:not(.locked)").length;
-      if (el.querySelector(".fb-chain")) {   /* без лишних перерисовок: сравниваем разметку */
+      if (el.querySelector(".fb-chain")) {
         if (el.dataset.sig === got + "/" + total + "/" + clone.innerHTML.length) return;
       }
       el.dataset.sig = got + "/" + total + "/" + clone.innerHTML.length;
       el.innerHTML = `<div class="fin-branch"><span class="fb-cap">ВЕТКА АЧИВОК · <b>${got}/${total}</b></span><div class="fb-chain">${clone.innerHTML}</div></div>`;
     };
+    function renderStage(host, d) {
+      const b = d.b, got = new Set(ZM.store.get(b.store, []) || []);
+      const items = b.adv, total = items.length, have = items.filter((a) => got.has(a.key)).length;
+      const xp = items.filter((a) => got.has(a.key)).reduce((s, a) => s + (a.xp || 0), 0);
+      const cap = `<div class="br-cap"><span>ВЕТКА ПУНКТА</span><b>${esc(d.label)}${b.title ? " · " + esc(b.title) : ""}</b><em>${have}/${total}</em><span>${xp} XP</span></div>`;
+      const track = items.map((a, i) => {
+        const has = got.has(a.key), show = has || !a.hidden;
+        const prev = i ? items[i - 1] : null;
+        const link = i ? `<span class="br-link ${has ? "on" : ""}"></span>` : "";
+        return link + `<button type="button" class="br-node ${has ? "got" : ""} ${has ? "" : "locked"} ${a.frame || "task"}" data-key="${esc(a.key)}" title="${show ? esc(String(a.t || "").replace(/§[kr]/g, "")) : "Скрытое достижение"}" aria-label="${show ? esc(String(a.t || "").replace(/§[kr]/g, "")) : "Скрытое достижение"}"><span class="adv-frame ${show ? a.frame || "task" : "task"}${has ? "" : " locked"}"></span>${show ? `<img src="${ZM.url(a.icon)}" alt="">` : "<b>?</b>"}</button>`;
+      }).join("");
+      const root = d.mark ? `<span class="br-root" title="${esc(b.title || "")}"><img src="${ZM.url(d.mark)}" alt=""></span>` : "";
+      host.innerHTML = `<div class="br-stage"><div class="br-bg" aria-hidden="true"></div><div class="br-in">${cap}<div class="br-track">${root}${track}</div><div class="br-hint"><span>Нажми на значок — откроется список достижений пункта</span><a href="#adv">Все ачивки пункта</a></div></div></div>`;
+    }
     render();
     setInterval(render, 1500);
     el.addEventListener("click", (e) => {
-      const n = e.target.closest(".adv-node");
-      if (n && n.dataset && n.dataset.k) { const o = document.querySelector('#advChain .adv-node[data-k="' + n.dataset.k + '"]'); if (o) o.click(); }
+      const n = e.target.closest(".br-node");
+      if (n && n.dataset && n.dataset.key) {
+        const o = document.querySelector('#advChain .adv-node[data-k="' + n.dataset.key + '"]');
+        if (o) { o.click(); }
+        const a = document.getElementById("adv"); if (a) a.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if (e.target.closest(".br-hint a")) return;
       const a = document.getElementById("adv"); if (a) a.scrollIntoView({ behavior: "smooth" });
     });
   }

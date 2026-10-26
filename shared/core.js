@@ -159,14 +159,7 @@
     // №22 и №23 сохраняют восстановленный дизайн и механику без общей переразметки.
     if (n === 22 || n === 23) return;
 
-    // Маршрут вместо ещё одной стены вступительного текста. Ведёт прямо к опытам.
-    const sections = [...main.children].filter((el) => el.tagName === "SECTION" && el.id && el.querySelector("h2") && !/^(hist|history|finale)$/.test(el.id));
-    if (sections.length > 2) {
-      const first = main.querySelector("section"), route = document.createElement("nav");
-      route.className = "zm-route"; route.setAttribute("aria-label", "Маршрут по пункту");
-      route.innerHTML = `<div class="zm-route-intro"><span>ПУТЕВОДИТЕЛЬ / №${m[1]}</span><b>Выбери, что попробовать</b></div><div class="zm-route-links">${sections.map((sec, i) => `<a href="#${encodeURIComponent(sec.id)}"><small>${String(i + 1).padStart(2, "0")}</small>${ZM.esc(sec.querySelector("h2").textContent.trim())}${n >= 23 ? "" : '<span aria-hidden="true">↗</span>'}</a>`).join("")}</div>`;
-      if (first) first.after(route);
-    }
+    // Путеводитель по разделам убран: страница листается вниз, лишняя вкладка только мешала.
     main.querySelectorAll("section > p").forEach((p) => {
       if (p.textContent.length > 240 && !p.closest(".hero, .ml-hero, .gz-hero") && !p.classList.contains("fin-q")) p.classList.add("zm-story");
     });
